@@ -37,7 +37,6 @@ class Releaser
   end
 
   def commit_release_folder
-    raise "No changes, no commit." unless git_dirty?
     run "git add -u && git add . && git commit -m 'Generate new release'"
   end
 
