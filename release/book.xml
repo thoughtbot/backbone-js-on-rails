@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+
+<article lang="en">
+<articleinfo>
+    <title>The Backbone.js on Rails Adventure</title>
+    <author>
+        <firstname>Jason</firstname>
+        <surname>Morrison</surname>
+        <email>&lt;jmorrison@thoughtbot.com&gt;</email>
+    </author>
+    <authorinitials>JM</authorinitials>
+</articleinfo>
+<section id="_preface">
+<title>Preface</title>
+<simpara>The preface for the book could go here.</simpara>
+</section>
+<section id="_introduction">
+<title>Introduction</title>
+<section id="_when_not_to_use_backbone_js">
+<title>When not to use Backbone.js</title>
+</section>
+<section id="_why_backbone_js_and_not_kickstart_js_sproutcore_etc">
+<title>Why Backbone.js and not kickstart.js, sproutcore, etc.</title>
+</section>
+</section>
+<section id="_organization">
+<title>Organization</title>
+<section id="_backbone_js_and_mvc">
+<title>Backbone.js and MVC</title>
+</section>
+<section id="_what_goes_where_in_mvc">
+<title>What goes where in MVC</title>
+<simpara>Where do I put display logic, avoid putting biz logic in controllers</simpara>
+</section>
+</section>
+<section id="_rails_integration">
+<title>Rails integration</title>
+<section id="_automatically_using_the_rails_authentication_token">
+<title>Automatically using the Rails authentication token</title>
+</section>
+<section id="_converting_your_rails_models_to_backbone_js_friendly_json">
+<title>Converting your Rails models to Backbone.js-friendly JSON</title>
+</section>
+<section id="_code_organization">
+<title>Code organization</title>
+</section>
+<section id="_converting_an_existing_page_view_area_to_use_backbone_js_incremental_addition">
+<title>Converting an existing page/view area to use Backbone.js (incremental addition)</title>
+</section>
+</section>
+<section id="_views_and_templates">
+<title>Views and Templates</title>
+<section id="_view_explanation_what_is_a_view_class_viewcontroller_distinguish_templates_from_views">
+<title>View explanation (what is a view class, viewcontroller, distinguish templates from views)</title>
+</section>
+<section id="_templating_strategy_underscore_mustache_static_html_with_view_class_content">
+<title>Templating strategy - underscore, mustache, static html with view class content</title>
+</section>
+<section id="_view_helpers">
+<title>View helpers</title>
+</section>
+<section id="_form_helpers">
+<title>Form helpers</title>
+</section>
+<section id="_event_binding">
+<title>Event binding</title>
+</section>
+<section id="_how_to_use_multiple_views_on_the_same_model_collection">
+<title>How to use multiple views on the same model/collection</title>
+</section>
+<section id="_cleaning_up_binding_unbinding">
+<title>Cleaning up / binding / unbinding</title>
+</section>
+<section id="_internationalization">
+<title>Internationalization</title>
+</section>
+</section>
+<section id="_models_and_collections">
+<title>Models and collections</title>
+<section id="_naming_conventions">
+<title>Naming conventions</title>
+</section>
+<section id="_nested_resources">
+<title>Nested resources</title>
+</section>
+<section id="_resource_relationships">
+<title>Resource relationships</title>
+</section>
+<section id="_named_scopes">
+<title>Named scopes</title>
+</section>
+<section id="_client_server_duplicated_business_logic">
+<title>Client/Server duplicated business logic</title>
+</section>
+<section id="_validations">
+<title>Validations</title>
+<note><simpara>Is this model stuff or view stuff? ErrorView, what else?</simpara></note>
+</section>
+<section id="_synchronizing_between_clients">
+<title>Synchronizing between clients</title>
+</section>
+</section>
+<section id="_testing">
+<title>Testing</title>
+<section id="_not_off_the_hook">
+<title>Not off the hook</title>
+</section>
+<section id="_integration">
+<title>Integration</title>
+</section>
+<section id="_unit">
+<title>Unit</title>
+</section>
+</section>
+<section id="_the_javascript_language">
+<title>The JavaScript language</title>
+<section id="_on_dates_times_javascript_and_serialization">
+<title>On dates, times, javascript, and serialization</title>
+</section>
+<section id="_coffeescript">
+<title>Coffeescript</title>
+</section>
+<section id="_bind_and_bindall_and_javascript_8217_s_literal_this_literal_keyword">
+<title>bind and bindAll and JavaScript&#8217;s <literal>this</literal> keyword</title>
+</section>
+</section>
+</article>

@@ -1,0 +1,588 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.6.5" />
+<title>The Backbone.js on Rails Adventure</title>
+<style type="text/css">
+/* BEG */
+/* ---------------------------------------------------------------------------
+   Bare AsciiDoc styles
+   Ryan Tomayko <r@tomayko.com>
+--------------------------------------------------------------------------- */
+
+body {
+	font-family:verdana,helvetica,arial,sans-serif;
+	font-size:81.25%;   /* 13px */
+	line-height:1.538;  /* 20px */
+	margin:40px 50px;
+	max-width:53.8461538462em; /* 790px */
+	color:#333;
+}
+
+em {
+	font-style:italic;
+}
+
+strong {
+	font-weight:bold;
+	color:#000;
+}
+
+tt {
+	font-family:consolas, 'lucida console', 'bitstream vera sans mono',
+	           'courier new', monospace;
+	color:#000;
+}
+
+p, ul, ol, dl {
+	margin:10px 0
+}
+
+dl { }
+
+dt {
+	font-weight:normal;
+	color:#000;
+}
+
+h1, h2, h3, h4, h5 {
+	font-family:'lucida grande',georgia,verdana,helvetica,arial,sans-serif;
+	font-weight:normal;
+	color:#000;
+}
+
+h1 {
+	font-size:30px;
+	line-height:1.428;
+	margin:20px 0;
+}
+
+h2 {
+	font-size:23px;
+	line-height:1.36363636; /* repeating, of course */
+	margin:20px 0;
+}
+
+h2 + .sectionbody {}
+
+h3 {
+	font-size:18px;
+	line-height:1.1;
+	margin:30px 0 10px 0;
+}
+
+h4 {
+	font-size:13px;
+	font-weight:bold;
+	line-height:1.538;
+}
+
+h5 {
+	font-size:13px;
+	font-style:italic;
+	line-height:1.538;
+}
+
+pre {
+	font-size:larger;
+}
+
+#header {
+	text-align:center;
+	margin-bottom:30px;
+}
+
+#header h1 { margin-bottom:0 }
+
+
+.title, .sidebar-title {
+	font-weight:normal;
+	margin-bottom:0;
+}
+
+.admonitionblock .title {
+	font-weight:bold;
+}
+
+.admonitionblock {
+	margin:30px 0px;
+	color:#555;
+}
+
+.admonitionblock td.icon {
+	width:30px;
+	padding-right:20px;
+	padding-left:20px;
+	text-transform:uppercase;
+	font-weight:bold;
+	color:#888;
+}
+
+.listingblock .content {
+	border:1px solid silver;
+	background:#eee;
+	padding:5px;
+}
+
+.listingblock .content pre {
+	margin:0;
+}
+
+.literalblock .content {
+	margin-left:40px;
+}
+
+.verseblock .content {
+	white-space:pre
+}
+
+.sidebarblock .sidebar-content {
+	border:1px solid silver;
+	background:#FFFFEE;
+	padding:0 10px;
+	color:#222;
+	font-size:smaller;
+	line-height:1.5;
+}
+
+.sidebar-title {
+	margin:10px 0;
+	font-weight:bold;
+	color:#442;
+}
+
+.quoteblock-content {
+	font-style:italic;
+	color:#444;
+	margin-left:40px;
+}
+
+.quoteblock-content .attribution {
+	font-style:normal;
+	text-align:right;
+	color:#000;
+}
+
+.exampleblock-content *:first-child { margin-top:0 }
+.exampleblock-content {
+	border-left:2px solid silver;
+	padding-left:8px;
+}
+
+#footer {
+	font-size:11px;
+	margin-top:40px;
+	border-top:1px solid silver;
+	color:#555;
+}
+
+#author {
+	color:#000;
+	text-transform:uppercase
+}
+
+/* vim: set ft=css ts=4 sw=4 noexpandtab: */
+
+/* END @import url(bare.css); */
+
+/* ---------------------------------------------------------------------------
+   FreeBSD AsciiDoc Theme
+   Ryan Tomayko <r@tomayko.com>
+
+   Based on The FreeBSD Handbook and various other FreeBSD documenration.
+--------------------------------------------------------------------------- */
+
+body {
+  font-family:verdana,helvetica,arial,sans-serif;
+  font-size:100%;
+  color:#000;
+}
+
+tt { color:#007A00 }
+pre tt { color:#000 }
+
+dt { color:#000 }
+
+h1, h2, h3, h4, h5 {
+  font-family:'lucida grande',helvetica,verdana,sans-serif;
+  color:#900;
+  font-weight:bold;
+}
+
+#header {
+  text-align:left;
+}
+#header h1 { margin-bottom:40px }
+
+h1 {
+  font-size:36px;
+  line-height:1;
+  margin:40px 0;
+}
+
+h2 {
+  font-size:28px;
+  line-height:1;
+  margin:30px 0 20px 0;
+}
+
+.sectionbody {
+  margin-left:30px;
+}
+
+pre {
+  background:#EEE;
+}
+
+/* vim: set ft=css ts=4 sw=4 noexpandtab: */
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName == 'DIV'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
+  var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
+}
+
+}
+asciidoc.install();
+/*]]>*/
+</script>
+</head>
+<body class="article">
+<div id="header">
+<h1>The Backbone.js on Rails Adventure</h1>
+<span id="author">Jason Morrison</span><br />
+<span id="email"><tt>&lt;<a href="mailto:&lt;jmorrison@thoughtbot.com&gt;">&lt;jmorrison@thoughtbot.com&gt;</a>&gt;</tt></span><br />
+</div>
+<div id="content">
+<div class="sect1">
+<h2 id="_preface">Preface</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>The preface for the book could go here.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_when_not_to_use_backbone_js">When not to use Backbone.js</h3>
+</div>
+<div class="sect2">
+<h3 id="_why_backbone_js_and_not_kickstart_js_sproutcore_etc">Why Backbone.js and not kickstart.js, sproutcore, etc.</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_organization">Organization</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_backbone_js_and_mvc">Backbone.js and MVC</h3>
+</div>
+<div class="sect2">
+<h3 id="_what_goes_where_in_mvc">What goes where in MVC</h3>
+<div class="paragraph"><p>Where do I put display logic, avoid putting biz logic in controllers</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_rails_integration">Rails integration</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</h3>
+</div>
+<div class="sect2">
+<h3 id="_converting_your_rails_models_to_backbone_js_friendly_json">Converting your Rails models to Backbone.js-friendly JSON</h3>
+</div>
+<div class="sect2">
+<h3 id="_code_organization">Code organization</h3>
+</div>
+<div class="sect2">
+<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_incremental_addition">Converting an existing page/view area to use Backbone.js (incremental addition)</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_views_and_templates">Views and Templates</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_view_explanation_what_is_a_view_class_viewcontroller_distinguish_templates_from_views">View explanation (what is a view class, viewcontroller, distinguish templates from views)</h3>
+</div>
+<div class="sect2">
+<h3 id="_templating_strategy_underscore_mustache_static_html_with_view_class_content">Templating strategy - underscore, mustache, static html with view class content</h3>
+</div>
+<div class="sect2">
+<h3 id="_view_helpers">View helpers</h3>
+</div>
+<div class="sect2">
+<h3 id="_form_helpers">Form helpers</h3>
+</div>
+<div class="sect2">
+<h3 id="_event_binding">Event binding</h3>
+</div>
+<div class="sect2">
+<h3 id="_how_to_use_multiple_views_on_the_same_model_collection">How to use multiple views on the same model/collection</h3>
+</div>
+<div class="sect2">
+<h3 id="_cleaning_up_binding_unbinding">Cleaning up / binding / unbinding</h3>
+</div>
+<div class="sect2">
+<h3 id="_internationalization">Internationalization</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_models_and_collections">Models and collections</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_naming_conventions">Naming conventions</h3>
+</div>
+<div class="sect2">
+<h3 id="_nested_resources">Nested resources</h3>
+</div>
+<div class="sect2">
+<h3 id="_resource_relationships">Resource relationships</h3>
+</div>
+<div class="sect2">
+<h3 id="_named_scopes">Named scopes</h3>
+</div>
+<div class="sect2">
+<h3 id="_client_server_duplicated_business_logic">Client/Server duplicated business logic</h3>
+</div>
+<div class="sect2">
+<h3 id="_validations">Validations</h3>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Is this model stuff or view stuff? ErrorView, what else?</td>
+</tr></table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_synchronizing_between_clients">Synchronizing between clients</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing">Testing</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_not_off_the_hook">Not off the hook</h3>
+</div>
+<div class="sect2">
+<h3 id="_integration">Integration</h3>
+</div>
+<div class="sect2">
+<h3 id="_unit">Unit</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_javascript_language">The JavaScript language</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_on_dates_times_javascript_and_serialization">On dates, times, javascript, and serialization</h3>
+</div>
+<div class="sect2">
+<h3 id="_coffeescript">Coffeescript</h3>
+</div>
+<div class="sect2">
+<h3 id="_bind_and_bindall_and_javascript_8217_s_tt_this_tt_keyword">bind and bindAll and JavaScript&#8217;s <tt>this</tt> keyword</h3>
+</div>
+</div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2011-07-14 17:34:01 EDT
+</div>
+</div>
+</body>
+</html>

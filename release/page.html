@@ -1,0 +1,60 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>{{title}}</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        {% if prev %}
+         <a href="{{prev.link}}">Prev</a><br/>
+         {{prev.title}}
+        {% endif %}
+      </td><td width="33%" align="center">
+        {% if prev %}
+         <a href="{{home.link}}">Home</a><br/>
+         <strong>{{ book_title }}</strong>
+        {% endif %}
+      </td><td width="33%" align="right">
+        {% if next %}
+          <a href="{{next.link}}">Next</a><br/>
+          {{next.title}}
+        {% endif %}
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      {{content}}
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        {% if prev %}
+         <a href="{{prev.link}}">Prev</a><br/>
+         {{prev.title}}
+        {% endif %}
+      </td><td width="33%" align="center">
+        {% if prev %}
+         <a href="{{home.link}}">Home</a><br/>
+         {{ book_title }}
+        {% endif %}
+      </td><td width="33%" align="right">
+        {% if next %}
+          <a href="{{next.link}}">Next</a><br/>
+          {{next.title}}
+        {% endif %}
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>
