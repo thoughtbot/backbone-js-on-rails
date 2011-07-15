@@ -15,15 +15,26 @@
 </articleinfo>
 <section id="_preface">
 <title>Preface</title>
-<simpara>The preface for the book could go here.</simpara>
+</section>
+<section id="_getting_up_to_speed">
+<title>Getting up to speed</title>
+<section id="_backbone_js_online_resources">
+<title>Backbone.js online resources</title>
+</section>
+<section id="_javascript_onlines_resources_and_books">
+<title>JavaScript onlines resources and books</title>
+</section>
 </section>
 <section id="_introduction">
 <title>Introduction</title>
+<section id="_why_use_backbone_js">
+<title>Why use Backbone.js</title>
+</section>
 <section id="_when_not_to_use_backbone_js">
 <title>When not to use Backbone.js</title>
 </section>
-<section id="_why_backbone_js_and_not_kickstart_js_sproutcore_etc">
-<title>Why Backbone.js and not kickstart.js, sproutcore, etc.</title>
+<section id="_why_not_sproutcore_cappuccino_knockout_js_spine_etc">
+<title>Why not SproutCore, Cappuccino, Knockout.js, Spine, etc.</title>
 </section>
 </section>
 <section id="_organization">
@@ -33,22 +44,28 @@
 </section>
 <section id="_what_goes_where_in_mvc">
 <title>What goes where in MVC</title>
+</section>
+<section id="_namespacing_your_application">
+<title>Namespacing your application</title>
 <simpara>Where do I put display logic, avoid putting biz logic in controllers</simpara>
 </section>
 </section>
 <section id="_rails_integration">
 <title>Rails integration</title>
+<section id="_activerecord_and_backbone_js">
+<title>ActiveRecord and Backbone.js</title>
+</section>
+<section id="_converting_your_rails_models_to_backbone_friendly_json">
+<title>Converting your Rails models to backbone-friendly JSON</title>
+</section>
+<section id="_organizing_your_backbone_and_rails_code_side_by_side">
+<title>Organizing your Backbone and Rails code side-by-side</title>
+</section>
+<section id="_converting_an_existing_page_view_area_to_use_backbone_incremental_addition">
+<title>Converting an existing page/view area to use backbone (incremental addition)</title>
+</section>
 <section id="_automatically_using_the_rails_authentication_token">
 <title>Automatically using the Rails authentication token</title>
-</section>
-<section id="_converting_your_rails_models_to_backbone_js_friendly_json">
-<title>Converting your Rails models to Backbone.js-friendly JSON</title>
-</section>
-<section id="_code_organization">
-<title>Code organization</title>
-</section>
-<section id="_converting_an_existing_page_view_area_to_use_backbone_js_incremental_addition">
-<title>Converting an existing page/view area to use Backbone.js (incremental addition)</title>
 </section>
 </section>
 <section id="_views_and_templates">
@@ -56,26 +73,16 @@
 <section id="_view_explanation_what_is_a_view_class_viewcontroller_distinguish_templates_from_views">
 <title>View explanation (what is a view class, viewcontroller, distinguish templates from views)</title>
 </section>
-<section id="_templating_strategy_underscore_mustache_static_html_with_view_class_content">
-<title>Templating strategy - underscore, mustache, static html with view class content</title>
-</section>
-<section id="_view_helpers">
-<title>View helpers</title>
-</section>
-<section id="_form_helpers">
-<title>Form helpers</title>
-</section>
-<section id="_event_binding">
-<title>Event binding</title>
-</section>
-<section id="_how_to_use_multiple_views_on_the_same_model_collection">
-<title>How to use multiple views on the same model/collection</title>
-</section>
-<section id="_cleaning_up_binding_unbinding">
-<title>Cleaning up / binding / unbinding</title>
-</section>
-<section id="_internationalization">
-<title>Internationalization</title>
+<section id="_templating_strategy">
+<title>Templating strategy</title>
+<simpara>When to use Underscore templates, mustache templates, or static HTML with view class content
+=== View helpers
+=== Form helpers
+=== Event binding
+=== How to use multiple views on the same model/collection
+=== Composed views
+=== Cleaning up: understanding binding and unbinding
+=== Internationalization</simpara>
 </section>
 </section>
 <section id="_models_and_collections">
@@ -86,45 +93,40 @@
 <section id="_nested_resources">
 <title>Nested resources</title>
 </section>
-<section id="_resource_relationships">
-<title>Resource relationships</title>
+<section id="_relationships">
+<title>Relationships</title>
 </section>
-<section id="_named_scopes">
-<title>Named scopes</title>
+<section id="_scopes_and_filters">
+<title>Scopes and filters</title>
 </section>
 <section id="_client_server_duplicated_business_logic">
 <title>Client/Server duplicated business logic</title>
 </section>
 <section id="_validations">
 <title>Validations</title>
-<note><simpara>Is this model stuff or view stuff? ErrorView, what else?</simpara></note>
-</section>
-<section id="_synchronizing_between_clients">
-<title>Synchronizing between clients</title>
+<note><simpara>Is this model stuff or view stuff? ErrorView, what else?
+=== Synchronizing between clients</simpara></note>
 </section>
 </section>
 <section id="_testing">
 <title>Testing</title>
-<section id="_not_off_the_hook">
-<title>Not off the hook</title>
+<section id="_full_stack_integration_testing">
+<title>Full-stack integration testing</title>
 </section>
-<section id="_integration">
-<title>Integration</title>
-</section>
-<section id="_unit">
-<title>Unit</title>
+<section id="_isolated_unit_testing">
+<title>Isolated unit testing</title>
 </section>
 </section>
 <section id="_the_javascript_language">
 <title>The JavaScript language</title>
-<section id="_on_dates_times_javascript_and_serialization">
-<title>On dates, times, javascript, and serialization</title>
+<section id="_model_attribute_types_and_serialization">
+<title>Model attribute types and serialization</title>
 </section>
-<section id="_coffeescript">
-<title>CoffeeScript</title>
+<section id="_context_binding_js_literal_this_literal">
+<title>Context binding (JS <literal>this</literal>)</title>
 </section>
-<section id="_bind_and_bindall_and_javascript_8217_s_literal_this_literal_keyword">
-<title>bind and bindAll and JavaScript&#8217;s <literal>this</literal> keyword</title>
+<section id="_coffeescript_with_backbone_js">
+<title>CoffeeScript with Backbone.js</title>
 </section>
 </section>
 </article>

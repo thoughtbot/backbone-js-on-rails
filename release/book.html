@@ -443,17 +443,30 @@ asciidoc.install();
 <div class="sect1">
 <h2 id="_preface">Preface</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>The preface for the book could go here.</p></div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_getting_up_to_speed">Getting up to speed</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_backbone_js_online_resources">Backbone.js online resources</h3>
+</div>
+<div class="sect2">
+<h3 id="_javascript_onlines_resources_and_books">JavaScript onlines resources and books</h3>
+</div>
 </div>
 </div>
 <div class="sect1">
 <h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_why_use_backbone_js">Why use Backbone.js</h3>
+</div>
+<div class="sect2">
 <h3 id="_when_not_to_use_backbone_js">When not to use Backbone.js</h3>
 </div>
 <div class="sect2">
-<h3 id="_why_backbone_js_and_not_kickstart_js_sproutcore_etc">Why Backbone.js and not kickstart.js, sproutcore, etc.</h3>
+<h3 id="_why_not_sproutcore_cappuccino_knockout_js_spine_etc">Why not SproutCore, Cappuccino, Knockout.js, Spine, etc.</h3>
 </div>
 </div>
 </div>
@@ -465,6 +478,9 @@ asciidoc.install();
 </div>
 <div class="sect2">
 <h3 id="_what_goes_where_in_mvc">What goes where in MVC</h3>
+</div>
+<div class="sect2">
+<h3 id="_namespacing_your_application">Namespacing your application</h3>
 <div class="paragraph"><p>Where do I put display logic, avoid putting biz logic in controllers</p></div>
 </div>
 </div>
@@ -473,16 +489,19 @@ asciidoc.install();
 <h2 id="_rails_integration">Rails integration</h2>
 <div class="sectionbody">
 <div class="sect2">
+<h3 id="_activerecord_and_backbone_js">ActiveRecord and Backbone.js</h3>
+</div>
+<div class="sect2">
+<h3 id="_converting_your_rails_models_to_backbone_friendly_json">Converting your Rails models to backbone-friendly JSON</h3>
+</div>
+<div class="sect2">
+<h3 id="_organizing_your_backbone_and_rails_code_side_by_side">Organizing your Backbone and Rails code side-by-side</h3>
+</div>
+<div class="sect2">
+<h3 id="_converting_an_existing_page_view_area_to_use_backbone_incremental_addition">Converting an existing page/view area to use backbone (incremental addition)</h3>
+</div>
+<div class="sect2">
 <h3 id="_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</h3>
-</div>
-<div class="sect2">
-<h3 id="_converting_your_rails_models_to_backbone_js_friendly_json">Converting your Rails models to Backbone.js-friendly JSON</h3>
-</div>
-<div class="sect2">
-<h3 id="_code_organization">Code organization</h3>
-</div>
-<div class="sect2">
-<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_incremental_addition">Converting an existing page/view area to use Backbone.js (incremental addition)</h3>
 </div>
 </div>
 </div>
@@ -493,25 +512,15 @@ asciidoc.install();
 <h3 id="_view_explanation_what_is_a_view_class_viewcontroller_distinguish_templates_from_views">View explanation (what is a view class, viewcontroller, distinguish templates from views)</h3>
 </div>
 <div class="sect2">
-<h3 id="_templating_strategy_underscore_mustache_static_html_with_view_class_content">Templating strategy - underscore, mustache, static html with view class content</h3>
-</div>
-<div class="sect2">
-<h3 id="_view_helpers">View helpers</h3>
-</div>
-<div class="sect2">
-<h3 id="_form_helpers">Form helpers</h3>
-</div>
-<div class="sect2">
-<h3 id="_event_binding">Event binding</h3>
-</div>
-<div class="sect2">
-<h3 id="_how_to_use_multiple_views_on_the_same_model_collection">How to use multiple views on the same model/collection</h3>
-</div>
-<div class="sect2">
-<h3 id="_cleaning_up_binding_unbinding">Cleaning up / binding / unbinding</h3>
-</div>
-<div class="sect2">
-<h3 id="_internationalization">Internationalization</h3>
+<h3 id="_templating_strategy">Templating strategy</h3>
+<div class="paragraph"><p>When to use Underscore templates, mustache templates, or static HTML with view class content
+=== View helpers
+=== Form helpers
+=== Event binding
+=== How to use multiple views on the same model/collection
+=== Composed views
+=== Cleaning up: understanding binding and unbinding
+=== Internationalization</p></div>
 </div>
 </div>
 </div>
@@ -525,10 +534,10 @@ asciidoc.install();
 <h3 id="_nested_resources">Nested resources</h3>
 </div>
 <div class="sect2">
-<h3 id="_resource_relationships">Resource relationships</h3>
+<h3 id="_relationships">Relationships</h3>
 </div>
 <div class="sect2">
-<h3 id="_named_scopes">Named scopes</h3>
+<h3 id="_scopes_and_filters">Scopes and filters</h3>
 </div>
 <div class="sect2">
 <h3 id="_client_server_duplicated_business_logic">Client/Server duplicated business logic</h3>
@@ -540,12 +549,10 @@ asciidoc.install();
 <td class="icon">
 <div class="title">Note</div>
 </td>
-<td class="content">Is this model stuff or view stuff? ErrorView, what else?</td>
+<td class="content">Is this model stuff or view stuff? ErrorView, what else?
+=== Synchronizing between clients</td>
 </tr></table>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_synchronizing_between_clients">Synchronizing between clients</h3>
 </div>
 </div>
 </div>
@@ -553,13 +560,10 @@ asciidoc.install();
 <h2 id="_testing">Testing</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_not_off_the_hook">Not off the hook</h3>
+<h3 id="_full_stack_integration_testing">Full-stack integration testing</h3>
 </div>
 <div class="sect2">
-<h3 id="_integration">Integration</h3>
-</div>
-<div class="sect2">
-<h3 id="_unit">Unit</h3>
+<h3 id="_isolated_unit_testing">Isolated unit testing</h3>
 </div>
 </div>
 </div>
@@ -567,13 +571,13 @@ asciidoc.install();
 <h2 id="_the_javascript_language">The JavaScript language</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_on_dates_times_javascript_and_serialization">On dates, times, javascript, and serialization</h3>
+<h3 id="_model_attribute_types_and_serialization">Model attribute types and serialization</h3>
 </div>
 <div class="sect2">
-<h3 id="_coffeescript">CoffeeScript</h3>
+<h3 id="_context_binding_js_tt_this_tt">Context binding (JS <tt>this</tt>)</h3>
 </div>
 <div class="sect2">
-<h3 id="_bind_and_bindall_and_javascript_8217_s_tt_this_tt_keyword">bind and bindAll and JavaScript&#8217;s <tt>this</tt> keyword</h3>
+<h3 id="_coffeescript_with_backbone_js">CoffeeScript with Backbone.js</h3>
 </div>
 </div>
 </div>
@@ -581,7 +585,7 @@ asciidoc.install();
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-14 18:08:40 EDT
+Last updated 2011-07-15 15:46:38 EDT
 </div>
 </div>
 </body>
