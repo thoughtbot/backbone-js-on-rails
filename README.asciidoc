@@ -25,6 +25,5 @@ Unzip it somewhere and make sure the `kindlegen` binary is on your path (I use ~
   cd /usr/local/KindleGen
   curl -O http://s3.amazonaws.com/kindlegen/KindleGen_Mac_i386_v1.2.zip
   unzip KindleGen_Mac_i386_v1.2.zip
-  cd KindleGen_Mac_i386_v1.KindleGen_Mac_i386_v1
   chmod u+x kindlegen
   ln -s /usr/local/KindleGen/kindlegen ~/bin/kindlegen
