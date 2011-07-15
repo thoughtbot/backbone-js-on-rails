@@ -1,5 +1,13 @@
-This Book
-=========
+Welcome!
+========
+
+Welcome to the thoughtbot Backbone.js on Rails eBook.
+
+The quickest way to start reading right now is to clone the repository and
+look at the release/index.html file.
+
+Writing This Book
+=================
 
 This book is written using using the git-scribe toolchain, which can be found at:
 
