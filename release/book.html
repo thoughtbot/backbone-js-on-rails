@@ -550,6 +550,145 @@ asciidoc.install();
 </div>
 <div class="sect2">
 <h3 id="_scopes_and_filters">Scopes and filters</h3>
+<div class="paragraph"><p>To filter a <tt>Backbone.Collection</tt>, like with Rails named scopes, define functions on your collections that return new collection instances, filtered by your criteria.  A first implementation might look like this:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> filteredTasks <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'completed_at'</span><span style="color: #990000">)</span> <span style="color: #990000">!==</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span>filteredTasks<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Ideally, the filter functions will reuse logic already defined in your model class:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  isComplete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'completed_at'</span><span style="color: #990000">)</span> <span style="color: #990000">!==</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> filteredTasks <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isComplete</span></span><span style="color: #990000">();</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span>filteredTasks<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Going further, you can separate the two concerns here, and extract a <tt>filtered</tt> function:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  isComplete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'completed_at'</span><span style="color: #990000">)</span> <span style="color: #990000">!==</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">filtered</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isComplete</span></span><span style="color: #990000">();</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  filtered<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>criteriaFunction<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span>criteriaFunction<span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect2">
+<h3 id="_sorting">Sorting</h3>
+<div class="paragraph"><p>The simplest way to sort <tt>Backbone.Collection</tt> is to define a <tt>comparator</tt> function:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  comparator<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>dueDate<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>If you&#8217;d like to provide more than one sort on your collection, you can use an approach similar to the <tt>filtered</tt> function above, and return a new <tt>Backbone.Collection</tt> whose <tt>comparator</tt> is overridden.  Call <tt>sort</tt> to update the ordering on the new collection:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  comparator<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>dueDate<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  byCreatedAt<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> sortedCollection <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>models<span style="color: #990000">);</span>
+    sortedCollection<span style="color: #990000">.</span>comparator <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>createdAt<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+    sortedCollection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sort</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> sortedCollection<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Similarly, you can extract the resuable concern to another function:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  comparator<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>dueDate<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  byCreatedAt<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sortedBy</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>createdAt<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  byCompletedAt<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sortedBy</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>createdAt<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  sortedBy<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>comparator<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> sortedCollection <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>models<span style="color: #990000">);</span>
+    sortedCollection<span style="color: #990000">.</span>comparator <span style="color: #990000">=</span> comparator<span style="color: #990000">;</span>
+    sortedCollection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sort</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> sortedCollection<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 </div>
 <div class="sect2">
 <h3 id="_client_server_duplicated_business_logic">Client/Server duplicated business logic</h3>
@@ -591,7 +730,7 @@ asciidoc.install();
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-17 15:12:41 EDT
+Last updated 2011-07-19 14:30:51 EDT
 </div>
 </div>
 </body>

@@ -110,6 +110,115 @@
 </section>
 <section id="_scopes_and_filters">
 <title>Scopes and filters</title>
+<simpara>To filter a <literal>Backbone.Collection</literal>, like with Rails named scopes, define functions on your collections that return new collection instances, filtered by your criteria.  A first implementation might look like this:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    var filteredTasks = this.select(function(task) {
+      return task.get('completed_at') !== null;
+    });
+    return new Tasks(filteredTasks);
+  }
+});</programlisting>
+<simpara>Ideally, the filter functions will reuse logic already defined in your model class:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
+  isComplete: function() {
+    return this.get('completed_at') !== null;
+  }
+});
+
+var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    var filteredTasks = this.select(function(task) {
+      return task.isComplete();
+    });
+    return new Tasks(filteredTasks);
+  }
+});</programlisting>
+<simpara>Going further, you can separate the two concerns here, and extract a <literal>filtered</literal> function:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
+  isComplete: function() {
+    return this.get('completed_at') !== null;
+  }
+});
+
+var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    return this.filtered(this.select(function(task) {
+      return task.isComplete();
+    }));
+  },
+
+  filtered: function(criteriaFunction) {
+    return new Tasks(this.select(criteriaFunction));
+  }
+});</programlisting>
+</section>
+<section id="_sorting">
+<title>Sorting</title>
+<simpara>The simplest way to sort <literal>Backbone.Collection</literal> is to define a <literal>comparator</literal> function:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  }
+});</programlisting>
+<simpara>If you&#8217;d like to provide more than one sort on your collection, you can use an approach similar to the <literal>filtered</literal> function above, and return a new <literal>Backbone.Collection</literal> whose <literal>comparator</literal> is overridden.  Call <literal>sort</literal> to update the ordering on the new collection:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  },
+
+  byCreatedAt: function() {
+    var sortedCollection = new Tasks(this.models);
+    sortedCollection.comparator = function(task) {
+      return task.createdAt;
+    };
+    sortedCollection.sort();
+    return sortedCollection;
+  }
+});</programlisting>
+<simpara>Similarly, you can extract the resuable concern to another function:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  },
+
+  byCreatedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.createdAt;
+    });
+  },
+
+  byCompletedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.createdAt;
+    });
+  },
+
+  sortedBy: function(comparator) {
+    var sortedCollection = new Tasks(this.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    return sortedCollection;
+  }
+});</programlisting>
 </section>
 <section id="_client_server_duplicated_business_logic">
 <title>Client/Server duplicated business logic</title>

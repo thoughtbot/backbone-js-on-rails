@@ -40,8 +40,120 @@
 <a id="_nested_resources"></a>Nested resources</h3></div></div></div></div>
 <div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_relationships"></a>Relationships</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_scopes_and_filters"></a>Scopes and filters</h3></div></div></div></div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_scopes_and_filters"></a>Scopes and filters</h3></div></div></div>
+<p>To filter a <code class="literal">Backbone.Collection</code>, like with Rails named scopes, define functions on your collections that return new collection instances, filtered by your criteria.  A first implementation might look like this:</p>
+<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    var filteredTasks = this.select(function(task) {
+      return task.get('completed_at') !== null;
+    });
+    return new Tasks(filteredTasks);
+  }
+});</pre>
+<p>Ideally, the filter functions will reuse logic already defined in your model class:</p>
+<pre class="programlisting">var Task = Backbone.Model.extend({
+  isComplete: function() {
+    return this.get('completed_at') !== null;
+  }
+});
+
+var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    var filteredTasks = this.select(function(task) {
+      return task.isComplete();
+    });
+    return new Tasks(filteredTasks);
+  }
+});</pre>
+<p>Going further, you can separate the two concerns here, and extract a <code class="literal">filtered</code> function:</p>
+<pre class="programlisting">var Task = Backbone.Model.extend({
+  isComplete: function() {
+    return this.get('completed_at') !== null;
+  }
+});
+
+var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    return this.filtered(this.select(function(task) {
+      return task.isComplete();
+    }));
+  },
+
+  filtered: function(criteriaFunction) {
+    return new Tasks(this.select(criteriaFunction));
+  }
+});</pre>
+</div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_sorting"></a>Sorting</h3></div></div></div>
+<p>The simplest way to sort <code class="literal">Backbone.Collection</code> is to define a <code class="literal">comparator</code> function:</p>
+<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  }
+});</pre>
+<p>If you’d like to provide more than one sort on your collection, you can use an approach similar to the <code class="literal">filtered</code> function above, and return a new <code class="literal">Backbone.Collection</code> whose <code class="literal">comparator</code> is overridden.  Call <code class="literal">sort</code> to update the ordering on the new collection:</p>
+<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  },
+
+  byCreatedAt: function() {
+    var sortedCollection = new Tasks(this.models);
+    sortedCollection.comparator = function(task) {
+      return task.createdAt;
+    };
+    sortedCollection.sort();
+    return sortedCollection;
+  }
+});</pre>
+<p>Similarly, you can extract the resuable concern to another function:</p>
+<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  },
+
+  byCreatedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.createdAt;
+    });
+  },
+
+  byCompletedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.createdAt;
+    });
+  },
+
+  sortedBy: function(comparator) {
+    var sortedCollection = new Tasks(this.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    return sortedCollection;
+  }
+});</pre>
+</div>
 <div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_client_server_duplicated_business_logic"></a>Client/Server duplicated business logic</h3></div></div></div></div>
 <div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
