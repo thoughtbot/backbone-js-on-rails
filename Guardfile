@@ -1,7 +1,7 @@
 require 'guard/guard'
 
 module ::Guard
-  class Gitscribe < Guard
+  class GitScribe < Guard
     def start
       UI.info "git-scribe is waiting for book changes..."
     end
@@ -30,7 +30,7 @@ module ::Guard
   end
 end
 
-guard 'gitscribe' do
+guard 'git-scribe' do
   watch (%r{book/})
 end
 
