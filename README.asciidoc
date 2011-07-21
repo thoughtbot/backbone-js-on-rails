@@ -5,6 +5,12 @@ Welcome to the thoughtbot Backbone.js on Rails eBook.
 The quickest way to start reading right now is to clone the repository and
 look at the release/index.html file.
 
+HTML is the best-supported output format right now.  While we're still working on improving the formatting, you can read in other formats, too:
+
+* PDF: release/book.pdf
+* Single-page HTML: release/book.html
+* Mobi (Kindle): release/book.mobi
+
 == Getting started
 
 This book is written using using the git-scribe toolchain, which can be found at:
