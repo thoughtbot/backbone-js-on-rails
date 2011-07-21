@@ -34,7 +34,7 @@
 <content src="book.html#_organization"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_5" playOrder="6">
-<navLabel><text>Rails integration</text></navLabel>
+<navLabel><text>Rails Integration</text></navLabel>
 <content src="book.html#_rails_integration"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_6" playOrder="7">

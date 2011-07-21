@@ -6,12 +6,6 @@
 <article lang="en">
 <articleinfo>
     <title>Backbone.js on Rails</title>
-    <author>
-        <firstname>Jason</firstname>
-        <surname>Morrison</surname>
-        <email>&lt;jmorrison@thoughtbot.com&gt;</email>
-    </author>
-    <authorinitials>JM</authorinitials>
 </articleinfo>
 <section id="_preface">
 <title>Preface</title>
@@ -50,21 +44,88 @@
 </section>
 </section>
 <section id="_rails_integration">
-<title>Rails integration</title>
-<section id="_activerecord_and_backbone_js">
-<title>ActiveRecord and Backbone.js</title>
+<title>Rails Integration</title>
+<section id="_organizing_your_backbone_js_code_in_a_rails_app">
+<title>Organizing your Backbone.js code in a Rails app</title>
+<simpara>When using Backbone.js in a Rails app, you&#8217;ll have two primary kinds of Backbone.js-related assets: classes, and templates.</simpara>
 </section>
-<section id="_converting_your_rails_models_to_backbone_js_friendly_json">
-<title>Converting your Rails models to Backbone.js-friendly JSON</title>
+<section id="_rails_3_0_and_prior">
+<title>Rails 3.0 and prior</title>
+<simpara>With Rails 3.0 and prior, store your Backbone.js classes in <literal>public/javascripts</literal>:</simpara>
+<screen>public/
+  javascripts/
+    jquery.js
+    jquery-ui.js
+    models/
+      user.js
+      todo.js
+    routers/
+      users_router.js
+      todos_router.js
+    views/
+      users/
+        users_index.js
+        users_new.js
+        users_edit.js
+      todos/
+        todos_index.js</screen>
+<simpara>If you are using templates, we prefer storing them in <literal>app/templates</literal> to keep them separated from the server views:</simpara>
+<screen>app/
+  views/
+    pages/
+      home.html.erb
+      terms.html.erb
+      privacy.html.erb
+      about.html.erb
+  templates/
+    users/
+      index.jst
+      new.jst
+      edit.jst
+    todos/
+      index.jst
+      show.jst</screen>
+<simpara>On Rails 3.0 and prior apps, we use Jammit for packaging assets and precompiling templates:</simpara>
+<simpara><ulink url="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</ulink>
+<ulink url="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</ulink></simpara>
+<section id="_a_note_on_jsts_and_jammit">
+<title>A note on JSTs and Jammit</title>
+<simpara>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</simpara>
+<simpara><ulink url="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</ulink></simpara>
 </section>
-<section id="_organizing_your_backbone_js_and_rails_code_side_by_side">
-<title>Organizing your Backbone.js and Rails code side-by-side</title>
 </section>
-<section id="_converting_an_existing_page_view_area_to_use_backbone_js">
-<title>Converting an existing page/view area to use Backbone.js</title>
-</section>
-<section id="_automatically_using_the_rails_authentication_token">
-<title>Automatically using the Rails authentication token</title>
+<section id="_rails_3_1">
+<title>Rails 3.1</title>
+<simpara>Rails 3.1 introduces the asset pipeline:</simpara>
+<simpara><ulink url="http://edgeguides.rubyonrails.org/asset_pipeline.html">http://edgeguides.rubyonrails.org/asset_pipeline.html</ulink></simpara>
+<simpara>which uses the Sprockets library for preprocessing and packaging assets:</simpara>
+<simpara><ulink url="http://getsprockets.org/">http://getsprockets.org/</ulink></simpara>
+<simpara>To take advantage of the built-in asset pipeline, organize your Backbone.js templates and classes in paths available to the asset pipeline.  Classes go in <literal>app/assets/javascripts/</literal>, and templates go alongside, in <literal>app/assets/templates/</literal>:</simpara>
+<screen>app/
+  assets/
+    javascripts/
+      jquery.js
+      models/
+        todo.js
+      routers/
+        todos_router.js
+      views/
+        todos/
+          todos_index.js
+    templates/
+      todos/
+        index.jst.ejs
+        show.jst.ejs</screen>
+<simpara>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <literal>*.jst</literal> files and makes them available to the <literal>window.JST</literal> function.  Identifying the <literal>.ejs</literal> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <literal>ejs</literal> gem to be included in the application Gemfile.</simpara>
+<simpara>Underscore.js templates:
+<ulink url="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</ulink></simpara>
+<simpara>EJS gem:
+<ulink url="https://github.com/sstephenson/ruby-ejs">https://github.com/sstephenson/ruby-ejs</ulink></simpara>
+<simpara>Sprockets support for EJS:
+<ulink url="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</ulink>
+=== Converting your Rails models to Backbone.js-friendly JSON
+=== Converting an existing page/view area to use Backbone.js
+=== Automatically using the Rails authentication token</simpara>
 </section>
 </section>
 <section id="_views_and_templates">

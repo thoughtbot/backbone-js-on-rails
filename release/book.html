@@ -436,8 +436,6 @@ asciidoc.install();
 <body class="article">
 <div id="header">
 <h1>Backbone.js on Rails</h1>
-<span id="author">Jason Morrison</span><br />
-<span id="email"><tt>&lt;<a href="mailto:&lt;jmorrison@thoughtbot.com&gt;">&lt;jmorrison@thoughtbot.com&gt;</a>&gt;</tt></span><br />
 </div>
 <div id="content">
 <div class="sect1">
@@ -485,22 +483,98 @@ asciidoc.install();
 </div>
 </div>
 <div class="sect1">
-<h2 id="_rails_integration">Rails integration</h2>
+<h2 id="_rails_integration">Rails Integration</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_activerecord_and_backbone_js">ActiveRecord and Backbone.js</h3>
+<h3 id="_organizing_your_backbone_js_code_in_a_rails_app">Organizing your Backbone.js code in a Rails app</h3>
+<div class="paragraph"><p>When using Backbone.js in a Rails app, you&#8217;ll have two primary kinds of Backbone.js-related assets: classes, and templates.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_converting_your_rails_models_to_backbone_js_friendly_json">Converting your Rails models to Backbone.js-friendly JSON</h3>
+<h3 id="_rails_3_0_and_prior">Rails 3.0 and prior</h3>
+<div class="paragraph"><p>With Rails 3.0 and prior, store your Backbone.js classes in <tt>public/javascripts</tt>:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>public/
+  javascripts/
+    jquery.js
+    jquery-ui.js
+    models/
+      user.js
+      todo.js
+    routers/
+      users_router.js
+      todos_router.js
+    views/
+      users/
+        users_index.js
+        users_new.js
+        users_edit.js
+      todos/
+        todos_index.js</tt></pre>
+</div></div>
+<div class="paragraph"><p>If you are using templates, we prefer storing them in <tt>app/templates</tt> to keep them separated from the server views:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>app/
+  views/
+    pages/
+      home.html.erb
+      terms.html.erb
+      privacy.html.erb
+      about.html.erb
+  templates/
+    users/
+      index.jst
+      new.jst
+      edit.jst
+    todos/
+      index.jst
+      show.jst</tt></pre>
+</div></div>
+<div class="paragraph"><p>On Rails 3.0 and prior apps, we use Jammit for packaging assets and precompiling templates:</p></div>
+<div class="paragraph"><p><a href="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</a>
+<a href="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</a></p></div>
+<div class="sect3">
+<h4 id="_a_note_on_jsts_and_jammit">A note on JSTs and Jammit</h4>
+<div class="paragraph"><p>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</p></div>
+<div class="paragraph"><p><a href="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</a></p></div>
+</div>
 </div>
 <div class="sect2">
-<h3 id="_organizing_your_backbone_js_and_rails_code_side_by_side">Organizing your Backbone.js and Rails code side-by-side</h3>
-</div>
-<div class="sect2">
-<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js">Converting an existing page/view area to use Backbone.js</h3>
-</div>
-<div class="sect2">
-<h3 id="_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</h3>
+<h3 id="_rails_3_1">Rails 3.1</h3>
+<div class="paragraph"><p>Rails 3.1 introduces the asset pipeline:</p></div>
+<div class="paragraph"><p><a href="http://edgeguides.rubyonrails.org/asset_pipeline.html">http://edgeguides.rubyonrails.org/asset_pipeline.html</a></p></div>
+<div class="paragraph"><p>which uses the Sprockets library for preprocessing and packaging assets:</p></div>
+<div class="paragraph"><p><a href="http://getsprockets.org/">http://getsprockets.org/</a></p></div>
+<div class="paragraph"><p>To take advantage of the built-in asset pipeline, organize your Backbone.js templates and classes in paths available to the asset pipeline.  Classes go in <tt>app/assets/javascripts/</tt>, and templates go alongside, in <tt>app/assets/templates/</tt>:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>app/
+  assets/
+    javascripts/
+      jquery.js
+      models/
+        todo.js
+      routers/
+        todos_router.js
+      views/
+        todos/
+          todos_index.js
+    templates/
+      todos/
+        index.jst.ejs
+        show.jst.ejs</tt></pre>
+</div></div>
+<div class="paragraph"><p>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <tt>*.jst</tt> files and makes them available to the <tt>window.JST</tt> function.  Identifying the <tt>.ejs</tt> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <tt>ejs</tt> gem to be included in the application Gemfile.</p></div>
+<div class="paragraph"><p>Underscore.js templates:
+<a href="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</a></p></div>
+<div class="paragraph"><p>EJS gem:
+<a href="https://github.com/sstephenson/ruby-ejs">https://github.com/sstephenson/ruby-ejs</a></p></div>
+<div class="paragraph"><p>Sprockets support for EJS:
+<a href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a>
+=== Converting your Rails models to Backbone.js-friendly JSON
+=== Converting an existing page/view area to use Backbone.js
+=== Automatically using the Rails authentication token</p></div>
 </div>
 </div>
 </div>
@@ -730,7 +804,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-19 14:30:51 EDT
+Last updated 2011-07-21 13:46:00 EDT
 </div>
 </div>
 </body>
