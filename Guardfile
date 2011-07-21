@@ -24,7 +24,7 @@ module ::Guard
         UI.error "Errors in generation listed above!"
         UI.error "*"*80
       else
-        UI.info "git-scribe successfully generated a new SITE."
+        UI.info "Done."
       end
     end
   end
