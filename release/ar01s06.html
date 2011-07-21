@@ -1,3 +1,70 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Views and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Views and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_views_and_templates"></a>Views and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation"></a>View explanation</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy"></a>Templating strategy</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers"></a>View helpers</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers"></a>Form helpers</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding"></a>Event binding</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_how_to_use_multiple_views_on_the_same_model_collection"></a>How to use multiple views on the same model/collection</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composed_views"></a>Composed views</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_understanding_binding_and_unbinding"></a>Cleaning up: understanding binding and unbinding</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization"></a>Internationalization</h3></div></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rails Integration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Models and collections</td></tr></table></div></body></html>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Views and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Views and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_views_and_templates"></a>Views and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation_chapter_unstarted"></a>View explanation (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding_chapter_unstarted"></a>Event binding (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_understanding_binding_and_unbinding_in_progress"></a>Cleaning up: understanding binding and unbinding (in progress)</h3></div></div></div><p>Imagine you’re writing a task management application.  Consider two views: an index view which contains all the tasks, and a detail view that shows detail on one task.  The interface switches between the two views, and both views can modify existing tasks (say, to indicate that the task is complete or incomplete).</p><div class="figure"><a id="idp4523296"></a><p class="title"><b>Figure 1. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" /></div></div></div><br class="figure-break" /><div class="figure"><a id="idp4525728"></a><p class="title"><b>Figure 2. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" /></div></div></div><br class="figure-break" /><p>The view classes look something like this:</p><pre class="programlisting">var TasksIndex = Backbone.View.extend({
+  template: JST['tasks/tasks_index'],
+  tagName: 'section',
+  id: 'tasks',
+
+  initialize: function() {
+    _.bindAll(this, "render");
+    TaskApp.tasks.bind("change", this.render);
+    TaskApp.tasks.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  }
+});
+
+var TasksDetail = Backbone.View.extend({
+  tagName: 'section',
+  id: 'tasks',
+
+  initialize: function() {
+    _.bindAll(this, "render", "renderCompletedTasks", "renderOverdueTasks");
+    TaskApp.tasks.bind("change", this.render);
+    TaskApp.tasks.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(JST['tasks/task_detail']({task: this.model}));
+  }
+});</pre><p>TODO: Bind to change event on collection in index and detail.  Link to detail from index page.  If you don’t unbind index when leaving it, and go to the detail view, and change the model (e.g. check "Completed"), then the index view class re-renders itself.  This is undesirable, and can cause visible bugs.  Briefly introduce convention of SwappingController.  Then, next section is SwappingController.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_controllers_in_progress"></a>Swapping controllers (in progress)</h3></div></div></div><pre class="programlisting">SwappingController = function(options) {
+  Backbone.Controller.apply(this, [options]);
+};
+
+_.extend(SwappingController.prototype, Backbone.Controller.prototype, {
+  swap: function(newView) {
+    if (this.currentView &amp;&amp; this.currentView.leave)
+      this.currentView.leave();
+
+    this.currentView = newView;
+    this.currentView.render();
+    $(this.el).empty().append(this.currentView.el);
+  }
+});
+
+SwappingController.extend = Backbone.Controller.extend;</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views_in_progress"></a>Composite views (in progress)</h3></div></div></div><p>TODO: Refactor the TaskIndex view class in tasks_index_and_detail_view_classes.js to be composite.  Discuss other common places you’ll find composite views.  Then, motivate the CompositeView superclass by referencing the cleanup issue from before, and noting that even if parent view classes unbind, child view classes may not.</p><pre class="programlisting">CompositeView = function(options) {
+  this.children = [];
+  Backbone.View.apply(this, [options]);
+};
+
+_.extend(CompositeView.prototype, Backbone.View.prototype, {
+  leave: function() {
+    this.unbind();
+    this.remove();
+    _(this.children).invoke("leave");
+  },
+
+  renderChild: function(view) {
+    view.render();
+    this.children.push(view);
+  },
+
+  appendChild: function(view) {
+    this.renderChild(view);
+    $(this.el).append(view.el);
+  }
+});
+
+CompositeView.extend = Backbone.View.extend;</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted"></a>How to use multiple views on the same model/collection (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization_chapter_unstarted"></a>Internationalization (chapter unstarted)</h3></div></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rails Integration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Models and collections</td></tr></table></div></body></html>

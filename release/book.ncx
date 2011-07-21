@@ -18,20 +18,20 @@
 <content src="toc.html"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_1" playOrder="2">
-<navLabel><text>Preface</text></navLabel>
-<content src="book.html#_preface"/>
+<navLabel><text>Preface (section unstarted)</text></navLabel>
+<content src="book.html#_preface_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_2" playOrder="3">
-<navLabel><text>Getting up to speed</text></navLabel>
-<content src="book.html#_getting_up_to_speed"/>
+<navLabel><text>Getting up to speed (section unstarted)</text></navLabel>
+<content src="book.html#_getting_up_to_speed_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_3" playOrder="4">
-<navLabel><text>Introduction</text></navLabel>
-<content src="book.html#_introduction"/>
+<navLabel><text>Introduction (section unstarted)</text></navLabel>
+<content src="book.html#_introduction_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_4" playOrder="5">
-<navLabel><text>Organization</text></navLabel>
-<content src="book.html#_organization"/>
+<navLabel><text>Organization (section unstarted)</text></navLabel>
+<content src="book.html#_organization_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_5" playOrder="6">
 <navLabel><text>Rails Integration</text></navLabel>
@@ -46,11 +46,11 @@
 <content src="book.html#_models_and_collections"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_8" playOrder="9">
-<navLabel><text>Testing</text></navLabel>
-<content src="book.html#_testing"/>
+<navLabel><text>Testing (section unstarted)</text></navLabel>
+<content src="book.html#_testing_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_9" playOrder="10">
-<navLabel><text>The JavaScript language</text></navLabel>
-<content src="book.html#_the_javascript_language"/>
+<navLabel><text>The JavaScript language (section unstarted)</text></navLabel>
+<content src="book.html#_the_javascript_language_section_unstarted"/>
 </navPoint>
 </navMap></ncx>

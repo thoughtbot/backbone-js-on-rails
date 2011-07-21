@@ -7,11 +7,11 @@
 <articleinfo>
     <title>Backbone.js on Rails</title>
 </articleinfo>
-<section id="_preface">
-<title>Preface</title>
+<section id="_preface_section_unstarted">
+<title>Preface (section unstarted)</title>
 </section>
-<section id="_getting_up_to_speed">
-<title>Getting up to speed</title>
+<section id="_getting_up_to_speed_section_unstarted">
+<title>Getting up to speed (section unstarted)</title>
 <section id="_backbone_js_online_resources">
 <title>Backbone.js online resources</title>
 </section>
@@ -19,8 +19,8 @@
 <title>JavaScript online resources and books</title>
 </section>
 </section>
-<section id="_introduction">
-<title>Introduction</title>
+<section id="_introduction_section_unstarted">
+<title>Introduction (section unstarted)</title>
 <section id="_why_use_backbone_js">
 <title>Why use Backbone.js</title>
 </section>
@@ -31,8 +31,8 @@
 <title>Why not SproutCore, Cappuccino, Knockout.js, Spine, etc.</title>
 </section>
 </section>
-<section id="_organization">
-<title>Organization</title>
+<section id="_organization_section_unstarted">
+<title>Organization (section unstarted)</title>
 <section id="_backbone_js_and_mvc">
 <title>Backbone.js and MVC</title>
 </section>
@@ -122,52 +122,151 @@
 <simpara>EJS gem:
 <ulink url="https://github.com/sstephenson/ruby-ejs">https://github.com/sstephenson/ruby-ejs</ulink></simpara>
 <simpara>Sprockets support for EJS:
-<ulink url="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</ulink>
-=== Converting your Rails models to Backbone.js-friendly JSON
-=== Converting an existing page/view area to use Backbone.js
-=== Automatically using the Rails authentication token</simpara>
+<ulink url="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</ulink></simpara>
+</section>
+<section id="_converting_your_rails_models_to_backbone_js_friendly_json_chapter_unstarted">
+<title>Converting your Rails models to Backbone.js-friendly JSON (chapter unstarted)</title>
+</section>
+<section id="_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted">
+<title>Converting an existing page/view area to use Backbone.js (chapter unstarted)</title>
+</section>
+<section id="_automatically_using_the_rails_authentication_token_chapter_unstarted">
+<title>Automatically using the Rails authentication token (chapter unstarted)</title>
 </section>
 </section>
 <section id="_views_and_templates">
 <title>Views and Templates</title>
-<section id="_view_explanation">
-<title>View explanation</title>
+<section id="_view_explanation_chapter_unstarted">
+<title>View explanation (chapter unstarted)</title>
 </section>
-<section id="_templating_strategy">
-<title>Templating strategy</title>
+<section id="_templating_strategy_chapter_unstarted">
+<title>Templating strategy (chapter unstarted)</title>
 </section>
-<section id="_view_helpers">
-<title>View helpers</title>
+<section id="_view_helpers_chapter_unstarted">
+<title>View helpers (chapter unstarted)</title>
 </section>
-<section id="_form_helpers">
-<title>Form helpers</title>
+<section id="_form_helpers_chapter_unstarted">
+<title>Form helpers (chapter unstarted)</title>
 </section>
-<section id="_event_binding">
-<title>Event binding</title>
+<section id="_event_binding_chapter_unstarted">
+<title>Event binding (chapter unstarted)</title>
 </section>
-<section id="_how_to_use_multiple_views_on_the_same_model_collection">
-<title>How to use multiple views on the same model/collection</title>
+<section id="_cleaning_up_understanding_binding_and_unbinding_in_progress">
+<title>Cleaning up: understanding binding and unbinding (in progress)</title>
+<simpara>Imagine you&#8217;re writing a task management application.  Consider two views: an index view which contains all the tasks, and a detail view that shows detail on one task.  The interface switches between the two views, and both views can modify existing tasks (say, to indicate that the task is complete or incomplete).</simpara>
+<figure><title>Tasks index view</title>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="views_and_templates/tasks-index.png"/>
+  </imageobject>
+  <textobject><phrase>views_and_templates/tasks-index.png</phrase></textobject>
+</mediaobject>
+</figure>
+<figure><title>Tasks detail view</title>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="views_and_templates/tasks-detail.png"/>
+  </imageobject>
+  <textobject><phrase>views_and_templates/tasks-detail.png</phrase></textobject>
+</mediaobject>
+</figure>
+<simpara>The view classes look something like this:</simpara>
+<programlisting language="js" linenumbering="unnumbered">var TasksIndex = Backbone.View.extend({
+  template: JST['tasks/tasks_index'],
+  tagName: 'section',
+  id: 'tasks',
+
+  initialize: function() {
+    _.bindAll(this, "render");
+    TaskApp.tasks.bind("change", this.render);
+    TaskApp.tasks.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  }
+});
+
+var TasksDetail = Backbone.View.extend({
+  tagName: 'section',
+  id: 'tasks',
+
+  initialize: function() {
+    _.bindAll(this, "render", "renderCompletedTasks", "renderOverdueTasks");
+    TaskApp.tasks.bind("change", this.render);
+    TaskApp.tasks.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(JST['tasks/task_detail']({task: this.model}));
+  }
+});</programlisting>
+<simpara>TODO: Bind to change event on collection in index and detail.  Link to detail from index page.  If you don&#8217;t unbind index when leaving it, and go to the detail view, and change the model (e.g. check "Completed"), then the index view class re-renders itself.  This is undesirable, and can cause visible bugs.  Briefly introduce convention of SwappingController.  Then, next section is SwappingController.</simpara>
 </section>
-<section id="_composed_views">
-<title>Composed views</title>
+<section id="_swapping_controllers_in_progress">
+<title>Swapping controllers (in progress)</title>
+<programlisting language="js" linenumbering="unnumbered">SwappingController = function(options) {
+  Backbone.Controller.apply(this, [options]);
+};
+
+_.extend(SwappingController.prototype, Backbone.Controller.prototype, {
+  swap: function(newView) {
+    if (this.currentView &amp;&amp; this.currentView.leave)
+      this.currentView.leave();
+
+    this.currentView = newView;
+    this.currentView.render();
+    $(this.el).empty().append(this.currentView.el);
+  }
+});
+
+SwappingController.extend = Backbone.Controller.extend;</programlisting>
 </section>
-<section id="_cleaning_up_understanding_binding_and_unbinding">
-<title>Cleaning up: understanding binding and unbinding</title>
+<section id="_composite_views_in_progress">
+<title>Composite views (in progress)</title>
+<simpara>TODO: Refactor the TaskIndex view class in tasks_index_and_detail_view_classes.js to be composite.  Discuss other common places you&#8217;ll find composite views.  Then, motivate the CompositeView superclass by referencing the cleanup issue from before, and noting that even if parent view classes unbind, child view classes may not.</simpara>
+<programlisting language="js" linenumbering="unnumbered">CompositeView = function(options) {
+  this.children = [];
+  Backbone.View.apply(this, [options]);
+};
+
+_.extend(CompositeView.prototype, Backbone.View.prototype, {
+  leave: function() {
+    this.unbind();
+    this.remove();
+    _(this.children).invoke("leave");
+  },
+
+  renderChild: function(view) {
+    view.render();
+    this.children.push(view);
+  },
+
+  appendChild: function(view) {
+    this.renderChild(view);
+    $(this.el).append(view.el);
+  }
+});
+
+CompositeView.extend = Backbone.View.extend;</programlisting>
 </section>
-<section id="_internationalization">
-<title>Internationalization</title>
+<section id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted">
+<title>How to use multiple views on the same model/collection (chapter unstarted)</title>
+</section>
+<section id="_internationalization_chapter_unstarted">
+<title>Internationalization (chapter unstarted)</title>
 </section>
 </section>
 <section id="_models_and_collections">
 <title>Models and collections</title>
-<section id="_naming_conventions">
-<title>Naming conventions</title>
+<section id="_naming_conventions_chapter_unstarted">
+<title>Naming conventions (chapter unstarted)</title>
 </section>
-<section id="_nested_resources">
-<title>Nested resources</title>
+<section id="_nested_resources_chapter_unstarted">
+<title>Nested resources (chapter unstarted)</title>
 </section>
-<section id="_relationships">
-<title>Relationships</title>
+<section id="_relationships_chapter_unstarted">
+<title>Relationships (chapter unstarted)</title>
 </section>
 <section id="_scopes_and_filters">
 <title>Scopes and filters</title>
@@ -281,18 +380,18 @@ var Tasks = Backbone.Collection.extend({
   }
 });</programlisting>
 </section>
-<section id="_client_server_duplicated_business_logic">
-<title>Client/Server duplicated business logic</title>
+<section id="_client_server_duplicated_business_logic_chapter_unstarted">
+<title>Client/Server duplicated business logic (chapter unstarted)</title>
 </section>
-<section id="_validations">
-<title>Validations</title>
+<section id="_validations_chapter_unstarted">
+<title>Validations (chapter unstarted)</title>
 </section>
-<section id="_synchronizing_between_clients">
-<title>Synchronizing between clients</title>
+<section id="_synchronizing_between_clients_chapter_unstarted">
+<title>Synchronizing between clients (chapter unstarted)</title>
 </section>
 </section>
-<section id="_testing">
-<title>Testing</title>
+<section id="_testing_section_unstarted">
+<title>Testing (section unstarted)</title>
 <section id="_full_stack_integration_testing">
 <title>Full-stack integration testing</title>
 </section>
@@ -300,8 +399,8 @@ var Tasks = Backbone.Collection.extend({
 <title>Isolated unit testing</title>
 </section>
 </section>
-<section id="_the_javascript_language">
-<title>The JavaScript language</title>
+<section id="_the_javascript_language_section_unstarted">
+<title>The JavaScript language (section unstarted)</title>
 <section id="_model_attribute_types_and_serialization">
 <title>Model attribute types and serialization</title>
 </section>

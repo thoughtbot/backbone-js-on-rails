@@ -439,12 +439,12 @@ asciidoc.install();
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_preface">Preface</h2>
+<h2 id="_preface_section_unstarted">Preface (section unstarted)</h2>
 <div class="sectionbody">
 </div>
 </div>
 <div class="sect1">
-<h2 id="_getting_up_to_speed">Getting up to speed</h2>
+<h2 id="_getting_up_to_speed_section_unstarted">Getting up to speed (section unstarted)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_backbone_js_online_resources">Backbone.js online resources</h3>
@@ -455,7 +455,7 @@ asciidoc.install();
 </div>
 </div>
 <div class="sect1">
-<h2 id="_introduction">Introduction</h2>
+<h2 id="_introduction_section_unstarted">Introduction (section unstarted)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_why_use_backbone_js">Why use Backbone.js</h3>
@@ -469,7 +469,7 @@ asciidoc.install();
 </div>
 </div>
 <div class="sect1">
-<h2 id="_organization">Organization</h2>
+<h2 id="_organization_section_unstarted">Organization (section unstarted)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_backbone_js_and_mvc">Backbone.js and MVC</h3>
@@ -571,10 +571,16 @@ asciidoc.install();
 <div class="paragraph"><p>EJS gem:
 <a href="https://github.com/sstephenson/ruby-ejs">https://github.com/sstephenson/ruby-ejs</a></p></div>
 <div class="paragraph"><p>Sprockets support for EJS:
-<a href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a>
-=== Converting your Rails models to Backbone.js-friendly JSON
-=== Converting an existing page/view area to use Backbone.js
-=== Automatically using the Rails authentication token</p></div>
+<a href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a></p></div>
+</div>
+<div class="sect2">
+<h3 id="_converting_your_rails_models_to_backbone_js_friendly_json_chapter_unstarted">Converting your Rails models to Backbone.js-friendly JSON (chapter unstarted)</h3>
+</div>
+<div class="sect2">
+<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted">Converting an existing page/view area to use Backbone.js (chapter unstarted)</h3>
+</div>
+<div class="sect2">
+<h3 id="_automatically_using_the_rails_authentication_token_chapter_unstarted">Automatically using the Rails authentication token (chapter unstarted)</h3>
 </div>
 </div>
 </div>
@@ -582,31 +588,135 @@ asciidoc.install();
 <h2 id="_views_and_templates">Views and Templates</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_view_explanation">View explanation</h3>
+<h3 id="_view_explanation_chapter_unstarted">View explanation (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_templating_strategy">Templating strategy</h3>
+<h3 id="_templating_strategy_chapter_unstarted">Templating strategy (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_view_helpers">View helpers</h3>
+<h3 id="_view_helpers_chapter_unstarted">View helpers (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_form_helpers">Form helpers</h3>
+<h3 id="_form_helpers_chapter_unstarted">Form helpers (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_event_binding">Event binding</h3>
+<h3 id="_event_binding_chapter_unstarted">Event binding (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_how_to_use_multiple_views_on_the_same_model_collection">How to use multiple views on the same model/collection</h3>
+<h3 id="_cleaning_up_understanding_binding_and_unbinding_in_progress">Cleaning up: understanding binding and unbinding (in progress)</h3>
+<div class="paragraph"><p>Imagine you&#8217;re writing a task management application.  Consider two views: an index view which contains all the tasks, and a detail view that shows detail on one task.  The interface switches between the two views, and both views can modify existing tasks (say, to indicate that the task is complete or incomplete).</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" />
+</div>
+<div class="title">Figure 1. Tasks index view</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" />
+</div>
+<div class="title">Figure 2. Tasks detail view</div>
+</div>
+<div class="paragraph"><p>The view classes look something like this:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> TasksIndex <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  template<span style="color: #990000">:</span> JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/tasks_index'</span><span style="color: #990000">],</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">'section'</span><span style="color: #990000">,</span>
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">'tasks'</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">);</span>
+    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">template</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>task<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> TasksDetail <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">'section'</span><span style="color: #990000">,</span>
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">'tasks'</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"renderCompletedTasks"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"renderOverdueTasks"</span><span style="color: #990000">);</span>
+    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/task_detail'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span>task<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>TODO: Bind to change event on collection in index and detail.  Link to detail from index page.  If you don&#8217;t unbind index when leaving it, and go to the detail view, and change the model (e.g. check "Completed"), then the index view class re-renders itself.  This is undesirable, and can cause visible bugs.  Briefly introduce convention of SwappingController.  Then, next section is SwappingController.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_composed_views">Composed views</h3>
+<h3 id="_swapping_controllers_in_progress">Swapping controllers (in progress)</h3>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>SwappingController <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>options<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+  Backbone<span style="color: #990000">.</span>Controller<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">apply</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #990000">[</span>options<span style="color: #990000">]);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>SwappingController<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Backbone<span style="color: #990000">.</span>Controller<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  swap<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>newView<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView <span style="color: #990000">&amp;&amp;</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView<span style="color: #990000">.</span>leave<span style="color: #990000">)</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">leave</span></span><span style="color: #990000">();</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView <span style="color: #990000">=</span> newView<span style="color: #990000">;</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">();</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">empty</span></span><span style="color: #990000">().</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>currentView<span style="color: #990000">.</span>el<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+SwappingController<span style="color: #990000">.</span>extend <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Controller<span style="color: #990000">.</span>extend<span style="color: #990000">;</span></tt></pre></div></div>
 </div>
 <div class="sect2">
-<h3 id="_cleaning_up_understanding_binding_and_unbinding">Cleaning up: understanding binding and unbinding</h3>
+<h3 id="_composite_views_in_progress">Composite views (in progress)</h3>
+<div class="paragraph"><p>TODO: Refactor the TaskIndex view class in tasks_index_and_detail_view_classes.js to be composite.  Discuss other common places you&#8217;ll find composite views.  Then, motivate the CompositeView superclass by referencing the cleanup issue from before, and noting that even if parent view classes unbind, child view classes may not.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>CompositeView <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>options<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>children <span style="color: #990000">=</span> <span style="color: #990000">[];</span>
+  Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">apply</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #990000">[</span>options<span style="color: #990000">]);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>CompositeView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #000000">_</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>children<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">invoke</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"leave"</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  renderChild<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>view<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    view<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>children<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">push</span></span><span style="color: #990000">(</span>view<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  appendChild<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>view<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">renderChild</span></span><span style="color: #990000">(</span>view<span style="color: #990000">);</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>view<span style="color: #990000">.</span>el<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+CompositeView<span style="color: #990000">.</span>extend <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span>extend<span style="color: #990000">;</span></tt></pre></div></div>
 </div>
 <div class="sect2">
-<h3 id="_internationalization">Internationalization</h3>
+<h3 id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted">How to use multiple views on the same model/collection (chapter unstarted)</h3>
+</div>
+<div class="sect2">
+<h3 id="_internationalization_chapter_unstarted">Internationalization (chapter unstarted)</h3>
 </div>
 </div>
 </div>
@@ -614,13 +724,13 @@ asciidoc.install();
 <h2 id="_models_and_collections">Models and collections</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_naming_conventions">Naming conventions</h3>
+<h3 id="_naming_conventions_chapter_unstarted">Naming conventions (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_nested_resources">Nested resources</h3>
+<h3 id="_nested_resources_chapter_unstarted">Nested resources (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_relationships">Relationships</h3>
+<h3 id="_relationships_chapter_unstarted">Relationships (chapter unstarted)</h3>
 </div>
 <div class="sect2">
 <h3 id="_scopes_and_filters">Scopes and filters</h3>
@@ -765,18 +875,18 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 </div>
 <div class="sect2">
-<h3 id="_client_server_duplicated_business_logic">Client/Server duplicated business logic</h3>
+<h3 id="_client_server_duplicated_business_logic_chapter_unstarted">Client/Server duplicated business logic (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_validations">Validations</h3>
+<h3 id="_validations_chapter_unstarted">Validations (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_synchronizing_between_clients">Synchronizing between clients</h3>
+<h3 id="_synchronizing_between_clients_chapter_unstarted">Synchronizing between clients (chapter unstarted)</h3>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_testing">Testing</h2>
+<h2 id="_testing_section_unstarted">Testing (section unstarted)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_full_stack_integration_testing">Full-stack integration testing</h3>
@@ -787,7 +897,7 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect1">
-<h2 id="_the_javascript_language">The JavaScript language</h2>
+<h2 id="_the_javascript_language_section_unstarted">The JavaScript language (section unstarted)</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_model_attribute_types_and_serialization">Model attribute types and serialization</h3>
@@ -804,7 +914,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-21 13:48:50 EDT
+Last updated 2011-07-21 18:03:28 EDT
 </div>
 </div>
 </body>
