@@ -28,7 +28,7 @@ Install dependencies with Bundler:
 
 Now install the git-scribe dependencies:
 
-On OSX:
+==== Installing git-scribe dependencies On OSX
 
   brew install asciidoc fop source-highlight docbook
 
@@ -48,6 +48,19 @@ Unzip it somewhere and make sure the `kindlegen` binary is on your path (I use ~
   unzip KindleGen_Mac_i386_v1.2.zip
   chmod u+x kindlegen
   ln -s /usr/local/KindleGen/kindlegen ~/bin/kindlegen
+
+==== Installing git-scribe dependencies On Ubuntu
+
+   sudo aptitude install asciidoc fop source-highlight docbook
+
+Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
+
+   wget -P /tmp/ http://s3.amazonaws.com/kindlegen/kindlegen_linux_2.6_i386_v1.2.tar.gz
+   tar -C /tmp/ -xzf /tmp/kindlegen_linux_2.6_i386_v1.2.tar.gz
+   mv /tmp/kindlegen ~/bin/
+
+
+=== Verifying the install
 
 Check to see that everything is working together:
 
