@@ -28,6 +28,7 @@ class Releaser
   end
 
   def generate_output
+    run "rm -rf output/*"
     run "git scribe gen"
   end
 
