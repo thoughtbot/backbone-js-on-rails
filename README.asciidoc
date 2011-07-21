@@ -70,7 +70,7 @@ Check to see that everything is working together:
 
 Run +guard+ to watch the +book/+ directory and automatically rebuild the SITE target when anything changes:
 
-  $ guard
+  $ bundle exec guard
   Guard is now watching at '/Users/jason/dev/backbone-js-on-rails'
   git-scribe is waiting for book changes...
   git-scribe is generating a new SITE from the book...
