@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.5" />
+<meta name="generator" content="AsciiDoc 8.6.3" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* BEG */
@@ -240,6 +240,7 @@ pre {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -301,25 +302,6 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
-  if (!toc) {
-    return;
-  }
-
-  // Delete existing TOC entries in case we're reloading the TOC.
-  var tocEntriesToRemove = [];
-  var i;
-  for (i = 0; i < toc.childNodes.length; i++) {
-    var entry = toc.childNodes[i];
-    if (entry.nodeName == 'DIV'
-     && entry.getAttribute("class")
-     && entry.getAttribute("class").match(/^toclevel/))
-      tocEntriesToRemove.push(entry);
-  }
-  for (i = 0; i < tocEntriesToRemove.length; i++) {
-    toc.removeChild(tocEntriesToRemove[i]);
-  }
-
-  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -347,44 +329,24 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  // Delete existing footnote entries in case we're reloading the footnodes.
-  var i;
-  var noteholder = document.getElementById("footnotes");
-  if (!noteholder) {
-    return;
-  }
-  var entriesToRemove = [];
-  for (i = 0; i < noteholder.childNodes.length; i++) {
-    var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
-      entriesToRemove.push(entry);
-  }
-  for (i = 0; i < entriesToRemove.length; i++) {
-    noteholder.removeChild(entriesToRemove[i]);
-  }
-
-  // Rebuild footnote entries.
   var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      var note = spans[i].getAttribute("data-note");
-      if (!note) {
-        // Use [\s\S] in place of . so multi-line matches work.
-        // Because JavaScript has no s (dotall) regex flag.
-        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
-        spans[i].innerHTML =
-          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-          "' title='View footnote' class='footnote'>" + n + "</a>]";
-        spans[i].setAttribute("data-note", note);
-      }
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -404,32 +366,9 @@ footnotes: function () {
       }
     }
   }
-},
-
-install: function(toclevels) {
-  var timerId;
-
-  function reinstall() {
-    asciidoc.footnotes();
-    if (toclevels) {
-      asciidoc.toc(toclevels);
-    }
-  }
-
-  function reinstallAndRemoveTimer() {
-    clearInterval(timerId);
-    reinstall();
-  }
-
-  timerId = setInterval(reinstall, 500);
-  if (document.addEventListener)
-    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
-  else
-    window.onload = reinstallAndRemoveTimer;
 }
 
 }
-asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -469,16 +408,99 @@ asciidoc.install();
 </div>
 </div>
 <div class="sect1">
-<h2 id="_organization_section_unstarted">Organization (section unstarted)</h2>
+<h2 id="_organization">Organization</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_backbone_js_and_mvc">Backbone.js and MVC</h3>
+<div class="paragraph"><p>Model–View–Controller (MVC) is an architectural pattern used in many applications to isolates "domain logic" (the application logic for the user) from the user interface (input and presentation).</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="image/MVCDiagram.png" alt="image/MVCDiagram.png" />
+</div>
+<div class="title">Figure 1. Model-view-controller concept</div>
+</div>
+<div class="paragraph"><p>In the above diagram, the solid line represents a direct association, the dashed an indirect association (via an observer for example).</p></div>
+<div class="paragraph"><p>As a user of Rails, you&#8217;re likely already familiar with the concept of MVC and the benefits that the separation of concerns can give you. However, Rails itself is not doing "traditional" MVC. A traditional MVC is event-based. This means that the views trigger events which the controller figures out what to do with. It can be argued that the requests generated by the browser are the "events" in Rails, however, due to the single-threaded, request-response nature of the web, the control flow between the different levels of MVC is much more straight-forward.</p></div>
+<div class="paragraph"><p>Given that Javascript has events, and that much of the interactions between the different components of Backbone.js in the browser are not limited to request/response, programming with Backbone.js is in a lot of ways more like working with a traditional MVC architecture.</p></div>
+<div class="paragraph"><p>That being said, technically speaking, Backbone.js is NOT MVC, and this was acknowledged by the creators of Backbone.js when they renamed Controllers to Routers in version 0.5.0.</p></div>
+<div class="paragraph"><p>So what is Backbone.js then if not MVC? Technically speaking, it&#8217;s just the Models and the Views with a Router to handle flow between them. in Backbone.js the views will handle many of the aspects that controllers would typically handle, such as actually figuring out what to do next and what to render.</p></div>
+<div class="paragraph"><p>While you could do it, the benefit of actually introducing a Controller in your application would be limited, and the more pragmatic approach is to realize the great organization that Backbone.js gives you is much better than what you had before. The fact that it doesn&#8217;t have a nice name, or strict adherence to a pattern isn&#8217;t worth worrying about.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_what_goes_where_in_mvc">What goes where in MVC</h3>
+<h3 id="_what_goes_where">What Goes Where</h3>
+<div class="paragraph"><p>Part of the initial learning curve of Backbone.js can be figuring out what goes where, and mapping it to your expectations set by working with Rails. In Rails we have Models, Views, Controllers, and Routers. In Backbone.js, we have Models, Views, Templates, and Routers.</p></div>
+<div class="paragraph"><p>The models in Backbone.js and Rails are analogous. Because it lacks controllers, Backbone.js routers and views work together to pick up the functionality provided by Rails controllers. Finally, in Rails, when we say views, we actually mean templates. In Backbone.js, however, you have a separation between the view and templates.</p></div>
+<div class="paragraph"><p>Once you introduce Backbone.js into your stack, you grow the layers in your stack by four levels. This can be daunting at first, and frankly, at times can be difficult to keep everything going on in your application straight. Ultimately, the additional organization and functionality of Backbone.js outweigh the costs, so lets break it down.</p></div>
+<div class="paragraph"><p>Rails
+  Model
+  Controller
+  View
+Backbone.js
+  Model
+  Router
+  View
+  Template</p></div>
+<div class="paragraph"><p>In a typical Rails and Backbone.js application, the initial interaction between the layers will be as follows:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+A request from a user comes in the <strong>Rails router</strong> identifies what should handle the request based on the URL
+</p>
+</li>
+<li>
+<p>
+The <strong>Rails controller action</strong> to handle the request is called, some initial processing may be performed
+</p>
+</li>
+<li>
+<p>
+The <strong>Rails view template</strong> is rendered and returned to the user&#8217;s browser
+</p>
+</li>
+<li>
+<p>
+The <strong>Rails view template</strong> will include <strong>Backbone.js initialization</strong>, usually this is populating some <strong>Backbone models</strong> with json data provided by the <strong>Rails view</strong>
+</p>
+</li>
+<li>
+<p>
+The <strong>Backbone.js router</strong> determines which of its methods should handle the display based on the URL
+</p>
+</li>
+<li>
+<p>
+The <strong>Backbone.js router</strong> method calls that method, some initial processing may be performed, and one or more <strong>Backbone.js views</strong> are rendered
+</p>
+</li>
+<li>
+<p>
+The <strong>Backbone.js view</strong> reads <strong>templates</strong> and uses <strong>Backbone.js</strong> models to render itself onto the page
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>At this point, the user will see a nice page in their browser and be able to interact with it. The user interacting with elements on the page will trigger actions to be taken at any level of the above sequence: <strong>Backbone.js model</strong>, <strong>Backbone.js views</strong>, <strong>Backbone.js router</strong>, or requests to the remote server.</p></div>
+<div class="paragraph"><p>Requests to the remote server may be any one of the following:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+At the <strong>Backbone.js model</strong> level, communicating with Rails via json.
+</p>
+</li>
+<li>
+<p>
+Normal Ajax requests, not using Backbone.js at all.
+</p>
+</li>
+<li>
+<p>
+Normal requests that don&#8217;t hit Backbone.js and trigger a full page reload.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Which of the above remote server interactions utilized will depend upon the desired result, and the type of user-interface. This book should help you understand which interaction you&#8217;ll want to choose each portion of your application.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_namespacing_your_application">Namespacing your application</h3>
+<h3 id="_namespacing_your_application_chapter_unstarted">Namespacing your application (chapter unstarted)</h3>
 </div>
 </div>
 </div>
@@ -534,9 +556,58 @@ asciidoc.install();
 <div class="paragraph"><p>On Rails 3.0 and prior apps, we use Jammit for packaging assets and precompiling templates:</p></div>
 <div class="paragraph"><p><a href="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</a>
 <a href="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</a></p></div>
+<div class="paragraph"><p>Jammit will make your templates available in a top-level JST object. For example, to access the above todos/index.jst template, you would refer to it as:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>JST<span style="color: #990000">[</span><span style="color: #FF0000">'todos/index'</span><span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>Variables can be passed to the templates by passing a Hash to the template, as shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>JST<span style="color: #990000">[</span><span style="color: #FF0000">'todos/index'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> model<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #FF0000">}</span><span style="color: #990000">)</span></tt></pre></div></div>
 <div class="sect3">
-<h4 id="_a_note_on_jsts_and_jammit">A note on JSTs and Jammit</h4>
-<div class="paragraph"><p>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</p></div>
+<h4 id="_a_note_jammit_and_a_jst_naming_gotcha">A note Jammit and a JST naming gotcha</h4>
+<div class="paragraph"><p>One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.</p></div>
+<div class="paragraph"><p>When using Jammit, we run into a slightly sticky issue as an app grows from one template subdirectory to multiple template subdirectories.</p></div>
+<div class="paragraph"><p>Let&#8217;s say you place templates in app/templates. You work for a while on the "Tasks" feature, placing templates under app/templates/tasks. So, window.JST looks something like:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>JST<span style="color: #990000">[</span><span style="color: #FF0000">'form'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'show'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'index'</span><span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>Now, you add another directory under app/templates, say app/templates/user. Now, all JST references are prefixed with their parent directory name so they are unambiguous:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/form'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/show'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/index'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'users/new'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'users/show'</span><span style="color: #990000">]</span>
+JST<span style="color: #990000">[</span><span style="color: #FF0000">'users/index'</span><span style="color: #990000">]</span></tt></pre></div></div>
+<div class="paragraph"><p>This breaks existing JST references. You can work around this issue by applying the following monkeypatch to Jammit, in config/initializers/jammit.rb</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Jammit<span style="color: #990000">::</span>Compressor<span style="color: #990000">.</span>class_eval <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
+  private
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> find_base_path<span style="color: #990000">(</span>path<span style="color: #990000">)</span>
+    File<span style="color: #990000">.</span>expand_path<span style="color: #990000">(</span>Rails<span style="color: #990000">.</span>root<span style="color: #990000">.</span>join<span style="color: #990000">(</span><span style="color: #FF0000">'app'</span><span style="color: #990000">,</span><span style="color: #FF0000">'templates'</span><span style="color: #990000">))</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>We have an open issue and workaround reported to the Jammit project:</p></div>
 <div class="paragraph"><p><a href="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</a></p></div>
 </div>
 </div>
@@ -580,7 +651,74 @@ asciidoc.install();
 <h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted">Converting an existing page/view area to use Backbone.js (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_automatically_using_the_rails_authentication_token_chapter_unstarted">Automatically using the Rails authentication token (chapter unstarted)</h3>
+<h3 id="_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</h3>
+<div class="paragraph"><p>When using Backbone.js in a Rails app, you will run into a conflct with the Rails built in Cross Site Scripting (XSS) protection.</p></div>
+<div class="paragraph"><p>When Rails XSS is enabled, each POST or PUT request to Rails should include a special token which is verified to ensure that the reqtest originated from a user which is actually using the Rails app. In recent versions of Rails, Backbone.js Ajax requests are no exception.</p></div>
+<div class="paragraph"><p>To get around this, you have two options. Disable Rails XSS projection (not recommended), or make Backbone.js play nicely with Rails XSS.</p></div>
+<div class="paragraph"><p>To make Backbone.js play nicely with Rails XSS you can include a monkeypatch to Backbone.js on your pages which patches Backbone.js to include the Rails XSS token in any requests it makes.</p></div>
+<div class="paragraph"><p>The following is one such script.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">//</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">// With additions by Maciej Adwent http://github.com/Maciek416</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">// If token name and value are not supplied, this code Requires jQuery</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">//</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">// Adapted from:</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">// http://www.ngauthier.com/2011/02/backbone-and-rails-forgery-protection.html</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">// Nick Gauthier @ngauthier</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">//</span></span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> BackboneRailsAuthTokenAdapter <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">//</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// Given an instance of Backbone, route its sync() function so that</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// it executes through this one first, which mixes in the CSRF</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// authenticity token that Rails 3 needs to protect requests from</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// forgery. Optionally, the token's name and value can be supplied</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// by the caller.</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">//</span></span>
+  fixSync<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>Backbone<span style="color: #990000">,</span> paramName <span style="font-style: italic"><span style="color: #9A1900">/*optional*/</span></span><span style="color: #990000">,</span> paramValue <span style="font-style: italic"><span style="color: #9A1900">/*optional*/</span></span><span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">typeof</span></span><span style="color: #990000">(</span>paramName<span style="color: #990000">)==</span><span style="color: #FF0000">'string'</span> <span style="color: #990000">&amp;&amp;</span> <span style="font-weight: bold"><span style="color: #0000FF">typeof</span></span><span style="color: #990000">(</span>paramValue<span style="color: #990000">)==</span><span style="color: #FF0000">'string'</span><span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+      <span style="font-style: italic"><span style="color: #9A1900">// Use paramName and paramValue as supplied</span></span>
+    <span style="color: #FF0000">}</span> <span style="font-weight: bold"><span style="color: #0000FF">else</span></span> <span style="color: #FF0000">{</span>
+      <span style="font-style: italic"><span style="color: #9A1900">// Assume we've rendered meta tags with erb</span></span>
+      paramName <span style="color: #990000">=</span> $<span style="color: #990000">(</span><span style="color: #FF0000">"meta[name='csrf-param']"</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">attr</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'content'</span><span style="color: #990000">);</span>
+      paramValue <span style="color: #990000">=</span> $<span style="color: #990000">(</span><span style="color: #FF0000">"meta[name='csrf-token']"</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">attr</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'content'</span><span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// alias away the sync method</span></span>
+    Backbone<span style="color: #990000">.</span>_sync <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>sync<span style="color: #990000">;</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// define a new sync method</span></span>
+    Backbone<span style="color: #990000">.</span>sync <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>method<span style="color: #990000">,</span> model<span style="color: #990000">,</span> success<span style="color: #990000">,</span> error<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+
+      <span style="font-style: italic"><span style="color: #9A1900">// only need a token for non-get requests</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span>method <span style="color: #990000">==</span> <span style="color: #FF0000">'create'</span> <span style="color: #990000">||</span> method <span style="color: #990000">==</span> <span style="color: #FF0000">'update'</span> <span style="color: #990000">||</span> method <span style="color: #990000">==</span> <span style="color: #FF0000">'delete'</span><span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+
+        <span style="font-style: italic"><span style="color: #9A1900">// grab the token from the meta tag rails embeds</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> auth_options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">;</span>
+        auth_options<span style="color: #990000">[</span>paramName<span style="color: #990000">]</span> <span style="color: #990000">=</span> paramValue<span style="color: #990000">;</span>
+
+        <span style="font-style: italic"><span style="color: #9A1900">// set it as a model attribute without triggering events</span></span>
+        model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">set</span></span><span style="color: #990000">(</span>auth_options<span style="color: #990000">,</span> <span style="color: #FF0000">{</span>silent<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+      <span style="color: #FF0000">}</span>
+
+      <span style="font-style: italic"><span style="color: #9A1900">// proxy the call to the old sync method</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> Backbone<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">_sync</span></span><span style="color: #990000">(</span>method<span style="color: #990000">,</span> model<span style="color: #990000">,</span> success<span style="color: #990000">,</span> error<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+
+  <span style="font-style: italic"><span style="color: #9A1900">// change Backbone's sync function back to the original one</span></span>
+  restoreSync<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>Backbone<span style="color: #990000">)</span><span style="color: #FF0000">{</span>
+    Backbone<span style="color: #990000">.</span>sync <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>_sync<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>The above patch depends on jQuery, and should be included in your after jQuery and Backbone.js are loaded. Using Jammit, you&#8217;d list it below the backbone.js file.</p></div>
 </div>
 </div>
 </div>
@@ -609,13 +747,13 @@ asciidoc.install();
 <div class="content">
 <img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" />
 </div>
-<div class="title">Figure 1. Tasks index view</div>
+<div class="title">Figure 2. Tasks index view</div>
 </div>
 <div class="imageblock">
 <div class="content">
 <img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" />
 </div>
-<div class="title">Figure 2. Tasks detail view</div>
+<div class="title">Figure 3. Tasks detail view</div>
 </div>
 <div class="paragraph"><p>The view classes look something like this:</p></div>
 <div class="listingblock">
@@ -914,7 +1052,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-21 18:03:28 EDT
+Last updated 2011-07-26 16:06:29 EDT
 </div>
 </div>
 </body>

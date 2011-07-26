@@ -30,8 +30,8 @@
 <content src="book.html#_introduction_section_unstarted"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_4" playOrder="5">
-<navLabel><text>Organization (section unstarted)</text></navLabel>
-<content src="book.html#_organization_section_unstarted"/>
+<navLabel><text>Organization</text></navLabel>
+<content src="book.html#_organization"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_5" playOrder="6">
 <navLabel><text>Rails Integration</text></navLabel>
