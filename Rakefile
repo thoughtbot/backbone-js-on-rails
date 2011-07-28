@@ -1,5 +1,6 @@
 require 'rake'
 
+desc "Build all output targets, commit, and push a new release"
 task :release do
   Releaser.new.release
 end
