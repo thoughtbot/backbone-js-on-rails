@@ -4,8 +4,9 @@ SwappingRouter = function(options) {
 
 _.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
   swap: function(newView) {
-    if (this.currentView && this.currentView.leave)
+    if (this.currentView && this.currentView.leave) {
       this.currentView.leave();
+    }
 
     this.currentView = newView;
     this.currentView.render();
