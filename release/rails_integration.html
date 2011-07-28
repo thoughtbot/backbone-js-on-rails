@@ -37,7 +37,7 @@
 <div class="section" lang="en" xml:lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_organizing_your_backbone_js_code_in_a_rails_app"></a>Organizing your Backbone.js code in a Rails app</h3></div></div></div>
-<p>When using Backbone.js in a Rails app, you’ll have two primary kinds of Backbone.js-related assets: classes, and templates.</p>
+<p>When using Backbone.js in a Rails app, you’ll have two kinds of Backbone.js-related assets: classes, and templates.</p>
 </div>
 <div class="section" lang="en" xml:lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -106,7 +106,7 @@ JST['users/index']</pre>
     File.expand_path(Rails.root.join('app','templates'))
   end
 end</pre>
-<p>We have an open issue and workaround reported to the Jammit project:</p>
+<p>As applications are moving to Rails 3.1, they’re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we’ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</p>
 <p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p>
 </div>
 </div>
@@ -133,7 +133,7 @@ end</pre>
       todos/
         index.jst.ejs
         show.jst.ejs</pre>
-<p>Using Sprockets' preprocessors, we can use templates as before.  Here, we’re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <code class="literal">*.jst</code> files and makes them available to the <code class="literal">window.JST</code> function.  Sprocket handles identifying the <code class="literal">.ejs</code> extension and invoking EJS to compile the templates; to do this, Sprocket requires the <code class="literal">ejs</code> gem to be included in the application Gemfile.</p>
+<p>Using Sprockets' preprocessors, we can use templates as before.  Here, we’re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <code class="literal">*.jst</code> files and makes them available on the client side via the <code class="literal">window.JST</code> object. Identifying the <code class="literal">.ejs</code> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <code class="literal">ejs</code> gem to be included in the application Gemfile.</p>
 <p>Underscore.js templates:
 <a class="ulink" href="http://documentcloud.github.com/underscore/#template" target="_top">http://documentcloud.github.com/underscore/#template</a></p>
 <p>EJS gem:

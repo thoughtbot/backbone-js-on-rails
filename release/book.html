@@ -600,7 +600,7 @@ Normal requests that don&#8217;t hit Backbone.js and trigger a full page reload.
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_organizing_your_backbone_js_code_in_a_rails_app">Organizing your Backbone.js code in a Rails app</h3>
-<div class="paragraph"><p>When using Backbone.js in a Rails app, you&#8217;ll have two primary kinds of Backbone.js-related assets: classes, and templates.</p></div>
+<div class="paragraph"><p>When using Backbone.js in a Rails app, you&#8217;ll have two kinds of Backbone.js-related assets: classes, and templates.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_rails_3_0_and_prior">Rails 3.0 and prior</h3>
@@ -698,7 +698,7 @@ http://www.gnu.org/software/src-highlite -->
     File<span style="color: #990000">.</span>expand_path<span style="color: #990000">(</span>Rails<span style="color: #990000">.</span>root<span style="color: #990000">.</span>join<span style="color: #990000">(</span><span style="color: #FF0000">'app'</span><span style="color: #990000">,</span><span style="color: #FF0000">'templates'</span><span style="color: #990000">))</span>
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
-<div class="paragraph"><p>We have an open issue and workaround reported to the Jammit project:</p></div>
+<div class="paragraph"><p>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</p></div>
 <div class="paragraph"><p><a href="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</a></p></div>
 </div>
 </div>
@@ -727,7 +727,7 @@ http://www.gnu.org/software/src-highlite -->
         index.jst.ejs
         show.jst.ejs</tt></pre>
 </div></div>
-<div class="paragraph"><p>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <tt>*.jst</tt> files and makes them available to the <tt>window.JST</tt> function.  Sprocket handles identifying the <tt>.ejs</tt> extension and invoking EJS to compile the templates; to do this, Sprocket requires the <tt>ejs</tt> gem to be included in the application Gemfile.</p></div>
+<div class="paragraph"><p>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <tt>*.jst</tt> files and makes them available on the client side via the <tt>window.JST</tt> object. Identifying the <tt>.ejs</tt> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <tt>ejs</tt> gem to be included in the application Gemfile.</p></div>
 <div class="paragraph"><p>Underscore.js templates:
 <a href="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</a></p></div>
 <div class="paragraph"><p>EJS gem:
@@ -959,11 +959,102 @@ CompositeView<span style="color: #990000">.</span>extend <span style="color: #99
 <h3 id="_nested_resources_chapter_unstarted">Nested resources (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_relationships_chapter_unstarted">Relationships (chapter unstarted)</h3>
+<h3 id="_model_associations">Model associations</h3>
+<div class="paragraph"><p>Backbone.js doesn&#8217;t prescribe a way to define associations between models, so we need to get creative and use the power of JavaScript to set up associations in a way that it&#8217;s usage is natural.</p></div>
+<div class="sect3">
+<h4 id="_belongs_to_associations">Belongs to associations</h4>
+<div class="paragraph"><p>Setting up a <tt>belongs_to</tt> association in Backbone is a two step process. Let&#8217;s discuss setting up the association that may occur between a task and a user. The end result of the approach is a <tt>Task</tt> instance having a property called <tt>user</tt> where we store the associated <tt>User</tt> object.</p></div>
+<div class="paragraph"><p>To set this up, let&#8217;s start by telling Rails to augment the task&#8217;s JSON representation to also send over the associated user attributes:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> Task <span style="color: #990000">&lt;</span> ActiveRecord<span style="color: #990000">::</span>Base
+  belongs_to <span style="color: #990000">:</span>user
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span><span style="color: #990000">:</span> <span style="color: #FF0000">{</span> user<span style="color: #990000">:</span> <span style="color: #FF0000">{</span> only<span style="color: #990000">:</span> <span style="color: #990000">[:</span>name<span style="color: #990000">,</span> <span style="color: #990000">:</span>email<span style="color: #990000">]</span> <span style="color: #FF0000">}</span> <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>This means that when Backbone calls <tt>fetch()</tt> for a <tt>Task</tt> model, it will include the name and email of the associated user nested within the task JSON representation. Something like this:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+<div class="paragraph"><p>Now that we receive user data with the task&#8217;s JSON representation, let&#8217;s tell our Backbone User model to store the User object. We do that on the task&#8217;s initializer. Here&#8217;s a first cut at that:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>user <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>A couple of improvements to the above: You&#8217;ll soon realize that you will might be setting the user outside of the initialize as well. Also, the initializer should check whether there user data in the first place. To address the first concern, let&#8217;s create a setter for the object. Backbone provides a handy function called <tt>has</tt> that returns whether the provided option is set for the object:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> User <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">has</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">))</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>user <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">setUser</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">)));</span>
+    <span style="color: #FF0000">}</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  setUser<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>user<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>user <span style="color: #990000">=</span> user<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>The final setup allows for a nice clean interface to a task&#8217;s user, by accessing the task property fo the user instance.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> task <span style="color: #990000">=</span> Task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">fetch</span></span><span style="color: #990000">(</span><span style="color: #993399">1</span><span style="color: #990000">);</span>
+console<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">log</span></span><span style="color: #990000">(</span>task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'title'</span><span style="color: #990000">)</span> <span style="color: #990000">+</span> <span style="color: #FF0000">' is being worked on by '</span> <span style="color: #990000">+</span> task<span style="color: #990000">.</span>user<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'name'</span><span style="color: #990000">));</span></tt></pre></div></div>
+</div>
+<div class="sect3">
+<h4 id="_has_many_associations">Has many associations</h4>
+<div class="paragraph"><p>You can take a similar approach to set up a <tt>has_many</tt> association on the client side models. This time, however, the object&#8217;s property will be a Backbone collection.</p></div>
+<div class="paragraph"><p>Following the example, say we need access to a user&#8217;s tasks. Let&#8217;s set up the JSON representation on the Rails side first:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> User <span style="color: #990000">&lt;</span> ActiveRecord<span style="color: #990000">::</span>Base
+  has_many <span style="color: #990000">:</span>tasks
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span><span style="color: #990000">:</span> <span style="color: #FF0000">{</span> tasks<span style="color: #990000">:</span> <span style="color: #FF0000">{</span> only<span style="color: #990000">:</span> <span style="color: #990000">[:</span>body<span style="color: #990000">,</span> <span style="color: #990000">:</span>due_date<span style="color: #990000">]</span> <span style="color: #FF0000">}</span> <span style="color: #FF0000">}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Now, on the Backbone <tt>User</tt> model&#8217;s initializer, let&#8217;s call the <tt>setTasks</tt> function:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> User <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> tasks <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> Tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">reset</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'tasks'</span><span style="color: #990000">));</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setTasks</span></span><span style="color: #990000">(</span>tasks<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  setTasks<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>tasks<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>tasks <span style="color: #990000">=</span> tasks<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Note that we are setting the relation to an instance of the <tt>Tasks</tt> collection.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_scopes_and_filters">Scopes and filters</h3>
-<div class="paragraph"><p>To filter a <tt>Backbone.Collection</tt>, like with Rails named scopes, define functions on your collections that return new collection instances, filtered by your criteria.  A first implementation might look like this:</p></div>
+<div class="paragraph"><p>To filter a <tt>Backbone.Collection</tt>, like with Rails named scopes, define functions on your collections that filter by your criteria and return new instances of the collection class. A first implementation might look like this:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1046,7 +1137,7 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>dueDate<span style="color: #990000">;</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>If you&#8217;d like to provide more than one sort on your collection, you can use an approach similar to the <tt>filtered</tt> function above, and return a new <tt>Backbone.Collection</tt> whose <tt>comparator</tt> is overridden.  Call <tt>sort</tt> to update the ordering on the new collection:</p></div>
+<div class="paragraph"><p>If you&#8217;d like to provide more than one sort order on your collection, you can use an approach similar to the <tt>filtered</tt> function above, and return a new <tt>Backbone.Collection</tt> whose <tt>comparator</tt> is overridden.  Call <tt>sort</tt> to update the ordering on the new collection:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1143,7 +1234,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-27 20:26:54 EDT
+Last updated 2011-07-28 13:47:34 EDT
 </div>
 </div>
 </body>

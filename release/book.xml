@@ -162,7 +162,7 @@ Normal requests that don&#8217;t hit Backbone.js and trigger a full page reload.
 <title>Rails Integration</title>
 <section id="_organizing_your_backbone_js_code_in_a_rails_app">
 <title>Organizing your Backbone.js code in a Rails app</title>
-<simpara>When using Backbone.js in a Rails app, you&#8217;ll have two primary kinds of Backbone.js-related assets: classes, and templates.</simpara>
+<simpara>When using Backbone.js in a Rails app, you&#8217;ll have two kinds of Backbone.js-related assets: classes, and templates.</simpara>
 </section>
 <section id="_rails_3_0_and_prior">
 <title>Rails 3.0 and prior</title>
@@ -229,7 +229,7 @@ JST['users/index']</programlisting>
     File.expand_path(Rails.root.join('app','templates'))
   end
 end</programlisting>
-<simpara>We have an open issue and workaround reported to the Jammit project:</simpara>
+<simpara>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for the asset packager.  Until then, many apps are using Jammit for asset packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that the JST template path can change when adding new templates.  We have an open issue and workaround:</simpara>
 <simpara><ulink url="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</ulink></simpara>
 </section>
 </section>
@@ -255,7 +255,7 @@ end</programlisting>
       todos/
         index.jst.ejs
         show.jst.ejs</screen>
-<simpara>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <literal>*.jst</literal> files and makes them available to the <literal>window.JST</literal> function.  Sprocket handles identifying the <literal>.ejs</literal> extension and invoking EJS to compile the templates; to do this, Sprocket requires the <literal>ejs</literal> gem to be included in the application Gemfile.</simpara>
+<simpara>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <literal>*.jst</literal> files and makes them available on the client side via the <literal>window.JST</literal> object. Identifying the <literal>.ejs</literal> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <literal>ejs</literal> gem to be included in the application Gemfile.</simpara>
 <simpara>Underscore.js templates:
 <ulink url="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</ulink></simpara>
 <simpara>EJS gem:
@@ -466,12 +466,79 @@ CompositeView.extend = Backbone.View.extend;</programlisting>
 <section id="_nested_resources_chapter_unstarted">
 <title>Nested resources (chapter unstarted)</title>
 </section>
-<section id="_relationships_chapter_unstarted">
-<title>Relationships (chapter unstarted)</title>
+<section id="_model_associations">
+<title>Model associations</title>
+<simpara>Backbone.js doesn&#8217;t prescribe a way to define associations between models, so we need to get creative and use the power of JavaScript to set up associations in a way that it&#8217;s usage is natural.</simpara>
+<section id="_belongs_to_associations">
+<title>Belongs to associations</title>
+<simpara>Setting up a <literal>belongs_to</literal> association in Backbone is a two step process. Let&#8217;s discuss setting up the association that may occur between a task and a user. The end result of the approach is a <literal>Task</literal> instance having a property called <literal>user</literal> where we store the associated <literal>User</literal> object.</simpara>
+<simpara>To set this up, let&#8217;s start by telling Rails to augment the task&#8217;s JSON representation to also send over the associated user attributes:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">class Task &lt; ActiveRecord::Base
+  belongs_to :user
+
+  def as_json(options = {})
+    super(include: { user: { only: [:name, :email] } })
+  end
+end</programlisting>
+<simpara>This means that when Backbone calls <literal>fetch()</literal> for a <literal>Task</literal> model, it will include the name and email of the associated user nested within the task JSON representation. Something like this:</simpara>
+<programlisting language="javascript]" linenumbering="unnumbered">{
+  "title": "Buy more Cheeseburgers",
+  "due_date": "2011-03-04",
+  "user": {
+    "name": "Robert McGraffalon",
+    "email": "bobby@themcgraffalons.com"
+  }
+}</programlisting>
+<simpara>Now that we receive user data with the task&#8217;s JSON representation, let&#8217;s tell our Backbone User model to store the User object. We do that on the task&#8217;s initializer. Here&#8217;s a first cut at that:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
+  initialize: function() {
+    this.user = new User(this.get('user'));
+  }
+});</programlisting>
+<simpara>A couple of improvements to the above: You&#8217;ll soon realize that you will might be setting the user outside of the initialize as well. Also, the initializer should check whether there user data in the first place. To address the first concern, let&#8217;s create a setter for the object. Backbone provides a handy function called <literal>has</literal> that returns whether the provided option is set for the object:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var User = Backbone.Model.extend({
+  initialize: function() {
+    if (this.has('user')) {
+      this.user = setUser(new User(this.get('user')));
+    }
+  },
+
+  setUser: function(user) {
+    this.user = user;
+  }
+});</programlisting>
+<simpara>The final setup allows for a nice clean interface to a task&#8217;s user, by accessing the task property fo the user instance.</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var task = Task.fetch(1);
+console.log(task.get('title') + ' is being worked on by ' + task.user.get('name'));</programlisting>
+</section>
+<section id="_has_many_associations">
+<title>Has many associations</title>
+<simpara>You can take a similar approach to set up a <literal>has_many</literal> association on the client side models. This time, however, the object&#8217;s property will be a Backbone collection.</simpara>
+<simpara>Following the example, say we need access to a user&#8217;s tasks. Let&#8217;s set up the JSON representation on the Rails side first:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">class User &lt; ActiveRecord::Base
+  has_many :tasks
+
+  def as_json(options = {})
+    super(include: { tasks: { only: [:body, :due_date] } })
+  end
+end</programlisting>
+<simpara>Now, on the Backbone <literal>User</literal> model&#8217;s initializer, let&#8217;s call the <literal>setTasks</literal> function:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var User = Backbone.Model.extend({
+  initialize: function() {
+    var tasks = new Tasks.reset(this.get('tasks'));
+    this.setTasks(tasks);
+  },
+
+  setTasks: function(tasks) {
+    this.tasks = tasks;
+  }
+});</programlisting>
+<simpara>Note that we are setting the relation to an instance of the <literal>Tasks</literal> collection.</simpara>
+</section>
 </section>
 <section id="_scopes_and_filters">
 <title>Scopes and filters</title>
-<simpara>To filter a <literal>Backbone.Collection</literal>, like with Rails named scopes, define functions on your collections that return new collection instances, filtered by your criteria.  A first implementation might look like this:</simpara>
+<simpara>To filter a <literal>Backbone.Collection</literal>, like with Rails named scopes, define functions on your collections that filter by your criteria and return new instances of the collection class. A first implementation might look like this:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -534,7 +601,7 @@ var Tasks = Backbone.Collection.extend({
     return task.dueDate;
   }
 });</programlisting>
-<simpara>If you&#8217;d like to provide more than one sort on your collection, you can use an approach similar to the <literal>filtered</literal> function above, and return a new <literal>Backbone.Collection</literal> whose <literal>comparator</literal> is overridden.  Call <literal>sort</literal> to update the ordering on the new collection:</simpara>
+<simpara>If you&#8217;d like to provide more than one sort order on your collection, you can use an approach similar to the <literal>filtered</literal> function above, and return a new <literal>Backbone.Collection</literal> whose <literal>comparator</literal> is overridden.  Call <literal>sort</literal> to update the ordering on the new collection:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
