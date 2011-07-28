@@ -885,7 +885,7 @@ end</programlisting>
 <simpara>This means that when Backbone calls <literal>fetch()</literal> for a <literal>Task</literal> model, it will
 include the name and email of the associated user nested within the task JSON
 representation. Something like this:</simpara>
-<programlisting language="javascript]" linenumbering="unnumbered">{
+<programlisting language="javascript" linenumbering="unnumbered">{
   "title": "Buy more Cheeseburgers",
   "due_date": "2011-03-04",
   "user": {
