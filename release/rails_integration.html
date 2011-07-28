@@ -134,6 +134,10 @@ end</pre>
         index.jst.ejs
         show.jst.ejs</pre>
 <p>Using Sprockets' preprocessors, we can use templates as before.  Here, we’re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <code class="literal">*.jst</code> files and makes them available on the client side via the <code class="literal">window.JST</code> object. Identifying the <code class="literal">.ejs</code> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <code class="literal">ejs</code> gem to be included in the application Gemfile.</p>
+<p>To make the <code class="literal">*.jst</code> files available and create the <code class="literal">window.JST</code> object, require them in your application.js Sprockets manifest:</p>
+<pre class="screen">//  other application requires
+//= require_tree ../templates
+//= require_tree .</pre>
 <p>Underscore.js templates:
 <a class="ulink" href="http://documentcloud.github.com/underscore/#template" target="_top">http://documentcloud.github.com/underscore/#template</a></p>
 <p>EJS gem:

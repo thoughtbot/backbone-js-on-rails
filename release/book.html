@@ -728,6 +728,13 @@ http://www.gnu.org/software/src-highlite -->
         show.jst.ejs</tt></pre>
 </div></div>
 <div class="paragraph"><p>Using Sprockets' preprocessors, we can use templates as before.  Here, we&#8217;re using the EJS template preprocessor to provide the same functionality as Underscore.js' templates.  It compiles the <tt>*.jst</tt> files and makes them available on the client side via the <tt>window.JST</tt> object. Identifying the <tt>.ejs</tt> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <tt>ejs</tt> gem to be included in the application Gemfile.</p></div>
+<div class="paragraph"><p>To make the <tt>*.jst</tt> files available and create the <tt>window.JST</tt> object, require them in your application.js Sprockets manifest:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>//  other application requires
+//= require_tree ../templates
+//= require_tree .</tt></pre>
+</div></div>
 <div class="paragraph"><p>Underscore.js templates:
 <a href="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</a></p></div>
 <div class="paragraph"><p>EJS gem:
@@ -1234,7 +1241,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-28 13:47:34 EDT
+Last updated 2011-07-28 14:20:43 EDT
 </div>
 </div>
 </body>
