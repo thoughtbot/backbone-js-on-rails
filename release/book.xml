@@ -479,7 +479,35 @@ tasks (say, to indicate that the task is complete or incomplete).</simpara>
     $(this.el).html(this.template({tasks: this.tasks}));
   }
 });</programlisting>
-<programlisting language="js" linenumbering="unnumbered"></programlisting>
+<programlisting language="js" linenumbering="unnumbered">var TaskDetail = Backbone.View.extend({
+  template: JST['tasks/tasks_detail'],
+  tagName: 'section',
+  id: 'task',
+
+  events: {
+    "click .comments .form-inputs button": "createComment"
+  },
+
+  initialize: function() {
+    this.model = this.options.model;
+
+    _.bindAll(this, "render");
+
+    this.model.bind("change", this.render);
+    this.model.comments.bind("change", this.render);
+    this.model.comments.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  },
+
+  createComment: function() {
+    var comment = new Comment({ text: this.$('.new-comment-input').val() });
+    this.$('.new-comment-input').val('');
+    this.model.comments.create(comment);
+  }
+});</programlisting>
 <simpara>Each task on the index page links to the detail view for itself.  When a user
 follows one of these links and navigates from the index page to the detail
 page, then interacts with the detail view to change a model, the <literal>change</literal> event
@@ -540,7 +568,35 @@ SwappingRouter.extend = Backbone.Router.extend;</programlisting>
 <simpara>One of the first refactorings you find yourself doing in a non-trivial Backbone
 app is splitting up large views into composable parts.  Let&#8217;s take another look
 at the <literal>TaskDetail</literal> source code from the beginning of this section:</simpara>
-<programlisting language="js" linenumbering="unnumbered"></programlisting>
+<programlisting language="js" linenumbering="unnumbered">var TaskDetail = Backbone.View.extend({
+  template: JST['tasks/tasks_detail'],
+  tagName: 'section',
+  id: 'task',
+
+  events: {
+    "click .comments .form-inputs button": "createComment"
+  },
+
+  initialize: function() {
+    this.model = this.options.model;
+
+    _.bindAll(this, "render");
+
+    this.model.bind("change", this.render);
+    this.model.comments.bind("change", this.render);
+    this.model.comments.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  },
+
+  createComment: function() {
+    var comment = new Comment({ text: this.$('.new-comment-input').val() });
+    this.$('.new-comment-input').val('');
+    this.model.comments.create(comment);
+  }
+});</programlisting>
 <simpara>along with the template for that view:</simpara>
 <programlisting language="html" linenumbering="unnumbered">&lt;section class="task-details"&gt;
   &lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
@@ -1048,6 +1104,27 @@ the ordering on the new collection:</simpara>
 </section>
 <section id="_coffeescript_with_backbone_js">
 <title>CoffeeScript with Backbone.js</title>
+</section>
+</section>
+<section id="_security_stub">
+<title>Security (stub)</title>
+<section id="_xss_with_json_bootstrapping_stub">
+<title>XSS with JSON bootstrapping (stub)</title>
+<simpara>Use <literal>json2.js</literal> and:</simpara>
+<programlisting language="js" linenumbering="unnumbered">&lt;script type="text/json" id="something"&gt;
+  &lt;%= something.to_json %&gt;
+&lt;/script&gt;
+
+&lt;script type="text/javascript"&gt;
+  (function () {
+    var something = JSON.parse($('#something').text());
+    someJavascriptFunction(something);
+  })();
+&lt;/script&gt;</programlisting>
+</section>
+<section id="_xss_in_html_templates_stub">
+<title>XSS in HTML templates (stub)</title>
+<simpara>TODO: Discuss <literal>Backbone.Model.escape</literal>, <literal>_.escape</literal>, defaulting to escape with <literal>&lt;%=</literal> vs <literal>&lt;%==</literal>, escaping in other templating.</simpara>
 </section>
 </section>
 </article>

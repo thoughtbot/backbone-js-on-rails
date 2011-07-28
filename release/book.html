@@ -967,7 +967,35 @@ http://www.gnu.org/software/src-highlite -->
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt></tt></pre></div></div>
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> TaskDetail <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  template<span style="color: #990000">:</span> JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/tasks_detail'</span><span style="color: #990000">],</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">'section'</span><span style="color: #990000">,</span>
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">'task'</span><span style="color: #990000">,</span>
+
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click .comments .form-inputs button"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"createComment"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>options<span style="color: #990000">.</span>model<span style="color: #990000">;</span>
+
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">);</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">template</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>task<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  createComment<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> comment <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Comment</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> text<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'.new-comment-input'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">val</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'.new-comment-input'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">val</span></span><span style="color: #990000">(</span><span style="color: #FF0000">''</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span>comment<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>Each task on the index page links to the detail view for itself.  When a user
 follows one of these links and navigates from the index page to the detail
 page, then interacts with the detail view to change a model, the <tt>change</tt> event
@@ -1043,7 +1071,35 @@ at the <tt>TaskDetail</tt> source code from the beginning of this section:</p></
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt></tt></pre></div></div>
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> TaskDetail <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  template<span style="color: #990000">:</span> JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/tasks_detail'</span><span style="color: #990000">],</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">'section'</span><span style="color: #990000">,</span>
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">'task'</span><span style="color: #990000">,</span>
+
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click .comments .form-inputs button"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"createComment"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>options<span style="color: #990000">.</span>model<span style="color: #990000">;</span>
+
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">);</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">template</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>task<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  createComment<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> comment <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Comment</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> text<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'.new-comment-input'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">val</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'.new-comment-input'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">val</span></span><span style="color: #990000">(</span><span style="color: #FF0000">''</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>comments<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">create</span></span><span style="color: #990000">(</span>comment<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>along with the template for that view:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -1691,11 +1747,39 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_security_stub">Security (stub)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_xss_with_json_bootstrapping_stub">XSS with JSON bootstrapping (stub)</h3>
+<div class="paragraph"><p>Use <tt>json2.js</tt> and:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&lt;</span>script type<span style="color: #990000">=</span><span style="color: #FF0000">"text/json"</span> id<span style="color: #990000">=</span><span style="color: #FF0000">"something"</span><span style="color: #990000">&gt;</span>
+  <span style="color: #990000">&lt;%=</span> something<span style="color: #990000">.</span>to_json <span style="color: #990000">%&gt;</span>
+<span style="color: #990000">&lt;/</span>script<span style="color: #990000">&gt;</span>
+
+<span style="color: #990000">&lt;</span>script type<span style="color: #990000">=</span><span style="color: #FF0000">"text/javascript"</span><span style="color: #990000">&gt;</span>
+  <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> something <span style="color: #990000">=</span> JSON<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">parse</span></span><span style="color: #990000">(</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'#something'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">text</span></span><span style="color: #990000">());</span>
+    <span style="font-weight: bold"><span style="color: #000000">someJavascriptFunction</span></span><span style="color: #990000">(</span>something<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">)();</span>
+<span style="color: #990000">&lt;/</span>script<span style="color: #990000">&gt;</span></tt></pre></div></div>
+</div>
+<div class="sect2">
+<h3 id="_xss_in_html_templates_stub">XSS in HTML templates (stub)</h3>
+<div class="paragraph"><p>TODO: Discuss <tt>Backbone.Model.escape</tt>, <tt>_.escape</tt>, defaulting to escape with <tt>&lt;%=</tt> vs <tt>&lt;%==</tt>, escaping in other templating.</p></div>
+</div>
+</div>
+</div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-07-28 18:55:04 EDT
+Last updated 2011-07-28 19:08:58 EDT
 </div>
 </div>
 </body>

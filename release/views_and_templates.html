@@ -77,7 +77,35 @@ tasks (say, to indicate that the task is complete or incomplete).</p>
     $(this.el).html(this.template({tasks: this.tasks}));
   }
 });</pre>
-<pre class="programlisting"></pre>
+<pre class="programlisting">var TaskDetail = Backbone.View.extend({
+  template: JST['tasks/tasks_detail'],
+  tagName: 'section',
+  id: 'task',
+
+  events: {
+    "click .comments .form-inputs button": "createComment"
+  },
+
+  initialize: function() {
+    this.model = this.options.model;
+
+    _.bindAll(this, "render");
+
+    this.model.bind("change", this.render);
+    this.model.comments.bind("change", this.render);
+    this.model.comments.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  },
+
+  createComment: function() {
+    var comment = new Comment({ text: this.$('.new-comment-input').val() });
+    this.$('.new-comment-input').val('');
+    this.model.comments.create(comment);
+  }
+});</pre>
 <p>Each task on the index page links to the detail view for itself.  When a user
 follows one of these links and navigates from the index page to the detail
 page, then interacts with the detail view to change a model, the <code class="literal">change</code> event
@@ -140,7 +168,35 @@ SwappingRouter.extend = Backbone.Router.extend;</pre>
 <p>One of the first refactorings you find yourself doing in a non-trivial Backbone
 app is splitting up large views into composable parts.  Let’s take another look
 at the <code class="literal">TaskDetail</code> source code from the beginning of this section:</p>
-<pre class="programlisting"></pre>
+<pre class="programlisting">var TaskDetail = Backbone.View.extend({
+  template: JST['tasks/tasks_detail'],
+  tagName: 'section',
+  id: 'task',
+
+  events: {
+    "click .comments .form-inputs button": "createComment"
+  },
+
+  initialize: function() {
+    this.model = this.options.model;
+
+    _.bindAll(this, "render");
+
+    this.model.bind("change", this.render);
+    this.model.comments.bind("change", this.render);
+    this.model.comments.bind("add", this.render);
+  },
+
+  render: function() {
+    $(this.el).html(this.template({task: this.model}));
+  },
+
+  createComment: function() {
+    var comment = new Comment({ text: this.$('.new-comment-input').val() });
+    this.$('.new-comment-input').val('');
+    this.model.comments.create(comment);
+  }
+});</pre>
 <p>along with the template for that view:</p>
 <pre class="programlisting">&lt;section class="task-details"&gt;
   &lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
