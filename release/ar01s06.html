@@ -1,42 +1,59 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Views and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Views and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_views_and_templates"></a>Views and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation_chapter_unstarted"></a>View explanation (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding_chapter_unstarted"></a>Event binding (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_understanding_binding_and_unbinding_in_progress"></a>Cleaning up: understanding binding and unbinding (in progress)</h3></div></div></div><p>Imagine you’re writing a task management application.  Consider two views: an index view which contains all the tasks, and a detail view that shows detail on one task.  The interface switches between the two views, and both views can modify existing tasks (say, to indicate that the task is complete or incomplete).</p><div class="figure"><a id="idp4578976"></a><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" /></div></div></div><br class="figure-break" /><div class="figure"><a id="idp4581600"></a><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" /></div></div></div><br class="figure-break" /><p>The view classes look something like this:</p><pre class="programlisting">var TasksIndex = Backbone.View.extend({
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Views and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Views and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_views_and_templates"></a>Views and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation_chapter_unstarted"></a>View explanation (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding_chapter_unstarted"></a>Event binding (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_understanding_binding_and_unbinding_in_progress"></a>Cleaning up: understanding binding and unbinding (in progress)</h3></div></div></div><p>Imagine you’re writing a todo app.  Consider two views: an index view which
+contains all the tasks, and a detail view that shows detail on one task.  The
+interface switches between the two views, and both views can modify existing
+tasks (say, to indicate that the task is complete or incomplete).</p><div class="figure"><a id="idp4582048"></a><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" /></div></div></div><br class="figure-break" /><div class="figure"><a id="idp4584672"></a><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" /></div></div></div><br class="figure-break" /><p>The view classes look something like this:</p><pre class="programlisting">var TasksIndex = Backbone.View.extend({
   template: JST['tasks/tasks_index'],
   tagName: 'section',
   id: 'tasks',
 
   initialize: function() {
+    this.tasks = this.options.tasks;
+
     _.bindAll(this, "render");
     TaskApp.tasks.bind("change", this.render);
     TaskApp.tasks.bind("add", this.render);
   },
 
   render: function() {
-    $(this.el).html(this.template({task: this.model}));
+    $(this.el).html(this.template({tasks: this.tasks}));
   }
-});
+});</pre><pre class="programlisting"></pre><p>Each task on the index page links to the detail view for itself.  When a user
+follows one of these links and navigates from the index page to the detail
+page, then interacts with the detail view to change a model, the <code class="literal">change</code> event
+on the <code class="literal">TaskApp.tasks</code> collection is fired.  One consequence of this is that
+the index view, which is still bound and observing the <code class="literal">change</code> event, will
+re-render itself.</p><p>This is both a functional bug and a memory leak: not only will the index view
+re-render and disrupt the detail display, but navigating back and forth between
+the views without disposing of the previous view will keep creating and binding
+more views.</p><p>The solution is to make sure you unbind and remove views when you leave them.
+Our approach to this is to use a convention in <code class="literal">Router</code> instances, and reuse
+this as a <code class="literal">Router</code> subclass, <code class="literal">SwappingRouter</code>.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router_in_progress"></a>Swapping router (in progress)</h3></div></div></div><p>When switching from one view to another, we should clean up the previous view.
+Let’s augument our view to include the ability to clean itself up:</p><pre class="programlisting">var MyView = Backbone.View.extend({
+  // ...
 
-var TasksDetail = Backbone.View.extend({
-  tagName: 'section',
-  id: 'tasks',
-
-  initialize: function() {
-    _.bindAll(this, "render", "renderCompletedTasks", "renderOverdueTasks");
-    TaskApp.tasks.bind("change", this.render);
-    TaskApp.tasks.bind("add", this.render);
+  leave: function() {
+    this.unbind();
+    this.remove();
   },
 
-  render: function() {
-    $(this.el).html(JST['tasks/task_detail']({task: this.model}));
-  }
-});</pre><p>TODO: Bind to change event on collection in index and detail.  Link to detail from index page.  If you don’t unbind index when leaving it, and go to the detail view, and change the model (e.g. check "Completed"), then the index view class re-renders itself.  This is undesirable, and can cause visible bugs.  Briefly introduce convention of SwappingController.  Then, next section is SwappingController.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_controllers_in_progress"></a>Swapping controllers (in progress)</h3></div></div></div><pre class="programlisting">SwappingController = function(options) {
-  Backbone.Controller.apply(this, [options]);
+  // ...
+});</pre><p>The <code class="literal">unbind()</code> and <code class="literal">remove()</code> functions are provided by <code class="literal">Backbone.Events</code> and
+<code class="literal">Backbone.View</code>.  <code class="literal">unbind()</code> will remove all callbacks registered on the view,
+and <code class="literal">remove()</code> will remove the view’s element from the DOM.</p><p>In simple cases, we replace one full page view with another full page (less any
+shared layout).  We introduce a convention that all actions underneath one
+<code class="literal">Router</code> share the same root element, and define it as <code class="literal">el</code> on the router.</p><p>Now, a <code class="literal">SwappingRouter</code> can take advantage of the <code class="literal">leave()</code> function, and clean
+up any existing views before swapping to a new one.  It swaps into a new view by
+rendering that view into its own <code class="literal">el</code>:</p><pre class="programlisting">SwappingRouter = function(options) {
+  Backbone.Router.apply(this, [options]);
 };
 
-_.extend(SwappingController.prototype, Backbone.Controller.prototype, {
+_.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
   swap: function(newView) {
-    if (this.currentView &amp;&amp; this.currentView.leave)
+    if (this.currentView &amp;&amp; this.currentView.leave) {
       this.currentView.leave();
+    }
 
     this.currentView = newView;
     this.currentView.render();
@@ -44,7 +61,57 @@ _.extend(SwappingController.prototype, Backbone.Controller.prototype, {
   }
 });
 
-SwappingController.extend = Backbone.Controller.extend;</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views_in_progress"></a>Composite views (in progress)</h3></div></div></div><p>TODO: Refactor the TaskIndex view class in tasks_index_and_detail_view_classes.js to be composite.  Discuss other common places you’ll find composite views.  Then, motivate the CompositeView superclass by referencing the cleanup issue from before, and noting that even if parent view classes unbind, child view classes may not.</p><pre class="programlisting">CompositeView = function(options) {
+SwappingRouter.extend = Backbone.Router.extend;</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views_in_progress"></a>Composite views (in progress)</h3></div></div></div><p>One of the first refactorings you find yourself doing in a non-trivial Backbone
+app is splitting up large views into composable parts.  Let’s take another look
+at the <code class="literal">TaskDetail</code> source code from the beginning of this section:</p><pre class="programlisting"></pre><p>along with the template for that view:</p><pre class="programlisting">&lt;section class="task-details"&gt;
+  &lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
+  &lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;
+&lt;/section&gt;
+
+&lt;section class="comments"&gt;
+  &lt;ul&gt;
+    &lt;% task.comments.each(function(comment) { %&gt;
+      &lt;li&gt;
+        &lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
+        &lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;
+      &lt;/li&gt;
+    &lt;% } %&gt;
+  &lt;/ul&gt;
+
+  &lt;div class="form-inputs"&gt;
+    &lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
+    &lt;textarea id="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
+    &lt;button&gt;Add Comment&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/section&gt;</pre><p>There are clearly several concerns going on here: rendering the task, rendering
+the comments that folks have left, and rendering the form to create new
+comments.  Let’s separate those concerns.  A first approach might be to just
+break up the template files:</p><pre class="programlisting">&lt;!-- tasks/show.jst --&gt;
+&lt;section class="task-details"&gt;
+  &lt;%= JST['tasks/details']({ task: task }) %&gt;
+&lt;/section&gt;
+
+&lt;section class="comments"&gt;
+  &lt;%= JST['comments/list']({ task: task }) %&gt;
+&lt;/section&gt;</pre><pre class="programlisting">&lt;!-- tasks/details.jst --&gt;
+&lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
+&lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;</pre><pre class="programlisting">&lt;!-- comments/list.jst --&gt;
+&lt;ul&gt;
+  &lt;% task.comments.each(function(comment) { %&gt;
+    &lt;%= JST['comments/item']({ comment: comment }) %&gt;
+  &lt;% } %&gt;
+&lt;/ul&gt;
+
+&lt;%= JST['comments/new']() %&gt;</pre><pre class="programlisting">&lt;!-- comments/item.jst --&gt;
+&lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;</pre><pre class="programlisting">&lt;!-- comments/new.jst --&gt;
+&lt;div class="form-inputs"&gt;
+  &lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
+  &lt;textarea id="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
+  &lt;button&gt;Add Comment&lt;/button&gt;
+&lt;/div&gt;</pre><p>But this is really only half the story.  The <code class="literal">TaskDetail</code> view class still
+handles multiple concerns: displaying the task, and creating comments.  Let’s
+split that view class up, using the <code class="literal">CompositeView</code> base class:</p><pre class="programlisting">CompositeView = function(options) {
   this.children = [];
   Backbone.View.apply(this, [options]);
 };
@@ -53,18 +120,161 @@ _.extend(CompositeView.prototype, Backbone.View.prototype, {
   leave: function() {
     this.unbind();
     this.remove();
-    _(this.children).invoke("leave");
+    this._leaveChildren();
+    this._removeFromParent();
+  },
+
+  removeChild: function(view) {
+    var index = this.children.indexOf(view);
+    this.children.splice(index, 1);
   },
 
   renderChild: function(view) {
     view.render();
     this.children.push(view);
+    view.parent = this;
   },
 
   appendChild: function(view) {
     this.renderChild(view);
     $(this.el).append(view.el);
+  },
+
+  renderChildInto: function(view, container) {
+    this.renderChild(view);
+    $(container).html('').append(view.el);
+  },
+
+  _leaveChildren: function() {
+    var clonedChildren = this.children.slice(0);
+    _.each(clonedChildren, function(view) {
+      if (view.leave) {
+        view.leave();
+      }
+    });
+  },
+
+  _removeFromParent: function() {
+    if (this.parent) {
+      this.parent.removeChild(this);
+    }
   }
 });
 
-CompositeView.extend = Backbone.View.extend;</pre></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted"></a>How to use multiple views on the same model/collection (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization_chapter_unstarted"></a>Internationalization (chapter unstarted)</h3></div></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rails Integration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Models and collections</td></tr></table></div></body></html>
+CompositeView.extend = Backbone.View.extend;</pre><p>Similar to the <code class="literal">SwappingRouter</code>, the <code class="literal">CompositeView</code> base class solves common
+housekeeping problems by establishing a convention.  In this case, a parent view
+maintains an array of its immediate children as <code class="literal">this.children</code>.</p><p>With this reference in place, a parent view’s <code class="literal">leave()</code> method can invoke
+<code class="literal">leave()</code> on its children, ensuring that an entire tree of composed views is
+cleaned up properly.</p><p>For child views that can dismiss themselves, such as dialog boxes, children
+maintain a back-reference at <code class="literal">this.parent</code>.  This is used to reach up and call
+<code class="literal">this.parent.removeChild(this)</code> for these self-dismissing views.</p><p>Making use of <code class="literal">CompositeView</code>, we split up the <code class="literal">TaskDetail</code> view class:</p><pre class="programlisting">var TaskDetail = Backbone.View.extend({
+  tagName: 'section',
+  id: 'task',
+
+  initialize: function() {
+    this.model = this.options.model;
+    _.bindAll(this, "renderDetails");
+    this.model.bind("change", this.renderDetails);
+  },
+
+  render: function() {
+    this.renderLayout();
+    this.renderDetail();
+    this.renderCommentsList();
+  },
+
+  renderLayout: function() {
+    $(this.el).html(JST['tasks/show']());
+  },
+
+  renderDetails: function() {
+    var detailsMarkup = JST['tasks/details']({ task: this.model });
+    this.$('.task-details').html(detailsMarkup);
+  },
+
+  renderCommentsList: function() {
+    var commentsList = new CommentsList({ model: this.model });
+    var commentsContainer = this.$('comments');
+    this.renderChildInto(commentsList, commentsContainer);
+  }
+});</pre><pre class="programlisting">var CommentsList = CompositeView.extend({
+  tagName: 'ul',
+
+  initialize: function() {
+    this.model = this.options.model;
+    this.model.comments.bind("add", this.renderComments);
+  },
+
+  render: function() {
+    this.renderLayout();
+    this.renderComments();
+    this.renderCommentForm();
+  },
+
+  renderLayout: function() {
+    $(this.el).html(JST['comments/list']());
+  },
+
+  renderComments: function() {
+    var commentsContainer = this.$('comments-list');
+    commentsContainer.html('');
+
+    this.model.comments.each(function(comment) {
+      var commentMarkup = JST['comments/item']({ comment: comment });
+      commentsContainer.append(commentMarkup);
+    });
+  },
+
+  renderCommentForm: function() {
+    var commentForm = new CommentForm({ model: this.model });
+    var commentFormContainer = this.$('.new-comment-form');
+    this.renderChildInto(commentForm, commentFormContainer);
+  }
+});</pre><pre class="programlisting">var CommentForm = CompositeView.extend({
+  events: {
+    "click button": "createComment"
+  },
+
+  initialize: function() {
+    this.model = this.options.model;
+  },
+
+  render: function() {
+    $(this.el).html(JST['comments/new']);
+  },
+
+  createComment: function() {
+    var comment = new Comment({ text: $('.new-comment-input').val() });
+    this.$('.new-comment-input').val('');
+    this.model.comments.create(comment);
+  }
+});</pre><p>Along with this, remove the <code class="literal">&lt;%= JST(…) %&gt;</code> template nestings, allowing the
+view classes to assemble the templates instead.  In this case, each template
+contains placeholder elements that are used to wrap child views:</p><pre class="programlisting">&lt;!-- tasks/show.jst --&gt;
+&lt;section class="task-details"&gt;
+&lt;/section&gt;
+
+&lt;section class="comments"&gt;
+&lt;/section&gt;</pre><pre class="programlisting">&lt;!-- tasks/details.jst --&gt;
+&lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
+&lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;</pre><pre class="programlisting">&lt;!-- comments/list.jst --&gt;
+&lt;ul class="comments-list"&gt;
+&lt;/ul&gt;
+
+&lt;section class="new-comment-form"&gt;
+&lt;/section&gt;</pre><pre class="programlisting">&lt;!-- comments/item.jst --&gt;
+&lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;</pre><pre class="programlisting">&lt;!-- comments/new.jst --&gt;
+&lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
+&lt;textarea class="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
+&lt;button&gt;Add Comment&lt;/button&gt;</pre><p>There are several advantages to this approach:</p><div class="itemizedlist"><ul type="disc"><li>
+Split up like this, each view class has a smaller and more cohesive set of
+  responsibilities.
+</li><li>
+The comments view code, extracted and decoupled from the task view code, can
+  now be reused on other domain objects with comments.
+</li><li>
+The task view performs better, since adding new comments or updating the task
+  details will only re-render the pertinent section, instead of re-rendering the
+  entire task + comments composite.
+</li></ul></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted"></a>How to use multiple views on the same model/collection (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization_chapter_unstarted"></a>Internationalization (chapter unstarted)</h3></div></div></div></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rails Integration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Models and collections</td></tr></table></div></body></html>

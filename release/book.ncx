@@ -46,10 +46,14 @@
 <content src="book.html#_models_and_collections"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_8" playOrder="9">
+<navLabel><text>Binding models and views (section unstarted)</text></navLabel>
+<content src="book.html#_binding_models_and_views_section_unstarted"/>
+</navPoint>
+<navPoint class="chapter" id="chapter_9" playOrder="10">
 <navLabel><text>Testing (section unstarted)</text></navLabel>
 <content src="book.html#_testing_section_unstarted"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_9" playOrder="10">
+<navPoint class="chapter" id="chapter_10" playOrder="11">
 <navLabel><text>The JavaScript language (section unstarted)</text></navLabel>
 <content src="book.html#_the_javascript_language_section_unstarted"/>
 </navPoint>
