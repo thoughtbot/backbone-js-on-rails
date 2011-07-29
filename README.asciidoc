@@ -5,7 +5,8 @@ Welcome to the thoughtbot Backbone.js on Rails eBook.
 The quickest way to start reading right now is to clone the repository and
 look at the release/index.html file.
 
-HTML is the best-supported output format right now.  While we're still working on improving the formatting, you can read in other formats, too:
+HTML is the best-supported output format right now.  While we're still working
+on improving the formatting, you can read in other formats, too:
 
 * PDF: release/book.pdf
 * Single-page HTML: release/book.html
@@ -17,8 +18,8 @@ This book is written using using the git-scribe toolchain, which can be found at
 
 http://github.com/schacon/git-scribe
 
-Instructions on how to install the tool and use it for things like editing this book,
-submitting errata and providing translations can be found at that site.
+Instructions on how to install the tool and use it for things like editing this
+book, submitting errata and providing translations can be found at that site.
 
 === Dependencies
 
@@ -55,7 +56,8 @@ Check to see that everything is working together:
 
 == Writing
 
-Run +guard+ to watch the +book/+ directory and automatically rebuild the SITE target when anything changes:
+Run +guard+ to watch the +book/+ directory and automatically rebuild the SITE
+target when anything changes:
 
   $ bundle exec guard
   Guard is now watching at '/Users/jason/dev/backbone-js-on-rails'
@@ -67,4 +69,5 @@ You can now see the site in +output/index.html+.
 
 == Releasing
 
-Run +rake release+ to build all output targets, commit to git, and push up to GitHub.
+Run +rake release+ to build all output targets, commit to git, and push up to
+GitHub.
