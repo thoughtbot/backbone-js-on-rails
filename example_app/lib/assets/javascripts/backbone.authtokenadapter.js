@@ -54,3 +54,5 @@ var BackboneRailsAuthTokenAdapter = {
     Backbone.sync = Backbone._sync;
   }
 };
+
+BackboneRailsAuthTokenAdapter.fixSync(Backbone);
