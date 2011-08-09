@@ -3,13 +3,12 @@
 <head>
   <title>ExampleApp</title>
   <%= stylesheet_link_tag    "application" %>
-  <%= javascript_include_tag "application" %>
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <%= yield %>
 
-<%= yield %>
-
-<%= yield :javascript %>
+  <%= javascript_include_tag "application" %>
+  <%= yield :javascript %>
 </body>
 </html>

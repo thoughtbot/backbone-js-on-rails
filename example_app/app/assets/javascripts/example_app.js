@@ -5,7 +5,7 @@ var ExampleApp = {
   Routers: {},
   init: function(tasks) {
     new ExampleApp.Routers.Tasks();
-    ExampleApp.Collections.Tasks.reset(tasks);
+    this.tasks = new ExampleApp.Collections.Tasks(tasks);
     Backbone.history.start();
   }
 };
