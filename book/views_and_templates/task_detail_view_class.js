@@ -8,8 +8,6 @@ var TaskDetail = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.model = this.options.model;
-
     _.bindAll(this, "render");
 
     this.model.bind("change", this.render);
