@@ -1,0 +1,104 @@
+<mockup version="1.0" skin="sketch" measuredW="485" measuredH="856" mockupW="438" mockupH="768">
+  <controls>
+    <control controlID="36" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="47" y="88" w="438" h="322" measuredW="450" measuredH="400" zOrder="0" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Task%20app%0Ahttp%3A//task.app/%23tasks</text>
+      </controlProperties>
+    </control>
+    <control controlID="46" controlTypeID="__group__" x="75" y="182" w="195" h="46" measuredW="195" measuredH="46" zOrder="1" locked="false" isInGroup="-1">
+      <groupChildrenDescriptors>
+        <control controlID="0" controlTypeID="com.balsamiq.mockups::CheckBox" x="0" y="0" w="-1" h="-1" measuredW="195" measuredH="22" zOrder="0" locked="false" isInGroup="46">
+          <controlProperties>
+            <text>Buy%20some%20milk%20at%20the%20dairy</text>
+          </controlProperties>
+        </control>
+        <control controlID="1" controlTypeID="com.balsamiq.mockups::Link" x="104" y="22" w="-1" h="-1" measuredW="39" measuredH="23" zOrder="1" locked="false" isInGroup="46">
+          <controlProperties>
+            <text>Jason</text>
+          </controlProperties>
+        </control>
+        <control controlID="2" controlTypeID="com.balsamiq.mockups::Label" x="21" y="23" w="-1" h="-1" measuredW="81" measuredH="23" zOrder="2" locked="false" isInGroup="46">
+          <controlProperties>
+            <text>Assigned%20to%3A</text>
+          </controlProperties>
+        </control>
+      </groupChildrenDescriptors>
+    </control>
+    <control controlID="49" controlTypeID="com.balsamiq.mockups::CheckBox" x="75" y="250" w="-1" h="-1" measuredW="277" measuredH="22" zOrder="2" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Buy%20some%20chocolate%20at%20the%20grocery%20store</text>
+      </controlProperties>
+    </control>
+    <control controlID="50" controlTypeID="com.balsamiq.mockups::Link" x="179" y="272" w="-1" h="-1" measuredW="39" measuredH="23" zOrder="3" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Jason</text>
+      </controlProperties>
+    </control>
+    <control controlID="51" controlTypeID="com.balsamiq.mockups::Label" x="96" y="273" w="-1" h="-1" measuredW="81" measuredH="23" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Assigned%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="52" controlTypeID="com.balsamiq.mockups::CheckBox" x="75" y="314" w="-1" h="-1" measuredW="149" measuredH="22" zOrder="5" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Make%20chocolate%20milk</text>
+      </controlProperties>
+    </control>
+    <control controlID="53" controlTypeID="com.balsamiq.mockups::Link" x="179" y="336" w="-1" h="-1" measuredW="39" measuredH="23" zOrder="6" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Jason</text>
+      </controlProperties>
+    </control>
+    <control controlID="54" controlTypeID="com.balsamiq.mockups::Label" x="96" y="337" w="-1" h="-1" measuredW="81" measuredH="23" zOrder="7" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Assigned%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="55" controlTypeID="com.balsamiq.mockups::BrowserWindow" x="47" y="465" w="438" h="391" measuredW="450" measuredH="400" zOrder="8" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Task%20app%0Ahttp%3A//task.app/%23tasks/2</text>
+      </controlProperties>
+    </control>
+    <control controlID="57" controlTypeID="com.balsamiq.mockups::CheckBox" x="75" y="562" w="-1" h="-1" measuredW="277" measuredH="22" zOrder="9" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Buy%20some%20chocolate%20at%20the%20grocery%20store</text>
+      </controlProperties>
+    </control>
+    <control controlID="58" controlTypeID="com.balsamiq.mockups::Link" x="179" y="584" w="-1" h="-1" measuredW="39" measuredH="23" zOrder="10" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Jason</text>
+      </controlProperties>
+    </control>
+    <control controlID="59" controlTypeID="com.balsamiq.mockups::Label" x="96" y="585" w="-1" h="-1" measuredW="81" measuredH="23" zOrder="11" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Assigned%20to%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="63" controlTypeID="com.balsamiq.mockups::Label" x="96" y="622" w="-1" h="-1" measuredW="187" measuredH="23" zOrder="12" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Mark%20commented%20on%20Monday%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="66" controlTypeID="com.balsamiq.mockups::Label" x="96" y="645" w="308" h="23" measuredW="130" measuredH="23" zOrder="13" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Get%20some%20Ghiradelli%21</text>
+      </controlProperties>
+    </control>
+    <control controlID="67" controlTypeID="com.balsamiq.mockups::Label" x="96" y="675" w="169" h="23" measuredW="105" measuredH="23" zOrder="14" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Add%20a%20comment%3A</text>
+      </controlProperties>
+    </control>
+    <control controlID="68" controlTypeID="com.balsamiq.mockups::TextArea" x="96" y="696" w="341" h="59" measuredW="200" measuredH="140" zOrder="15" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text/>
+      </controlProperties>
+    </control>
+    <control controlID="69" controlTypeID="com.balsamiq.mockups::Button" x="357" y="770" w="-1" h="-1" measuredW="79" measuredH="28" zOrder="16" locked="false" isInGroup="-1">
+      <controlProperties>
+        <text>Comment</text>
+      </controlProperties>
+    </control>
+  </controls>
+</mockup>
+
