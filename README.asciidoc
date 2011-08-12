@@ -1,6 +1,4 @@
-= Welcome!
-
-Welcome to the thoughtbot Backbone.js on Rails eBook.
+== Get the latest release of the book
 
 The quickest way to start reading right now is to clone the repository and
 look at the release/index.html file.
