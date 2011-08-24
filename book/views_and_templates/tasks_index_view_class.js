@@ -5,8 +5,9 @@ var TasksIndex = Backbone.View.extend({
 
   initialize: function() {
     _.bindAll(this, "render");
-    TaskApp.tasks.bind("change", this.render);
-    TaskApp.tasks.bind("add", this.render);
+    this.collection.bind("change", this.render);
+    this.collection.bind("add",    this.render);
+    this.collection.bind("remove", this.render);
   },
 
   render: function() {
