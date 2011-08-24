@@ -5,9 +5,9 @@ CompositeView = function(options) {
 
 _.extend(CompositeView.prototype, Backbone.View.prototype, {
   leave: function() {
+    this._leaveChildren();
     this.unbind();
     this.remove();
-    this._leaveChildren();
     this._removeFromParent();
   },
 
