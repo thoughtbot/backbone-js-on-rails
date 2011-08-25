@@ -68,7 +68,9 @@
               
               <li><a href="organization.html#_what_goes_where">What Goes Where</a></li>
               
-              <li><a href="organization.html#_namespacing_your_application_chapter_unstarted">Namespacing your application (chapter unstarted)</a></li>
+              <li><a href="organization.html#_namespacing_your_application">Namespacing your application</a></li>
+              
+              <li><a href="organization.html#_mixins">Mixins</a></li>
               
             </ul>
             
@@ -85,9 +87,11 @@
               
               <li><a href="rails_integration.html#_rails_3_1">Rails 3.1</a></li>
               
-              <li><a href="rails_integration.html#_converting_your_rails_models_to_backbone_js_friendly_json">Converting your Rails models to Backbone.js-friendly JSON</a></li>
+              <li><a href="rails_integration.html#_an_overview_of_the_stack_connecting_rails_and_backbone_js">An Overview of the Stack: Connecting Rails and Backbone.js</a></li>
               
-              <li><a href="rails_integration.html#_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted">Converting an existing page/view area to use Backbone.js (chapter unstarted)</a></li>
+              <li><a href="rails_integration.html#_customizing_your_rails_generated_json">Customizing your Rails-generated JSON</a></li>
+              
+              <li><a href="rails_integration.html#_converting_an_existing_page_view_area_to_use_backbone_js_in_progress">Converting an existing page/view area to use Backbone.js (in progress)</a></li>
               
               <li><a href="rails_integration.html#_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</a></li>
               
@@ -96,29 +100,31 @@
           </li>
         
           <li>
-          <h2><a href="views_and_templates.html">Views and Templates</a></h2>
+          <h2><a href="routers_views_and_templates.html">Routers, Views, and Templates</a></h2>
             
             <ul>
               
-              <li><a href="views_and_templates.html#_view_explanation_chapter_unstarted">View explanation (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_view_explanation_chapter_unstarted">View explanation (chapter unstarted)</a></li>
               
-              <li><a href="views_and_templates.html#_templating_strategy_chapter_unstarted">Templating strategy (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_routers_chapter_unstarted">Routers (chapter unstarted)</a></li>
               
-              <li><a href="views_and_templates.html#_view_helpers_chapter_unstarted">View helpers (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_templating_strategy_chapter_unstarted">Templating strategy (chapter unstarted)</a></li>
               
-              <li><a href="views_and_templates.html#_form_helpers_chapter_unstarted">Form helpers (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_view_helpers_chapter_unstarted">View helpers (chapter unstarted)</a></li>
               
-              <li><a href="views_and_templates.html#_event_binding_chapter_unstarted">Event binding (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_form_helpers_chapter_unstarted">Form helpers (chapter unstarted)</a></li>
               
-              <li><a href="views_and_templates.html#_cleaning_up_understanding_binding_and_unbinding">Cleaning up: understanding binding and unbinding</a></li>
+              <li><a href="routers_views_and_templates.html#_event_binding">Event binding</a></li>
               
-              <li><a href="views_and_templates.html#_swapping_router">Swapping router</a></li>
+              <li><a href="routers_views_and_templates.html#_cleaning_up_unbinding">Cleaning Up: Unbinding</a></li>
               
-              <li><a href="views_and_templates.html#_composite_views">Composite views</a></li>
+              <li><a href="routers_views_and_templates.html#_swapping_router">Swapping router</a></li>
               
-              <li><a href="views_and_templates.html#_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted">How to use multiple views on the same model/collection (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_composite_views">Composite views</a></li>
               
-              <li><a href="views_and_templates.html#_internationalization_chapter_unstarted">Internationalization (chapter unstarted)</a></li>
+              <li><a href="routers_views_and_templates.html#_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted">How to use multiple views on the same model/collection (chapter unstarted)</a></li>
+              
+              <li><a href="routers_views_and_templates.html#_internationalization_chapter_unstarted">Internationalization (chapter unstarted)</a></li>
               
             </ul>
             
@@ -135,24 +141,13 @@
               
               <li><a href="models_and_collections.html#_model_associations">Model associations</a></li>
               
-              <li><a href="models_and_collections.html#_scopes_and_filters">Scopes and filters</a></li>
-              
-              <li><a href="models_and_collections.html#_sorting">Sorting</a></li>
+              <li><a href="models_and_collections.html#_filters_and_sorting">Filters and sorting</a></li>
               
               <li><a href="models_and_collections.html#_client_server_duplicated_business_logic_chapter_unstarted">Client/Server duplicated business logic (chapter unstarted)</a></li>
               
               <li><a href="models_and_collections.html#_validations_chapter_unstarted">Validations (chapter unstarted)</a></li>
               
               <li><a href="models_and_collections.html#_synchronizing_between_clients_chapter_unstarted">Synchronizing between clients (chapter unstarted)</a></li>
-              
-            </ul>
-            
-          </li>
-        
-          <li>
-          <h2><a href="binding_models_and_views_section_unstarted_.html">Binding models and views (section unstarted)</a></h2>
-            
-            <ul>
               
             </ul>
             
@@ -194,6 +189,17 @@
               <li><a href="security_stub_.html#_xss_with_json_bootstrapping_stub">XSS with JSON bootstrapping (stub)</a></li>
               
               <li><a href="security_stub_.html#_xss_in_html_templates_stub">XSS in HTML templates (stub)</a></li>
+              
+            </ul>
+            
+          </li>
+        
+          <li>
+          <h2><a href="performance_stub_.html">Performance (stub)</a></h2>
+            
+            <ul>
+              
+              <li><a href="performance_stub_.html#_dependency_choice">Dependency choice</a></li>
               
             </ul>
             

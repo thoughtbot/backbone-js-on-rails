@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rails Integration</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s04.html" title="Organization" /><link rel="next" href="ar01s06.html" title="Views and Templates" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Rails Integration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_rails_integration"></a>Rails Integration</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_organizing_your_backbone_js_code_in_a_rails_app"></a>Organizing your Backbone.js code in a Rails app</h3></div></div></div><p>When using Backbone.js in a Rails app, you’ll have two kinds of
-Backbone.js-related assets: classes, and templates.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_0_and_prior"></a>Rails 3.0 and prior</h3></div></div></div><p>With Rails 3.0 and prior, store your Backbone.js classes in
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Rails Integration</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s04.html" title="Organization" /><link rel="next" href="ar01s06.html" title="Routers, Views, and Templates" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Rails Integration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_rails_integration"></a>Rails Integration</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_organizing_your_backbone_js_code_in_a_rails_app"></a>Organizing your Backbone.js code in a Rails app</h3></div></div></div><p>When using Backbone.js in a Rails app, you’ll have two kinds of
+Backbone.js-related assets: classes and templates.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_0_and_prior"></a>Rails 3.0 and prior</h3></div></div></div><p>With Rails 3.0 and prior, store your Backbone.js classes in
 <code class="literal">public/javascripts</code>:</p><pre class="screen">public/
   javascripts/
     jquery.js
@@ -41,7 +41,7 @@ precompiling templates:</p><p><a class="ulink" href="http://documentcloud.github
 <a class="ulink" href="http://documentcloud.github.com/jammit/#jst" target="_top">http://documentcloud.github.com/jammit/#jst</a></p><p>Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:</p><pre class="programlisting">JST['todos/index']</pre><p>Variables can be passed to the templates by passing a Hash to the template, as
-shown below.</p><pre class="programlisting">JST['todos/index']({ model: this.model })</pre><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_a_note_on_jammit_and_a_jst_naming_gotcha"></a>A note on Jammit and a JST naming gotcha</h4></div></div></div><p>One issue with Jammit that we’ve encountered and worked around is that the JST
+shown below.</p><pre class="programlisting">JST['todos/index']({ model: this.model })</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>A note on Jammit and a JST naming gotcha</p><p>One issue with Jammit that we’ve encountered and worked around is that the JST
 template path can change when adding new templates.</p><p>When using Jammit, there is a slightly sticky issue as an app grows from one
 template subdirectory to multiple template subdirectories.</p><p>Let’s say you place templates in app/templates. You work for a while on the
 "Tasks" feature, placing templates under app/templates/tasks. So, window.JST
@@ -62,9 +62,7 @@ the following monkeypatch to Jammit, in config/initializers/jammit.rb</p><pre cl
   end
 end</pre><p>As applications are moving to Rails 3.1, they’re also moving to Sprockets for
 the asset packager.  Until then, many apps are using Jammit for asset
-packaging.  One issue with Jammit we’ve encountered and worked around is that
-the JST template path can change when adding new templates.  We have an open
-issue and workaround:</p><p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_1"></a>Rails 3.1</h3></div></div></div><p>Rails 3.1 introduces the asset pipeline:</p><p><a class="ulink" href="http://edgeguides.rubyonrails.org/asset_pipeline.html" target="_top">http://edgeguides.rubyonrails.org/asset_pipeline.html</a></p><p>which uses the Sprockets library for preprocessing and packaging assets:</p><p><a class="ulink" href="http://getsprockets.org/" target="_top">http://getsprockets.org/</a></p><p>To take advantage of the built-in asset pipeline, organize your Backbone.js
+packaging.  We have an open issue and workaround:</p><p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_1"></a>Rails 3.1</h3></div></div></div><p>Rails 3.1 introduces the asset pipeline:</p><p><a class="ulink" href="http://edgeguides.rubyonrails.org/asset_pipeline.html" target="_top">http://edgeguides.rubyonrails.org/asset_pipeline.html</a></p><p>which uses the Sprockets library for preprocessing and packaging assets:</p><p><a class="ulink" href="http://getsprockets.org/" target="_top">http://getsprockets.org/</a></p><p>To take advantage of the built-in asset pipeline, organize your Backbone.js
 templates and classes in paths available to the asset pipeline.  Classes go in
 <code class="literal">app/assets/javascripts/</code>, and templates go alongside, in
 <code class="literal">app/assets/templates/</code>:</p><pre class="screen">app/
@@ -115,10 +113,10 @@ done your application.js Sprockets manifest will be as shown below.</p><pre clas
 //= require_tree ./routers
 //= require_tree ../templates
 //= require_tree .</pre><p>The above is taken from the example application included with this book. You
-can view it at example_app/app/assets/javascripts/application.js.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_converting_your_rails_models_to_backbone_js_friendly_json"></a>Converting your Rails models to Backbone.js-friendly JSON</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON gets
-and posts. If you’ve ever made a JSON api for your Rails app, then for the most
-part this will be very similar.</p><p>If you haven’t ever made a JSON api for your Rails application before, lucky
-you, it’s pretty straightforward.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_models"></a>Setting Up Models</h4></div></div></div><p>One important aspect to keep in mind as you plan out how your Backbone.js
+can view it at example_app/app/assets/javascripts/application.js.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"></a>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON gets
+and posts. If you’ve ever made a JSON API for your Rails app, then for the most
+part this will be very similar.</p><p>If you haven’t ever made a JSON API for your Rails application before, lucky
+you, it’s pretty straightforward.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_models"></a>Setting Up Rails Models</h4></div></div></div><p>One important aspect to keep in mind as you plan out how your Backbone.js
 interface will behave, and how it will use your Rails back-end is that there is
 no need to have a one-to-one mapping between your Rails models and your
 Backbone.js models.</p><p>The smaller an application is, the more likely that there will be a one-to-one
@@ -142,10 +140,10 @@ Backbone.js version of a Rails model.</p><p>In our example application, we have 
 representation of this model would be as shown below.</p><pre class="programlisting">var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });</pre><p>The urlRoot property above indicates to Backbone.js that the server url for
-instances of this model will be found at /tasks/:id.</p><p>In Rails, its possible to access individual Tasks, as well as all Tasks (and
+instances of this model will be found at /tasks/:id.</p><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
 query all tasks) through the same Task model. However, in Backbone.js models
 only represent the singular representation of a Task. Backbone.js splits out the
-plural representation of Tasks into what it calls Collections.</p><p>The simplex Backbone.js collection to represent our Tasks would be the
+plural representation of Tasks into what it calls Collections.</p><p>The simplest Backbone.js collection to represent our Tasks would be the
 following.</p><pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task
 });</pre><p>If we specify the url for Tasks in our collection instead, then models within
@@ -158,49 +156,14 @@ change, then our collection and models will be as follows.</p><pre class="progra
 
 var Task = Backbone.Model.extend({});</pre><p>Notice in the above model definitions that there is no specification of the
 attributes on the model. Like ActiveRecord, Backbone.js models get their
-attributes from the schema and data given to them. In the case of Backbonejs,
+attributes from the schema and data given to them. In the case of Backbone.js,
 this schema and data are the JSON from the server.</p><p>The default JSON representation of an ActiveRecord model is a Hash that includes
 all the model’s attributes. It does not include the data for any related models
 or any methods on the model, but it does include the ids of any related models
-as those are stories in a relation name _id attribute on the model.</p><p>The JSON representation of your ActiveRecord models will be retrieved by calling
-to_json on them. You customize the output of to_json by overriding the as_json
-method in your model.</p><p>The most common things you’ll do in your Rails app when working with Backbone.js
-are the following.</p><p>Its likely that you’ll wan to switch from including all attributes by default to
-excluding some attributes. This can be done by specifying explicitly only the
-attributes that are to be included, or specifying the attributes that should be
-included. Which one you choose will depend on how many attributes your model has
-and how paranoid you are about something important appearing in the JSON when it
-shouldn’t be there. If your concerned about sensitive data unintentionally being
-included in the json when it shouldn’t be then you’ll want to switch to
-everything being explicitly included in the json. Otherwise, its a matter of
-preference and you can do what feels best for you an your app.</p><p>To explicitly specify the attributes to be included in the json, use the :only
-option, as shown in the following as_json implementation.</p><pre class="programlisting">def as_json(options = {})
-  super(options.merge(:only =&gt; [ :id, :title ]))
-end</pre><p>The above as_json override will make it so that the json will <span class="emphasis"><em>only</em></span> include the
-id and title attributes, even if there are many other attributes on the model.</p><p>If instead you want to include all attributes by default and just exclude a few,
-you accomplish this with the :except option, as shown below.</p><pre class="programlisting">def as_json(options = {})
-  super(options.merge(:except =&gt; [ :encrypted_password ]))
-end</pre><p>Another common customization you will want to do in the json is include the
-output of methods on your model. This is accomplished with the :methods option,
-as shown in the following example.</p><pre class="programlisting">def as_json(options = {})
-  super(options.merge(:methods =&gt; [ :calculated_value ]))
-end</pre><p>The final thing you’ll most commonly do with your JSON is include related
-objects. If our Tasks have_many Comments, to include all of the JSON for
-comments on a Task in the JSON for a Task. You do this with the :include option,
-as shown in the following example.</p><pre class="programlisting">def as_json(options = {})
-  super(options.merge(:include =&gt; [ :comments ]))
-end</pre><p>As you probably suspect, you can then customize the JSON for the comments by
-overriding the as_json method on the Comment model.</p><p>In Rails 3.1 ActiveRecord::Base.include_root_in_json is set to false. This is
-in contrast to Rails 3.0 which had it set to true. This reversal was made to
-simplify the JSON returned by default in Rails application, but it is fairly big
-change from the default behavior of Rails 3.0.</p><p>Practically speaking, this change is a good one, but if you’re upgrading an
-existing Rails 3.0 application to Rails 3.1 and you already have a published
-api or Backbone.js code, you probably want to set it back to true, as it will
-cause your public api to change, breaking a lot of code, including your
-Backbone.js application.</p><p>While these are the most common as_json options you’ll use when working with
-Backbone.js, it certainly isn’t all of them. The official, complete,
-documentation for the as_json method can be found here:
-<a class="ulink" href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json" target="_top">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_controllers"></a>Setting Up Controllers</h4></div></div></div><p>The Backbone models and collections will talk to your Rails controllers. While
+as those are stored in a <code class="literal">relation_name_id</code> attribute on the model.</p><p>The JSON representation of your ActiveRecord models will be retrieved by calling
+<code class="literal">to_json</code> on them. You customize the output of <code class="literal">to_json</code> by overriding the
+<code class="literal">as_json</code> method in your model.  We’ll touch on this more later in the
+section "Customizing your Rails-generated JSON."</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_controllers"></a>Setting Up Rails Controllers</h4></div></div></div><p>The Backbone models and collections will talk to your Rails controllers. While
 your models may not have a one-to-one mapping with their Rails counterparts, it
 is likely that you’ll have at least one controller corresponding to every
 Backbone.js model.</p><p>Fortunately for us, Backbone.js models will communicate in the normal RESTful
@@ -230,16 +193,17 @@ respond_to method.</p><pre class="programlisting">class TasksController &lt; App
     end
   end
 end</pre><p>Using respond_with you can create succinct controllers that respond with a
-normal web page, but also expose a JSON api that Backbone.js will use.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations"></a>Validations</h5></div></div></div><p>If a model has a validate method defined, it will be validated before it’s
-attributes are set. If validation fails, no changes to the model will occur,
-and the "error" event will be fired. Your validate method will be passed the
-attributes that are about to be updated. You can signal that validation passed
-by returning nothing from your validate method. You can signify that
+normal web page, but also expose a JSON api that Backbone.js will use.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"></a>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated
+before its attributes are set. If validation fails, no changes to the model will
+occur, and the "error" event will be fired. Your <code class="literal">validate</code> method will be passed
+the attributes that are about to be updated. You can signal that validation
+passed by returning nothing from your <code class="literal">validate</code> method. You can signify that
 validation has failed by returning something from the method. What you return
-can be as simple as a string, or a more complex object that describes the
-error in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
+can be as simple as a string, or a more complex object that describes the error
+in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
-would often require duplicating a lot of server-side business logic.</p><p>Instead, your Backbone.js applications will likely rely on server-side
+would often require duplicating a lot of server-side business logic.</p><p>TODO: Is it possible to smoothly integrate Backbone.js and the
+client_side_validations gem?</p><p>Instead, your Backbone.js applications will likely rely on server-side
 validation logic. How to handle a failure scenario is passed in to Backbone.js
 model save call as a callback, as shown below.</p><pre class="programlisting">task.save({title: "New Task title"}, {
   error: function(){
@@ -266,16 +230,11 @@ the Form helpers section of the Views and Templates chapter.</p></div></div><div
 your Rails application will render a single-page which properly sets up
 Backbone.js and the data it will use. From there, ongoing interaction with
 your Rails application occurs via the JSON apis.</p><p>The most common page for this single-page application will be the index action
-of a controller, as in our example application and the tasks controller.</p><p>You will want to create a Hash variable in Javascript for your Backbone,js
-application to reside. This variable will serve as a namespace for your
-Backbone,js application. Namespacing all of the javascript is desirable to to
-avoid potential collisions in naming. For example, its possible that a
-Javascript library you want to use might also create a Task variable. If you
-didn’t namespace your Task model then this would conflict and be unusable.</p><p>This variable includes a place to hold Models, Collections, Views, and Routes,
-and an init method which will be called to initialize the application. Its
-very common to create a new Router in the init function, and
-Backbone.history.start() must be called in order to route the initial URL.
-This app variable will look like the following.</p><pre class="programlisting">var ExampleApp = {
+of a controller, as in our example application and the tasks controller.</p><p>You will want to create an object in Javascript for your Backbone.js application
+to reside. For more information on this namespacing see the "Namespacing your
+application" section of the Organization chapter.</p><p>This namespace variable holds your Backbone.js application’s Models,
+Collections, Views, and Routes, and has an init method which will be called to
+initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting">var ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
@@ -285,7 +244,7 @@ This app variable will look like the following.</p><pre class="programlisting">v
     Backbone.history.start();
   }
 };</pre><p>You can find this file in the example app in
-app/assets/javascripts/example_app.js.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone.js router before calling
+<code class="literal">app/assets/javascripts/example_app.js</code>.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone.js router before calling
 Backbone.history.start() otherwise Backbone.history will be undefined.</p></div><p>Then, inside app/views/tasks/index.html.erb you will call the initialize
 method. This will appear as follows.</p><pre class="programlisting">&lt;%= content_for :javascript do -%&gt;
   &lt;%= javascript_tag do %&gt;
@@ -296,7 +255,7 @@ Backbone.js its initial data within the HTML view for this page. In our
 example, the tasks have already been provided to the view in a @tasks instance
 variable, and that can be used to prime the pump, as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript do -%&gt;
   &lt;%= javascript_tag do %&gt;
-    ExampleApp.init(&lt;%= @tasks.to_json %&gt;);
+    ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
   &lt;% end %&gt;
 &lt;% end -%&gt;</pre><p>The above example uses Erb to pass the JSON for the tasks to the init method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting">var ExampleApp = {
   Models: {},
@@ -313,9 +272,29 @@ routers in more detail in the Views and Templates chapter. For a more in-depth
 presentation on writing and using routes please go there. However, routers are
 an important part of the infrastructure you need to start using Backbone.js
 and we can’t make our example here work without them.</p><p>Backbone.js routers provide methods for routing application flow based on
-client-side URL fragments (#fragment).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
+client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
+  routes: {
+    "": "index"
+  },
+
+  index: function() {
+    // We've reached the end of Rails integration - it's all Backbone from here!
+
+    alert('Hello, world!  This is a Backbone.js router action.');
+
+    // Normally you would continue down the stack, instantiating a
+    // Backbone.View class, calling render() on it, and inserting its element
+    // into the DOM.
+  }
+});</pre><p>A basic router consists of a routes hash which is a mapping between url
+fragments and methods on the router. If the current URL fragment, or one that
+is being visited matches one of the routes in the hash, its method will be
+called.</p><p>The example router above is all that is needed to complete our Backbone.js
+infrastructure. When a user visits <code class="literal">/tasks</code> the index.html.erb view will be
+rendered which properly initialized Backbone.js and its dependencies and the
+Backbone.js models, collections, routers, and views.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
 instead of url fragments for routing.</p><p>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</p><p>pustState support is current limited to the latest versions of Firefox,
+browser support and that additional server-side work is required to support it.</p><p>pushState support is current limited to the latest versions of Firefox,
 Chrome, and Safari and Mobile Safari. For a full listing of support and more
 information about the History API, of which pushState is a part, visit
 <a class="ulink" href="http://diveintohtml5.org/history.html#how" target="_top">http://diveintohtml5.org/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
@@ -323,25 +302,305 @@ support pushState will continue to use hash-based URL fragments, and if a hash
 URL is visited by a pushState-capable browser, it will be transparently
 upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
 that because the URL used are real URLs, your server must now how to render
-each of the urls. For example, if your Backbone.js application as a route of
+each of the urls. For example, if your Backbone.js application has a route of
 /tasks/1, your server-side application must be able to respond to that page if
 the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting backbone handle the rest of the
+would have for the root URL and letting Backbone.js handle the rest of the
 routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</p></div><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
+server-side application will need to render the entire HTML of the requested page.</p></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"></a>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
+Backbone.js.</p><p>First, it’s likely that you’ll want to switch from including all attributes (the
+default) to delivering some subset.</p><p>This can be done by specifying explicitly only the attributes that are to be
+included (whitelisting), or specifying the attributes that should <span class="emphasis"><em>not</em></span> be
+included (blacklisting). Which one you choose will depend on how many attributes
+your model has and how paranoid you are about something important appearing in
+the JSON when it shouldn’t be there.</p><p>If you’re concerned about sensitive data unintentionally being included in the
+JSON when it shouldn’t be then you’ll want to whitelist, to switch to everything
+being explicitly included in the JSON with the <code class="literal">:only</code> option:</p><pre class="programlisting">def as_json(options = {})
+  super(options.merge(:only =&gt; [ :id, :title ]))
+end</pre><p>The above <code class="literal">as_json</code> override will make it so that the JSON will <span class="emphasis"><em>only</em></span> include the
+id and title attributes, even if there are many other attributes on the model.</p><p>If instead you want to include all attributes by default and just exclude a few,
+you accomplish this with the <code class="literal">:except</code> option:</p><pre class="programlisting">def as_json(options = {})
+  super(options.merge(:except =&gt; [ :encrypted_password ]))
+end</pre><p>Another common customization you will want to do in the JSON is include the
+output of methods (say, calculated values) on your model. This is accomplished
+with the <code class="literal">:methods</code> option, as shown in the following example.</p><pre class="programlisting">def as_json(options = {})
+  super(options.merge(:methods =&gt; [ :calculated_value ]))
+end</pre><p>The final thing you’ll most commonly do with your JSON is include related
+objects. If the <code class="literal">Task</code> model <code class="literal">has_many :comments</code>, include all of the JSON for
+comments in the JSON for a Task with the <code class="literal">:include</code> option:</p><pre class="programlisting">def as_json(options = {})
+  super(options.merge(:include =&gt; [ :comments ]))
+end</pre><p>As you probably suspect, you can then customize the JSON for the comments by
+overriding the <code class="literal">as_json</code> method on the <code class="literal">Comment</code> model.</p><p>While these are the most common <code class="literal">as_json</code> options you’ll use when working with
+Backbone.js, it certainly isn’t all of them. The official, complete,
+documentation for the <code class="literal">as_json</code> method can be found here:
+<a class="ulink" href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json" target="_top">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_activerecord_base_include_root_in_json"></a>ActiveRecord::Base.include_root_in_json</h4></div></div></div><p>Depending on the versions, Backbone.js and Rails may have different expectations
+about the format of JSON structures; specifically, whether or not a root key is
+present.  When generating JSON from Rails, this is controlled by the
+ActiveRecord setting <code class="literal">ActiveRecord::Base.include_root_in_json</code>.</p><pre class="programlisting">  &gt; ActiveRecord::Base.include_root_in_json = false
+  &gt; Task.last.as_json
+ =&gt; {"id"=&gt;4, "title"=&gt;"Enjoy a three mile swim"}
+
+  &gt; ActiveRecord::Base.include_root_in_json = true
+  &gt; Task.last.as_json
+ =&gt; {"task"=&gt;{"id"=&gt;4, "title"=&gt;"Enjoy a three mile swim"}}</pre><p>In Rails 3.0, <code class="literal">ActiveRecord::Base.include_root_in_json</code> is set to true. In 3.1,
+it defaults to false. This reversal was made to simplify the JSON returned by
+default in Rails application, but it is fairly big change from the default
+behavior of Rails 3.0.</p><p>Practically speaking, this change is a good one, but take particular note if
+you’re upgrading an existing Rails 3.0 application to Rails 3.1 and you already
+have a published API; you may need to expose a new version of your API.</p><p>From the Backbone.js side, the default behavior expects no root node.  This
+behavior is defined in a few places: <code class="literal">Backbone.Collection.prototype.parse</code>,
+<code class="literal">Backbone.Model.prototype.parse</code>, and <code class="literal">Backbone.Model.prototype.toJSON</code>:</p><pre class="programlisting">_.extend(Backbone.Collection.prototype, Backbone.Events, {
+  // http://documentcloud.github.com/backbone/#Collection-parse
+  parse : function(resp, xhr) {
+    return resp;
+  },
+
+  // snip...
+});
+
+_.extend(Backbone.Model.prototype, Backbone.Events, {
+  // http://documentcloud.github.com/backbone/#Model-toJSON
+  toJSON : function() {
+    return _.clone(this.attributes);
+  },
+
+  // http://documentcloud.github.com/backbone/#Model-parse
+  parse : function(resp, xhr) {
+    return resp;
+  },
+
+  // snip...
+});</pre><p>If you need to accept JSON with a root node, you can override <code class="literal">parse</code> in each of
+your models, or override the prototype’s function.  You’ll need to override it
+on the appropriate collection(s), too.</p><p>If you need to send JSON back to the server that includes a root node, you can
+override <code class="literal">toJSON</code>, per-model or across all models.  When you do this, you’ll
+need to explicitly specify the name of the root key.  We use a convention of a
+<code class="literal">modelName</code> function on your model to provide this:</p><pre class="programlisting">Backbone.Model.prototype.toJSON = function() {
+  var hashWithRoot = {};
+  hashWithRoot[this.modelName] = this.attributes;
+  return _.clone(hashWithRoot);
+};
+
+var Task = Backbone.Model.extend({
+  modelName: "task",
+
+  // ...
+});</pre></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_converting_an_existing_page_view_area_to_use_backbone_js_in_progress"></a>Converting an existing page/view area to use Backbone.js (in progress)</h3></div></div></div><p>We’ll cover Backbone.js Views and Templates in more detail in the Routers,
+Views, and Templates chapter, but this section is meant to get you started
+understanding how Backbone.js views work by illustrating the conversion of a
+Rails view to a Backbone.js view.</p><p>Its important to note that a Rails view is not directly analogous to a
+Backbone.js view. A Rails view is more like a Backbone.js template, and
+Backbone.js views are more like Rails controllers. This can cause confusion
+with developers just started with Backbone.js.</p><p>Consider the following Rails view for a tasks index.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Title&lt;/th&gt;
+    &lt;th&gt;Completed&lt;/th&gt;
+  &lt;/tr&gt;
+
+  &lt;% @tasks.each do |task| %&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;%= task.title %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= task.completed %&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;% end %&gt;
+&lt;/table&gt;</pre><p>Assuming we have the Backbone.js Task model and collection and the Rails Task
+model and controller discussed above, and we’re priming the pump with
+all the tasks, before we can convert the template we must create a Backbone.js
+view which will render the Backbone.js template.</p><p>A Backbone.js view is a class that is responsible for rendering the display of
+a logical element on the page. A view can also bind to events which may cause
+it to be re-rendered. For more detailed coverage of Bakcbone.js views, see the
+Routers, Views, and Templates chapter.</p><p>The most rudimentary view we could introduce at this point would be one that
+merely renders the above page markup, looping over each task in the Tasks
+collection. While this would be insufficient for most actual applications, in
+order to illustrate the building blocks of a Backbone.js view, such a view
+would be like the one shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+  initialize: function() {
+    this.render();
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/index']({ tasks: ExampleApp.tasks }));
+    $('body').html(this.el);
+
+    return this;
+  }
+};</pre><p>The Backbone.js view above has an initialize method which will be called when
+the view is instantiated. This initialize method calls the render method of
+the view. It’s not necessary to immediately render upon initialization, but
+it’s fairly common to do so.</p><p>The render method above then renders the <span class="emphasis"><em>tasks/index</em></span> template, passing
+the collection of tasks into the template. It then sets the HTML of the body
+element of the page to be the rendered template.</p><p>Each Backbone.js view has an element which is stories in this.el. This element
+can be populated with content, but isn’t on the page until placed there by
+you.</p><p>Finally, the Router must be changed to instantiate this view, as shown in the
+follow Tasks router.</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"
   },
 
   index: function() {
+    new ExampleApp.Views.TasksIndex();
   }
-});</pre><p>A basic router consists of a routes hash which is a mapping between url
-fragments and methods on the router. If the current URL fragment, or one that
-is being visited matches one of the routes in the hash, its method will be
-called.</p><p>The example router above is all that is needed to complete our Backbone.js
-infrastructure. When a user visits /tasks the index.html.erb view will be
-rendered which properly initialized Backbone.js and its dependencies and the
-Backbone.js models, collections, routers, and views.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted"></a>Converting an existing page/view area to use Backbone.js (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_automatically_using_the_rails_authentication_token"></a>Automatically using the Rails authentication token</h3></div></div></div><p>When using Backbone.js in a Rails app, you will run into a conflict with the
+});</pre><p>Now that we have the Backbone.js view in place that renders the template, and
+its being called by the router, we can focus on converting the above Rails
+view to a Backbone.js template.</p><p>Backbone.js depends on Underscore.js which provides templating. Fortunately,
+the delimiter and basic concepts used for both Underscore.js and Erb are the
+same, making conversion relatively painless. For this reason, we recommend
+using Underscore.js templates when converting a larger, existing Rails
+application to Backbone.js.</p><p>The tasks index template does two things:</p><div class="itemizedlist"><ul type="disc"><li>
+Loops over all of the tasks
+</li><li>
+For each task, it outputs the task title and completed attributes
+</li></ul></div><p>Underscore.js provides many iteration functions that will be familiar to Rails
+developers. For example, each, map, and reject. Fortunately, Backbone.js also
+proxies to Underscore.js to provide 26 iteration functions on
+Backbone.Collection. This means that its possible to call the Underscore.js
+methods directly on Backbone.js collections.</p><p>So we’ll use the each method to iterate through the Tasks collection that was
+passed to the view, as shown in the converted Rails template, which is now an
+Underscore.js template, below.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Title&lt;/th&gt;
+    &lt;th&gt;Completed&lt;/th&gt;
+  &lt;/tr&gt;
+
+  &lt;% tasks.each(function(model) { %&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;% }); %&gt;
+&lt;/table&gt;</pre><p>As you can see above in the above example, the same delimiter, and the use of
+the each method make the conversion of the Rails view to an Underscore.js
+template straightforward.</p><p>Finally, in Rails 3.0 and above template output is escaped. In order to ensure
+that we have the same XSS protection as we did in our Rails template, we
+access and output the Backbone.js model attributes using the escape method
+instead of the normal get method.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_breaking_out_the_taskview"></a>Breaking out the TaskView</h4></div></div></div><p>As mentioned above, this simple conversion of the index which merely loops
+over each of the tasks is not one you’d likely see in a real Backbone.js
+application.</p><p>Backbone.js views should represent the logic pieces of your web page. In the
+above example, we have an index view, which is a logic piece, but then it is
+made up of the display of individual tasks. Each of those individual tasks
+should be represented by a new Backbone.js view, named TaskView.</p><p>The benefit of this logical separation is covered in more detail in the
+Views section, but know that one of the major features of Backbone.js is event
+binding. With each of the Task models represented by an individual task view,
+when that individual model changes the view can be re-rendered automatically
+(by triggering events) and the entire page doesn’t need to be re-rendered.</p><p>Continuing our task index example from above, a TaskView will be responsible
+for rendering just the individual table row for a Task, therefore, its
+template will appear as follows.</p><pre class="programlisting">&lt;tr&gt;
+  &lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;
+&lt;/tr&gt;</pre><p>And the Task index template will be changed to be as shown below.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+
+&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Title&lt;/th&gt;
+    &lt;th&gt;Completed&lt;/th&gt;
+  &lt;/tr&gt;
+
+&lt;/table&gt;</pre><p>As you can see above in the index template, the individual tasks are no longer
+iterated over and rendered inside the table. This will now happen in the
+TasksIndex and TaskView view, which is shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
+  initialize: function() {
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/view']({ model: this.model }));
+    return this;
+  }
+});</pre><p>The TaskView view above is very similar to the one we saw previously for the
+TasksIndex view. However, unlike the TasksIndex view, the TaskView does not
+insert itself into the dom. Instead, it only inserts its content into it’s own
+element and the TasksIndex view be responsible for inserting the rendered task
+into the dom, as shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+  initialize: function() {
+    this.render();
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/index']({ tasks: ExampleApp.tasks }));
+
+    var tasksIndexView = this;
+    ExampleApp.tasks.each(function(task) {
+      var taskView = new ExampleApp.Views.TaskView({model: task});
+      tasksIndexView.$('table').append(taskView.render().el);
+    });
+
+    $('body').html(this.el);
+
+    return this;
+  }
+});</pre><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
+each task, a new TaskView is instantiated, rendered, and then inserted into
+the dom.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting">&lt;div&gt;
+  &lt;h1&gt;Tasks&lt;/h1&gt;
+
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Title&lt;/th&gt;
+      &lt;th&gt;Completed&lt;/th&gt;
+    &lt;/tr&gt;
+
+    &lt;div&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Task 1&lt;/td&gt;
+        &lt;td&gt;true&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;tr&gt;
+        &lt;td&gt;Task 2&lt;/td&gt;
+        &lt;td&gt;false&lt;/td&gt;
+      &lt;/tr&gt;
+    &lt;/div&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</pre><p>Unfortunately, we can see that there is a problem with the above rendered
+view, and that is the surrounding div around each of the rendered tasks.</p><p>Each of the rendered tasks has a surrounding div because this is the element
+that each view has that is accessed via this.el, and what the view’s content
+is inserted into. By default, this element is a div and therefore every view
+will be wrapped in an extra div. While sometimes this extra div doesn’t really
+matter, as in the outermost div that wraps the entire index, other times this
+produced invalid markup.</p><p>Fortunately, Backbone.js provides us with a clean and simple mechanism for
+changing the element to something other than a div. In the case of the
+TaskView, we would like this element to be a tr, then the wrapping tr can be
+removed from the task view template.</p><p>The element to use is specified by the tagName member of the TaskView, as
+shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
+  tagName: "tr",
+
+  initialize: function() {
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/view']({ model: this.model }));
+    return this;
+  }
+};</pre><p>Given the above tagName customization, the task view template will be as
+follows.</p><pre class="programlisting">&lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
+&lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;</pre><p>And the resulting output of the TasksIndex will be much cleaner, as shown
+below.</p><pre class="programlisting">&lt;div&gt;
+  &lt;h1&gt;Tasks&lt;/h1&gt;
+
+  &lt;table&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Title&lt;/th&gt;
+      &lt;th&gt;Completed&lt;/th&gt;
+    &lt;/tr&gt;
+
+    &lt;tr&gt;
+      &lt;td&gt;Task 1&lt;/td&gt;
+      &lt;td&gt;true&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;Task 2&lt;/td&gt;
+      &lt;td&gt;false&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/table&gt;
+&lt;/div&gt;</pre><p>That is the basic building blocks of converting Rails views to Backbone.js and
+getting a functional system. The majority of Backbone.js programming you will
+do will likely be in the Views and Templates and there is a lot more too them:
+event binding, different templating strategies, helpers, event unbinding, and
+more. All of which are covered in the Routers, Views, and Templates chapter.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_automatically_using_the_rails_authentication_token"></a>Automatically using the Rails authentication token</h3></div></div></div><p>When using Backbone.js in a Rails app, you will run into a conflict with the
 Rails built in Cross Site Scripting (XSS) protection.</p><p>When Rails XSS is enabled, each POST or PUT request to Rails should include a
 special token which is verified to ensure that the request originated from a
 user which is actually using the Rails app. In recent versions of Rails,
@@ -408,4 +667,4 @@ BackboneRailsAuthTokenAdapter.fixSync(Backbone);</pre><p>The above patch depends
 and Backbone.js are loaded. Using Jammit, you’d list it below the backbone.js
 file.</p><p>In Rails 3.1, you’ll place this file in lib/assets/javascripts. In the example
 app, you can find this this in
-example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Organization </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Views and Templates</td></tr></table></div></body></html>
+example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Organization </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Routers, Views, and Templates</td></tr></table></div></body></html>

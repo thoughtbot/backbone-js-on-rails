@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="master.css" type="text/css" />
-    <title>Testing (section unstarted)</title>
+    <title>Performance (stub)</title>
   </head>
 
   <body>
@@ -11,8 +11,8 @@
     <table width="100%">
       <tr><td width="33%" align="left">
         
-         <a href="models_and_collections.html">Prev</a><br/>
-         Models and collections
+         <a href="security_stub_.html">Prev</a><br/>
+         Security (stub)
         
       </td><td width="33%" align="center">
         
@@ -20,9 +20,6 @@
          <strong>Backbone.js on Rails</strong>
         
       </td><td width="33%" align="right">
-        
-          <a href="the_javascript_language_section_unstarted_.html">Next</a><br/>
-          The JavaScript language (section unstarted)
         
       </td></tr>
     </table>
@@ -33,11 +30,30 @@
     <div class="content">
       <div class="section" lang="en" xml:lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
-<a id="_testing_section_unstarted"></a>Testing (section unstarted)</h2></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_full_stack_integration_testing"></a>Full-stack integration testing</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_isolated_unit_testing"></a>Isolated unit testing</h3></div></div></div></div>
+<a id="_performance_stub"></a>Performance (stub)</h2></div></div></div>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_dependency_choice"></a>Dependency choice</h3></div></div></div>
+<p>Backbone.js defines a <code class="literal">$</code> variable that defers to jQuery if present.</p>
+<p>If you are only targeting mobile platforms, Backbone will handily fall back to
+Zepto <a class="ulink" href="http://zeptojs.com" target="_top">http://zeptojs.com</a> for a more lightweight dependency.  Zepto is "a
+minimalist JavaScript framework for mobile WebKit browsers, with a
+jQuery-compatible syntax."  From <code class="literal">backbone.js</code>:</p>
+<pre class="programlisting">(function(){
+
+  // Initial Setup
+  // -------------
+
+  // Save a reference to the global object.
+  var root = this;
+
+  // For Backbone's purposes, jQuery or Zepto owns the `$` variable.
+  var $ = root.jQuery || root.Zepto;
+
+  // ...
+
+}).call(this);</pre>
+</div>
 </div>
 
     </div>
@@ -48,8 +64,8 @@
     <table width="100%">
       <tr><td width="33%" align="left">
         
-         <a href="models_and_collections.html">Prev</a><br/>
-         Models and collections
+         <a href="security_stub_.html">Prev</a><br/>
+         Security (stub)
         
       </td><td width="33%" align="center">
         
@@ -57,9 +73,6 @@
          Backbone.js on Rails
         
       </td><td width="33%" align="right">
-        
-          <a href="the_javascript_language_section_unstarted_.html">Next</a><br/>
-          The JavaScript language (section unstarted)
         
       </td></tr>
     </table>

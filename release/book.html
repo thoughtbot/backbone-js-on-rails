@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.5" />
+<meta name="generator" content="AsciiDoc 8.6.3" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* BEG */
@@ -240,6 +240,7 @@ pre {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -301,25 +302,6 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
-  if (!toc) {
-    return;
-  }
-
-  // Delete existing TOC entries in case we're reloading the TOC.
-  var tocEntriesToRemove = [];
-  var i;
-  for (i = 0; i < toc.childNodes.length; i++) {
-    var entry = toc.childNodes[i];
-    if (entry.nodeName == 'DIV'
-     && entry.getAttribute("class")
-     && entry.getAttribute("class").match(/^toclevel/))
-      tocEntriesToRemove.push(entry);
-  }
-  for (i = 0; i < tocEntriesToRemove.length; i++) {
-    toc.removeChild(tocEntriesToRemove[i]);
-  }
-
-  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -347,44 +329,24 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  // Delete existing footnote entries in case we're reloading the footnodes.
-  var i;
-  var noteholder = document.getElementById("footnotes");
-  if (!noteholder) {
-    return;
-  }
-  var entriesToRemove = [];
-  for (i = 0; i < noteholder.childNodes.length; i++) {
-    var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
-      entriesToRemove.push(entry);
-  }
-  for (i = 0; i < entriesToRemove.length; i++) {
-    noteholder.removeChild(entriesToRemove[i]);
-  }
-
-  // Rebuild footnote entries.
   var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      var note = spans[i].getAttribute("data-note");
-      if (!note) {
-        // Use [\s\S] in place of . so multi-line matches work.
-        // Because JavaScript has no s (dotall) regex flag.
-        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
-        spans[i].innerHTML =
-          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-          "' title='View footnote' class='footnote'>" + n + "</a>]";
-        spans[i].setAttribute("data-note", note);
-      }
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -404,32 +366,9 @@ footnotes: function () {
       }
     }
   }
-},
-
-install: function(toclevels) {
-  var timerId;
-
-  function reinstall() {
-    asciidoc.footnotes();
-    if (toclevels) {
-      asciidoc.toc(toclevels);
-    }
-  }
-
-  function reinstallAndRemoveTimer() {
-    clearInterval(timerId);
-    reinstall();
-  }
-
-  timerId = setInterval(reinstall, 500);
-  if (document.addEventListener)
-    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
-  else
-    window.onload = reinstallAndRemoveTimer;
 }
 
 }
-asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -473,7 +412,7 @@ asciidoc.install();
 <div class="paragraph"><p>Backbone.js and Underscore.js are the non-minified versions. This is for
 informational purposes, but also because the Rails 3.1 asset pipeline will
 compress and minify them.</p></div>
-<div class="paragraph"><p>While Rails 3.1 defaults to Coffee script, we have decided to make all example
+<div class="paragraph"><p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all example
 code normal Javascript as we believe that will be the most understandable to
 the current readers.</p></div>
 </div>
@@ -493,16 +432,16 @@ from the user interface (input and presentation).</p></div>
 </div>
 <div class="title">Figure 1. Model-view-controller concept</div>
 </div>
-<div class="paragraph"><p>In the above diagram, a solid line represents a direct association, a dashed
-line an indirect association (for example, via an observer).</p></div>
+<div class="paragraph"><p>In the above diagram a solid line represents a direct association and a dashed
+line represents an indirect association (for example, via an observer).</p></div>
 <div class="paragraph"><p>As a user of Rails, you&#8217;re likely already familiar with the concept of MVC and
-the benefits that the separation of concerns can give you. However, Rails
-itself is not doing "traditional" MVC. A traditional MVC is event-based. This
-means that the views trigger events which the controller figures out what to do
-with. It can be argued that the requests generated by the browser are the
-"events" in Rails, however, due to the single-threaded, request-response nature
-of the web, the control flow between the different levels of MVC is much more
-straight-forward.</p></div>
+the benefits that the separation of concerns can give you. However, Rails itself
+is not doing "traditional" MVC. A traditional MVC is event-based. This means
+that the views trigger events which the controller figures out what to do with.
+It can be argued that the requests generated by the browser are the "events" in
+Rails, however, due to the single-threaded, request-response nature of the web,
+the control flow between the different levels of MVC is much more
+straightforward.</p></div>
 <div class="paragraph"><p>Given that Javascript has events, and that much of the interactions between the
 different components of Backbone.js in the browser are not limited to
 request/response, programming with Backbone.js is in a lot of ways more like
@@ -525,12 +464,12 @@ pattern, isn&#8217;t worth worrying about.</p></div>
 <div class="paragraph"><p>Part of the initial learning curve of Backbone.js can be figuring out what goes
 where, and mapping it to your expectations set by working with Rails. In Rails
 we have Models, Views, Controllers, and Routers. In Backbone.js, we have
-Models, Views, Templates, and Routers.</p></div>
-<div class="paragraph"><p>The models in Backbone.js and Rails are analogous. Because it lacks
-controllers, Backbone.js routers and views work together to pick up the
-functionality provided by Rails controllers. Finally, in Rails, when we say
-views, we actually mean templates. In Backbone.js, however, you have a
-separation between the view and templates.</p></div>
+Models, Collections, Views, Templates, and Routers.</p></div>
+<div class="paragraph"><p>The models in Backbone.js and Rails are analogous. Backbone.js collections are
+just ordered sets of models.  Because it lacks controllers, Backbone.js routers
+and views work together to pick up the functionality provided by Rails
+controllers. Finally, in Rails, when we say views, we actually mean templates.
+In Backbone.js, however, you have a separation between the view and templates.</p></div>
 <div class="paragraph"><p>Once you introduce Backbone.js into your stack, you grow the layers in your
 stack by four levels. This can be daunting at first, and frankly, at times it
 can be difficult to keep everything going on in your application straight.
@@ -556,7 +495,7 @@ View
 <div class="ulist"><div class="title">Backbone.js</div><ul>
 <li>
 <p>
-Model
+Model and Collection
 </p>
 </li>
 <li>
@@ -598,8 +537,8 @@ The <strong>Rails view template</strong> is rendered and returned to the user&#8
 <li>
 <p>
 The <strong>Rails view template</strong> will include <strong>Backbone.js initialization</strong>, usually
-  this is populating some <strong>Backbone models</strong> with JSON data provided by the
- <strong>Rails view</strong>
+  this is populating some <strong>Backbone collections</strong> as sets of <strong>Backbone models</strong>
+  with JSON data provided by the <strong>Rails view</strong>
 </p>
 </li>
 <li>
@@ -629,7 +568,8 @@ actions to be taken at any level of the above sequence: <strong>Backbone.js mode
 <div class="ulist"><ul>
 <li>
 <p>
-At the <strong>Backbone.js model</strong> level, communicating with Rails via JSON.
+At the <strong>Backbone.js model</strong> or <strong>Backbone.js collection</strong> level, communicating
+  with Rails via JSON.
 </p>
 </li>
 <li>
@@ -649,7 +589,77 @@ understand which interaction you&#8217;ll want to choose for each portion of you
 application.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_namespacing_your_application_chapter_unstarted">Namespacing your application (chapter unstarted)</h3>
+<h3 id="_namespacing_your_application">Namespacing your application</h3>
+<div class="paragraph"><p>You will want to create an object in Javascript for your Backbone.js
+application to reside. This variable will serve as a namespace for your
+Backbone.js application. Namespacing all of the Javascript is desirable to
+avoid potential collisions in naming. For example, it&#8217;s possible that a
+Javascript library you want to use might also create a Task variable. If you
+didn&#8217;t namespace your Task model then this would conflict.</p></div>
+<div class="paragraph"><p>This variable includes a place to hold Models, Collections, Views, and Routes,
+and an init method which will be called to initialize the application. Its
+very common to create a new Router in the init function, and
+Backbone.history.start() must be called in order to route the initial URL.
+This app variable will look like the following.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> ExampleApp <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  Models<span style="color: #990000">:</span> <span style="color: #FF0000">{}</span><span style="color: #990000">,</span>
+  Collections<span style="color: #990000">:</span> <span style="color: #FF0000">{}</span><span style="color: #990000">,</span>
+  Views<span style="color: #990000">:</span> <span style="color: #FF0000">{}</span><span style="color: #990000">,</span>
+  Routers<span style="color: #990000">:</span> <span style="color: #FF0000">{}</span><span style="color: #990000">,</span>
+  init<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Routers<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">();</span>
+    Backbone<span style="color: #990000">.</span>history<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">start</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>You can find this file in the example app in
+<tt>app/assets/javascripts/example_app.js</tt>.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_mixins">Mixins</h3>
+<div class="paragraph"><p>Backbone provides a basic mechanism for inheritance.  Often you&#8217;ll want to build a collection of related, reusable behavior and include that in several classes that already inherit from a Backbone base class.  In these cases, you&#8217;ll want to use a <a href="http://en.wikipedia.org/wiki/Mixin">mixin</a>.</p></div>
+<div class="paragraph"><p>Backbone includes <a href="http://documentcloud.github.com/backbone/#Events">Backbone.Events</a> as an example of a mixin.</p></div>
+<div class="paragraph"><p>Here, we create a mixin named <tt>Observer</tt> that contains behavior for binding to events in a fashion that can be cleaned up later:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Observer <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  bindTo<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>source<span style="color: #990000">,</span> event<span style="color: #990000">,</span> callback<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    source<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span>event<span style="color: #990000">,</span> callback<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">push</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> source<span style="color: #990000">:</span> source<span style="color: #990000">,</span> event<span style="color: #990000">:</span> event<span style="color: #990000">,</span> callback<span style="color: #990000">:</span> callback <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  unbindFromAll<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">each</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>binding<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      binding<span style="color: #990000">.</span>source<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">(</span>binding<span style="color: #990000">.</span>event<span style="color: #990000">,</span> binding<span style="color: #990000">.</span>callback<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings <span style="color: #990000">=</span> <span style="color: #990000">[];</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>We can mix <tt>Observer</tt> into a class by using Underscore&#8217;s <tt>_.extend</tt> on the prototype of that class:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>SomeCollectionView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindTo</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">,</span> <span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbindFromAll</span></span><span style="color: #990000">();</span> <span style="font-style: italic"><span style="color: #9A1900">// calling a method defined in the mixin</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>SomeCollectionView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Observer<span style="color: #990000">);</span></tt></pre></div></div>
 </div>
 </div>
 </div>
@@ -659,7 +669,7 @@ application.</p></div>
 <div class="sect2">
 <h3 id="_organizing_your_backbone_js_code_in_a_rails_app">Organizing your Backbone.js code in a Rails app</h3>
 <div class="paragraph"><p>When using Backbone.js in a Rails app, you&#8217;ll have two kinds of
-Backbone.js-related assets: classes, and templates.</p></div>
+Backbone.js-related assets: classes and templates.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_rails_3_0_and_prior">Rails 3.0 and prior</h3>
@@ -729,8 +739,13 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>JST<span style="color: #990000">[</span><span style="color: #FF0000">'todos/index'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> model<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #FF0000">}</span><span style="color: #990000">)</span></tt></pre></div></div>
-<div class="sect3">
-<h4 id="_a_note_on_jammit_and_a_jst_naming_gotcha">A note on Jammit and a JST naming gotcha</h4>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph"><p>A note on Jammit and a JST naming gotcha</p></div>
 <div class="paragraph"><p>One issue with Jammit that we&#8217;ve encountered and worked around is that the JST
 template path can change when adding new templates.</p></div>
 <div class="paragraph"><p>When using Jammit, there is a slightly sticky issue as an app grows from one
@@ -775,10 +790,10 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
 <div class="paragraph"><p>As applications are moving to Rails 3.1, they&#8217;re also moving to Sprockets for
 the asset packager.  Until then, many apps are using Jammit for asset
-packaging.  One issue with Jammit we&#8217;ve encountered and worked around is that
-the JST template path can change when adding new templates.  We have an open
-issue and workaround:</p></div>
+packaging.  We have an open issue and workaround:</p></div>
 <div class="paragraph"><p><a href="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</a></p></div>
+</td>
+</tr></table>
 </div>
 </div>
 <div class="sect2">
@@ -873,14 +888,14 @@ http://www.gnu.org/software/src-highlite -->
 can view it at example_app/app/assets/javascripts/application.js.</p></div>
 </div>
 <div class="sect2">
-<h3 id="_converting_your_rails_models_to_backbone_js_friendly_json">Converting your Rails models to Backbone.js-friendly JSON</h3>
+<h3 id="_an_overview_of_the_stack_connecting_rails_and_backbone_js">An Overview of the Stack: Connecting Rails and Backbone.js</h3>
 <div class="paragraph"><p>By default Backbone.js communicates with your Rails application via JSON gets
-and posts. If you&#8217;ve ever made a JSON api for your Rails app, then for the most
+and posts. If you&#8217;ve ever made a JSON API for your Rails app, then for the most
 part this will be very similar.</p></div>
-<div class="paragraph"><p>If you haven&#8217;t ever made a JSON api for your Rails application before, lucky
+<div class="paragraph"><p>If you haven&#8217;t ever made a JSON API for your Rails application before, lucky
 you, it&#8217;s pretty straightforward.</p></div>
 <div class="sect3">
-<h4 id="_setting_up_models">Setting Up Models</h4>
+<h4 id="_setting_up_rails_models">Setting Up Rails Models</h4>
 <div class="paragraph"><p>One important aspect to keep in mind as you plan out how your Backbone.js
 interface will behave, and how it will use your Rails back-end is that there is
 no need to have a one-to-one mapping between your Rails models and your
@@ -931,11 +946,11 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>The urlRoot property above indicates to Backbone.js that the server url for
 instances of this model will be found at /tasks/:id.</p></div>
-<div class="paragraph"><p>In Rails, its possible to access individual Tasks, as well as all Tasks (and
+<div class="paragraph"><p>In Rails, it&#8217;s possible to access individual Tasks, as well as all Tasks (and
 query all tasks) through the same Task model. However, in Backbone.js models
 only represent the singular representation of a Task. Backbone.js splits out the
 plural representation of Tasks into what it calls Collections.</p></div>
-<div class="paragraph"><p>The simplex Backbone.js collection to represent our Tasks would be the
+<div class="paragraph"><p>The simplest Backbone.js collection to represent our Tasks would be the
 following.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -962,89 +977,19 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>Notice in the above model definitions that there is no specification of the
 attributes on the model. Like ActiveRecord, Backbone.js models get their
-attributes from the schema and data given to them. In the case of Backbonejs,
+attributes from the schema and data given to them. In the case of Backbone.js,
 this schema and data are the JSON from the server.</p></div>
 <div class="paragraph"><p>The default JSON representation of an ActiveRecord model is a Hash that includes
 all the model&#8217;s attributes. It does not include the data for any related models
 or any methods on the model, but it does include the ids of any related models
-as those are stories in a relation name _id attribute on the model.</p></div>
+as those are stored in a <tt>relation_name_id</tt> attribute on the model.</p></div>
 <div class="paragraph"><p>The JSON representation of your ActiveRecord models will be retrieved by calling
-to_json on them. You customize the output of to_json by overriding the as_json
-method in your model.</p></div>
-<div class="paragraph"><p>The most common things you&#8217;ll do in your Rails app when working with Backbone.js
-are the following.</p></div>
-<div class="paragraph"><p>Its likely that you&#8217;ll wan to switch from including all attributes by default to
-excluding some attributes. This can be done by specifying explicitly only the
-attributes that are to be included, or specifying the attributes that should be
-included. Which one you choose will depend on how many attributes your model has
-and how paranoid you are about something important appearing in the JSON when it
-shouldn&#8217;t be there. If your concerned about sensitive data unintentionally being
-included in the json when it shouldn&#8217;t be then you&#8217;ll want to switch to
-everything being explicitly included in the json. Otherwise, its a matter of
-preference and you can do what feels best for you an your app.</p></div>
-<div class="paragraph"><p>To explicitly specify the attributes to be included in the json, use the :only
-option, as shown in the following as_json implementation.</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
-  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>only <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>id<span style="color: #990000">,</span> <span style="color: #990000">:</span>title <span style="color: #990000">]))</span>
-<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
-<div class="paragraph"><p>The above as_json override will make it so that the json will <em>only</em> include the
-id and title attributes, even if there are many other attributes on the model.</p></div>
-<div class="paragraph"><p>If instead you want to include all attributes by default and just exclude a few,
-you accomplish this with the :except option, as shown below.</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
-  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>except <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>encrypted_password <span style="color: #990000">]))</span>
-<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
-<div class="paragraph"><p>Another common customization you will want to do in the json is include the
-output of methods on your model. This is accomplished with the :methods option,
-as shown in the following example.</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
-  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>methods <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>calculated_value <span style="color: #990000">]))</span>
-<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
-<div class="paragraph"><p>The final thing you&#8217;ll most commonly do with your JSON is include related
-objects. If our Tasks have_many Comments, to include all of the JSON for
-comments on a Task in the JSON for a Task. You do this with the :include option,
-as shown in the following example.</p></div>
-<div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.4
-by Lorenzo Bettini
-http://www.lorenzobettini.it
-http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
-  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span> <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>comments <span style="color: #990000">]))</span>
-<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
-<div class="paragraph"><p>As you probably suspect, you can then customize the JSON for the comments by
-overriding the as_json method on the Comment model.</p></div>
-<div class="paragraph"><p>In Rails 3.1 ActiveRecord::Base.include_root_in_json is set to false. This is
-in contrast to Rails 3.0 which had it set to true. This reversal was made to
-simplify the JSON returned by default in Rails application, but it is fairly big
-change from the default behavior of Rails 3.0.</p></div>
-<div class="paragraph"><p>Practically speaking, this change is a good one, but if you&#8217;re upgrading an
-existing Rails 3.0 application to Rails 3.1 and you already have a published
-api or Backbone.js code, you probably want to set it back to true, as it will
-cause your public api to change, breaking a lot of code, including your
-Backbone.js application.</p></div>
-<div class="paragraph"><p>While these are the most common as_json options you&#8217;ll use when working with
-Backbone.js, it certainly isn&#8217;t all of them. The official, complete,
-documentation for the as_json method can be found here:
-<a href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p></div>
+<tt>to_json</tt> on them. You customize the output of <tt>to_json</tt> by overriding the
+<tt>as_json</tt> method in your model.  We&#8217;ll touch on this more later in the
+section "Customizing your Rails-generated JSON."</p></div>
 </div>
 <div class="sect3">
-<h4 id="_setting_up_controllers">Setting Up Controllers</h4>
+<h4 id="_setting_up_rails_controllers">Setting Up Rails Controllers</h4>
 <div class="paragraph"><p>The Backbone models and collections will talk to your Rails controllers. While
 your models may not have a one-to-one mapping with their Rails counterparts, it
 is likely that you&#8217;ll have at least one controller corresponding to every
@@ -1096,18 +1041,20 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Using respond_with you can create succinct controllers that respond with a
 normal web page, but also expose a JSON api that Backbone.js will use.</p></div>
 <div class="sect4">
-<h5 id="_validations">Validations</h5>
-<div class="paragraph"><p>If a model has a validate method defined, it will be validated before it&#8217;s
-attributes are set. If validation fails, no changes to the model will occur,
-and the "error" event will be fired. Your validate method will be passed the
-attributes that are about to be updated. You can signal that validation passed
-by returning nothing from your validate method. You can signify that
+<h5 id="_validations_and_your_http_api">Validations and your HTTP API</h5>
+<div class="paragraph"><p>If a Backbone.js model has a <tt>validate</tt> method defined, it will be validated
+before its attributes are set. If validation fails, no changes to the model will
+occur, and the "error" event will be fired. Your <tt>validate</tt> method will be passed
+the attributes that are about to be updated. You can signal that validation
+passed by returning nothing from your <tt>validate</tt> method. You can signify that
 validation has failed by returning something from the method. What you return
-can be as simple as a string, or a more complex object that describes the
-error in all its gory detail.</p></div>
+can be as simple as a string, or a more complex object that describes the error
+in all its gory detail.</p></div>
 <div class="paragraph"><p>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
 would often require duplicating a lot of server-side business logic.</p></div>
+<div class="paragraph"><p>TODO: Is it possible to smoothly integrate Backbone.js and the
+client_side_validations gem?</p></div>
 <div class="paragraph"><p>Instead, your Backbone.js applications will likely rely on server-side
 validation logic. How to handle a failure scenario is passed in to Backbone.js
 model save call as a callback, as shown below.</p></div>
@@ -1157,17 +1104,13 @@ Backbone.js and the data it will use. From there, ongoing interaction with
 your Rails application occurs via the JSON apis.</p></div>
 <div class="paragraph"><p>The most common page for this single-page application will be the index action
 of a controller, as in our example application and the tasks controller.</p></div>
-<div class="paragraph"><p>You will want to create a Hash variable in Javascript for your Backbone,js
-application to reside. This variable will serve as a namespace for your
-Backbone,js application. Namespacing all of the javascript is desirable to to
-avoid potential collisions in naming. For example, its possible that a
-Javascript library you want to use might also create a Task variable. If you
-didn&#8217;t namespace your Task model then this would conflict and be unusable.</p></div>
-<div class="paragraph"><p>This variable includes a place to hold Models, Collections, Views, and Routes,
-and an init method which will be called to initialize the application. Its
-very common to create a new Router in the init function, and
-Backbone.history.start() must be called in order to route the initial URL.
-This app variable will look like the following.</p></div>
+<div class="paragraph"><p>You will want to create an object in Javascript for your Backbone.js application
+to reside. For more information on this namespacing see the "Namespacing your
+application" section of the Organization chapter.</p></div>
+<div class="paragraph"><p>This namespace variable holds your Backbone.js application&#8217;s Models,
+Collections, Views, and Routes, and has an init method which will be called to
+initialize the application.</p></div>
+<div class="paragraph"><p>This namespace variable will look like the following.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1184,7 +1127,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
 <div class="paragraph"><p>You can find this file in the example app in
-app/assets/javascripts/example_app.js.</p></div>
+<tt>app/assets/javascripts/example_app.js</tt>.</p></div>
 <div class="admonitionblock">
 <table><tr>
 <td class="icon">
@@ -1217,7 +1160,7 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="color: #990000">&lt;%=</span> content_for <span style="color: #990000">:</span>javascript <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">-%&gt;</span>
   <span style="color: #990000">&lt;%=</span> javascript_tag <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">%&gt;</span>
-    ExampleApp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">init</span></span><span style="color: #990000">(&lt;%=</span> @tasks<span style="color: #990000">.</span>to_json <span style="color: #990000">%&gt;);</span>
+    ExampleApp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">init</span></span><span style="color: #990000">(&lt;%==</span> @tasks<span style="color: #990000">.</span>to_json <span style="color: #990000">%&gt;);</span>
   <span style="color: #990000">&lt;%</span> end <span style="color: #990000">%&gt;</span>
 <span style="color: #990000">&lt;%</span> end <span style="color: #990000">-%&gt;</span></tt></pre></div></div>
 <div class="paragraph"><p>The above example uses Erb to pass the JSON for the tasks to the init method.</p></div>
@@ -1245,36 +1188,6 @@ an important part of the infrastructure you need to start using Backbone.js
 and we can&#8217;t make our example here work without them.</p></div>
 <div class="paragraph"><p>Backbone.js routers provide methods for routing application flow based on
 client-side URL fragments (#fragment).</p></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="paragraph"><p>Backbone.js now includes support for pushState, which can use real, full URLs
-instead of url fragments for routing.</p></div>
-<div class="paragraph"><p>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</p></div>
-<div class="paragraph"><p>pustState support is current limited to the latest versions of Firefox,
-Chrome, and Safari and Mobile Safari. For a full listing of support and more
-information about the History API, of which pushState is a part, visit
-<a href="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</a></p></div>
-<div class="paragraph"><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
-support pushState will continue to use hash-based URL fragments, and if a hash
-URL is visited by a pushState-capable browser, it will be transparently
-upgraded to the true URL.</p></div>
-<div class="paragraph"><p>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
-each of the urls. For example, if your Backbone.js application as a route of
-/tasks/1, your server-side application must be able to respond to that page if
-the browser visits that URL directly.</p></div>
-<div class="paragraph"><p>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting backbone handle the rest of the
-routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</p></div>
-</td>
-</tr></table>
-</div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1286,6 +1199,13 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
   index<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// We've reached the end of Rails integration - it's all Backbone from here!</span></span>
+
+    <span style="font-weight: bold"><span style="color: #000000">alert</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Hello, world!  This is a Backbone.js router action.'</span><span style="color: #990000">);</span>
+
+    <span style="font-style: italic"><span style="color: #9A1900">// Normally you would continue down the stack, instantiating a</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Backbone.View class, calling render() on it, and inserting its element</span></span>
+    <span style="font-style: italic"><span style="color: #9A1900">// into the DOM.</span></span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>A basic router consists of a routes hash which is a mapping between url
@@ -1293,13 +1213,516 @@ fragments and methods on the router. If the current URL fragment, or one that
 is being visited matches one of the routes in the hash, its method will be
 called.</p></div>
 <div class="paragraph"><p>The example router above is all that is needed to complete our Backbone.js
-infrastructure. When a user visits /tasks the index.html.erb view will be
+infrastructure. When a user visits <tt>/tasks</tt> the index.html.erb view will be
 rendered which properly initialized Backbone.js and its dependencies and the
 Backbone.js models, collections, routers, and views.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph"><p>Backbone.js now includes support for pushState, which can use real, full URLs
+instead of url fragments for routing.</p></div>
+<div class="paragraph"><p>However, pushState support in Backbone.js is fully opt-in due to lack of
+browser support and that additional server-side work is required to support it.</p></div>
+<div class="paragraph"><p>pushState support is current limited to the latest versions of Firefox,
+Chrome, and Safari and Mobile Safari. For a full listing of support and more
+information about the History API, of which pushState is a part, visit
+<a href="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</a></p></div>
+<div class="paragraph"><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
+support pushState will continue to use hash-based URL fragments, and if a hash
+URL is visited by a pushState-capable browser, it will be transparently
+upgraded to the true URL.</p></div>
+<div class="paragraph"><p>In addition to browser support, another hurdle to seamless use of pushState is
+that because the URL used are real URLs, your server must now how to render
+each of the urls. For example, if your Backbone.js application has a route of
+/tasks/1, your server-side application must be able to respond to that page if
+the browser visits that URL directly.</p></div>
+<div class="paragraph"><p>For most applications, you can handle this by just rendering the content you
+would have for the root URL and letting Backbone.js handle the rest of the
+routing to the proper location. But for full search-engine crawlability, your
+server-side application will need to render the entire HTML of the requested page.</p></div>
+</td>
+</tr></table>
+</div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_chapter_unstarted">Converting an existing page/view area to use Backbone.js (chapter unstarted)</h3>
+<h3 id="_customizing_your_rails_generated_json">Customizing your Rails-generated JSON</h3>
+<div class="paragraph"><p>There are a few common things you&#8217;ll do in your Rails app when working with
+Backbone.js.</p></div>
+<div class="paragraph"><p>First, it&#8217;s likely that you&#8217;ll want to switch from including all attributes (the
+default) to delivering some subset.</p></div>
+<div class="paragraph"><p>This can be done by specifying explicitly only the attributes that are to be
+included (whitelisting), or specifying the attributes that should <em>not</em> be
+included (blacklisting). Which one you choose will depend on how many attributes
+your model has and how paranoid you are about something important appearing in
+the JSON when it shouldn&#8217;t be there.</p></div>
+<div class="paragraph"><p>If you&#8217;re concerned about sensitive data unintentionally being included in the
+JSON when it shouldn&#8217;t be then you&#8217;ll want to whitelist, to switch to everything
+being explicitly included in the JSON with the <tt>:only</tt> option:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>only <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>id<span style="color: #990000">,</span> <span style="color: #990000">:</span>title <span style="color: #990000">]))</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>The above <tt>as_json</tt> override will make it so that the JSON will <em>only</em> include the
+id and title attributes, even if there are many other attributes on the model.</p></div>
+<div class="paragraph"><p>If instead you want to include all attributes by default and just exclude a few,
+you accomplish this with the <tt>:except</tt> option:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>except <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>encrypted_password <span style="color: #990000">]))</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Another common customization you will want to do in the JSON is include the
+output of methods (say, calculated values) on your model. This is accomplished
+with the <tt>:methods</tt> option, as shown in the following example.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span>methods <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>calculated_value <span style="color: #990000">]))</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>The final thing you&#8217;ll most commonly do with your JSON is include related
+objects. If the <tt>Task</tt> model <tt>has_many :comments</tt>, include all of the JSON for
+comments in the JSON for a Task with the <tt>:include</tt> option:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">def</span></span> as_json<span style="color: #990000">(</span>options <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">super</span></span><span style="color: #990000">(</span>options<span style="color: #990000">.</span>merge<span style="color: #990000">(:</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span> <span style="color: #990000">=&gt;</span> <span style="color: #990000">[</span> <span style="color: #990000">:</span>comments <span style="color: #990000">]))</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>As you probably suspect, you can then customize the JSON for the comments by
+overriding the <tt>as_json</tt> method on the <tt>Comment</tt> model.</p></div>
+<div class="paragraph"><p>While these are the most common <tt>as_json</tt> options you&#8217;ll use when working with
+Backbone.js, it certainly isn&#8217;t all of them. The official, complete,
+documentation for the <tt>as_json</tt> method can be found here:
+<a href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p></div>
+<div class="sect3">
+<h4 id="_activerecord_base_include_root_in_json">ActiveRecord::Base.include_root_in_json</h4>
+<div class="paragraph"><p>Depending on the versions, Backbone.js and Rails may have different expectations
+about the format of JSON structures; specifically, whether or not a root key is
+present.  When generating JSON from Rails, this is controlled by the
+ActiveRecord setting <tt>ActiveRecord::Base.include_root_in_json</tt>.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>  <span style="color: #990000">&gt;</span> ActiveRecord<span style="color: #990000">::</span>Base<span style="color: #990000">.</span>include_root_in_json <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>
+  <span style="color: #990000">&gt;</span> Task<span style="color: #990000">.</span>last<span style="color: #990000">.</span>as_json
+ <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">{</span><span style="color: #FF0000">"id"</span><span style="color: #990000">=&gt;</span><span style="color: #993399">4</span><span style="color: #990000">,</span> <span style="color: #FF0000">"title"</span><span style="color: #990000">=&gt;</span><span style="color: #FF0000">"Enjoy a three mile swim"</span><span style="color: #FF0000">}</span>
+
+  <span style="color: #990000">&gt;</span> ActiveRecord<span style="color: #990000">::</span>Base<span style="color: #990000">.</span>include_root_in_json <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span>
+  <span style="color: #990000">&gt;</span> Task<span style="color: #990000">.</span>last<span style="color: #990000">.</span>as_json
+ <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">{</span><span style="color: #FF0000">"task"</span><span style="color: #990000">=&gt;</span><span style="color: #FF0000">{</span><span style="color: #FF0000">"id"</span><span style="color: #990000">=&gt;</span><span style="color: #993399">4</span><span style="color: #990000">,</span> <span style="color: #FF0000">"title"</span><span style="color: #990000">=&gt;</span><span style="color: #FF0000">"Enjoy a three mile swim"</span><span style="color: #FF0000">}}</span></tt></pre></div></div>
+<div class="paragraph"><p>In Rails 3.0, <tt>ActiveRecord::Base.include_root_in_json</tt> is set to true. In 3.1,
+it defaults to false. This reversal was made to simplify the JSON returned by
+default in Rails application, but it is fairly big change from the default
+behavior of Rails 3.0.</p></div>
+<div class="paragraph"><p>Practically speaking, this change is a good one, but take particular note if
+you&#8217;re upgrading an existing Rails 3.0 application to Rails 3.1 and you already
+have a published API; you may need to expose a new version of your API.</p></div>
+<div class="paragraph"><p>From the Backbone.js side, the default behavior expects no root node.  This
+behavior is defined in a few places: <tt>Backbone.Collection.prototype.parse</tt>,
+<tt>Backbone.Model.prototype.parse</tt>, and <tt>Backbone.Model.prototype.toJSON</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Backbone<span style="color: #990000">.</span>Events<span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  <span style="font-style: italic"><span style="color: #9A1900">// http://documentcloud.github.com/backbone/#Collection-parse</span></span>
+  parse <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>resp<span style="color: #990000">,</span> xhr<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> resp<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Backbone<span style="color: #990000">.</span>Events<span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
+  <span style="font-style: italic"><span style="color: #9A1900">// http://documentcloud.github.com/backbone/#Model-toJSON</span></span>
+  toJSON <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">clone</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>attributes<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// http://documentcloud.github.com/backbone/#Model-parse</span></span>
+  parse <span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>resp<span style="color: #990000">,</span> xhr<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> resp<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>If you need to accept JSON with a root node, you can override <tt>parse</tt> in each of
+your models, or override the prototype&#8217;s function.  You&#8217;ll need to override it
+on the appropriate collection(s), too.</p></div>
+<div class="paragraph"><p>If you need to send JSON back to the server that includes a root node, you can
+override <tt>toJSON</tt>, per-model or across all models.  When you do this, you&#8217;ll
+need to explicitly specify the name of the root key.  We use a convention of a
+<tt>modelName</tt> function on your model to provide this:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">.</span>toJSON <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> hashWithRoot <span style="color: #990000">=</span> <span style="color: #FF0000">{}</span><span style="color: #990000">;</span>
+  hashWithRoot<span style="color: #990000">[</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>modelName<span style="color: #990000">]</span> <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>attributes<span style="color: #990000">;</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">clone</span></span><span style="color: #990000">(</span>hashWithRoot<span style="color: #990000">);</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  modelName<span style="color: #990000">:</span> <span style="color: #FF0000">"task"</span><span style="color: #990000">,</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// ...</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_converting_an_existing_page_view_area_to_use_backbone_js_in_progress">Converting an existing page/view area to use Backbone.js (in progress)</h3>
+<div class="paragraph"><p>We&#8217;ll cover Backbone.js Views and Templates in more detail in the Routers,
+Views, and Templates chapter, but this section is meant to get you started
+understanding how Backbone.js views work by illustrating the conversion of a
+Rails view to a Backbone.js view.</p></div>
+<div class="paragraph"><p>Its important to note that a Rails view is not directly analogous to a
+Backbone.js view. A Rails view is more like a Backbone.js template, and
+Backbone.js views are more like Rails controllers. This can cause confusion
+with developers just started with Backbone.js.</p></div>
+<div class="paragraph"><p>Consider the following Rails view for a tasks index.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;h1&gt;</span></span>Tasks<span style="font-weight: bold"><span style="color: #0000FF">&lt;/h1&gt;</span></span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;table&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Title<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Completed<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+
+  &lt;% @tasks.each do |task| %&gt;
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= task.title %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= task.completed %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+  &lt;% end %&gt;
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/table&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Assuming we have the Backbone.js Task model and collection and the Rails Task
+model and controller discussed above, and we&#8217;re priming the pump with
+all the tasks, before we can convert the template we must create a Backbone.js
+view which will render the Backbone.js template.</p></div>
+<div class="paragraph"><p>A Backbone.js view is a class that is responsible for rendering the display of
+a logical element on the page. A view can also bind to events which may cause
+it to be re-rendered. For more detailed coverage of Bakcbone.js views, see the
+Routers, Views, and Templates chapter.</p></div>
+<div class="paragraph"><p>The most rudimentary view we could introduce at this point would be one that
+merely renders the above page markup, looping over each task in the Tasks
+collection. While this would be insufficient for most actual applications, in
+order to illustrate the building blocks of a Backbone.js view, such a view
+would be like the one shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span>TasksIndex <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/index'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> tasks<span style="color: #990000">:</span> ExampleApp<span style="color: #990000">.</span>tasks <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+    $<span style="color: #990000">(</span><span style="color: #FF0000">'body'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">);</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>The Backbone.js view above has an initialize method which will be called when
+the view is instantiated. This initialize method calls the render method of
+the view. It&#8217;s not necessary to immediately render upon initialization, but
+it&#8217;s fairly common to do so.</p></div>
+<div class="paragraph"><p>The render method above then renders the <em>tasks/index</em> template, passing
+the collection of tasks into the template. It then sets the HTML of the body
+element of the page to be the rendered template.</p></div>
+<div class="paragraph"><p>Each Backbone.js view has an element which is stories in this.el. This element
+can be populated with content, but isn&#8217;t on the page until placed there by
+you.</p></div>
+<div class="paragraph"><p>Finally, the Router must be changed to instantiate this view, as shown in the
+follow Tasks router.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Routers<span style="color: #990000">.</span>Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Router<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  routes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">""</span><span style="color: #990000">:</span> <span style="color: #FF0000">"index"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  index<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">TasksIndex</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Now that we have the Backbone.js view in place that renders the template, and
+its being called by the router, we can focus on converting the above Rails
+view to a Backbone.js template.</p></div>
+<div class="paragraph"><p>Backbone.js depends on Underscore.js which provides templating. Fortunately,
+the delimiter and basic concepts used for both Underscore.js and Erb are the
+same, making conversion relatively painless. For this reason, we recommend
+using Underscore.js templates when converting a larger, existing Rails
+application to Backbone.js.</p></div>
+<div class="paragraph"><p>The tasks index template does two things:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Loops over all of the tasks
+</p>
+</li>
+<li>
+<p>
+For each task, it outputs the task title and completed attributes
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Underscore.js provides many iteration functions that will be familiar to Rails
+developers. For example, each, map, and reject. Fortunately, Backbone.js also
+proxies to Underscore.js to provide 26 iteration functions on
+Backbone.Collection. This means that its possible to call the Underscore.js
+methods directly on Backbone.js collections.</p></div>
+<div class="paragraph"><p>So we&#8217;ll use the each method to iterate through the Tasks collection that was
+passed to the view, as shown in the converted Rails template, which is now an
+Underscore.js template, below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;h1&gt;</span></span>Tasks<span style="font-weight: bold"><span style="color: #0000FF">&lt;/h1&gt;</span></span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;table&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Title<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Completed<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+
+  &lt;% tasks.each(function(model) { %&gt;
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('title') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('completed') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+  &lt;% }); %&gt;
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/table&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>As you can see above in the above example, the same delimiter, and the use of
+the each method make the conversion of the Rails view to an Underscore.js
+template straightforward.</p></div>
+<div class="paragraph"><p>Finally, in Rails 3.0 and above template output is escaped. In order to ensure
+that we have the same XSS protection as we did in our Rails template, we
+access and output the Backbone.js model attributes using the escape method
+instead of the normal get method.</p></div>
+<div class="sect3">
+<h4 id="_breaking_out_the_taskview">Breaking out the TaskView</h4>
+<div class="paragraph"><p>As mentioned above, this simple conversion of the index which merely loops
+over each of the tasks is not one you&#8217;d likely see in a real Backbone.js
+application.</p></div>
+<div class="paragraph"><p>Backbone.js views should represent the logic pieces of your web page. In the
+above example, we have an index view, which is a logic piece, but then it is
+made up of the display of individual tasks. Each of those individual tasks
+should be represented by a new Backbone.js view, named TaskView.</p></div>
+<div class="paragraph"><p>The benefit of this logical separation is covered in more detail in the
+Views section, but know that one of the major features of Backbone.js is event
+binding. With each of the Task models represented by an individual task view,
+when that individual model changes the view can be re-rendered automatically
+(by triggering events) and the entire page doesn&#8217;t need to be re-rendered.</p></div>
+<div class="paragraph"><p>Continuing our task index example from above, a TaskView will be responsible
+for rendering just the individual table row for a Task, therefore, its
+template will appear as follows.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('title') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('completed') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>And the Task index template will be changed to be as shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;h1&gt;</span></span>Tasks<span style="font-weight: bold"><span style="color: #0000FF">&lt;/h1&gt;</span></span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;table&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Title<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Completed<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/table&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>As you can see above in the index template, the individual tasks are no longer
+iterated over and rendered inside the table. This will now happen in the
+TasksIndex and TaskView view, which is shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span>TaskView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/view'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> model<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>The TaskView view above is very similar to the one we saw previously for the
+TasksIndex view. However, unlike the TasksIndex view, the TaskView does not
+insert itself into the dom. Instead, it only inserts its content into it&#8217;s own
+element and the TasksIndex view be responsible for inserting the rendered task
+into the dom, as shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span>TasksIndex <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/index'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> tasks<span style="color: #990000">:</span> ExampleApp<span style="color: #990000">.</span>tasks <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> tasksIndexView <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+    ExampleApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">each</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> taskView <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">TaskView</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>model<span style="color: #990000">:</span> task<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+      tasksIndexView<span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'table'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">append</span></span><span style="color: #990000">(</span>taskView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">().</span>el<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+    $<span style="color: #990000">(</span><span style="color: #FF0000">'body'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">);</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
+each task, a new TaskView is instantiated, rendered, and then inserted into
+the dom.</p></div>
+<div class="paragraph"><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;div&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;h1&gt;</span></span>Tasks<span style="font-weight: bold"><span style="color: #0000FF">&lt;/h1&gt;</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;table&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Title<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Completed<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;div&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>Task 1<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>true<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/div&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;div&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>Task 2<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+        <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>false<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/div&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;/table&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/div&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>Unfortunately, we can see that there is a problem with the above rendered
+view, and that is the surrounding div around each of the rendered tasks.</p></div>
+<div class="paragraph"><p>Each of the rendered tasks has a surrounding div because this is the element
+that each view has that is accessed via this.el, and what the view&#8217;s content
+is inserted into. By default, this element is a div and therefore every view
+will be wrapped in an extra div. While sometimes this extra div doesn&#8217;t really
+matter, as in the outermost div that wraps the entire index, other times this
+produced invalid markup.</p></div>
+<div class="paragraph"><p>Fortunately, Backbone.js provides us with a clean and simple mechanism for
+changing the element to something other than a div. In the case of the
+TaskView, we would like this element to be a tr, then the wrapping tr can be
+removed from the task view template.</p></div>
+<div class="paragraph"><p>The element to use is specified by the tagName member of the TaskView, as
+shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span>TaskView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"tr"</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span> <span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/view'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> model<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>Given the above tagName customization, the task view template will be as
+follows.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('title') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>&lt;%= model.escape('completed') %&gt;<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>And the resulting output of the TasksIndex will be much cleaner, as shown
+below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">&lt;div&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;h1&gt;</span></span>Tasks<span style="font-weight: bold"><span style="color: #0000FF">&lt;/h1&gt;</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;table&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Title<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;th&gt;</span></span>Completed<span style="font-weight: bold"><span style="color: #0000FF">&lt;/th&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>Task 1<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>true<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;tr&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>Task 2<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+      <span style="font-weight: bold"><span style="color: #0000FF">&lt;td&gt;</span></span>false<span style="font-weight: bold"><span style="color: #0000FF">&lt;/td&gt;</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">&lt;/tr&gt;</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">&lt;/table&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;/div&gt;</span></span></tt></pre></div></div>
+<div class="paragraph"><p>That is the basic building blocks of converting Rails views to Backbone.js and
+getting a functional system. The majority of Backbone.js programming you will
+do will likely be in the Views and Templates and there is a lot more too them:
+event binding, different templating strategies, helpers, event unbinding, and
+more. All of which are covered in the Routers, Views, and Templates chapter.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_automatically_using_the_rails_authentication_token">Automatically using the Rails authentication token</h3>
@@ -1387,10 +1810,13 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_views_and_templates">Views and Templates</h2>
+<h2 id="_routers_views_and_templates">Routers, Views, and Templates</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_view_explanation_chapter_unstarted">View explanation (chapter unstarted)</h3>
+</div>
+<div class="sect2">
+<h3 id="_routers_chapter_unstarted">Routers (chapter unstarted)</h3>
 </div>
 <div class="sect2">
 <h3 id="_templating_strategy_chapter_unstarted">Templating strategy (chapter unstarted)</h3>
@@ -1402,27 +1828,102 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div>
 <h3 id="_form_helpers_chapter_unstarted">Form helpers (chapter unstarted)</h3>
 </div>
 <div class="sect2">
-<h3 id="_event_binding_chapter_unstarted">Event binding (chapter unstarted)</h3>
+<h3 id="_event_binding">Event binding</h3>
+<div class="paragraph"><p>A big part of writing snappy rich client applications is building models and
+views that update in realtime with respect to one another.  With Backbone.js
+you accomplish this with events.</p></div>
+<div class="paragraph"><p>TODO: This is probably the first time we dive into events, unless we touch on
+them earlier in the models/collections sections.  Might want to introduce the
+topic with a basic example that uses <tt>Backbone.Events</tt> without views &amp; models.</p></div>
+<div class="paragraph"><p>There are three primary kinds of events that your views will bind to:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+DOM events within the view&#8217;s <tt>this.el</tt> element
+</p>
+</li>
+<li>
+<p>
+Backbone events triggered by the view&#8217;s model or collection
+</p>
+</li>
+<li>
+<p>
+Custom view events
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>TODO: This three-point breakdown is the wrong way to slice this.  Instead of
+"DOM, model/collection, custom" it should be "DOM, events I observe, events I
+publish".  Events that your view observes need to be cleaned up upon disposing
+the view, regardless of where those events are triggered (models, collections,
+or other views, or other arbitrary objects).  Events that your view publishes
+need to be handled in a different way.</p></div>
+<div class="paragraph"><p>TODO: Consider promoting events and binding/unbinding to its own top-level
+section; this isn&#8217;t view-specific, although the view layer is where you&#8217;ll be
+doing most of your binding.</p></div>
+<div class="sect3">
+<h4 id="_binding_to_dom_events_within_the_view_element">Binding to DOM events within the view element</h4>
+<div class="paragraph"><p>The primary function of a view class is to provide behavior for its markup&#8217;s DOM elements.  You can attach event listeners by hand if you like:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900">&lt;!-- templates/soundboard.jst --&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;a</span></span> <span style="color: #009900">class</span><span style="color: #990000">=</span><span style="color: #FF0000">"sound"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>Honk<span style="font-weight: bold"><span style="color: #0000FF">&lt;/a&gt;</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">&lt;a</span></span> <span style="color: #009900">class</span><span style="color: #990000">=</span><span style="color: #FF0000">"sound"</span><span style="font-weight: bold"><span style="color: #0000FF">&gt;</span></span>Beep<span style="font-weight: bold"><span style="color: #0000FF">&lt;/a&gt;</span></span></tt></pre></div></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> SoundBoard <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'soundboard'</span><span style="color: #990000">]());</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">"a.sound"</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"click"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>playSound<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  playSound<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// play sound for this element</span></span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>But Backbone provides an easier and more declarative approach with the <tt>events</tt> hash:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> SoundBoard <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click a.sound"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"playSound"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'soundboard'</span><span style="color: #990000">]());</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  playSound<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// play sound for this element</span></span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Backbone will bind the events with the
+<a href="http://documentcloud.github.com/backbone/#View-delegateEvents">Backbone.View.prototype.delegateEvents()</a>
+function.  It binds DOM events with <tt>$.delegate()</tt>, whether you&#8217;re using the
+<a href="http://api.jquery.com/delegate/">jQuery</a> or
+<a href="https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108">Zepto</a>
+<tt>.delegate()</tt> function.</p></div>
+<div class="paragraph"><p>It also takes care of binding the event handlers' <tt>this</tt> to the view instance using <tt>_.bind()</tt>.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_cleaning_up_understanding_binding_and_unbinding">Cleaning up: understanding binding and unbinding</h3>
-<div class="paragraph"><p>Imagine you&#8217;re writing a todo app. Consider two views: an index view which
-contains all the tasks, and a detail view that shows detail on one task. The
-interface switches between the two views, and both views can modify existing
-tasks (say, to indicate that the task is complete or incomplete.)</p></div>
-<div class="imageblock">
-<div class="content">
-<img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" />
-</div>
-<div class="title">Figure 2. Tasks index view</div>
-</div>
-<div class="imageblock">
-<div class="content">
-<img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" />
-</div>
-<div class="title">Figure 3. Tasks detail view</div>
-</div>
-<div class="paragraph"><p>The view classes for these pages could be written as follows:</p></div>
+<div class="sect3">
+<h4 id="_binding_to_events_triggered_by_tt_this_model_tt_or_tt_this_collection_tt">Binding to events triggered by <tt>this.model</tt> or <tt>this.collection</tt></h4>
+<div class="paragraph"><p>In almost every view you write, the view will be bound to a <tt>Backbone.Model</tt> or
+<tt>Backbone.Collection</tt>, most often with the convenience properties <tt>this.model</tt>
+or <tt>this.collection</tt>.</p></div>
+<div class="paragraph"><p>TODO: Make sure we discussed the convenience properties previously?</p></div>
+<div class="paragraph"><p>Consider a view that displays a collection of <tt>Task</tt> models.  It will re-render
+itself when any model in the collection is changed or removed, or when a new
+model is added:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1435,14 +1936,104 @@ http://www.gnu.org/software/src-highlite -->
 
   initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
     _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">);</span>
-    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
-    TaskApp<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span>    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"remove"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
   render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
     $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">template</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>tasks<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect3">
+<h4 id="_binding_to_custom_events">Binding to custom events</h4>
+<div class="paragraph"><p>With sufficiently complex views, you may encounter a situation where you want
+one view to change in response to another.</p></div>
+<div class="paragraph"><p>TODO: Expound on this situation, discuss that it&#8217;s unlikely, and you should
+consider whether you should be binding to models instead.  However, sometimes
+it&#8217;s useful.</p></div>
+<div class="paragraph"><p>Consider a simple example with a table of users and a toggle control that
+filters the users to a particular gender:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>GenderFilter <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click .show-male"</span><span style="color: #990000">:</span>   <span style="color: #FF0000">"showMale"</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"click .show-female"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"showFemale"</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"click .show-both"</span><span style="color: #990000">:</span>   <span style="color: #FF0000">"showBoth"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  showMale<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span>   <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">trigger</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"changed"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"male"</span><span style="color: #990000">);</span>   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+  showFemale<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">trigger</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"changed"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"female"</span><span style="color: #990000">);</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+  showBoth<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span>   <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">trigger</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"changed"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"both"</span><span style="color: #990000">);</span>   <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+UsersTable <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>filterView <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">UserFilter</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>filterView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"changed"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>filterByGender<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  filterByGender<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>gender<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>filteredCollection <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">byGender</span></span><span style="color: #990000">(</span>gender<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p><tt>GenderFilter</tt> is responsible for the filter control, and triggers an event
+with <tt>Backbone.Events.prototype.trigger()</tt> when it changes.  <tt>UsersTable</tt>
+observes this event, and filters its own collection in response.</p></div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_cleaning_up_unbinding">Cleaning Up: Unbinding</h3>
+<div class="paragraph"><p>In the last section, we discussed three different kinds of event binding in
+your <tt>Backbone.Views</tt> classes: DOM events, model/collection events, and custom
+view events.  Next we&#8217;ll discuss unbinding these events: why it&#8217;s a good idea,
+and how to do it.</p></div>
+<div class="sect3">
+<h4 id="_why_do_i_have_to_unbind_events">Why do I have to unbind events?</h4>
+<div class="paragraph"><p>Consider two views in a Todo app: an index view which contains all the tasks
+that need to be done:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" />
+</div>
+<div class="title">Figure 2. Tasks index view</div>
+</div>
+<div class="paragraph"><p>and a detail view that shows detail on one task:</p></div>
+<div class="imageblock">
+<div class="content">
+<img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" />
+</div>
+<div class="title">Figure 3. Tasks detail view</div>
+</div>
+<div class="paragraph"><p>The interface switches between the two views.</p></div>
+<div class="paragraph"><p>Here&#8217;s the source for the aggregate index view:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> TasksIndex <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  template<span style="color: #990000">:</span> JST<span style="color: #990000">[</span><span style="color: #FF0000">'tasks/tasks_index'</span><span style="color: #990000">],</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">'section'</span><span style="color: #990000">,</span>
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">'tasks'</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindAll</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">"render"</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"add"</span><span style="color: #990000">,</span>    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"remove"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">template</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>tasks<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>and the source for the individual task detail view:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1487,17 +2078,158 @@ forth between the views without disposing of the previous view will keep
 creating more views and binding more events on the associated models or
 collections.</p></div>
 <div class="paragraph"><p>These can be extremely tricky to track down on a production application,
-especially if you are rendering children views, much like how Rails can render
-a partial for each member of a collection. Sadly, there&#8217;s no "garbage
+especially if you are nesting child views. Sadly, there&#8217;s no "garbage
 collection" for views in Backbone, so your application needs to manage this
 itself.</p></div>
-<div class="paragraph"><p>The solution is to make sure you unbind events and remove views when you leave
-them. Our approach to this is to use a convention in <tt>Router</tt> instances, and reuse
-this as a <tt>Router</tt> subclass, <tt>SwappingRouter</tt>.</p></div>
+<div class="paragraph"><p>Let&#8217;s take a look at how to unbind various kinds of events.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_unbinding_dom_events">Unbinding DOM events</h4>
+<div class="paragraph"><p>When you call <tt>this.remove()</tt> in your view, it delegates to <tt>jQuery.remove()</tt>
+by invoking <tt>$(this.el).remove()</tt>.  This means that jQuery takes care of
+cleaning up any events bound on DOM elements within your view, regardless of
+whether you bound them with the Backbone <tt>events</tt> hash or by hand; for
+example, with <tt>$.bind()</tt>, <tt>$.delegate()</tt>, or <tt>$.live()</tt>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_unbinding_model_and_collection_events">Unbinding model and collection events</h4>
+<div class="paragraph"><p>If your view binds to events on a model or collection, you are responsible for
+unbinding these events.  You do this with a simple call to
+<tt>this.model.unbind()</tt> or <tt>this.collection.unbind()</tt>; the
+<a href="http://documentcloud.github.com/backbone/#Events-unbind"><tt>Backbone.Events.unbind()</tt>
+function</a> removes all callbacks on that object.</p></div>
+<div class="paragraph"><p>When should we unbind these handlers?  Whenever the view is going away.  This
+means that any pieces of code that create new instances of this view become
+responsible for cleaning up after it.  That doesn&#8217;t sound like a very cohesive
+approach, so let&#8217;s include the cleanup responsibility on this view.</p></div>
+<div class="paragraph"><p>TODO: Consider just overriding <tt>Backbone.View.prototype.remove()</tt> instead of
+making a new function, since <tt>remove()</tt> is very simple.  What are the pros/cons?</p></div>
+<div class="paragraph"><p>Let&#8217;s write a <tt>leave()</tt> function on our view that wraps <tt>remove()</tt> and handles
+any additional event unbinding we need to do.  As a convention, when we use
+this view elsewhere, we&#8217;ll call <tt>leave()</tt> instead of <tt>remove()</tt> when we&#8217;re
+done:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> SomeCollectionView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect3">
+<h4 id="_keep_track_of_tt_bind_tt_calls_to_unbind_more_easily">Keep track of <tt>bind()</tt> calls to unbind more easily</h4>
+<div class="paragraph"><p>In the example above, unbinding the collection change event isn&#8217;t too much
+hassle; since we&#8217;re only observing one thing, we only have to unbind one
+thing.  But even the addition of one line to <tt>leave()</tt> is easy to forget, and
+if you bind to multiple events then it only gets more verbose.</p></div>
+<div class="paragraph"><p>Let&#8217;s add a step of indirection in event binding so that we can automatically
+clean up all the events with one call.  We&#8217;ll add and use a <tt>bindTo()</tt>
+function that keeps track of all the event handlers we bind, and then issue a
+single call to <tt>unbindFromAll()</tt> to unbind them:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> SomeCollectionView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bindTo</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>collection<span style="color: #990000">,</span> <span style="color: #FF0000">"change"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>render<span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbindFromAll</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  bindTo<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>source<span style="color: #990000">,</span> event<span style="color: #990000">,</span> callback<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    source<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span>event<span style="color: #990000">,</span> callback<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">push</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> source<span style="color: #990000">:</span> source<span style="color: #990000">,</span> event<span style="color: #990000">:</span> event<span style="color: #990000">,</span> callback<span style="color: #990000">:</span> callback <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  unbindFromAll<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">each</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>binding<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      binding<span style="color: #990000">.</span>source<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">(</span>binding<span style="color: #990000">.</span>event<span style="color: #990000">,</span> binding<span style="color: #990000">.</span>callback<span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>bindings <span style="color: #990000">=</span> <span style="color: #990000">[];</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>These functions, <tt>bindTo()</tt> and <tt>unbindFromAll()</tt>, can be extracted into a
+reusable mixin or superclass.  Then, we just have to use <tt>bindTo()</tt> instead of
+<tt>model.bind()</tt> and be assured that the handlers will be cleaned up during
+<tt>leave()</tt>.</p></div>
+<div class="paragraph"><p>TODO: Is it viable to use Function.caller inside Backbone.Events so this
+functionality is provided by Backbone.Events?
+<a href="https://gist.github.com/158a4172aea28876d0fc">https://gist.github.com/158a4172aea28876d0fc</a></p></div>
+<div class="paragraph"><p>TODO: Wrap <tt>bindTo()</tt> and <tt>unbindFromAll()</tt> into <tt>Observer</tt> which gets mixed
+into <tt>CompositeView</tt>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_unbinding_custom_events">Unbinding custom events</h4>
+<div class="paragraph"><p>With the first two kinds of event binding that we discussed, DOM and
+model/collection, the view is the observer.  The responsibility to clean up is
+on the observer, and here the responsibility consists of unbinding the event
+handler when the view is being removed.</p></div>
+<div class="paragraph"><p>But other times, our view classes will trigger (emit) events of their own.
+In this case, other objects are the observer, and are responsible for cleaning
+up the event binding when they are disposed.</p></div>
+<div class="paragraph"><p>However, additionally, when the view itself is disposed of with <tt>leave()</tt>, it
+should clean up any event handlers bound on <strong>itself</strong> for events that it
+triggers.</p></div>
+<div class="paragraph"><p>This is handled by invoking <tt>Backbone.Events.unbind()</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> FilteringView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click a.filter"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"changeFilter"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  changeFilter<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #000000">someLogic</span></span><span style="color: #990000">())</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">trigger</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"filtered"</span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span> some<span style="color: #990000">:</span> options <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="color: #FF0000">}</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">();</span> <span style="font-style: italic"><span style="color: #9A1900">// Clean up any event handlers bound on this view</span></span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// snip...</span></span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+<div class="sect3">
+<h4 id="_establish_a_convention_for_consistent_and_correct_unbinding">Establish a convention for consistent and correct unbinding</h4>
+<div class="paragraph"><p>There&#8217;s no built-in garbage collection for Backbone&#8217;s event bindings, and
+forgetting to unbind can cause bugs and memory leaks. The solution is to make
+sure you unbind events and remove views when you leave them. Our approach to
+this is two-fold: write a set of reusable functions that manage cleaning up a
+view&#8217;s bindings, and use these functions where ever views are instantiated: in
+<tt>Router</tt> instances, and in composite views.  We&#8217;ll take a look at these
+concrete, reusable approaches in the next two sections about <tt>SwappingRouter</tt>
+and <tt>CompositeView</tt>.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_swapping_router">Swapping router</h3>
 <div class="paragraph"><p>When switching from one view to another, we should clean up the previous view.
+We discussed previously a convention of writing a <tt>view.leave()</tt>
 Let&#8217;s augment our view to include the ability to clean itself up by "leaving"
 the DOM:</p></div>
 <div class="listingblock">
@@ -1516,7 +2248,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="font-style: italic"><span style="color: #9A1900">// ...</span></span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>The <tt>unbind()</tt> and <tt>remove()</tt> functions are provided by <tt>Backbone.Events</tt> and
-<tt>Backbone.View</tt>.  <tt>unbind()</tt> will remove all callbacks registered on the view,
+<tt>Backbone.Events.unbind()</tt> will remove all callbacks registered on the view,
 and <tt>remove()</tt> will remove the view&#8217;s element from the DOM.</p></div>
 <div class="paragraph"><p>In simple cases, we replace one full page view with another full page (less any
 shared layout). We introduce a convention that all actions underneath one
@@ -1559,7 +2291,7 @@ the <tt>swap</tt> method into <tt>Backbone.Router</tt>, or call <tt>Backbone.Rou
 mixin the function we need.</p></div>
 <div class="paragraph"><p>Our goal here is essentially to create a subclass of <tt>Backbone.Router</tt>, and to
 extend it without modifying the original class. This gives us a few benefits:
-first, <tt>SwappingRouter</tt> should work with Backbone upgrades. Second, it shold be
+first, <tt>SwappingRouter</tt> should work with Backbone upgrades. Second, it should be
 <strong>obvious</strong>  and <strong>intention-revealing</strong> when a controller needs to swap views. If
 we chose to just mix in a <tt>swap</tt> method, and called it from a direct descendant
 of <tt>Backbone.Router</tt>, an unaware (and unlucky) programmer now needs to go on a
@@ -1755,9 +2487,9 @@ http://www.gnu.org/software/src-highlite -->
 
 _<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>CompositeView<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">prototype</span></span><span style="color: #990000">,</span> <span style="color: #FF0000">{</span>
   leave<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">_leaveChildren</span></span><span style="color: #990000">();</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">unbind</span></span><span style="color: #990000">();</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">remove</span></span><span style="color: #990000">();</span>
-    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">_leaveChildren</span></span><span style="color: #990000">();</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">_removeFromParent</span></span><span style="color: #990000">();</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
@@ -1799,10 +2531,11 @@ _<span style="color: #990000">.</span><span style="font-weight: bold"><span styl
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
 
 CompositeView<span style="color: #990000">.</span>extend <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span>extend<span style="color: #990000">;</span></tt></pre></div></div>
+<div class="paragraph"><p>TODO: Re-link to swapping-internals anchor once <a href="https://github.com/schacon/git-scribe/issues/33">https://github.com/schacon/git-scribe/issues/33</a> is fixed</p></div>
 <div class="paragraph"><p>Similar to the <tt>SwappingRouter</tt>, the <tt>CompositeView</tt> base class solves common
-housekeeping problems by establishing a convention. See the
-<a href="#swapping-internals">Swapping Router and Backbone internals</a> section for an
-in-depth analysis of how this subclassing pattern works.</p></div>
+housekeeping problems by establishing a convention. See the Swapping Router and
+Backbone internals section for an in-depth analysis of how this subclassing
+pattern works.</p></div>
 <div class="paragraph"><p>Now our <tt>CompositeView</tt> maintains an array of its immediate children as
 <tt>this.children</tt>.  With this reference in place, a parent view&#8217;s <tt>leave()</tt> method
 can invoke <tt>leave()</tt> on its children, ensuring that an entire tree of composed
@@ -1982,6 +2715,8 @@ The task view performs better, since adding new comments or updating the task
 </div>
 <div class="sect3">
 <h4 id="_cleaning_up_views_properly">Cleaning up views properly</h4>
+<div class="paragraph"><p>We now have a full set of tools to clean up views properly.</p></div>
+<div class="paragraph"><p>TODO: Wrap up and re-state the "cleaning up, swappingrouter, compositeview" sections.  Mix <tt>Observer</tt> into <tt>CompositeView</tt>.</p></div>
 </div>
 </div>
 <div class="sect2">
@@ -2005,7 +2740,7 @@ The task view performs better, since adding new comments or updating the task
 <h3 id="_model_associations">Model associations</h3>
 <div class="paragraph"><p>Backbone.js doesn&#8217;t prescribe a way to define associations between models, so
 we need to get creative and use the power of JavaScript to set up associations
-in a way that it&#8217;s usage is natural.</p></div>
+in such a way that its usage is natural.</p></div>
 <div class="sect3">
 <h4 id="_belongs_to_associations">Belongs to associations</h4>
 <div class="paragraph"><p>Setting up a <tt>belongs_to</tt> association in Backbone is a two step process. Let&#8217;s
@@ -2055,21 +2790,21 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>user <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">));</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>A couple of improvements to the above: You&#8217;ll soon realize that you will might
-be setting the user outside of the initialize as well. Also, the initializer
-should check whether there user data in the first place. To address the first
-concern, let&#8217;s create a setter for the object. Backbone provides a handy
-function called <tt>has</tt> that returns whether the provided option is set for the
-object:</p></div>
+<div class="paragraph"><p>We can make a couple of improvements to the above. First, you&#8217;ll soon realize
+that you might be setting the user outside of the initialize as well. Second,
+the initializer should check whether there is user data in the first place. To
+address the first concern, let&#8217;s create a setter for the object. Backbone
+provides a handy function called <tt>has</tt> that returns true or false depending on
+whether the provided option is set for the object:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> User <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
   initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
     <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">has</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">))</span> <span style="color: #FF0000">{</span>
-      <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>user <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">setUser</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">)));</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">setUser</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'user'</span><span style="color: #990000">)));</span>
     <span style="color: #FF0000">}</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
@@ -2078,7 +2813,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>The final setup allows for a nice clean interface to a task&#8217;s user, by
-accessing the task property fo the user instance.</p></div>
+accessing the task property of the user instance.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2124,13 +2859,25 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>Note that we are setting the relation to an instance of the <tt>Tasks</tt> collection.</p></div>
+<div class="paragraph"><p>TODO: Let&#8217;s exapnd upon this, as it isn&#8217;t the most flexible solution.  (It is
+a good start.) We are setting the JSON representation of the Rails models to
+suit the Backbone.js concerns.  Additionally, the <tt>Task#as_json</tt> method at the
+top is concerned with the User JSON representation.  It should at least delegate
+to User#as_json. Going further, the JSON presentation for consumption by
+Backbone.js should be completely extracted into the JSON API endpoint controller
+action, or even a separate presenter class.</p></div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_scopes_and_filters">Scopes and filters</h3>
+<h3 id="_filters_and_sorting">Filters and sorting</h3>
+<div class="paragraph"><p>When using our Backbone models and collections, it&#8217;s often handy to filter the
+collections by resuable criteria, or sort them by several different criteria.</p></div>
+<div class="sect3">
+<h4 id="_filters">Filters</h4>
 <div class="paragraph"><p>To filter a <tt>Backbone.Collection</tt>, like with Rails named scopes, define
-functions on your collections that filter by your criteria and return new
-instances of the collection class. A first implementation might look like this:</p></div>
+functions on your collections that filter by your criteria, using the <tt>select</tt>
+function from Underscore.js, and return new instances of the collection class. A
+first implementation might look like this:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2147,8 +2894,8 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span>filteredTasks<span style="color: #990000">);</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>Ideally, the filter functions will reuse logic already defined in your model
-class:</p></div>
+<div class="paragraph"><p>Let&#8217;s refactor this a bit.  Ideally, the filter functions will reuse logic
+already defined in your model class:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2171,8 +2918,10 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span>filteredTasks<span style="color: #990000">);</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>Going further, you can separate the two concerns here, and extract a <tt>filtered</tt>
-function:</p></div>
+<div class="paragraph"><p>Going further, notice that there are actually two concerns in this function.
+The first is the notion of filtering the collection, and the other is the
+specific filtering criteria (<tt>task.isComplete()</tt>).</p></div>
+<div class="paragraph"><p>Let&#8217;s separate the two concerns here, and extract a <tt>filtered</tt> function:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2198,11 +2947,40 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #000000">Tasks</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span>criteriaFunction<span style="color: #990000">));</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>We can extract this function into a reusable mixin, abstracting the <tt>Tasks</tt>
+collection class using <tt>this.constructor</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>FilterableCollectionMixin <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  filtered<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>criteriaFunction<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">constructor</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">select</span></span><span style="color: #990000">(</span>criteriaFunction<span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  isComplete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'completed_at'</span><span style="color: #990000">)</span> <span style="color: #990000">!==</span> <span style="font-weight: bold"><span style="color: #0000FF">null</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">filtered</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isComplete</span></span><span style="color: #990000">();</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">,</span> FilterableCollectionMixin<span style="color: #990000">));</span></tt></pre></div></div>
 </div>
-<div class="sect2">
-<h3 id="_sorting">Sorting</h3>
+<div class="sect3">
+<h4 id="_sorting">Sorting</h4>
 <div class="paragraph"><p>The simplest way to sort a <tt>Backbone.Collection</tt> is to define a <tt>comparator</tt>
-function:</p></div>
+function.  This functionality is built in:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2242,7 +3020,7 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> sortedCollection<span style="color: #990000">;</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
-<div class="paragraph"><p>Similarly, you can extract the resuable concern to another function:</p></div>
+<div class="paragraph"><p>Similarly, you can extract the reusable concern to another function:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2275,6 +3053,42 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> sortedCollection<span style="color: #990000">;</span>
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>And then into another reusable mixin:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">var</span></span> SortableCollectionMixin <span style="color: #990000">=</span> <span style="color: #FF0000">{</span>
+  sortedBy<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>comparator<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> sortedCollection <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">constructor</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>models<span style="color: #990000">);</span>
+    sortedCollection<span style="color: #990000">.</span>comparator <span style="color: #990000">=</span> comparator<span style="color: #990000">;</span>
+    sortedCollection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sort</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> sortedCollection<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span>
+
+<span style="font-weight: bold"><span style="color: #0000FF">var</span></span> Tasks <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Collection<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span>_<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  model<span style="color: #990000">:</span> Task<span style="color: #990000">,</span>
+  url<span style="color: #990000">:</span> <span style="color: #FF0000">'/tasks'</span><span style="color: #990000">,</span>
+
+  comparator<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>dueDate<span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  byCreatedAt<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sortedBy</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>createdAt<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  byCompletedAt<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">sortedBy</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>task<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+      <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> task<span style="color: #990000">.</span>completedAt<span style="color: #990000">;</span>
+    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">,</span> SortableCollectionMixin<span style="color: #990000">));</span></tt></pre></div></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_client_server_duplicated_business_logic_chapter_unstarted">Client/Server duplicated business logic (chapter unstarted)</h3>
@@ -2285,11 +3099,6 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect2">
 <h3 id="_synchronizing_between_clients_chapter_unstarted">Synchronizing between clients (chapter unstarted)</h3>
 </div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_binding_models_and_views_section_unstarted">Binding models and views (section unstarted)</h2>
-<div class="sectionbody">
 </div>
 </div>
 <div class="sect1">
@@ -2345,11 +3154,43 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_performance_stub">Performance (stub)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_dependency_choice">Dependency choice</h3>
+<div class="paragraph"><p>Backbone.js defines a <tt>$</tt> variable that defers to jQuery if present.</p></div>
+<div class="paragraph"><p>If you are only targeting mobile platforms, Backbone will handily fall back to
+Zepto <a href="http://zeptojs.com">http://zeptojs.com</a> for a more lightweight dependency.  Zepto is "a
+minimalist JavaScript framework for mobile WebKit browsers, with a
+jQuery-compatible syntax."  From <tt>backbone.js</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span><span style="color: #FF0000">{</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// Initial Setup</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// -------------</span></span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// Save a reference to the global object.</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> root <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// For Backbone's purposes, jQuery or Zepto owns the `$` variable.</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> $ <span style="color: #990000">=</span> root<span style="color: #990000">.</span>jQuery <span style="color: #990000">||</span> root<span style="color: #990000">.</span>Zepto<span style="color: #990000">;</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// ...</span></span>
+
+<span style="color: #FF0000">}</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">call</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">);</span></tt></pre></div></div>
+</div>
+</div>
+</div>
 </div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-08-10 18:03:08 EDT
+Last updated 2011-08-25 10:39:59 EDT
 </div>
 </div>
 </body>

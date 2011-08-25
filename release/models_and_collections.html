@@ -11,8 +11,8 @@
     <table width="100%">
       <tr><td width="33%" align="left">
         
-         <a href="views_and_templates.html">Prev</a><br/>
-         Views and Templates
+         <a href="routers_views_and_templates.html">Prev</a><br/>
+         Routers, Views, and Templates
         
       </td><td width="33%" align="center">
         
@@ -21,8 +21,8 @@
         
       </td><td width="33%" align="right">
         
-          <a href="binding_models_and_views_section_unstarted_.html">Next</a><br/>
-          Binding models and views (section unstarted)
+          <a href="testing_section_unstarted_.html">Next</a><br/>
+          Testing (section unstarted)
         
       </td></tr>
     </table>
@@ -43,7 +43,7 @@
 <a id="_model_associations"></a>Model associations</h3></div></div></div>
 <p>Backbone.js doesn’t prescribe a way to define associations between models, so
 we need to get creative and use the power of JavaScript to set up associations
-in a way that it’s usage is natural.</p>
+in such a way that its usage is natural.</p>
 <div class="section" lang="en" xml:lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_belongs_to_associations"></a>Belongs to associations</h4></div></div></div>
@@ -79,16 +79,16 @@ initializer. Here’s a first cut at that:</p>
     this.user = new User(this.get('user'));
   }
 });</pre>
-<p>A couple of improvements to the above: You’ll soon realize that you will might
-be setting the user outside of the initialize as well. Also, the initializer
-should check whether there user data in the first place. To address the first
-concern, let’s create a setter for the object. Backbone provides a handy
-function called <code class="literal">has</code> that returns whether the provided option is set for the
-object:</p>
-<pre class="programlisting">var User = Backbone.Model.extend({
+<p>We can make a couple of improvements to the above. First, you’ll soon realize
+that you might be setting the user outside of the initialize as well. Second,
+the initializer should check whether there is user data in the first place. To
+address the first concern, let’s create a setter for the object. Backbone
+provides a handy function called <code class="literal">has</code> that returns true or false depending on
+whether the provided option is set for the object:</p>
+<pre class="programlisting">var Task = Backbone.Model.extend({
   initialize: function() {
     if (this.has('user')) {
-      this.user = setUser(new User(this.get('user')));
+      this.setUser(new User(this.get('user')));
     }
   },
 
@@ -97,7 +97,7 @@ object:</p>
   }
 });</pre>
 <p>The final setup allows for a nice clean interface to a task’s user, by
-accessing the task property fo the user instance.</p>
+accessing the task property of the user instance.</p>
 <pre class="programlisting">var task = Task.fetch(1);
 console.log(task.get('title') + ' is being worked on by ' + task.user.get('name'));</pre>
 </div>
@@ -129,14 +129,27 @@ function:</p>
   }
 });</pre>
 <p>Note that we are setting the relation to an instance of the <code class="literal">Tasks</code> collection.</p>
+<p>TODO: Let’s exapnd upon this, as it isn’t the most flexible solution.  (It is
+a good start.) We are setting the JSON representation of the Rails models to
+suit the Backbone.js concerns.  Additionally, the <code class="literal">Task#as_json</code> method at the
+top is concerned with the User JSON representation.  It should at least delegate
+to User#as_json. Going further, the JSON presentation for consumption by
+Backbone.js should be completely extracted into the JSON API endpoint controller
+action, or even a separate presenter class.</p>
 </div>
 </div>
 <div class="section" lang="en" xml:lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a id="_scopes_and_filters"></a>Scopes and filters</h3></div></div></div>
+<a id="_filters_and_sorting"></a>Filters and sorting</h3></div></div></div>
+<p>When using our Backbone models and collections, it’s often handy to filter the
+collections by resuable criteria, or sort them by several different criteria.</p>
+<div class="section" lang="en" xml:lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_filters"></a>Filters</h4></div></div></div>
 <p>To filter a <code class="literal">Backbone.Collection</code>, like with Rails named scopes, define
-functions on your collections that filter by your criteria and return new
-instances of the collection class. A first implementation might look like this:</p>
+functions on your collections that filter by your criteria, using the <code class="literal">select</code>
+function from Underscore.js, and return new instances of the collection class. A
+first implementation might look like this:</p>
 <pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -148,8 +161,8 @@ instances of the collection class. A first implementation might look like this:<
     return new Tasks(filteredTasks);
   }
 });</pre>
-<p>Ideally, the filter functions will reuse logic already defined in your model
-class:</p>
+<p>Let’s refactor this a bit.  Ideally, the filter functions will reuse logic
+already defined in your model class:</p>
 <pre class="programlisting">var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
@@ -167,8 +180,10 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });</pre>
-<p>Going further, you can separate the two concerns here, and extract a <code class="literal">filtered</code>
-function:</p>
+<p>Going further, notice that there are actually two concerns in this function.
+The first is the notion of filtering the collection, and the other is the
+specific filtering criteria (<code class="literal">task.isComplete()</code>).</p>
+<p>Let’s separate the two concerns here, and extract a <code class="literal">filtered</code> function:</p>
 <pre class="programlisting">var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
@@ -189,12 +204,36 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(this.select(criteriaFunction));
   }
 });</pre>
+<p>We can extract this function into a reusable mixin, abstracting the <code class="literal">Tasks</code>
+collection class using <code class="literal">this.constructor</code>:</p>
+<pre class="programlisting">FilterableCollectionMixin = {
+  filtered: function(criteriaFunction) {
+    return new this.constructor(this.select(criteriaFunction));
+  }
+};
+
+var Task = Backbone.Model.extend({
+  isComplete: function() {
+    return this.get('completed_at') !== null;
+  }
+});
+
+var Tasks = Backbone.Collection.extend(_.extend({
+  model: Task,
+  url: '/tasks',
+
+  complete: function() {
+    return this.filtered(function(task) {
+      return task.isComplete();
+    });
+  }
+}, FilterableCollectionMixin));</pre>
 </div>
 <div class="section" lang="en" xml:lang="en">
-<div class="titlepage"><div><div><h3 class="title">
-<a id="_sorting"></a>Sorting</h3></div></div></div>
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_sorting"></a>Sorting</h4></div></div></div>
 <p>The simplest way to sort a <code class="literal">Backbone.Collection</code> is to define a <code class="literal">comparator</code>
-function:</p>
+function.  This functionality is built in:</p>
 <pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -224,7 +263,7 @@ the ordering on the new collection:</p>
     return sortedCollection;
   }
 });</pre>
-<p>Similarly, you can extract the resuable concern to another function:</p>
+<p>Similarly, you can extract the reusable concern to another function:</p>
 <pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -252,6 +291,37 @@ the ordering on the new collection:</p>
     return sortedCollection;
   }
 });</pre>
+<p>And then into another reusable mixin:</p>
+<pre class="programlisting">var SortableCollectionMixin = {
+  sortedBy: function(comparator) {
+    var sortedCollection = new this.constructor(this.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    return sortedCollection;
+  }
+};
+
+var Tasks = Backbone.Collection.extend(_.extend({
+  model: Task,
+  url: '/tasks',
+
+  comparator: function(task) {
+    return task.dueDate;
+  },
+
+  byCreatedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.createdAt;
+    });
+  },
+
+  byCompletedAt: function() {
+    return this.sortedBy(function(task) {
+      return task.completedAt;
+    });
+  }
+}, SortableCollectionMixin));</pre>
+</div>
 </div>
 <div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_client_server_duplicated_business_logic_chapter_unstarted"></a>Client/Server duplicated business logic (chapter unstarted)</h3></div></div></div></div>
@@ -269,8 +339,8 @@ the ordering on the new collection:</p>
     <table width="100%">
       <tr><td width="33%" align="left">
         
-         <a href="views_and_templates.html">Prev</a><br/>
-         Views and Templates
+         <a href="routers_views_and_templates.html">Prev</a><br/>
+         Routers, Views, and Templates
         
       </td><td width="33%" align="center">
         
@@ -279,8 +349,8 @@ the ordering on the new collection:</p>
         
       </td><td width="33%" align="right">
         
-          <a href="binding_models_and_views_section_unstarted_.html">Next</a><br/>
-          Binding models and views (section unstarted)
+          <a href="testing_section_unstarted_.html">Next</a><br/>
+          Testing (section unstarted)
         
       </td></tr>
     </table>
