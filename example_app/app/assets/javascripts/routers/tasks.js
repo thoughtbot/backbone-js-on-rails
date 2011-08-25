@@ -4,5 +4,6 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
   },
 
   index: function() {
+    new ExampleApp.Views.TasksIndex();
   }
 });

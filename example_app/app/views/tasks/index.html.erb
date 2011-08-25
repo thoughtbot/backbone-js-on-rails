@@ -1,5 +1,5 @@
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
-    ExampleApp.init(<%= @tasks.to_json %>);
+    ExampleApp.init(<%== @tasks.to_json %>);
   <% end %>
 <% end -%>
