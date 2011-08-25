@@ -833,8 +833,8 @@ var Task = Backbone.Model.extend({
 });</programlisting>
 </section>
 </section>
-<section id="_converting_an_existing_page_view_area_to_use_backbone_js_in_progress">
-<title>Converting an existing page/view area to use Backbone.js (in progress)</title>
+<section id="_converting_an_existing_page_view_area_to_use_backbone_js">
+<title>Converting an existing page/view area to use Backbone.js</title>
 <simpara>We&#8217;ll cover Backbone.js Views and Templates in more detail in the Routers,
 Views, and Templates chapter, but this section is meant to get you started
 understanding how Backbone.js views work by illustrating the conversion of a
