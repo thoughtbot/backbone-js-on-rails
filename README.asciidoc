@@ -29,7 +29,7 @@ Install dependencies with Bundler:
 
 Now install the git-scribe dependencies:
 
-==== Installing git-scribe dependencies On OSX
+==== Installing git-scribe dependencies on OSX
 
   brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
   brew install asciidoc fop source-highlight docbook
@@ -38,7 +38,7 @@ Make sure you register docbook after installation:
 
   sudo docbook-register
 
-==== Installing git-scribe dependencies On Ubuntu
+==== Installing git-scribe dependencies on Ubuntu
 
    sudo aptitude install asciidoc fop source-highlight docbook
 
