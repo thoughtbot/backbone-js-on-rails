@@ -37,11 +37,10 @@ them separated from the server views:</p><pre class="screen">app/
     todos/
       index.jst
       show.jst</pre><p>On Rails 3.0 and prior apps, we use Jammit for packaging assets and
-precompiling templates:</p><p><a class="ulink" href="http://documentcloud.github.com/jammit/" target="_top">http://documentcloud.github.com/jammit/</a>
-<a class="ulink" href="http://documentcloud.github.com/jammit/#jst" target="_top">http://documentcloud.github.com/jammit/#jst</a></p><p>Jammit will make your templates available in a top-level JST object. For
+precompiling templates:</p><p><a class="ulink" href="http://documentcloud.github.com/jammit/" target="_top">http://documentcloud.github.com/jammit/</a></p><p><a class="ulink" href="http://documentcloud.github.com/jammit/#jst" target="_top">http://documentcloud.github.com/jammit/#jst</a></p><p>Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:</p><pre class="programlisting">JST['todos/index']</pre><p>Variables can be passed to the templates by passing a Hash to the template, as
-shown below.</p><pre class="programlisting">JST['todos/index']({ model: this.model })</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>A note on Jammit and a JST naming gotcha</p><p>One issue with Jammit that we’ve encountered and worked around is that the JST
+shown below.</p><pre class="programlisting">JST['todos/index']({ model: this.model })</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Jammit and a JST naming gotcha</p><p>One issue with Jammit that we’ve encountered and worked around is that the JST
 template path can change when adding new templates.</p><p>When using Jammit, there is a slightly sticky issue as an app grows from one
 template subdirectory to multiple template subdirectories.</p><p>Let’s say you place templates in app/templates. You work for a while on the
 "Tasks" feature, placing templates under app/templates/tasks. So, window.JST
@@ -115,12 +114,12 @@ done your application.js Sprockets manifest will be as shown below.</p><pre clas
 //= require_tree .</pre><p>The above is taken from the example application included with this book. You
 can view it at example_app/app/assets/javascripts/application.js.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"></a>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON gets
 and posts. If you’ve ever made a JSON API for your Rails app, then for the most
-part this will be very similar.</p><p>If you haven’t ever made a JSON API for your Rails application before, lucky
+part this will be very similar.</p><p>If you’ve never made a JSON API for your Rails application before, lucky
 you, it’s pretty straightforward.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_models"></a>Setting Up Rails Models</h4></div></div></div><p>One important aspect to keep in mind as you plan out how your Backbone.js
-interface will behave, and how it will use your Rails back-end is that there is
+interface will behave, and how it will use your Rails back-end, is that there is
 no need to have a one-to-one mapping between your Rails models and your
 Backbone.js models.</p><p>The smaller an application is, the more likely that there will be a one-to-one
-mapping between both Backbone.js and Rails models and controllers.</p><p>However, if you have a sufficiently complex application, its more likely that
+mapping between both Backbone.js and Rails models and controllers.</p><p>However, if you have a sufficiently complex application, it’s more likely that
 you <span class="emphasis"><em>won’t</em></span> have a one-to-one mapping due to the differences in the tools
 Backbone.js gives you and the fact that you’re building a user-interface, not a
 back-end. Some of the reasons why you won’t have a one to one mapping include:</p><div class="itemizedlist"><ul type="disc"><li>
@@ -147,7 +146,7 @@ plural representation of Tasks into what it calls Collections.</p><p>The simples
 following.</p><pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task
 });</pre><p>If we specify the url for Tasks in our collection instead, then models within
-the collection will use the collection’s url to construct their own urls, and
+the collection will use the collection’s url to construct their own URLs, and
 the urlRoot no longer needs to be specified in the model. If we make that
 change, then our collection and models will be as follows.</p><pre class="programlisting">var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -193,7 +192,7 @@ respond_to method.</p><pre class="programlisting">class TasksController &lt; App
     end
   end
 end</pre><p>Using respond_with you can create succinct controllers that respond with a
-normal web page, but also expose a JSON api that Backbone.js will use.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"></a>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated
+normal web page, but also expose a JSON API that Backbone.js will use.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"></a>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated
 before its attributes are set. If validation fails, no changes to the model will
 occur, and the "error" event will be fired. Your <code class="literal">validate</code> method will be passed
 the attributes that are about to be updated. You can signal that validation
@@ -229,7 +228,7 @@ application. For more information about handling and displaying errors, see
 the Form helpers section of the Views and Templates chapter.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"></a>Setting Up Views</h4></div></div></div><p>Most Backbone.js applications will be a "single-page app". This means that
 your Rails application will render a single-page which properly sets up
 Backbone.js and the data it will use. From there, ongoing interaction with
-your Rails application occurs via the JSON apis.</p><p>The most common page for this single-page application will be the index action
+your Rails application occurs via the JSON APIs.</p><p>The most common page for this single-page application will be the index action
 of a controller, as in our example application and the tasks controller.</p><p>You will want to create an object in Javascript for your Backbone.js application
 to reside. For more information on this namespacing see the "Namespacing your
 application" section of the Organization chapter.</p><p>This namespace variable holds your Backbone.js application’s Models,
@@ -302,7 +301,7 @@ support pushState will continue to use hash-based URL fragments, and if a hash
 URL is visited by a pushState-capable browser, it will be transparently
 upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
 that because the URL used are real URLs, your server must now how to render
-each of the urls. For example, if your Backbone.js application has a route of
+each of the URLs. For example, if your Backbone.js application has a route of
 /tasks/1, your server-side application must be able to respond to that page if
 the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
 would have for the root URL and letting Backbone.js handle the rest of the
@@ -410,7 +409,7 @@ model and controller discussed above, and we’re priming the pump with
 all the tasks, before we can convert the template we must create a Backbone.js
 view which will render the Backbone.js template.</p><p>A Backbone.js view is a class that is responsible for rendering the display of
 a logical element on the page. A view can also bind to events which may cause
-it to be re-rendered. For more detailed coverage of Bakcbone.js views, see the
+it to be re-rendered. For more detailed coverage of Backbone.js views, see the
 Routers, Views, and Templates chapter.</p><p>The most rudimentary view we could introduce at this point would be one that
 merely renders the above page markup, looping over each task in the Tasks
 collection. While this would be insufficient for most actual applications, in
@@ -511,9 +510,9 @@ TasksIndex and TaskView view, which is shown below.</p><pre class="programlistin
   }
 });</pre><p>The TaskView view above is very similar to the one we saw previously for the
 TasksIndex view. However, unlike the TasksIndex view, the TaskView does not
-insert itself into the dom. Instead, it only inserts its content into it’s own
+insert itself into the DOM. Instead, it only inserts its content into it’s own
 element and the TasksIndex view be responsible for inserting the rendered task
-into the dom, as shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+into the DOM, as shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
   initialize: function() {
     this.render();
   },
@@ -533,7 +532,7 @@ into the dom, as shown below.</p><pre class="programlisting">ExampleApp.Views.Ta
   }
 });</pre><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
 each task, a new TaskView is instantiated, rendered, and then inserted into
-the dom.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting">&lt;div&gt;
+the DOM.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting">&lt;div&gt;
   &lt;h1&gt;Tasks&lt;/h1&gt;
 
   &lt;table&gt;

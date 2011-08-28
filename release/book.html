@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.3" />
+<meta name="generator" content="AsciiDoc 8.6.5" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* BEG */
@@ -240,7 +240,6 @@ pre {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -302,6 +301,25 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName == 'DIV'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -329,24 +347,44 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  var cont = document.getElementById("content");
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
   var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      // Use [\s\S] in place of . so multi-line matches work.
-      // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
-      spans[i].innerHTML =
-        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -366,9 +404,32 @@ footnotes: function () {
       }
     }
   }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
 
 }
+asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -412,8 +473,8 @@ footnotes: function () {
 <div class="paragraph"><p>Backbone.js and Underscore.js are the non-minified versions. This is for
 informational purposes, but also because the Rails 3.1 asset pipeline will
 compress and minify them.</p></div>
-<div class="paragraph"><p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all example
-code normal Javascript as we believe that will be the most understandable to
+<div class="paragraph"><p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
+example code normal Javascript as we believe that will be the most understandable to
 the current readers.</p></div>
 </div>
 </div>
@@ -439,17 +500,17 @@ the benefits that the separation of concerns can give you. However, Rails itself
 is not doing "traditional" MVC. A traditional MVC is event-based. This means
 that the views trigger events which the controller figures out what to do with.
 It can be argued that the requests generated by the browser are the "events" in
-Rails, however, due to the single-threaded, request-response nature of the web,
+Rails; however, due to the single-threaded, request-response nature of the web,
 the control flow between the different levels of MVC is much more
 straightforward.</p></div>
 <div class="paragraph"><p>Given that Javascript has events, and that much of the interactions between the
 different components of Backbone.js in the browser are not limited to
 request/response, programming with Backbone.js is in a lot of ways more like
 working with a traditional MVC architecture.</p></div>
-<div class="paragraph"><p>That being said, technically speaking, Backbone.js is <em>not</em> MVC, and this was
-acknowledged by the creators of Backbone.js when they renamed Controllers to
-Routers in version 0.5.0.</p></div>
-<div class="paragraph"><p>So what is Backbone.js then if not MVC? Technically speaking, it&#8217;s just the
+<div class="paragraph"><p>That said, technically speaking, Backbone.js is <em>not</em> MVC, and the creators of
+Backbone.js acknowledged this when they renamed Controllers to Routers in
+version 0.5.0.</p></div>
+<div class="paragraph"><p>What is Backbone.js then, if not MVC? Technically speaking, it&#8217;s just the
 Models and the Views with a Router to handle flow between them. In Backbone.js
 the views will handle many of the aspects that controllers would typically
 handle, such as actually figuring out what to do next and what to render.</p></div>
@@ -597,7 +658,7 @@ avoid potential collisions in naming. For example, it&#8217;s possible that a
 Javascript library you want to use might also create a Task variable. If you
 didn&#8217;t namespace your Task model then this would conflict.</p></div>
 <div class="paragraph"><p>This variable includes a place to hold Models, Collections, Views, and Routes,
-and an init method which will be called to initialize the application. Its
+and an init method which will be called to initialize the application. It&#8217;s
 very common to create a new Router in the init function, and
 Backbone.history.start() must be called in order to route the initial URL.
 This app variable will look like the following.</p></div>
@@ -720,8 +781,8 @@ them separated from the server views:</p></div>
 </div></div>
 <div class="paragraph"><p>On Rails 3.0 and prior apps, we use Jammit for packaging assets and
 precompiling templates:</p></div>
-<div class="paragraph"><p><a href="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</a><br />
-<a href="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</a></p></div>
+<div class="paragraph"><p><a href="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</a></p></div>
+<div class="paragraph"><p><a href="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</a></p></div>
 <div class="paragraph"><p>Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:</p></div>
@@ -745,7 +806,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Note</div>
 </td>
 <td class="content">
-<div class="paragraph"><p>A note on Jammit and a JST naming gotcha</p></div>
+<div class="paragraph"><p>Jammit and a JST naming gotcha</p></div>
 <div class="paragraph"><p>One issue with Jammit that we&#8217;ve encountered and worked around is that the JST
 template path can change when adding new templates.</p></div>
 <div class="paragraph"><p>When using Jammit, there is a slightly sticky issue as an app grows from one
@@ -892,17 +953,17 @@ can view it at example_app/app/assets/javascripts/application.js.</p></div>
 <div class="paragraph"><p>By default Backbone.js communicates with your Rails application via JSON gets
 and posts. If you&#8217;ve ever made a JSON API for your Rails app, then for the most
 part this will be very similar.</p></div>
-<div class="paragraph"><p>If you haven&#8217;t ever made a JSON API for your Rails application before, lucky
+<div class="paragraph"><p>If you&#8217;ve never made a JSON API for your Rails application before, lucky
 you, it&#8217;s pretty straightforward.</p></div>
 <div class="sect3">
 <h4 id="_setting_up_rails_models">Setting Up Rails Models</h4>
 <div class="paragraph"><p>One important aspect to keep in mind as you plan out how your Backbone.js
-interface will behave, and how it will use your Rails back-end is that there is
+interface will behave, and how it will use your Rails back-end, is that there is
 no need to have a one-to-one mapping between your Rails models and your
 Backbone.js models.</p></div>
 <div class="paragraph"><p>The smaller an application is, the more likely that there will be a one-to-one
 mapping between both Backbone.js and Rails models and controllers.</p></div>
-<div class="paragraph"><p>However, if you have a sufficiently complex application, its more likely that
+<div class="paragraph"><p>However, if you have a sufficiently complex application, it&#8217;s more likely that
 you <em>won&#8217;t</em> have a one-to-one mapping due to the differences in the tools
 Backbone.js gives you and the fact that you&#8217;re building a user-interface, not a
 back-end. Some of the reasons why you won&#8217;t have a one to one mapping include:</p></div>
@@ -961,7 +1022,7 @@ http://www.gnu.org/software/src-highlite -->
   model<span style="color: #990000">:</span> Task
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>If we specify the url for Tasks in our collection instead, then models within
-the collection will use the collection&#8217;s url to construct their own urls, and
+the collection will use the collection&#8217;s url to construct their own URLs, and
 the urlRoot no longer needs to be specified in the model. If we make that
 change, then our collection and models will be as follows.</p></div>
 <div class="listingblock">
@@ -1039,7 +1100,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
 <div class="paragraph"><p>Using respond_with you can create succinct controllers that respond with a
-normal web page, but also expose a JSON api that Backbone.js will use.</p></div>
+normal web page, but also expose a JSON API that Backbone.js will use.</p></div>
 <div class="sect4">
 <h5 id="_validations_and_your_http_api">Validations and your HTTP API</h5>
 <div class="paragraph"><p>If a Backbone.js model has a <tt>validate</tt> method defined, it will be validated
@@ -1101,7 +1162,7 @@ the Form helpers section of the Views and Templates chapter.</p></div>
 <div class="paragraph"><p>Most Backbone.js applications will be a "single-page app". This means that
 your Rails application will render a single-page which properly sets up
 Backbone.js and the data it will use. From there, ongoing interaction with
-your Rails application occurs via the JSON apis.</p></div>
+your Rails application occurs via the JSON APIs.</p></div>
 <div class="paragraph"><p>The most common page for this single-page application will be the index action
 of a controller, as in our example application and the tasks controller.</p></div>
 <div class="paragraph"><p>You will want to create an object in Javascript for your Backbone.js application
@@ -1236,7 +1297,7 @@ URL is visited by a pushState-capable browser, it will be transparently
 upgraded to the true URL.</p></div>
 <div class="paragraph"><p>In addition to browser support, another hurdle to seamless use of pushState is
 that because the URL used are real URLs, your server must now how to render
-each of the urls. For example, if your Backbone.js application has a route of
+each of the URLs. For example, if your Backbone.js application has a route of
 /tasks/1, your server-side application must be able to respond to that page if
 the browser visits that URL directly.</p></div>
 <div class="paragraph"><p>For most applications, you can handle this by just rendering the content you
@@ -1427,7 +1488,7 @@ all the tasks, before we can convert the template we must create a Backbone.js
 view which will render the Backbone.js template.</p></div>
 <div class="paragraph"><p>A Backbone.js view is a class that is responsible for rendering the display of
 a logical element on the page. A view can also bind to events which may cause
-it to be re-rendered. For more detailed coverage of Bakcbone.js views, see the
+it to be re-rendered. For more detailed coverage of Backbone.js views, see the
 Routers, Views, and Templates chapter.</p></div>
 <div class="paragraph"><p>The most rudimentary view we could introduce at this point would be one that
 merely renders the above page markup, looping over each task in the Tasks
@@ -1593,9 +1654,9 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>The TaskView view above is very similar to the one we saw previously for the
 TasksIndex view. However, unlike the TasksIndex view, the TaskView does not
-insert itself into the dom. Instead, it only inserts its content into it&#8217;s own
+insert itself into the DOM. Instead, it only inserts its content into it&#8217;s own
 element and the TasksIndex view be responsible for inserting the rendered task
-into the dom, as shown below.</p></div>
+into the DOM, as shown below.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -1622,7 +1683,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 <div class="paragraph"><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
 each task, a new TaskView is instantiated, rendered, and then inserted into
-the dom.</p></div>
+the DOM.</p></div>
 <div class="paragraph"><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -2871,7 +2932,7 @@ action, or even a separate presenter class.</p></div>
 <div class="sect2">
 <h3 id="_filters_and_sorting">Filters and sorting</h3>
 <div class="paragraph"><p>When using our Backbone models and collections, it&#8217;s often handy to filter the
-collections by resuable criteria, or sort them by several different criteria.</p></div>
+collections by reusable criteria, or sort them by several different criteria.</p></div>
 <div class="sect3">
 <h4 id="_filters">Filters</h4>
 <div class="paragraph"><p>To filter a <tt>Backbone.Collection</tt>, like with Rails named scopes, define
@@ -3190,7 +3251,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-08-25 10:42:45 EDT
+Last updated 2011-08-27 21:09:28 EDT
 </div>
 </div>
 </body>
