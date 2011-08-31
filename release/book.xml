@@ -672,8 +672,8 @@ variable, and that can be used to prime the pump, as shown below.</simpara>
   }
 };</programlisting>
 <simpara>Finally, you must have a Router in place which knows what to do. We&#8217;ll cover
-routers in more detail in the Views and Templates chapter. For a more in-depth
-presentation on writing and using routes please go there. However, routers are
+routers in more detail in the Routers, Views and Templates chapter. For a more in-depth
+presentation on writing and using routers please go there. However, routers are
 an important part of the infrastructure you need to start using Backbone.js
 and we can&#8217;t make our example here work without them.</simpara>
 <simpara>Backbone.js routers provide methods for routing application flow based on
@@ -701,29 +701,6 @@ called.</simpara>
 infrastructure. When a user visits <literal>/tasks</literal> the index.html.erb view will be
 rendered which properly initialized Backbone.js and its dependencies and the
 Backbone.js models, collections, routers, and views.</simpara>
-<note>
-<simpara>Backbone.js now includes support for pushState, which can use real, full URLs
-instead of url fragments for routing.</simpara>
-<simpara>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</simpara>
-<simpara>pushState support is current limited to the latest versions of Firefox,
-Chrome, and Safari and Mobile Safari. For a full listing of support and more
-information about the History API, of which pushState is a part, visit
-<ulink url="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</ulink></simpara>
-<simpara>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
-support pushState will continue to use hash-based URL fragments, and if a hash
-URL is visited by a pushState-capable browser, it will be transparently
-upgraded to the true URL.</simpara>
-<simpara>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
-each of the URLs. For example, if your Backbone.js application has a route of
-/tasks/1, your server-side application must be able to respond to that page if
-the browser visits that URL directly.</simpara>
-<simpara>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting Backbone.js handle the rest of the
-routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</simpara>
-</note>
 </section>
 </section>
 <section id="_customizing_your_rails_generated_json">
@@ -1188,14 +1165,207 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</simpara>
 </section>
 <section id="_routers_views_and_templates">
 <title>Routers, Views, and Templates</title>
-<section id="_view_explanation_chapter_unstarted">
-<title>View explanation (chapter unstarted)</title>
+<section id="_view_explanation">
+<title>View explanation</title>
+<simpara>A Backbone.js view is a class that is responsible for rendering the display of
+a logical element on the page. A view can also bind to events which may cause
+it to be re-rendered.</simpara>
+<simpara>Its important to note that a Rails view is not directly analogous to a
+Backbone.js view. A Rails view is more like a Backbone.js template, and
+Backbone.js views are often more like Rails controllers, in that they are
+responsible for logic about what should be rendered and how and rendering the
+actual template file. This can cause confusion with developers just started
+with Backbone.js.</simpara>
+<simpara>A basic Backbone.js view appears as follows.</simpara>
+<programlisting language="js" linenumbering="unnumbered">ExampleApp.Views.ExampleView = Backbone.View.extend({
+  tagName: "li",
+
+  className: "example",
+
+  id: "example_view",
+
+  events: {
+    "click a.save": "save"
+  },
+
+  initialize: function() {
+    this.render();
+  },
+
+  render: function() {
+    $(this.el).html(JST['example/view']({ model:  }));
+    $('body').html(this.el);
+
+    return this;
+  },
+
+  save: function() {
+    // do something
+  }
+};</programlisting>
+<section id="_initialization">
+<title>Initialization</title>
+<simpara>The Backbone.js view above has an initialize function which will be called
+when the view is instantiated.</simpara>
+<simpara>You only need to specify the initialize function if you wish to do something
+custom. For example, the above view&#8217;s initialize function calls the render
+function of the view. It&#8217;s not necessary to immediately render upon
+initialization, but it&#8217;s relatively common to do so.</simpara>
+<simpara>You create a new view by instantiating it with <literal>new</literal>. For example <literal>new
+ExampleView()</literal>. It is possible to pass in a hash of options with <literal>new
+ExampleView(options)</literal>. Any options you pass into the constructor will be
+available inside of the view in <literal>this.options</literal>.</simpara>
+<simpara>There are a few special options that, when passed, will be assigned to other
+members in the view directly. These are <literal>model</literal>, <literal>collection</literal>, <literal>el</literal>, <literal>id</literal>,
+<literal>className</literal>, and <literal>tagName</literal>. For example, if you create a new view and give it
+a model option with <literal>new ExampleView({ model: Task })</literal> then inside of the view
+the model you passed in as an option will be available in <literal>this.model</literal>.</simpara>
 </section>
-<section id="_routers_chapter_unstarted">
-<title>Routers (chapter unstarted)</title>
+<section id="_the_view_8217_s_element">
+<title>The View&#8217;s Element</title>
+<simpara>Each Backbone.js view has an element which is stores in <literal>this.el</literal>. This element
+can be populated with content, but isn&#8217;t on the page until placed there by
+you. Using this strategy it is then possible to render views outside of the
+current DOM at any time, inserting the new elements all at once. In this way,
+high performance rendering of views can be achieved with as few reflows and
+repaints as possible.</simpara>
+<simpara>It is possible to create a view that references an element already in the DOM,
+instead of a new element. To do this, pass in the existing element as an
+option to the view constructor with <literal>new ExampleView({ el: existingElement })</literal>.</simpara>
+<simpara>You can use <literal>tagName</literal>, <literal>className</literal>, and <literal>id</literal> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<literal>div</literal>.</simpara>
+</section>
+<section id="_customizing_the_view_8217_s_element">
+<title>Customizing the View&#8217;s Element</title>
+<simpara>You can use <literal>tagName</literal>, <literal>className</literal>, and <literal>id</literal> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<literal>div</literal>.</simpara>
+<simpara><literal>tagName</literal>, <literal>className</literal>, and <literal>id</literal> can either be specified directly on the view
+or passed in as options at instantiation time. Since <literal>id</literal> is likely to be
+individual to each model, its most likely to pass that in as an option rather
+than declaring it statically in the view.</simpara>
+<simpara><literal>tagName</literal> will change the element that is created from a <literal>div</literal> to something
+else that you specify. For example, setting <literal>tagName: "li"</literal> will result in the
+view&#8217;s element being an <literal>li</literal> rather than a <literal>div</literal>.</simpara>
+<simpara><literal>className</literal> will add an additional class to the element that is created for
+the view. For example, setting <literal>className: "example"</literal> on the view will result
+in view&#8217;s element with that additional class like <literal>&lt;div class="example"&gt;</literal>.</simpara>
+</section>
+<section id="_rendering">
+<title>Rendering</title>
+<simpara>The <literal>render</literal> function above renders the <literal>example/view</literal> template. Template
+rendering is covered in depth in the "Templating strategy" chapter. Suffice to
+say, nearly every view&#8217;s render function will render some form of template. Once
+that template is rendered, any other actions to modify the view may be taken.</simpara>
+<simpara>Typical functionality in <literal>render</literal> in addition to rendering a template would be
+to add additional classes or attributes to <literal>this.el</literal> or fire or bind other
+events.</simpara>
+<simpara>Backbone.js, when used with jQuery (or Zepto) provides a convenience function
+of <literal>this.$</literal> that can be used for selecting elements inside of the view.
+<literal>this.$(selector)</literal> is equivalent to the jQuery function call <literal>$(selector,
+this.el)</literal></simpara>
+<simpara>A nice convention of the render function is to return <literal>this</literal> at the end of
+render to enable chained calls on the view.</simpara>
+</section>
+<section id="_events">
+<title>Events</title>
+<simpara>The view&#8217;s <literal>events</literal> hash specifies a mapping of the events and elements that
+should have events bound, and the functions that should be bound to those
+events. In the example above the <literal>click</literal> event is being bound to the
+element(s) that match the selector <literal>a.save</literal> within the view&#8217;s element. When
+that event fires, the <literal>save</literal> function will be called on the view.</simpara>
+<simpara>Events bound automatically with the <literal>events</literal> hash, the DOM events are bound
+with the <literal>$.delegate()</literal> function. Backbone.js also takes care of binding the
+event handlers' <literal>this</literal> to the view instance using <literal>_.bind()</literal>.</simpara>
+<simpara>Event binding is covered in great detail in the "Event binding" chapter.</simpara>
+</section>
 </section>
 <section id="_templating_strategy_chapter_unstarted">
 <title>Templating strategy (chapter unstarted)</title>
+</section>
+<section id="_routers">
+<title>Routers</title>
+<simpara>Routers are an important part of the Backbone.js infrastructure. Backbone.js
+routers provide methods for routing application flow based on client-side URL
+fragments (#fragment).</simpara>
+<note>
+<simpara>Backbone.js now includes support for pushState, which can use real, full URLs
+instead of url fragments for routing.</simpara>
+<simpara>However, pushState support in Backbone.js is fully opt-in due to lack of
+browser support and that additional server-side work is required to support it.</simpara>
+<simpara>pushState support is current limited to the latest versions of Firefox,
+Chrome, and Safari and Mobile Safari. For a full listing of support and more
+information about the History API, of which pushState is a part, visit
+<ulink url="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</ulink></simpara>
+<simpara>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
+support pushState will continue to use hash-based URL fragments, and if a hash
+URL is visited by a pushState-capable browser, it will be transparently
+upgraded to the true URL.</simpara>
+<simpara>In addition to browser support, another hurdle to seamless use of pushState is
+that because the URL used are real URLs, your server must now how to render
+each of the URLs. For example, if your Backbone.js application has a route of
+/tasks/1, your server-side application must be able to respond to that page if
+the browser visits that URL directly.</simpara>
+<simpara>For most applications, you can handle this by just rendering the content you
+would have for the root URL and letting Backbone.js handle the rest of the
+routing to the proper location. But for full search-engine crawlability, your
+server-side application will need to render the entire HTML of the requested page.</simpara>
+<simpara>For all the reasons and complications above, the examples in this book all
+currently use URL fragments and not pushState.</simpara>
+</note>
+<simpara>A typical Backbone.js router will appear as shown below.</simpara>
+<programlisting language="js" linenumbering="unnumbered">ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
+  routes: {
+    ""         : "index"
+    "show/:id" : "show"
+  },
+
+  index: function() {
+    // Render the index view
+  }
+
+  show: function(id) {
+    // Render the show view
+  }
+});</programlisting>
+<section id="_the_routes_hash">
+<title>The Routes Hash</title>
+<simpara>The basic router consists of a routes hash which is a mapping between URL
+fragments and methods on the router. If the current URL fragment, or one that
+is being visited matches one of the routes in the hash, its method will be
+called.</simpara>
+<simpara>Like Rails routes, Backbone.js routes can contain parameter parts, as seen in
+the <literal>show</literal> route in the example above. In this route, the part of the fragment
+after <literal>show/</literal> will then be based as an argument to the <literal>show</literal> method.</simpara>
+<simpara>Multiple parameters are possible, as well. For example, a route of
+<literal>search/:query/p:page</literal> will match a fragment of <literal>search/completed/p2</literal> passing
+passing <literal>completed</literal> and <literal>2</literal> to the action.</simpara>
+<simpara>In the routes, <literal>/</literal> is the natural separator. For example, a route of
+<literal>show/:id</literal> will not match a fragment of <literal>show/1/2</literal>. To match through route,
+Backbone.js provides the concept of splat parts, identified by <literal>*</literal> instead of
+<literal>:</literal>. For example, a route of <literal>show/*id</literal> would match the previous fragment, and
+<literal>1/2</literal> would be passed to the action as the <literal>id</literal> variable.</simpara>
+<simpara>Routing occurs when the browser&#8217;s URL changes. This can occur when clicking on
+a link, entering a URL into the browser&#8217;s URL bar, or clicking the back
+button. In all of those cases, Backbone.js will look to see if the new URL
+matches an existing route. If it does, the specified function will be called
+with any parameters.</simpara>
+<simpara>In addition, an event with the name of "route" and the function will be
+triggered. For example, when the <literal>show</literal> route above is routed, an event of
+<literal>route:show</literal> will be fired. This is so that other objects can listen to the
+router, and be notified about certain routes.</simpara>
+</section>
+<section id="_initializing_a_router">
+<title>Initializing a Router</title>
+<simpara>It is possible to specify an <literal>initialize</literal> function in a Router which will be
+called when the Router is instantiated. Any arguments passed to the Routes
+constructor will be passed to this <literal>initialize</literal> function.</simpara>
+<simpara>Additionally, it is possible to pass the routes for a router via the
+constructor like <literal>new ExampleRouter({ routes: { "" : "index" }}</literal>. But note
+that this will override any routes defined in the routes hash on the router
+itself.</simpara>
+</section>
 </section>
 <section id="_view_helpers_chapter_unstarted">
 <title>View helpers (chapter unstarted)</title>
@@ -1206,7 +1376,7 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</simpara>
 <section id="_event_binding">
 <title>Event binding</title>
 <simpara>A big part of writing snappy rich client applications is building models and
-views that update in realtime with respect to one another.  With Backbone.js
+views that update in real-time with respect to one another.  With Backbone.js
 you accomplish this with events.</simpara>
 <simpara>TODO: This is probably the first time we dive into events, unless we touch on
 them earlier in the models/collections sections.  Might want to introduce the

@@ -267,8 +267,8 @@ variable, and that can be used to prime the pump, as shown below.</p><pre class=
     Backbone.history.start();
   }
 };</pre><p>Finally, you must have a Router in place which knows what to do. We’ll cover
-routers in more detail in the Views and Templates chapter. For a more in-depth
-presentation on writing and using routes please go there. However, routers are
+routers in more detail in the Routers, Views and Templates chapter. For a more in-depth
+presentation on writing and using routers please go there. However, routers are
 an important part of the infrastructure you need to start using Backbone.js
 and we can’t make our example here work without them.</p><p>Backbone.js routers provide methods for routing application flow based on
 client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
@@ -291,22 +291,7 @@ is being visited matches one of the routes in the hash, its method will be
 called.</p><p>The example router above is all that is needed to complete our Backbone.js
 infrastructure. When a user visits <code class="literal">/tasks</code> the index.html.erb view will be
 rendered which properly initialized Backbone.js and its dependencies and the
-Backbone.js models, collections, routers, and views.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
-instead of url fragments for routing.</p><p>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</p><p>pushState support is current limited to the latest versions of Firefox,
-Chrome, and Safari and Mobile Safari. For a full listing of support and more
-information about the History API, of which pushState is a part, visit
-<a class="ulink" href="http://diveintohtml5.org/history.html#how" target="_top">http://diveintohtml5.org/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
-support pushState will continue to use hash-based URL fragments, and if a hash
-URL is visited by a pushState-capable browser, it will be transparently
-upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
-each of the URLs. For example, if your Backbone.js application has a route of
-/tasks/1, your server-side application must be able to respond to that page if
-the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting Backbone.js handle the rest of the
-routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</p></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"></a>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
+Backbone.js models, collections, routers, and views.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"></a>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
 Backbone.js.</p><p>First, it’s likely that you’ll want to switch from including all attributes (the
 default) to delivering some subset.</p><p>This can be done by specifying explicitly only the attributes that are to be
 included (whitelisting), or specifying the attributes that should <span class="emphasis"><em>not</em></span> be

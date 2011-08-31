@@ -1,7 +1,137 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Routers, Views, and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Routers, Views, and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_routers_views_and_templates"></a>Routers, Views, and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation_chapter_unstarted"></a>View explanation (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_routers_chapter_unstarted"></a>Routers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding"></a>Event binding</h3></div></div></div><p>A big part of writing snappy rich client applications is building models and
-views that update in realtime with respect to one another.  With Backbone.js
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Routers, Views, and Templates</title><link rel="stylesheet" href="stylesheets/handbookish.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.74.1" /><link rel="home" href="index.html" title="Backbone.js on Rails" /><link rel="up" href="index.html" title="Backbone.js on Rails" /><link rel="prev" href="ar01s05.html" title="Rails Integration" /><link rel="next" href="ar01s07.html" title="Models and collections" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Routers, Views, and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_routers_views_and_templates"></a>Routers, Views, and Templates</h2></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation"></a>View explanation</h3></div></div></div><p>A Backbone.js view is a class that is responsible for rendering the display of
+a logical element on the page. A view can also bind to events which may cause
+it to be re-rendered.</p><p>Its important to note that a Rails view is not directly analogous to a
+Backbone.js view. A Rails view is more like a Backbone.js template, and
+Backbone.js views are often more like Rails controllers, in that they are
+responsible for logic about what should be rendered and how and rendering the
+actual template file. This can cause confusion with developers just started
+with Backbone.js.</p><p>A basic Backbone.js view appears as follows.</p><pre class="programlisting">ExampleApp.Views.ExampleView = Backbone.View.extend({
+  tagName: "li",
+
+  className: "example",
+
+  id: "example_view",
+
+  events: {
+    "click a.save": "save"
+  },
+
+  initialize: function() {
+    this.render();
+  },
+
+  render: function() {
+    $(this.el).html(JST['example/view']({ model:  }));
+    $('body').html(this.el);
+
+    return this;
+  },
+
+  save: function() {
+    // do something
+  }
+};</pre><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initialization"></a>Initialization</h4></div></div></div><p>The Backbone.js view above has an initialize function which will be called
+when the view is instantiated.</p><p>You only need to specify the initialize function if you wish to do something
+custom. For example, the above view’s initialize function calls the render
+function of the view. It’s not necessary to immediately render upon
+initialization, but it’s relatively common to do so.</p><p>You create a new view by instantiating it with <code class="literal">new</code>. For example <code class="literal">new
+ExampleView()</code>. It is possible to pass in a hash of options with <code class="literal">new
+ExampleView(options)</code>. Any options you pass into the constructor will be
+available inside of the view in <code class="literal">this.options</code>.</p><p>There are a few special options that, when passed, will be assigned to other
+members in the view directly. These are <code class="literal">model</code>, <code class="literal">collection</code>, <code class="literal">el</code>, <code class="literal">id</code>,
+<code class="literal">className</code>, and <code class="literal">tagName</code>. For example, if you create a new view and give it
+a model option with <code class="literal">new ExampleView({ model: Task })</code> then inside of the view
+the model you passed in as an option will be available in <code class="literal">this.model</code>.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_view_8217_s_element"></a>The View’s Element</h4></div></div></div><p>Each Backbone.js view has an element which is stores in <code class="literal">this.el</code>. This element
+can be populated with content, but isn’t on the page until placed there by
+you. Using this strategy it is then possible to render views outside of the
+current DOM at any time, inserting the new elements all at once. In this way,
+high performance rendering of views can be achieved with as few reflows and
+repaints as possible.</p><p>It is possible to create a view that references an element already in the DOM,
+instead of a new element. To do this, pass in the existing element as an
+option to the view constructor with <code class="literal">new ExampleView({ el: existingElement })</code>.</p><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<code class="literal">div</code>.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_customizing_the_view_8217_s_element"></a>Customizing the View’s Element</h4></div></div></div><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<code class="literal">div</code>.</p><p><code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> can either be specified directly on the view
+or passed in as options at instantiation time. Since <code class="literal">id</code> is likely to be
+individual to each model, its most likely to pass that in as an option rather
+than declaring it statically in the view.</p><p><code class="literal">tagName</code> will change the element that is created from a <code class="literal">div</code> to something
+else that you specify. For example, setting <code class="literal">tagName: "li"</code> will result in the
+view’s element being an <code class="literal">li</code> rather than a <code class="literal">div</code>.</p><p><code class="literal">className</code> will add an additional class to the element that is created for
+the view. For example, setting <code class="literal">className: "example"</code> on the view will result
+in view’s element with that additional class like <code class="literal">&lt;div class="example"&gt;</code>.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_rendering"></a>Rendering</h4></div></div></div><p>The <code class="literal">render</code> function above renders the <code class="literal">example/view</code> template. Template
+rendering is covered in depth in the "Templating strategy" chapter. Suffice to
+say, nearly every view’s render function will render some form of template. Once
+that template is rendered, any other actions to modify the view may be taken.</p><p>Typical functionality in <code class="literal">render</code> in addition to rendering a template would be
+to add additional classes or attributes to <code class="literal">this.el</code> or fire or bind other
+events.</p><p>Backbone.js, when used with jQuery (or Zepto) provides a convenience function
+of <code class="literal">this.$</code> that can be used for selecting elements inside of the view.
+<code class="literal">this.$(selector)</code> is equivalent to the jQuery function call <code class="literal">$(selector,
+this.el)</code></p><p>A nice convention of the render function is to return <code class="literal">this</code> at the end of
+render to enable chained calls on the view.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_events"></a>Events</h4></div></div></div><p>The view’s <code class="literal">events</code> hash specifies a mapping of the events and elements that
+should have events bound, and the functions that should be bound to those
+events. In the example above the <code class="literal">click</code> event is being bound to the
+element(s) that match the selector <code class="literal">a.save</code> within the view’s element. When
+that event fires, the <code class="literal">save</code> function will be called on the view.</p><p>Events bound automatically with the <code class="literal">events</code> hash, the DOM events are bound
+with the <code class="literal">$.delegate()</code> function. Backbone.js also takes care of binding the
+event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p><p>Event binding is covered in great detail in the "Event binding" chapter.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_routers"></a>Routers</h3></div></div></div><p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
+routers provide methods for routing application flow based on client-side URL
+fragments (#fragment).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
+instead of url fragments for routing.</p><p>However, pushState support in Backbone.js is fully opt-in due to lack of
+browser support and that additional server-side work is required to support it.</p><p>pushState support is current limited to the latest versions of Firefox,
+Chrome, and Safari and Mobile Safari. For a full listing of support and more
+information about the History API, of which pushState is a part, visit
+<a class="ulink" href="http://diveintohtml5.org/history.html#how" target="_top">http://diveintohtml5.org/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
+support pushState will continue to use hash-based URL fragments, and if a hash
+URL is visited by a pushState-capable browser, it will be transparently
+upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
+that because the URL used are real URLs, your server must now how to render
+each of the URLs. For example, if your Backbone.js application has a route of
+/tasks/1, your server-side application must be able to respond to that page if
+the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
+would have for the root URL and letting Backbone.js handle the rest of the
+routing to the proper location. But for full search-engine crawlability, your
+server-side application will need to render the entire HTML of the requested page.</p><p>For all the reasons and complications above, the examples in this book all
+currently use URL fragments and not pushState.</p></div><p>A typical Backbone.js router will appear as shown below.</p><pre class="programlisting">ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
+  routes: {
+    ""         : "index"
+    "show/:id" : "show"
+  },
+
+  index: function() {
+    // Render the index view
+  }
+
+  show: function(id) {
+    // Render the show view
+  }
+});</pre><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_routes_hash"></a>The Routes Hash</h4></div></div></div><p>The basic router consists of a routes hash which is a mapping between URL
+fragments and methods on the router. If the current URL fragment, or one that
+is being visited matches one of the routes in the hash, its method will be
+called.</p><p>Like Rails routes, Backbone.js routes can contain parameter parts, as seen in
+the <code class="literal">show</code> route in the example above. In this route, the part of the fragment
+after <code class="literal">show/</code> will then be based as an argument to the <code class="literal">show</code> method.</p><p>Multiple parameters are possible, as well. For example, a route of
+<code class="literal">search/:query/p:page</code> will match a fragment of <code class="literal">search/completed/p2</code> passing
+passing <code class="literal">completed</code> and <code class="literal">2</code> to the action.</p><p>In the routes, <code class="literal">/</code> is the natural separator. For example, a route of
+<code class="literal">show/:id</code> will not match a fragment of <code class="literal">show/1/2</code>. To match through route,
+Backbone.js provides the concept of splat parts, identified by <code class="literal">*</code> instead of
+<code class="literal">:</code>. For example, a route of <code class="literal">show/*id</code> would match the previous fragment, and
+<code class="literal">1/2</code> would be passed to the action as the <code class="literal">id</code> variable.</p><p>Routing occurs when the browser’s URL changes. This can occur when clicking on
+a link, entering a URL into the browser’s URL bar, or clicking the back
+button. In all of those cases, Backbone.js will look to see if the new URL
+matches an existing route. If it does, the specified function will be called
+with any parameters.</p><p>In addition, an event with the name of "route" and the function will be
+triggered. For example, when the <code class="literal">show</code> route above is routed, an event of
+<code class="literal">route:show</code> will be fired. This is so that other objects can listen to the
+router, and be notified about certain routes.</p></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initializing_a_router"></a>Initializing a Router</h4></div></div></div><p>It is possible to specify an <code class="literal">initialize</code> function in a Router which will be
+called when the Router is instantiated. Any arguments passed to the Routes
+constructor will be passed to this <code class="literal">initialize</code> function.</p><p>Additionally, it is possible to pass the routes for a router via the
+constructor like <code class="literal">new ExampleRouter({ routes: { "" : "index" }}</code>. But note
+that this will override any routes defined in the routes hash on the router
+itself.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding"></a>Event binding</h3></div></div></div><p>A big part of writing snappy rich client applications is building models and
+views that update in real-time with respect to one another.  With Backbone.js
 you accomplish this with events.</p><p>TODO: This is probably the first time we dive into events, unless we touch on
 them earlier in the models/collections sections.  Might want to introduce the
 topic with a basic example that uses <code class="literal">Backbone.Events</code> without views &amp; models.</p><p>There are three primary kinds of events that your views will bind to:</p><div class="itemizedlist"><ul type="disc"><li>
@@ -95,7 +225,7 @@ observes this event, and filters its own collection in response.</p></div></div>
 your <code class="literal">Backbone.Views</code> classes: DOM events, model/collection events, and custom
 view events.  Next we’ll discuss unbinding these events: why it’s a good idea,
 and how to do it.</p><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_why_do_i_have_to_unbind_events"></a>Why do I have to unbind events?</h4></div></div></div><p>Consider two views in a Todo app: an index view which contains all the tasks
-that need to be done:</p><div class="figure"><a id="idp4809616"></a><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" /></div></div></div><br class="figure-break" /><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="idp4812624"></a><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" /></div></div></div><br class="figure-break" /><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting">var TasksIndex = Backbone.View.extend({
+that need to be done:</p><div class="figure"><a id="id449791"></a><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" /></div></div></div><br class="figure-break" /><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="id449818"></a><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" /></div></div></div><br class="figure-break" /><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting">var TasksIndex = Backbone.View.extend({
   template: JST['tasks/tasks_index'],
   tagName: 'section',
   id: 'tasks',
@@ -316,7 +446,7 @@ var inherits = function(parent, protoProps, staticProps) {
 reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
 utility functions to allow more class-style inheritance.</p><p>The end result here is that whenever you make a custom controller, internally
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
-<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="idp4908320"></a><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/router-diagram.png" alt="views_and_templates/router-diagram.png" /></div></div></div><br class="figure-break" /><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
+<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="id450675"></a><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/router-diagram.png" alt="views_and_templates/router-diagram.png" /></div></div></div><br class="figure-break" /><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
 taught you that although it’s more code, it’s hopefully going to save time down
 the road for those maintaining your code.</p></div></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"></a>Composite views</h3></div></div></div><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension

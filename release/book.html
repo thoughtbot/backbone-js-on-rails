@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.5" />
+<meta name="generator" content="AsciiDoc 8.6.3" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* BEG */
@@ -240,6 +240,7 @@ pre {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -301,25 +302,6 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
-  if (!toc) {
-    return;
-  }
-
-  // Delete existing TOC entries in case we're reloading the TOC.
-  var tocEntriesToRemove = [];
-  var i;
-  for (i = 0; i < toc.childNodes.length; i++) {
-    var entry = toc.childNodes[i];
-    if (entry.nodeName == 'DIV'
-     && entry.getAttribute("class")
-     && entry.getAttribute("class").match(/^toclevel/))
-      tocEntriesToRemove.push(entry);
-  }
-  for (i = 0; i < tocEntriesToRemove.length; i++) {
-    toc.removeChild(tocEntriesToRemove[i]);
-  }
-
-  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -347,44 +329,24 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  // Delete existing footnote entries in case we're reloading the footnodes.
-  var i;
-  var noteholder = document.getElementById("footnotes");
-  if (!noteholder) {
-    return;
-  }
-  var entriesToRemove = [];
-  for (i = 0; i < noteholder.childNodes.length; i++) {
-    var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
-      entriesToRemove.push(entry);
-  }
-  for (i = 0; i < entriesToRemove.length; i++) {
-    noteholder.removeChild(entriesToRemove[i]);
-  }
-
-  // Rebuild footnote entries.
   var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      var note = spans[i].getAttribute("data-note");
-      if (!note) {
-        // Use [\s\S] in place of . so multi-line matches work.
-        // Because JavaScript has no s (dotall) regex flag.
-        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
-        spans[i].innerHTML =
-          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-          "' title='View footnote' class='footnote'>" + n + "</a>]";
-        spans[i].setAttribute("data-note", note);
-      }
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -404,32 +366,9 @@ footnotes: function () {
       }
     }
   }
-},
-
-install: function(toclevels) {
-  var timerId;
-
-  function reinstall() {
-    asciidoc.footnotes();
-    if (toclevels) {
-      asciidoc.toc(toclevels);
-    }
-  }
-
-  function reinstallAndRemoveTimer() {
-    clearInterval(timerId);
-    reinstall();
-  }
-
-  timerId = setInterval(reinstall, 500);
-  if (document.addEventListener)
-    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
-  else
-    window.onload = reinstallAndRemoveTimer;
 }
 
 }
-asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -1243,8 +1182,8 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
 <div class="paragraph"><p>Finally, you must have a Router in place which knows what to do. We&#8217;ll cover
-routers in more detail in the Views and Templates chapter. For a more in-depth
-presentation on writing and using routes please go there. However, routers are
+routers in more detail in the Routers, Views and Templates chapter. For a more in-depth
+presentation on writing and using routers please go there. However, routers are
 an important part of the infrastructure you need to start using Backbone.js
 and we can&#8217;t make our example here work without them.</p></div>
 <div class="paragraph"><p>Backbone.js routers provide methods for routing application flow based on
@@ -1277,36 +1216,6 @@ called.</p></div>
 infrastructure. When a user visits <tt>/tasks</tt> the index.html.erb view will be
 rendered which properly initialized Backbone.js and its dependencies and the
 Backbone.js models, collections, routers, and views.</p></div>
-<div class="admonitionblock">
-<table><tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-<div class="paragraph"><p>Backbone.js now includes support for pushState, which can use real, full URLs
-instead of url fragments for routing.</p></div>
-<div class="paragraph"><p>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</p></div>
-<div class="paragraph"><p>pushState support is current limited to the latest versions of Firefox,
-Chrome, and Safari and Mobile Safari. For a full listing of support and more
-information about the History API, of which pushState is a part, visit
-<a href="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</a></p></div>
-<div class="paragraph"><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
-support pushState will continue to use hash-based URL fragments, and if a hash
-URL is visited by a pushState-capable browser, it will be transparently
-upgraded to the true URL.</p></div>
-<div class="paragraph"><p>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
-each of the URLs. For example, if your Backbone.js application has a route of
-/tasks/1, your server-side application must be able to respond to that page if
-the browser visits that URL directly.</p></div>
-<div class="paragraph"><p>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting Backbone.js handle the rest of the
-routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</p></div>
-</td>
-</tr></table>
-</div>
 </div>
 </div>
 <div class="sect2">
@@ -1874,13 +1783,223 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div>
 <h2 id="_routers_views_and_templates">Routers, Views, and Templates</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_view_explanation_chapter_unstarted">View explanation (chapter unstarted)</h3>
+<h3 id="_view_explanation">View explanation</h3>
+<div class="paragraph"><p>A Backbone.js view is a class that is responsible for rendering the display of
+a logical element on the page. A view can also bind to events which may cause
+it to be re-rendered.</p></div>
+<div class="paragraph"><p>Its important to note that a Rails view is not directly analogous to a
+Backbone.js view. A Rails view is more like a Backbone.js template, and
+Backbone.js views are often more like Rails controllers, in that they are
+responsible for logic about what should be rendered and how and rendering the
+actual template file. This can cause confusion with developers just started
+with Backbone.js.</p></div>
+<div class="paragraph"><p>A basic Backbone.js view appears as follows.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Views<span style="color: #990000">.</span>ExampleView <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>View<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  tagName<span style="color: #990000">:</span> <span style="color: #FF0000">"li"</span><span style="color: #990000">,</span>
+
+  className<span style="color: #990000">:</span> <span style="color: #FF0000">"example"</span><span style="color: #990000">,</span>
+
+  id<span style="color: #990000">:</span> <span style="color: #FF0000">"example_view"</span><span style="color: #990000">,</span>
+
+  events<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">"click a.save"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"save"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">render</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    $<span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span>JST<span style="color: #990000">[</span><span style="color: #FF0000">'example/view'</span><span style="color: #990000">](</span><span style="color: #FF0000">{</span> model<span style="color: #990000">:</span>  <span style="color: #FF0000">}</span><span style="color: #990000">));</span>
+    $<span style="color: #990000">(</span><span style="color: #FF0000">'body'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">html</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>el<span style="color: #990000">);</span>
+
+    <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  save<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// do something</span></span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
+<div class="sect3">
+<h4 id="_initialization">Initialization</h4>
+<div class="paragraph"><p>The Backbone.js view above has an initialize function which will be called
+when the view is instantiated.</p></div>
+<div class="paragraph"><p>You only need to specify the initialize function if you wish to do something
+custom. For example, the above view&#8217;s initialize function calls the render
+function of the view. It&#8217;s not necessary to immediately render upon
+initialization, but it&#8217;s relatively common to do so.</p></div>
+<div class="paragraph"><p>You create a new view by instantiating it with <tt>new</tt>. For example <tt>new
+ExampleView()</tt>. It is possible to pass in a hash of options with <tt>new
+ExampleView(options)</tt>. Any options you pass into the constructor will be
+available inside of the view in <tt>this.options</tt>.</p></div>
+<div class="paragraph"><p>There are a few special options that, when passed, will be assigned to other
+members in the view directly. These are <tt>model</tt>, <tt>collection</tt>, <tt>el</tt>, <tt>id</tt>,
+<tt>className</tt>, and <tt>tagName</tt>. For example, if you create a new view and give it
+a model option with <tt>new ExampleView({ model: Task })</tt> then inside of the view
+the model you passed in as an option will be available in <tt>this.model</tt>.</p></div>
 </div>
-<div class="sect2">
-<h3 id="_routers_chapter_unstarted">Routers (chapter unstarted)</h3>
+<div class="sect3">
+<h4 id="_the_view_8217_s_element">The View&#8217;s Element</h4>
+<div class="paragraph"><p>Each Backbone.js view has an element which is stores in <tt>this.el</tt>. This element
+can be populated with content, but isn&#8217;t on the page until placed there by
+you. Using this strategy it is then possible to render views outside of the
+current DOM at any time, inserting the new elements all at once. In this way,
+high performance rendering of views can be achieved with as few reflows and
+repaints as possible.</p></div>
+<div class="paragraph"><p>It is possible to create a view that references an element already in the DOM,
+instead of a new element. To do this, pass in the existing element as an
+option to the view constructor with <tt>new ExampleView({ el: existingElement })</tt>.</p></div>
+<div class="paragraph"><p>You can use <tt>tagName</tt>, <tt>className</tt>, and <tt>id</tt> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<tt>div</tt>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_customizing_the_view_8217_s_element">Customizing the View&#8217;s Element</h4>
+<div class="paragraph"><p>You can use <tt>tagName</tt>, <tt>className</tt>, and <tt>id</tt> to customize the new element
+created for the view. If no customization is done, the element is an empty
+<tt>div</tt>.</p></div>
+<div class="paragraph"><p><tt>tagName</tt>, <tt>className</tt>, and <tt>id</tt> can either be specified directly on the view
+or passed in as options at instantiation time. Since <tt>id</tt> is likely to be
+individual to each model, its most likely to pass that in as an option rather
+than declaring it statically in the view.</p></div>
+<div class="paragraph"><p><tt>tagName</tt> will change the element that is created from a <tt>div</tt> to something
+else that you specify. For example, setting <tt>tagName: "li"</tt> will result in the
+view&#8217;s element being an <tt>li</tt> rather than a <tt>div</tt>.</p></div>
+<div class="paragraph"><p><tt>className</tt> will add an additional class to the element that is created for
+the view. For example, setting <tt>className: "example"</tt> on the view will result
+in view&#8217;s element with that additional class like <tt>&lt;div class="example"&gt;</tt>.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_rendering">Rendering</h4>
+<div class="paragraph"><p>The <tt>render</tt> function above renders the <tt>example/view</tt> template. Template
+rendering is covered in depth in the "Templating strategy" chapter. Suffice to
+say, nearly every view&#8217;s render function will render some form of template. Once
+that template is rendered, any other actions to modify the view may be taken.</p></div>
+<div class="paragraph"><p>Typical functionality in <tt>render</tt> in addition to rendering a template would be
+to add additional classes or attributes to <tt>this.el</tt> or fire or bind other
+events.</p></div>
+<div class="paragraph"><p>Backbone.js, when used with jQuery (or Zepto) provides a convenience function
+of <tt>this.$</tt> that can be used for selecting elements inside of the view.
+<tt>this.$(selector)</tt> is equivalent to the jQuery function call <tt>$(selector,
+this.el)</tt></p></div>
+<div class="paragraph"><p>A nice convention of the render function is to return <tt>this</tt> at the end of
+render to enable chained calls on the view.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_events">Events</h4>
+<div class="paragraph"><p>The view&#8217;s <tt>events</tt> hash specifies a mapping of the events and elements that
+should have events bound, and the functions that should be bound to those
+events. In the example above the <tt>click</tt> event is being bound to the
+element(s) that match the selector <tt>a.save</tt> within the view&#8217;s element. When
+that event fires, the <tt>save</tt> function will be called on the view.</p></div>
+<div class="paragraph"><p>Events bound automatically with the <tt>events</tt> hash, the DOM events are bound
+with the <tt>$.delegate()</tt> function. Backbone.js also takes care of binding the
+event handlers' <tt>this</tt> to the view instance using <tt>_.bind()</tt>.</p></div>
+<div class="paragraph"><p>Event binding is covered in great detail in the "Event binding" chapter.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_templating_strategy_chapter_unstarted">Templating strategy (chapter unstarted)</h3>
+</div>
+<div class="sect2">
+<h3 id="_routers">Routers</h3>
+<div class="paragraph"><p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
+routers provide methods for routing application flow based on client-side URL
+fragments (#fragment).</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">
+<div class="paragraph"><p>Backbone.js now includes support for pushState, which can use real, full URLs
+instead of url fragments for routing.</p></div>
+<div class="paragraph"><p>However, pushState support in Backbone.js is fully opt-in due to lack of
+browser support and that additional server-side work is required to support it.</p></div>
+<div class="paragraph"><p>pushState support is current limited to the latest versions of Firefox,
+Chrome, and Safari and Mobile Safari. For a full listing of support and more
+information about the History API, of which pushState is a part, visit
+<a href="http://diveintohtml5.org/history.html#how">http://diveintohtml5.org/history.html#how</a></p></div>
+<div class="paragraph"><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don&#8217;t
+support pushState will continue to use hash-based URL fragments, and if a hash
+URL is visited by a pushState-capable browser, it will be transparently
+upgraded to the true URL.</p></div>
+<div class="paragraph"><p>In addition to browser support, another hurdle to seamless use of pushState is
+that because the URL used are real URLs, your server must now how to render
+each of the URLs. For example, if your Backbone.js application has a route of
+/tasks/1, your server-side application must be able to respond to that page if
+the browser visits that URL directly.</p></div>
+<div class="paragraph"><p>For most applications, you can handle this by just rendering the content you
+would have for the root URL and letting Backbone.js handle the rest of the
+routing to the proper location. But for full search-engine crawlability, your
+server-side application will need to render the entire HTML of the requested page.</p></div>
+<div class="paragraph"><p>For all the reasons and complications above, the examples in this book all
+currently use URL fragments and not pushState.</p></div>
+</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>A typical Backbone.js router will appear as shown below.</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>ExampleApp<span style="color: #990000">.</span>Routers<span style="color: #990000">.</span>ExampleRouter <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Router<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  routes<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
+    <span style="color: #FF0000">""</span>         <span style="color: #990000">:</span> <span style="color: #FF0000">"index"</span>
+    <span style="color: #FF0000">"show/:id"</span> <span style="color: #990000">:</span> <span style="color: #FF0000">"show"</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  index<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Render the index view</span></span>
+  <span style="color: #FF0000">}</span>
+
+  show<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>id<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
+    <span style="font-style: italic"><span style="color: #9A1900">// Render the show view</span></span>
+  <span style="color: #FF0000">}</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="sect3">
+<h4 id="_the_routes_hash">The Routes Hash</h4>
+<div class="paragraph"><p>The basic router consists of a routes hash which is a mapping between URL
+fragments and methods on the router. If the current URL fragment, or one that
+is being visited matches one of the routes in the hash, its method will be
+called.</p></div>
+<div class="paragraph"><p>Like Rails routes, Backbone.js routes can contain parameter parts, as seen in
+the <tt>show</tt> route in the example above. In this route, the part of the fragment
+after <tt>show/</tt> will then be based as an argument to the <tt>show</tt> method.</p></div>
+<div class="paragraph"><p>Multiple parameters are possible, as well. For example, a route of
+<tt>search/:query/p:page</tt> will match a fragment of <tt>search/completed/p2</tt> passing
+passing <tt>completed</tt> and <tt>2</tt> to the action.</p></div>
+<div class="paragraph"><p>In the routes, <tt>/</tt> is the natural separator. For example, a route of
+<tt>show/:id</tt> will not match a fragment of <tt>show/1/2</tt>. To match through route,
+Backbone.js provides the concept of splat parts, identified by <tt>*</tt> instead of
+<tt>:</tt>. For example, a route of <tt>show/*id</tt> would match the previous fragment, and
+<tt>1/2</tt> would be passed to the action as the <tt>id</tt> variable.</p></div>
+<div class="paragraph"><p>Routing occurs when the browser&#8217;s URL changes. This can occur when clicking on
+a link, entering a URL into the browser&#8217;s URL bar, or clicking the back
+button. In all of those cases, Backbone.js will look to see if the new URL
+matches an existing route. If it does, the specified function will be called
+with any parameters.</p></div>
+<div class="paragraph"><p>In addition, an event with the name of "route" and the function will be
+triggered. For example, when the <tt>show</tt> route above is routed, an event of
+<tt>route:show</tt> will be fired. This is so that other objects can listen to the
+router, and be notified about certain routes.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_initializing_a_router">Initializing a Router</h4>
+<div class="paragraph"><p>It is possible to specify an <tt>initialize</tt> function in a Router which will be
+called when the Router is instantiated. Any arguments passed to the Routes
+constructor will be passed to this <tt>initialize</tt> function.</p></div>
+<div class="paragraph"><p>Additionally, it is possible to pass the routes for a router via the
+constructor like <tt>new ExampleRouter({ routes: { "" : "index" }}</tt>. But note
+that this will override any routes defined in the routes hash on the router
+itself.</p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_view_helpers_chapter_unstarted">View helpers (chapter unstarted)</h3>
@@ -1891,7 +2010,7 @@ example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div>
 <div class="sect2">
 <h3 id="_event_binding">Event binding</h3>
 <div class="paragraph"><p>A big part of writing snappy rich client applications is building models and
-views that update in realtime with respect to one another.  With Backbone.js
+views that update in real-time with respect to one another.  With Backbone.js
 you accomplish this with events.</p></div>
 <div class="paragraph"><p>TODO: This is probably the first time we dive into events, unless we touch on
 them earlier in the models/collections sections.  Might want to introduce the
@@ -3251,7 +3370,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-08-27 21:09:28 EDT
+Last updated 2011-08-31 14:04:02 EDT
 </div>
 </div>
 </body>
