@@ -5,6 +5,13 @@ task :release do
   Releaser.new.release
 end
 
+desc "update backbone support code"
+task :update_backbone_support do
+  sh "git clone git@github.com:thoughtbot/backbone-support.git"
+  sh "mv backbone-support/lib/assets/backbone-support/*.js book/views_and_templates"
+  sh "rm -rf backbone-support"
+end
+
 class Releaser
   def release
     ensure_clean_git

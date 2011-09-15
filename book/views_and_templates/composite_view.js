@@ -1,19 +1,14 @@
-CompositeView = function(options) {
-  this.children = [];
+Support.CompositeView = function(options) {
+  this.children = _([]);
   Backbone.View.apply(this, [options]);
 };
 
-_.extend(CompositeView.prototype, Backbone.View.prototype, {
+_.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
   leave: function() {
-    this._leaveChildren();
     this.unbind();
     this.remove();
+    this._leaveChildren();
     this._removeFromParent();
-  },
-
-  removeChild: function(view) {
-    var index = this.children.indexOf(view);
-    this.children.splice(index, 1);
   },
 
   renderChild: function(view) {
@@ -29,23 +24,25 @@ _.extend(CompositeView.prototype, Backbone.View.prototype, {
 
   renderChildInto: function(view, container) {
     this.renderChild(view);
-    $(container).html('').append(view.el);
+    $(container).empty().append(view.el);
   },
 
   _leaveChildren: function() {
-    var clonedChildren = this.children.slice(0);
-    _.each(clonedChildren, function(view) {
-      if (view.leave) {
+    this.children.chain().clone().each(function(view) {
+      if (view.leave)
         view.leave();
-      }
     });
   },
 
   _removeFromParent: function() {
-    if (this.parent) {
-      this.parent.removeChild(this);
-    }
+    if (this.parent)
+      this.parent._removeChild(this);
+  },
+
+  _removeChild: function(view) {
+    var index = this.children.indexOf(view);
+    this.children.splice(index, 1);
   }
 });
 
-CompositeView.extend = Backbone.View.extend;
+Support.CompositeView.extend = Backbone.View.extend;
