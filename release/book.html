@@ -450,7 +450,7 @@ the current readers.</p></div>
 <div class="paragraph"><p>Model–View–Controller (MVC) is an architectural pattern used in many
 applications to isolate "domain logic" (the application logic for the user)
 from the user interface (input and presentation).</p></div>
-<div class="imageblock">
+<div class="imageblock" style="text-align:center;">
 <div class="content">
 <img src="image/MVCDiagram.png" alt="image/MVCDiagram.png" />
 </div>
@@ -1731,7 +1731,7 @@ Backbone.js Ajax requests are no exception.</p></div>
 recommended), or make Backbone.js play nicely with Rails XSS.</p></div>
 <div class="paragraph"><p>To make Backbone.js play nicely with Rails XSS you can monkeypatch Backbone.js
 to include the Rails XSS token in any requests it makes.</p></div>
-<div class="paragraph"><p>The following is one such script.</p></div>
+<div class="paragraph"><p>The following is one such script:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -2272,14 +2272,14 @@ and how to do it.</p></div>
 <h4 id="_why_do_i_have_to_unbind_events">Why do I have to unbind events?</h4>
 <div class="paragraph"><p>Consider two views in a Todo app: an index view which contains all the tasks
 that need to be done:</p></div>
-<div class="imageblock">
+<div class="imageblock" style="text-align:center;">
 <div class="content">
 <img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png" />
 </div>
 <div class="title">Figure 2. Tasks index view</div>
 </div>
 <div class="paragraph"><p>and a detail view that shows detail on one task:</p></div>
-<div class="imageblock">
+<div class="imageblock" style="text-align:center;">
 <div class="content">
 <img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png" />
 </div>
@@ -2609,9 +2609,9 @@ utility functions to allow more class-style inheritance.</p></div>
 <div class="paragraph"><p>The end result here is that whenever you make a custom controller, internally
 in Backbone, you&#8217;re making <strong>another</strong> subclass. The inheritance chain for
 <tt>TasksRouter</tt> would then look like:</p></div>
-<div class="imageblock">
+<div class="imageblock" style="text-align:center;">
 <div class="content">
-<img src="views_and_templates/router-diagram.png" alt="views_and_templates/router-diagram.png" />
+<img src="views_and_templates/router-diagram.png" alt="views_and_templates/router-diagram.png" height="200" />
 </div>
 <div class="title">Figure 4. Router class inheritance</div>
 </div>
@@ -3830,7 +3830,8 @@ $ cat faye/run<span style="color: #990000">.</span>sh
 
 <span style="font-style: italic"><span style="color: #9A1900">#!/usr/bin/env bash</span></span>
 <span style="color: #009900">BASEDIR</span><span style="color: #990000">=</span><span style="color: #009900">$(</span>dirname <span style="color: #009900">$0</span><span style="color: #990000">)</span>
-<span style="color: #009900">BUNDLE_GEMFILE</span><span style="color: #990000">=</span><span style="color: #009900">$BASEDIR</span>/Gemfile bundle <span style="font-weight: bold"><span style="color: #0000FF">exec</span></span> rackup <span style="color: #009900">$BASEDIR</span>/config<span style="color: #990000">.</span>ru -s thin -E production
+<span style="color: #009900">BUNDLE_GEMFILE</span><span style="color: #990000">=</span><span style="color: #009900">$BASEDIR</span>/Gemfile
+bundle <span style="font-weight: bold"><span style="color: #0000FF">exec</span></span> rackup <span style="color: #009900">$BASEDIR</span>/config<span style="color: #990000">.</span>ru -s thin -E production
 
 $ <span style="color: #990000">.</span>/faye/run<span style="color: #990000">.</span>sh
 
@@ -4031,37 +4032,72 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
   <span style="font-style: italic"><span style="color: #9A1900">// ...</span></span>
-<span style="color: #FF0000">}</span><span style="color: #990000">);</span>
-
-Now run the app<span style="color: #990000">,</span> and watch browsers receive push updates<span style="color: #990000">!</span>
-
-<span style="color: #990000">====</span> Testing synchronization
-TODO<span style="color: #990000">:</span> Testing client<span style="color: #990000">-</span>client sync<span style="color: #990000">.</span>  `Capybara<span style="color: #990000">.</span>using_session` <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> multiple concurrent actors<span style="color: #990000">.</span>
-
-<span style="color: #990000">====</span> More reading
-NOTE<span style="color: #990000">:</span> Faye <span style="font-weight: bold"><span style="color: #0000FF">implements</span></span> a messaging protocol called Bayeux<span style="color: #990000">:</span> http<span style="color: #990000">:</span><span style="font-style: italic"><span style="color: #9A1900">//svn.cometd.com/trunk/bayeux/bayeux.html</span></span>
-
-NOTE<span style="color: #990000">:</span> Read up on idempotent messages<span style="color: #990000">.</span>  Check out <span style="font-weight: bold"><span style="color: #0000FF">this</span></span> solid<span style="color: #990000">,</span> readable article http<span style="color: #990000">:</span><span style="font-style: italic"><span style="color: #9A1900">//devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].</span></span>
-
-
-<span style="color: #990000">==</span> <span style="font-weight: bold"><span style="color: #000000">Testing</span></span> <span style="color: #990000">(</span>section unstarted<span style="color: #990000">)</span>
-<span style="color: #990000">===</span> Full<span style="color: #990000">-</span>stack integration testing
-<span style="color: #990000">===</span> Isolated unit testing
-
-<span style="color: #990000">==</span> The JavaScript <span style="font-weight: bold"><span style="color: #000000">language</span></span> <span style="color: #990000">(</span>section unstarted<span style="color: #990000">)</span>
-<span style="color: #990000">===</span> Model attribute types and serialization
-<span style="color: #990000">===</span> Context <span style="font-weight: bold"><span style="color: #000000">binding</span></span> <span style="color: #990000">(</span>JS <span style="color: #990000">+</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">+)</span>
-<span style="color: #990000">===</span> CoffeeScript <span style="font-weight: bold"><span style="color: #0000FF">with</span></span> Backbone<span style="color: #990000">.</span>js
-
-<span style="color: #990000">==</span> <span style="font-weight: bold"><span style="color: #000000">Security</span></span> <span style="color: #990000">(</span>stub<span style="color: #990000">)</span>
-
-<span style="color: #990000">===</span> XSS <span style="font-weight: bold"><span style="color: #0000FF">with</span></span> JSON <span style="font-weight: bold"><span style="color: #000000">bootstrapping</span></span> <span style="color: #990000">(</span>stub<span style="color: #990000">)</span>
-
-Use <span style="color: #990000">+</span>json2<span style="color: #990000">.</span>js<span style="color: #990000">+</span> and<span style="color: #990000">:</span>
-
-<span style="color: #990000">[</span>javascript<span style="color: #990000">]</span>
-source<span style="color: #990000">~~~~</span>
-<span style="color: #990000">&lt;</span>script type<span style="color: #990000">=</span><span style="color: #FF0000">"text/json"</span> id<span style="color: #990000">=</span><span style="color: #FF0000">"something"</span><span style="color: #990000">&gt;</span>
+<span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
+<div class="paragraph"><p>Now run the app, and watch browsers receive push updates!</p></div>
+</div>
+<div class="sect3">
+<h4 id="_testing_synchronization">Testing synchronization</h4>
+<div class="paragraph"><p>TODO: Testing client-client sync.  <tt>Capybara.using_session</tt> for multiple concurrent actors.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_more_reading">More reading</h4>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Faye implements a messaging protocol called Bayeux: <a href="http://svn.cometd.com/trunk/bayeux/bayeux.html">http://svn.cometd.com/trunk/bayeux/bayeux.html</a></td>
+</tr></table>
+</div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Read up on idempotent messages.  Check out this solid, readable article <a href="http://devhawk.net/2007/11/09/the-importance-of-idempotence/">The Importance of Idempotence</a>.</td>
+</tr></table>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_testing_section_unstarted">Testing (section unstarted)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_full_stack_integration_testing">Full-stack integration testing</h3>
+</div>
+<div class="sect2">
+<h3 id="_isolated_unit_testing">Isolated unit testing</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_javascript_language_section_unstarted">The JavaScript language (section unstarted)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_model_attribute_types_and_serialization">Model attribute types and serialization</h3>
+</div>
+<div class="sect2">
+<h3 id="_context_binding_js_tt_this_tt">Context binding (JS <tt>this</tt>)</h3>
+</div>
+<div class="sect2">
+<h3 id="_coffeescript_with_backbone_js">CoffeeScript with Backbone.js</h3>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_security_stub">Security (stub)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_xss_with_json_bootstrapping_stub">XSS with JSON bootstrapping (stub)</h3>
+<div class="paragraph"><p>Use <tt>json2.js</tt> and:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">&lt;</span>script type<span style="color: #990000">=</span><span style="color: #FF0000">"text/json"</span> id<span style="color: #990000">=</span><span style="color: #FF0000">"something"</span><span style="color: #990000">&gt;</span>
   <span style="color: #990000">&lt;%=</span> something<span style="color: #990000">.</span>to_json <span style="color: #990000">%&gt;</span>
 <span style="color: #990000">&lt;/</span>script<span style="color: #990000">&gt;</span>
 
@@ -4070,42 +4106,43 @@ source<span style="color: #990000">~~~~</span>
     <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> something <span style="color: #990000">=</span> JSON<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">parse</span></span><span style="color: #990000">(</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'#something'</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">text</span></span><span style="color: #990000">());</span>
     <span style="font-weight: bold"><span style="color: #000000">someJavascriptFunction</span></span><span style="color: #990000">(</span>something<span style="color: #990000">);</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">)();</span>
-<span style="color: #990000">&lt;/</span>script<span style="color: #990000">&gt;</span>
-source<span style="color: #990000">~~~~</span>
-
-<span style="color: #990000">===</span> XSS <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> HTML <span style="font-weight: bold"><span style="color: #000000">templates</span></span> <span style="color: #990000">(</span>stub<span style="color: #990000">)</span>
-
-TODO<span style="color: #990000">:</span> Discuss <span style="color: #990000">+</span>Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span>escape<span style="color: #990000">+,</span> <span style="color: #990000">+</span>_<span style="color: #990000">.</span>escape<span style="color: #990000">+,</span> defaulting to escape <span style="font-weight: bold"><span style="color: #0000FF">with</span></span> <span style="color: #990000">+&lt;%=+</span> vs <span style="color: #990000">+&lt;%==+,</span> escaping <span style="font-weight: bold"><span style="color: #0000FF">in</span></span> other templating<span style="color: #990000">.</span>
-
-<span style="color: #990000">==</span> <span style="font-weight: bold"><span style="color: #000000">Performance</span></span> <span style="color: #990000">(</span>stub<span style="color: #990000">)</span>
-
-<span style="color: #990000">===</span> Dependency choice
-
-Backbone<span style="color: #990000">.</span>js defines a <span style="color: #990000">+</span>$<span style="color: #990000">+</span> variable that defers to jQuery <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> present<span style="color: #990000">.</span>
-
-If you are only targeting mobile platforms<span style="color: #990000">,</span> Backbone will handily fall back to
-Zepto http<span style="color: #990000">:</span><span style="font-style: italic"><span style="color: #9A1900">//zeptojs.com for a more lightweight dependency.  Zepto is "a</span></span>
-minimalist JavaScript framework <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> mobile WebKit browsers<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">with</span></span> a
-jQuery<span style="color: #990000">-</span>compatible syntax<span style="color: #990000">.</span><span style="color: #FF0000">"  From +backbone.js+:</span>
-
-<span style="color: #FF0000">[javascript]</span>
-<span style="color: #FF0000">source~~~~</span>
-<span style="color: #FF0000">(function(){</span>
-
-<span style="color: #FF0000">  // Initial Setup</span>
-<span style="color: #FF0000">  // -------------</span>
-
-<span style="color: #FF0000">  // Save a reference to the global object.</span>
-<span style="color: #FF0000">  var root = this;</span>
-
-<span style="color: #FF0000">  // For Backbone's purposes, jQuery or Zepto owns the `$` variable.</span>
-<span style="color: #FF0000">  var $ = root.jQuery || root.Zepto;</span>
-
-<span style="color: #FF0000">  // ...</span>
-
-<span style="color: #FF0000">}).call(this);</span>
-<span style="color: #FF0000">source~~~~</span></tt></pre></div></div>
+<span style="color: #990000">&lt;/</span>script<span style="color: #990000">&gt;</span></tt></pre></div></div>
 </div>
+<div class="sect2">
+<h3 id="_xss_in_html_templates_stub">XSS in HTML templates (stub)</h3>
+<div class="paragraph"><p>TODO: Discuss <tt>Backbone.Model.escape</tt>, <tt>_.escape</tt>, defaulting to escape with <tt>&lt;%=</tt> vs <tt>&lt;%==</tt>, escaping in other templating.</p></div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_performance_stub">Performance (stub)</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_dependency_choice">Dependency choice</h3>
+<div class="paragraph"><p>Backbone.js defines a <tt>$</tt> variable that defers to jQuery if present.</p></div>
+<div class="paragraph"><p>If you are only targeting mobile platforms, Backbone will handily fall back to
+Zepto <a href="http://zeptojs.com">http://zeptojs.com</a> for a more lightweight dependency.  Zepto is "a
+minimalist JavaScript framework for mobile WebKit browsers, with a
+jQuery-compatible syntax."  From <tt>backbone.js</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span><span style="color: #FF0000">{</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// Initial Setup</span></span>
+  <span style="font-style: italic"><span style="color: #9A1900">// -------------</span></span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// Save a reference to the global object.</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> root <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">;</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// For Backbone's purposes, jQuery or Zepto owns the `$` variable.</span></span>
+  <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> $ <span style="color: #990000">=</span> root<span style="color: #990000">.</span>jQuery <span style="color: #990000">||</span> root<span style="color: #990000">.</span>Zepto<span style="color: #990000">;</span>
+
+  <span style="font-style: italic"><span style="color: #9A1900">// ...</span></span>
+
+<span style="color: #FF0000">}</span><span style="color: #990000">).</span><span style="font-weight: bold"><span style="color: #000000">call</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">);</span></tt></pre></div></div>
 </div>
 </div>
 </div>
@@ -4113,7 +4150,7 @@ jQuery<span style="color: #990000">-</span>compatible syntax<span style="color: 
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-09-16 16:49:10 EDT
+Last updated 2011-09-16 17:46:13 EDT
 </div>
 </div>
 </body>

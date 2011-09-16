@@ -591,7 +591,7 @@ special token which is verified to ensure that the request originated from a
 user which is actually using the Rails app. In recent versions of Rails,
 Backbone.js Ajax requests are no exception.</p><p>To get around this, you have two options. Disable Rails XSS protection (not
 recommended), or make Backbone.js play nicely with Rails XSS.</p><p>To make Backbone.js play nicely with Rails XSS you can monkeypatch Backbone.js
-to include the Rails XSS token in any requests it makes.</p><p>The following is one such script.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//</i>
+to include the Rails XSS token in any requests it makes.</p><p>The following is one such script:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">// With additions by Maciej Adwent http://github.com/Maciek416</i>
 <i class="hl-comment" style="color: silver">// If token name and value are not supplied, this code Requires jQuery</i>
 <i class="hl-comment" style="color: silver">//</i>

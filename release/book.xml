@@ -69,7 +69,7 @@ from the user interface (input and presentation).</simpara>
 <figure><title>Model-view-controller concept</title>
 <mediaobject>
   <imageobject>
-  <imagedata fileref="image/MVCDiagram.png"/>
+  <imagedata fileref="image/MVCDiagram.png" width="65%" scalefit="1" align="center"/>
   </imageobject>
   <textobject><phrase>image/MVCDiagram.png</phrase></textobject>
 </mediaobject>
@@ -1114,7 +1114,7 @@ Backbone.js Ajax requests are no exception.</simpara>
 recommended), or make Backbone.js play nicely with Rails XSS.</simpara>
 <simpara>To make Backbone.js play nicely with Rails XSS you can monkeypatch Backbone.js
 to include the Rails XSS token in any requests it makes.</simpara>
-<simpara>The following is one such script.</simpara>
+<simpara>The following is one such script:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">//
 // With additions by Maciej Adwent http://github.com/Maciek416
 // If token name and value are not supplied, this code Requires jQuery
@@ -1599,7 +1599,7 @@ that need to be done:</simpara>
 <figure><title>Tasks index view</title>
 <mediaobject>
   <imageobject>
-  <imagedata fileref="views_and_templates/tasks-index.png"/>
+  <imagedata fileref="views_and_templates/tasks-index.png" width="65%" scalefit="1" align="center"/>
   </imageobject>
   <textobject><phrase>views_and_templates/tasks-index.png</phrase></textobject>
 </mediaobject>
@@ -1608,7 +1608,7 @@ that need to be done:</simpara>
 <figure><title>Tasks detail view</title>
 <mediaobject>
   <imageobject>
-  <imagedata fileref="views_and_templates/tasks-detail.png"/>
+  <imagedata fileref="views_and_templates/tasks-detail.png" width="65%" scalefit="1" align="center"/>
   </imageobject>
   <textobject><phrase>views_and_templates/tasks-detail.png</phrase></textobject>
 </mediaobject>
@@ -1900,7 +1900,7 @@ in Backbone, you&#8217;re making <emphasis role="strong">another</emphasis> subc
 <figure><title>Router class inheritance</title>
 <mediaobject>
   <imageobject>
-  <imagedata fileref="views_and_templates/router-diagram.png"/>
+  <imagedata fileref="views_and_templates/router-diagram.png" contentdepth="200" align="center"/>
   </imageobject>
   <textobject><phrase>views_and_templates/router-diagram.png</phrase></textobject>
 </mediaobject>
@@ -2898,7 +2898,8 @@ $ cat faye/run.sh
 
 #!/usr/bin/env bash
 BASEDIR=$(dirname $0)
-BUNDLE_GEMFILE=$BASEDIR/Gemfile bundle exec rackup $BASEDIR/config.ru -s thin -E production
+BUNDLE_GEMFILE=$BASEDIR/Gemfile
+bundle exec rackup $BASEDIR/config.ru -s thin -E production
 
 $ ./faye/run.sh
 
@@ -3064,37 +3065,47 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
   },
 
   // ...
-});
-
-Now run the app, and watch browsers receive push updates!
-
-==== Testing synchronization
-TODO: Testing client-client sync.  `Capybara.using_session` for multiple concurrent actors.
-
-==== More reading
-NOTE: Faye implements a messaging protocol called Bayeux: http://svn.cometd.com/trunk/bayeux/bayeux.html
-
-NOTE: Read up on idempotent messages.  Check out this solid, readable article http://devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].
-
-
-== Testing (section unstarted)
-=== Full-stack integration testing
-=== Isolated unit testing
-
-== The JavaScript language (section unstarted)
-=== Model attribute types and serialization
-=== Context binding (JS +this+)
-=== CoffeeScript with Backbone.js
-
-== Security (stub)
-
-=== XSS with JSON bootstrapping (stub)
-
-Use +json2.js+ and:
-
-[javascript]
-source~~~~
-&lt;script type="text/json" id="something"&gt;
+});</programlisting>
+<simpara>Now run the app, and watch browsers receive push updates!</simpara>
+</section>
+<section id="_testing_synchronization">
+<title>Testing synchronization</title>
+<simpara>TODO: Testing client-client sync.  <literal>Capybara.using_session</literal> for multiple concurrent actors.</simpara>
+</section>
+<section id="_more_reading">
+<title>More reading</title>
+<note><simpara>Faye implements a messaging protocol called Bayeux: <ulink url="http://svn.cometd.com/trunk/bayeux/bayeux.html">http://svn.cometd.com/trunk/bayeux/bayeux.html</ulink></simpara></note>
+<note><simpara>Read up on idempotent messages.  Check out this solid, readable article <ulink url="http://devhawk.net/2007/11/09/the-importance-of-idempotence/">The Importance of Idempotence</ulink>.</simpara></note>
+</section>
+</section>
+</section>
+<section id="_testing_section_unstarted">
+<title>Testing (section unstarted)</title>
+<section id="_full_stack_integration_testing">
+<title>Full-stack integration testing</title>
+</section>
+<section id="_isolated_unit_testing">
+<title>Isolated unit testing</title>
+</section>
+</section>
+<section id="_the_javascript_language_section_unstarted">
+<title>The JavaScript language (section unstarted)</title>
+<section id="_model_attribute_types_and_serialization">
+<title>Model attribute types and serialization</title>
+</section>
+<section id="_context_binding_js_literal_this_literal">
+<title>Context binding (JS <literal>this</literal>)</title>
+</section>
+<section id="_coffeescript_with_backbone_js">
+<title>CoffeeScript with Backbone.js</title>
+</section>
+</section>
+<section id="_security_stub">
+<title>Security (stub)</title>
+<section id="_xss_with_json_bootstrapping_stub">
+<title>XSS with JSON bootstrapping (stub)</title>
+<simpara>Use <literal>json2.js</literal> and:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">&lt;script type="text/json" id="something"&gt;
   &lt;%= something.to_json %&gt;
 &lt;/script&gt;
 
@@ -3103,27 +3114,23 @@ source~~~~
     var something = JSON.parse($('#something').text());
     someJavascriptFunction(something);
   })();
-&lt;/script&gt;
-source~~~~
-
-=== XSS in HTML templates (stub)
-
-TODO: Discuss +Backbone.Model.escape+, +_.escape+, defaulting to escape with +&lt;%=+ vs +&lt;%==+, escaping in other templating.
-
-== Performance (stub)
-
-=== Dependency choice
-
-Backbone.js defines a +$+ variable that defers to jQuery if present.
-
-If you are only targeting mobile platforms, Backbone will handily fall back to
-Zepto http://zeptojs.com for a more lightweight dependency.  Zepto is "a
+&lt;/script&gt;</programlisting>
+</section>
+<section id="_xss_in_html_templates_stub">
+<title>XSS in HTML templates (stub)</title>
+<simpara>TODO: Discuss <literal>Backbone.Model.escape</literal>, <literal>_.escape</literal>, defaulting to escape with <literal>&lt;%=</literal> vs <literal>&lt;%==</literal>, escaping in other templating.</simpara>
+</section>
+</section>
+<section id="_performance_stub">
+<title>Performance (stub)</title>
+<section id="_dependency_choice">
+<title>Dependency choice</title>
+<simpara>Backbone.js defines a <literal>$</literal> variable that defers to jQuery if present.</simpara>
+<simpara>If you are only targeting mobile platforms, Backbone will handily fall back to
+Zepto <ulink url="http://zeptojs.com">http://zeptojs.com</ulink> for a more lightweight dependency.  Zepto is "a
 minimalist JavaScript framework for mobile WebKit browsers, with a
-jQuery-compatible syntax."  From +backbone.js+:
-
-[javascript]
-source~~~~
-(function(){
+jQuery-compatible syntax."  From <literal>backbone.js</literal>:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">(function(){
 
   // Initial Setup
   // -------------
@@ -3136,9 +3143,7 @@ source~~~~
 
   // ...
 
-}).call(this);
-source~~~~</programlisting>
-</section>
+}).call(this);</programlisting>
 </section>
 </section>
 </article>

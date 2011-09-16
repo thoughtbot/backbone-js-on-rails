@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Models and collections</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s06.html" title="Routers, Views, and Templates"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Models and collections</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> </td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_models_and_collections"/>Models and collections</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_naming_conventions_chapter_unstarted"/>Naming conventions (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_nested_resources_chapter_unstarted"/>Nested resources (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_model_associations"/>Model associations</h3></div></div></div><p>Backbone.js doesn’t prescribe a way to define associations between models, so
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Models and collections</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s06.html" title="Routers, Views, and Templates"/><link rel="next" href="ar01s08.html" title="Testing (section unstarted)"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Models and collections</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_models_and_collections"/>Models and collections</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_naming_conventions_chapter_unstarted"/>Naming conventions (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_nested_resources_chapter_unstarted"/>Nested resources (chapter unstarted)</h3></div></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_model_associations"/>Model associations</h3></div></div></div><p>Backbone.js doesn’t prescribe a way to define associations between models, so
 we need to get creative and use the power of JavaScript to set up associations
 in such a way that its usage is natural.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_belongs_to_associations"/>Belongs to associations</h4></div></div></div><p>Setting up a <code class="literal">belongs_to</code> association in Backbone is a two step process. Let’s
 discuss setting up the association that may occur between a task and a user.
@@ -463,7 +463,8 @@ $ cat faye/run.sh
 
 #!/usr/bin/env bash
 BASEDIR=$(dirname $0)
-BUNDLE_GEMFILE=$BASEDIR/Gemfile bundle exec rackup $BASEDIR/config.ru -s thin -E production
+BUNDLE_GEMFILE=$BASEDIR/Gemfile
+bundle exec rackup $BASEDIR/config.ru -s thin -E production
 
 $ ./faye/run.sh
 
@@ -603,77 +604,4 @@ corresponding <code class="literal">FayeSubscriber</code>.  Say, in your applica
   },
 
   <i class="hl-comment" style="color: silver">// ...</i>
-});
-
-Now run the app, and watch browsers receive push updates!
-
-==== Testing synchronization
-TODO: Testing client-client sync.  `Capybara.using_session` <b class="hl-keyword">for</b> multiple concurrent actors.
-
-==== More reading
-NOTE: Faye <b class="hl-keyword">implements</b> a messaging protocol called Bayeux: http:<i class="hl-comment" style="color: silver">//svn.cometd.com/trunk/bayeux/bayeux.html</i>
-
-NOTE: Read up on idempotent messages.  Check out <b class="hl-keyword">this</b> solid, readable article http:<i class="hl-comment" style="color: silver">//devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].</i>
-
-
-== Testing (section unstarted)
-=== Full-stack integration testing
-=== Isolated unit testing
-
-== The JavaScript language (section unstarted)
-=== Model attribute types and serialization
-=== Context binding (JS +<b class="hl-keyword">this</b>+)
-=== CoffeeScript <b class="hl-keyword">with</b> Backbone.js
-
-== Security (stub)
-
-=== XSS <b class="hl-keyword">with</b> JSON bootstrapping (stub)
-
-Use +json2.js+ and:
-
-[javascript]
-source~~~~
-&lt;script type=<b class="hl-string"><i style="color:red">"text/json"</i></b> id=<b class="hl-string"><i style="color:red">"something"</i></b>&gt;
-  &lt;%= something.to_json %&gt;
-&lt;/script&gt;
-
-&lt;script type=<b class="hl-string"><i style="color:red">"text/javascript"</i></b>&gt;
-  (<b class="hl-keyword">function</b> () {
-    <b class="hl-keyword">var</b> something = JSON.parse($(<b class="hl-string"><i style="color:red">'#something'</i></b>).text());
-    someJavascriptFunction(something);
-  })();
-&lt;/script&gt;
-source~~~~
-
-=== XSS <b class="hl-keyword">in</b> HTML templates (stub)
-
-TODO: Discuss +Backbone.Model.escape+, +_.escape+, defaulting to escape <b class="hl-keyword">with</b> +&lt;%=+ vs +&lt;%==+, escaping <b class="hl-keyword">in</b> other templating.
-
-== Performance (stub)
-
-=== Dependency choice
-
-Backbone.js defines a +$+ variable that defers to jQuery <b class="hl-keyword">if</b> present.
-
-If you are only targeting mobile platforms, Backbone will handily fall back to
-Zepto http:<i class="hl-comment" style="color: silver">//zeptojs.com for a more lightweight dependency.  Zepto is "a</i>
-minimalist JavaScript framework <b class="hl-keyword">for</b> mobile WebKit browsers, <b class="hl-keyword">with</b> a
-jQuery-compatible syntax.<b class="hl-string"><i style="color:red">"  From +backbone.js+:
-</i></b>
-[javascript]
-source~~~~
-(<b class="hl-keyword">function</b>(){
-
-  <i class="hl-comment" style="color: silver">// Initial Setup</i>
-  <i class="hl-comment" style="color: silver">// -------------</i>
-
-  <i class="hl-comment" style="color: silver">// Save a reference to the global object.</i>
-  <b class="hl-keyword">var</b> root = <b class="hl-keyword">this</b>;
-
-  <i class="hl-comment" style="color: silver">// For Backbone's purposes, jQuery or Zepto owns the `$` variable.</i>
-  <b class="hl-keyword">var</b> $ = root.jQuery || root.Zepto;
-
-  <i class="hl-comment" style="color: silver">// ...</i>
-
-}).call(<b class="hl-keyword">this</b>);
-source~~~~</pre></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> </td></tr><tr><td width="40%" align="left" valign="top">Routers, Views, and Templates </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> </td></tr></table></div></body></html>
+});</pre><p>Now run the app, and watch browsers receive push updates!</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_testing_synchronization"/>Testing synchronization</h4></div></div></div><p>TODO: Testing client-client sync.  <code class="literal">Capybara.using_session</code> for multiple concurrent actors.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_more_reading"/>More reading</h4></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Faye implements a messaging protocol called Bayeux: <a class="ulink" href="http://svn.cometd.com/trunk/bayeux/bayeux.html" target="_top">http://svn.cometd.com/trunk/bayeux/bayeux.html</a></p></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Read up on idempotent messages.  Check out this solid, readable article <a class="ulink" href="http://devhawk.net/2007/11/09/the-importance-of-idempotence/" target="_top">The Importance of Idempotence</a>.</p></div></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Routers, Views, and Templates </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Testing (section unstarted)</td></tr></table></div></body></html>
