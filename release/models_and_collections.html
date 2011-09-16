@@ -233,22 +233,22 @@ collection class using <code class="literal">this.constructor</code>:</p>
 collection that does not update when the original collection is changed.  To do
 so, bind to the change, add, and remove events on the source collection,
 reapply the filter function, and repopulate the filtered collection:</p>
-<pre class="programlisting">var FilterableCollectionMixin = {
-  filtered: function(criteriaFunction) {
-    var sourceCollection = this;
-    var filteredCollection = new this.constructor;
+<pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> filteredCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
 
-    var applyFilter = function() {
+    <b class="hl-keyword">var</b> applyFilter = <b class="hl-keyword">function</b>() {
       filteredCollection.reset(sourceCollection.select(criteriaFunction));
     };
 
-    this.bind("change", applyFilter);
-    this.bind("add",    applyFilter);
-    this.bind("remove", applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, applyFilter);
 
     applyFilter();
 
-    return filteredCollection;
+    <b class="hl-keyword">return</b> filteredCollection;
   }
 };</pre>
 </div>
@@ -347,24 +347,24 @@ the ordering on the new collection:</p>
 <p>Just as with the <code class="literal">FilterableCollectionMixin</code> before, the
 <code class="literal">SortableCollectionMixin</code> should observe its source if updates are to propagate
 from one collection to another:</p>
-<pre class="programlisting">var SortableCollectionMixin = {
-  sortedBy: function(comparator) {
-    var sourceCollection = this;
-    var sortedCollection = new this.constructor;
+<pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
     sortedCollection.comparator = comparator;
 
-    var applySort = function() {
+    <b class="hl-keyword">var</b> applySort = <b class="hl-keyword">function</b>() {
       sortedCollection.reset(sourceCollection.models);
       sortedCollection.sort();
     };
 
-    this.bind("change", applySort);
-    this.bind("add",    applySort);
-    this.bind("remove", applySort);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, applySort);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    applySort);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, applySort);
 
     applySort();
 
-    return sortedCollection;
+    <b class="hl-keyword">return</b> sortedCollection;
   }
 };</pre>
 </div>
@@ -749,14 +749,14 @@ message to our message bus, indicating the change.</p>
 ⇒ #&lt;Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09"&gt;</p>
 <p>The message looks like this:</p>
 <pre class="programlisting">{
-  "channel": "/sync/todos",
-  "data": {
-    "create": {
-      "17": {
-        "id": 17,
-        "title": "Buy some tasty kale juice",
-        "created_at": "2011-09-06T20:49:03Z",
-        "updated_at": "2011-09-07T15:01:09Z"
+  <b class="hl-string"><i style="color:red">"channel"</i></b>: <b class="hl-string"><i style="color:red">"/sync/todos"</i></b>,
+  <b class="hl-string"><i style="color:red">"data"</i></b>: {
+    <b class="hl-string"><i style="color:red">"create"</i></b>: {
+      <b class="hl-string"><i style="color:red">"17"</i></b>: {
+        <b class="hl-string"><i style="color:red">"id"</i></b>: <span class="hl-number">17</span>,
+        <b class="hl-string"><i style="color:red">"title"</i></b>: <b class="hl-string"><i style="color:red">"Buy some tasty kale juice"</i></b>,
+        <b class="hl-string"><i style="color:red">"created_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-06T20:49:03Z"</i></b>,
+        <b class="hl-string"><i style="color:red">"updated_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-07T15:01:09Z"</i></b>
       }
     }
   }
@@ -771,82 +771,82 @@ message to our message bus, indicating the change.</p>
 channels that interest us, and update Backbone collections based on those
 messages.</p>
 <p>Faye runs an HTTP server, and serves up its own client library, so that’s easy to pull in:</p>
-<pre class="programlisting">&lt;script type="text/javascript" src="http://localhost:9292/faye.js"&gt;&lt;/script&gt;</pre>
+<pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;script</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"text/javascript"</span> <span class="hl-attribute" style="color: #F5844C">src</span>=<span class="hl-value" style="color: #993300">"http://localhost:9292/faye.js"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/script&gt;</b></pre>
 <p>To subscribe to Faye channels, instantiate a <code class="literal">Faye.Client</code> and call <code class="literal">subscribe</code> on it:</p>
-<pre class="programlisting">var client = new Faye.Client('http://localhost:9292/faye');
-client.subscribe('/some/channel', function(message) {
-  // handle message
+<pre class="programlisting"><b class="hl-keyword">var</b> client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'http://localhost:9292/faye'</i></b>);
+client.subscribe(<b class="hl-string"><i style="color:red">'/some/channel'</i></b>, <b class="hl-keyword">function</b>(message) {
+  <i class="hl-comment" style="color: silver">// handle message</i>
 });</pre>
 <p>When the browser receives messages from Faye, we want to update a Backbone
 collection.  Let’s wrap up those two concerns into a <code class="literal">FayeSubscriber</code>:</p>
-<pre class="programlisting">this.BackboneSync = this.BackboneSync || {};
+<pre class="programlisting"><b class="hl-keyword">this</b>.BackboneSync = <b class="hl-keyword">this</b>.BackboneSync || {};
 
-BackboneSync.RailsFayeSubscriber = (function() {
-  function RailsFayeSubscriber(collection, options) {
-    this.collection = collection;
-    this.client = new Faye.Client('&lt;%= BackboneSync::Rails::Faye.root_address %&gt;/faye');
-    this.channel = options.channel;
-    this.subscribe();
+BackboneSync.RailsFayeSubscriber = (<b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">function</b> RailsFayeSubscriber(collection, options) {
+    <b class="hl-keyword">this</b>.collection = collection;
+    <b class="hl-keyword">this</b>.client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'&lt;%= BackboneSync::Rails::Faye.root_address %&gt;/faye'</i></b>);
+    <b class="hl-keyword">this</b>.channel = options.channel;
+    <b class="hl-keyword">this</b>.subscribe();
   }
 
-  RailsFayeSubscriber.prototype.subscribe = function() {
-    return this.client.subscribe("/sync/" + this.channel, _.bind(this.receive, this));
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.subscribe = <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.client.subscribe(<b class="hl-string"><i style="color:red">"/sync/"</i></b> + <b class="hl-keyword">this</b>.channel, _.bind(<b class="hl-keyword">this</b>.receive, <b class="hl-keyword">this</b>));
   };
 
-  RailsFayeSubscriber.prototype.receive = function(message) {
-    var self = this;
-    return $.each(message, function(event, eventArguments) {
-      return self[event](eventArguments);
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.receive = <b class="hl-keyword">function</b>(message) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(message, <b class="hl-keyword">function</b>(event, eventArguments) {
+      <b class="hl-keyword">return</b> self[event](eventArguments);
     });
   };
 
-  RailsFayeSubscriber.prototype.update = function(params) {
-    var self = this;
-    return $.each(params, function(id, attributes) {
-      var model = self.collection.get(id);
-      return model.set(attributes);
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.update = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> model.set(attributes);
     });
   };
 
-  RailsFayeSubscriber.prototype.create = function(params) {
-    var self = this;
-    return $.each(params, function(id, attributes) {
-      var model = new self.collection.model(attributes);
-      return self.collection.add(model);
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.create = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> self.collection.model(attributes);
+      <b class="hl-keyword">return</b> self.collection.add(model);
     });
   };
 
-  RailsFayeSubscriber.prototype.destroy = function(params) {
-    var self = this;
-    return $.each(params, function(id, attributes) {
-      var model = self.collection.get(id);
-      return self.collection.remove(model);
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.destroy = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> self.collection.remove(model);
     });
   };
 
-  return RailsFayeSubscriber;
+  <b class="hl-keyword">return</b> RailsFayeSubscriber;
 })();</pre>
 <p>Now, for each collection that we’d like to keep in sync, we instantiate a
 corresponding <code class="literal">FayeSubscriber</code>.  Say, in your application bootstrap code:</p>
 <pre class="programlisting">MyApp.Routers.TodosRouter = Backbone.Router.extend({
-  initialize: function(options) {
-    this.todos = new Todos.Collections.TodosCollection();
-    new BackboneSync.FayeSubscriber(this.todos, { channel: 'todos' });
-    this.todos.reset(options.todos);
+  initialize: <b class="hl-keyword">function</b>(options) {
+    <b class="hl-keyword">this</b>.todos = <b class="hl-keyword">new</b> Todos.Collections.TodosCollection();
+    <b class="hl-keyword">new</b> BackboneSync.FayeSubscriber(<b class="hl-keyword">this</b>.todos, { channel: <b class="hl-string"><i style="color:red">'todos'</i></b> });
+    <b class="hl-keyword">this</b>.todos.reset(options.todos);
   },
 
-  // ...
+  <i class="hl-comment" style="color: silver">// ...</i>
 });
 
 Now run the app, and watch browsers receive push updates!
 
 ==== Testing synchronization
-TODO: Testing client-client sync.  `Capybara.using_session` for multiple concurrent actors.
+TODO: Testing client-client sync.  `Capybara.using_session` <b class="hl-keyword">for</b> multiple concurrent actors.
 
 ==== More reading
-NOTE: Faye implements a messaging protocol called Bayeux: http://svn.cometd.com/trunk/bayeux/bayeux.html
+NOTE: Faye <b class="hl-keyword">implements</b> a messaging protocol called Bayeux: http:<i class="hl-comment" style="color: silver">//svn.cometd.com/trunk/bayeux/bayeux.html</i>
 
-NOTE: Read up on idempotent messages.  Check out this solid, readable article http://devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].
+NOTE: Read up on idempotent messages.  Check out <b class="hl-keyword">this</b> solid, readable article http:<i class="hl-comment" style="color: silver">//devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].</i>
 
 
 == Testing (section unstarted)
@@ -855,60 +855,60 @@ NOTE: Read up on idempotent messages.  Check out this solid, readable article ht
 
 == The JavaScript language (section unstarted)
 === Model attribute types and serialization
-=== Context binding (JS +this+)
-=== CoffeeScript with Backbone.js
+=== Context binding (JS +<b class="hl-keyword">this</b>+)
+=== CoffeeScript <b class="hl-keyword">with</b> Backbone.js
 
 == Security (stub)
 
-=== XSS with JSON bootstrapping (stub)
+=== XSS <b class="hl-keyword">with</b> JSON bootstrapping (stub)
 
 Use +json2.js+ and:
 
-[js]
+[javascript]
 source~~~~
-&lt;script type="text/json" id="something"&gt;
+&lt;script type=<b class="hl-string"><i style="color:red">"text/json"</i></b> id=<b class="hl-string"><i style="color:red">"something"</i></b>&gt;
   &lt;%= something.to_json %&gt;
 &lt;/script&gt;
 
-&lt;script type="text/javascript"&gt;
-  (function () {
-    var something = JSON.parse($('#something').text());
+&lt;script type=<b class="hl-string"><i style="color:red">"text/javascript"</i></b>&gt;
+  (<b class="hl-keyword">function</b> () {
+    <b class="hl-keyword">var</b> something = JSON.parse($(<b class="hl-string"><i style="color:red">'#something'</i></b>).text());
     someJavascriptFunction(something);
   })();
 &lt;/script&gt;
 source~~~~
 
-=== XSS in HTML templates (stub)
+=== XSS <b class="hl-keyword">in</b> HTML templates (stub)
 
-TODO: Discuss +Backbone.Model.escape+, +_.escape+, defaulting to escape with +&lt;%=+ vs +&lt;%==+, escaping in other templating.
+TODO: Discuss +Backbone.Model.escape+, +_.escape+, defaulting to escape <b class="hl-keyword">with</b> +&lt;%=+ vs +&lt;%==+, escaping <b class="hl-keyword">in</b> other templating.
 
 == Performance (stub)
 
 === Dependency choice
 
-Backbone.js defines a +$+ variable that defers to jQuery if present.
+Backbone.js defines a +$+ variable that defers to jQuery <b class="hl-keyword">if</b> present.
 
 If you are only targeting mobile platforms, Backbone will handily fall back to
-Zepto http://zeptojs.com for a more lightweight dependency.  Zepto is "a
-minimalist JavaScript framework for mobile WebKit browsers, with a
-jQuery-compatible syntax."  From +backbone.js+:
-
+Zepto http:<i class="hl-comment" style="color: silver">//zeptojs.com for a more lightweight dependency.  Zepto is "a</i>
+minimalist JavaScript framework <b class="hl-keyword">for</b> mobile WebKit browsers, <b class="hl-keyword">with</b> a
+jQuery-compatible syntax.<b class="hl-string"><i style="color:red">"  From +backbone.js+:
+</i></b>
 [javascript]
 source~~~~
-(function(){
+(<b class="hl-keyword">function</b>(){
 
-  // Initial Setup
-  // -------------
+  <i class="hl-comment" style="color: silver">// Initial Setup</i>
+  <i class="hl-comment" style="color: silver">// -------------</i>
 
-  // Save a reference to the global object.
-  var root = this;
+  <i class="hl-comment" style="color: silver">// Save a reference to the global object.</i>
+  <b class="hl-keyword">var</b> root = <b class="hl-keyword">this</b>;
 
-  // For Backbone's purposes, jQuery or Zepto owns the `$` variable.
-  var $ = root.jQuery || root.Zepto;
+  <i class="hl-comment" style="color: silver">// For Backbone's purposes, jQuery or Zepto owns the `$` variable.</i>
+  <b class="hl-keyword">var</b> $ = root.jQuery || root.Zepto;
 
-  // ...
+  <i class="hl-comment" style="color: silver">// ...</i>
 
-}).call(this);
+}).call(<b class="hl-keyword">this</b>);
 source~~~~</pre>
 </div>
 </div>

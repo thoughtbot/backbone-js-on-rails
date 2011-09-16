@@ -48,29 +48,29 @@ actual template file. This can cause confusion with developers just started
 with Backbone.js.</p>
 <p>A basic Backbone.js view appears as follows.</p>
 <pre class="programlisting">ExampleApp.Views.ExampleView = Backbone.View.extend({
-  tagName: "li",
+  tagName: <b class="hl-string"><i style="color:red">"li"</i></b>,
 
-  className: "example",
+  className: <b class="hl-string"><i style="color:red">"example"</i></b>,
 
-  id: "example_view",
+  id: <b class="hl-string"><i style="color:red">"example_view"</i></b>,
 
   events: {
-    "click a.save": "save"
+    <b class="hl-string"><i style="color:red">"click a.save"</i></b>: <b class="hl-string"><i style="color:red">"save"</i></b>
   },
 
-  initialize: function() {
-    this.render();
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.render();
   },
 
-  render: function() {
-    $(this.el).html(JST['example/view']({ model:  }));
-    $('body').html(this.el);
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'example/view'</i></b>]({ model:  }));
+    $(<b class="hl-string"><i style="color:red">'body'</i></b>).html(<b class="hl-keyword">this</b>.el);
 
-    return this;
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   },
 
-  save: function() {
-    // do something
+  save: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// do something</i>
   }
 };</pre>
 <div class="section" lang="en">
@@ -198,20 +198,20 @@ gone through:</p>
 <a id="_when_you_are_writing_new_backbone_functionality_from_scratch"></a>When you are writing new Backbone functionality from scratch</h4></div></div></div>
 <p>If you’re not migrating from (or re-using) existing server-side view templates, you have more freedom of choice.  Strongly consider the option of no templating at all, but rather using plain HTML templates, and then decorating the DOM from your view class.</p>
 <p>You can build static HTML mockups of the application first, and pull these mockups directly in as templates, without modifying them.</p>
-<pre class="programlisting">&lt;!-- snip --&gt;
-&lt;section id="songs"&gt;
-  &lt;nav&gt;
-    &lt;a class="home"    href="#/"&gt;Home&lt;/a&gt;
-    &lt;a class="profile" href="/profile.html"&gt;My Profile&lt;/a&gt;
-  &lt;/nav&gt;
-  &lt;ol&gt;
-    &lt;li&gt;Here is a song&lt;/li&gt;
-  &lt;/ol&gt;
-&lt;/section&gt;
-&lt;!-- snip --&gt;</pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- snip --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"songs"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;nav&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"home"</span>    <span class="hl-attribute" style="color: #F5844C">href</span>=<span class="hl-value" style="color: #993300">"#/"</span><b class="hl-tag" style="color: #000096">&gt;</b>Home<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"profile"</span> <span class="hl-attribute" style="color: #F5844C">href</span>=<span class="hl-value" style="color: #993300">"/profile.html"</span><b class="hl-tag" style="color: #000096">&gt;</b>My Profile<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/nav&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;ol&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;li&gt;</b>Here is a song<b class="hl-tag" style="color: #000096">&lt;/li&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/ol&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b>
+<i class="hl-comment" style="color: silver">&lt;!-- snip --&gt;</i></pre>
 <pre class="programlisting">MyView = Backbone.View.extend({
-  render: function() {
-    // TODO...
+  render: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// TODO...</i>
   }
 });</pre>
 <p>TODO: Can you render with this.$(<span class="emphasis"><em>#songs nav a.profile</em></span>).attr(<span class="emphasis"><em>…</em></span>) before inserting into the DOM?  That way, unpopulated HTML is never displayed to the user.</p>
@@ -252,16 +252,16 @@ currently use URL fragments and not pushState.</p>
 <p>A typical Backbone.js router will appear as shown below.</p>
 <pre class="programlisting">ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
-    ""         : "index"
-    "show/:id" : "show"
+    <b class="hl-string"><i style="color:red">""</i></b>         : <b class="hl-string"><i style="color:red">"index"</i></b>
+    <b class="hl-string"><i style="color:red">"show/:id"</i></b> : <b class="hl-string"><i style="color:red">"show"</i></b>
   },
 
-  index: function() {
-    // Render the index view
+  index: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// Render the index view</i>
   }
 
-  show: function(id) {
-    // Render the show view
+  show: <b class="hl-keyword">function</b>(id) {
+    <i class="hl-comment" style="color: silver">// Render the show view</i>
   }
 });</pre>
 <div class="section" lang="en">
@@ -342,31 +342,31 @@ doing most of your binding.</p>
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_binding_to_dom_events_within_the_view_element"></a>Binding to DOM events within the view element</h4></div></div></div>
 <p>The primary function of a view class is to provide behavior for its markup’s DOM elements.  You can attach event listeners by hand if you like:</p>
-<pre class="programlisting">&lt;!-- templates/soundboard.jst --&gt;
-&lt;a class="sound"&gt;Honk&lt;/a&gt;
-&lt;a class="sound"&gt;Beep&lt;/a&gt;</pre>
-<pre class="programlisting">var SoundBoard = Backbone.View.extend({
-  render: function() {
-    $(this.el).html(JST['soundboard']());
-    this.$("a.sound").bind("click", this.playSound);
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- templates/soundboard.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Honk<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Beep<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b></pre>
+<pre class="programlisting"><b class="hl-keyword">var</b> SoundBoard = Backbone.View.extend({
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">"a.sound"</i></b>).bind(<b class="hl-string"><i style="color:red">"click"</i></b>, <b class="hl-keyword">this</b>.playSound);
   },
 
-  playSound: function() {
-    // play sound for this element
+  playSound: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// play sound for this element</i>
   }
 });</pre>
 <p>But Backbone provides an easier and more declarative approach with the <code class="literal">events</code> hash:</p>
-<pre class="programlisting">var SoundBoard = Backbone.View.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> SoundBoard = Backbone.View.extend({
   events: {
-    "click a.sound": "playSound"
+    <b class="hl-string"><i style="color:red">"click a.sound"</i></b>: <b class="hl-string"><i style="color:red">"playSound"</i></b>
   },
 
-  render: function() {
-    $(this.el).html(JST['soundboard']());
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
   },
 
-  playSound: function() {
-    // play sound for this element
+  playSound: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// play sound for this element</i>
   }
 });</pre>
 <p>Backbone will bind the events with the
@@ -388,20 +388,20 @@ or <code class="literal">this.collection</code>.</p>
 <p>Consider a view that displays a collection of <code class="literal">Task</code> models.  It will re-render
 itself when any model in the collection is changed or removed, or when a new
 model is added:</p>
-<pre class="programlisting">var TasksIndex = Backbone.View.extend({
-  template: JST['tasks/tasks_index'],
-  tagName: 'section',
-  id: 'tasks',
+<pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
+  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
+  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
+  id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
 
-  initialize: function() {
-    _.bindAll(this, "render");
-    this.collection.bind("change", this.render);
-    this.collection.bind("add",    this.render);
-    this.collection.bind("remove", this.render);
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  render: function() {
-    $(this.el).html(this.template({tasks: this.collection}));
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({tasks: <b class="hl-keyword">this</b>.collection}));
   }
 });</pre>
 </div>
@@ -417,24 +417,24 @@ it’s useful.</p>
 filters the users to a particular gender:</p>
 <pre class="programlisting">GenderFilter = Backbone.View.extend({
   events: {
-    "click .show-male":   "showMale",
-    "click .show-female": "showFemale",
-    "click .show-both":   "showBoth"
+    <b class="hl-string"><i style="color:red">"click .show-male"</i></b>:   <b class="hl-string"><i style="color:red">"showMale"</i></b>,
+    <b class="hl-string"><i style="color:red">"click .show-female"</i></b>: <b class="hl-string"><i style="color:red">"showFemale"</i></b>,
+    <b class="hl-string"><i style="color:red">"click .show-both"</i></b>:   <b class="hl-string"><i style="color:red">"showBoth"</i></b>
   },
 
-  showMale: function()   { this.trigger("changed", "male");   },
-  showFemale: function() { this.trigger("changed", "female"); },
-  showBoth: function()   { this.trigger("changed", "both");   }
+  showMale: <b class="hl-keyword">function</b>()   { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"male"</i></b>);   },
+  showFemale: <b class="hl-keyword">function</b>() { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"female"</i></b>); },
+  showBoth: <b class="hl-keyword">function</b>()   { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"both"</i></b>);   }
 });
 
 UsersTable = Backbone.View.extend({
-  initialize: function() {
-    this.filterView = new UserFilter();
-    this.filterView.bind("changed", this.filterByGender);
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.filterView = <b class="hl-keyword">new</b> UserFilter();
+    <b class="hl-keyword">this</b>.filterView.bind(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-keyword">this</b>.filterByGender);
   },
 
-  filterByGender: function(gender) {
-    this.filteredCollection = this.collection.byGender(gender);
+  filterByGender: <b class="hl-keyword">function</b>(gender) {
+    <b class="hl-keyword">this</b>.filteredCollection = <b class="hl-keyword">this</b>.collection.byGender(gender);
   }
 });</pre>
 <p><code class="literal">GenderFilter</code> is responsible for the filter control, and triggers an event
@@ -465,48 +465,48 @@ that need to be done:</p>
 </div>
 <br class="figure-break"><p>The interface switches between the two views.</p>
 <p>Here’s the source for the aggregate index view:</p>
-<pre class="programlisting">var TasksIndex = Backbone.View.extend({
-  template: JST['tasks/tasks_index'],
-  tagName: 'section',
-  id: 'tasks',
+<pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
+  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
+  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
+  id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
 
-  initialize: function() {
-    _.bindAll(this, "render");
-    this.collection.bind("change", this.render);
-    this.collection.bind("add",    this.render);
-    this.collection.bind("remove", this.render);
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  render: function() {
-    $(this.el).html(this.template({tasks: this.collection}));
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({tasks: <b class="hl-keyword">this</b>.collection}));
   }
 });</pre>
 <p>and the source for the individual task detail view:</p>
-<pre class="programlisting">var TaskDetail = Backbone.View.extend({
-  template: JST['tasks/tasks_detail'],
-  tagName: 'section',
-  id: 'task',
+<pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = Backbone.View.extend({
+  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_detail'</i></b>],
+  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
+  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
 
   events: {
-    "click .comments .form-inputs button": "createComment"
+    <b class="hl-string"><i style="color:red">"click .comments .form-inputs button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
   },
 
-  initialize: function() {
-    _.bindAll(this, "render");
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
 
-    this.model.bind("change", this.render);
-    this.model.comments.bind("change", this.render);
-    this.model.comments.bind("add", this.render);
+    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  render: function() {
-    $(this.el).html(this.template({task: this.model}));
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({task: <b class="hl-keyword">this</b>.model}));
   },
 
-  createComment: function() {
-    var comment = new Comment({ text: this.$('.new-comment-input').val() });
-    this.$('.new-comment-input').val('');
-    this.model.comments.create(comment);
+  createComment: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
+    <b class="hl-keyword">this</b>.model.comments.create(comment);
   }
 });</pre>
 <p>Each task on the index page links to the detail view for itself. When a user
@@ -553,19 +553,19 @@ making a new function, since <code class="literal">remove()</code> is very simpl
 any additional event unbinding we need to do.  As a convention, when we use
 this view elsewhere, we’ll call <code class="literal">leave()</code> instead of <code class="literal">remove()</code> when we’re
 done:</p>
-<pre class="programlisting">var SomeCollectionView = Backbone.View.extend({
-  // snip...
+<pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectionView = Backbone.View.extend({
+  <i class="hl-comment" style="color: silver">// snip...</i>
 
-  initialize: function() {
-    this.collection.bind("change", this.render);
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  leave: function() {
-    this.collection.unbind("change", this.render);
-    this.remove();
+  leave: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.collection.unbind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.remove();
   }
 
-  // snip...
+  <i class="hl-comment" style="color: silver">// snip...</i>
 });</pre>
 </div>
 <div class="section" lang="en">
@@ -579,27 +579,27 @@ if you bind to multiple events then it only gets more verbose.</p>
 clean up all the events with one call.  We’ll add and use a <code class="literal">bindTo()</code>
 function that keeps track of all the event handlers we bind, and then issue a
 single call to <code class="literal">unbindFromAll()</code> to unbind them:</p>
-<pre class="programlisting">var SomeCollectionView = Backbone.View.extend({
-  initialize: function() {
-    this.bindings = [];
-    this.bindTo(this.collection, "change", this.render);
+<pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectionView = Backbone.View.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.bindings = [];
+    <b class="hl-keyword">this</b>.bindTo(<b class="hl-keyword">this</b>.collection, <b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  leave: function() {
-    this.unbindFromAll();
-    this.remove();
+  leave: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.unbindFromAll();
+    <b class="hl-keyword">this</b>.remove();
   },
 
-  bindTo: function(source, event, callback) {
-    source.bind(event, callback, this);
-    this.bindings.push({ source: source, event: event, callback: callback });
+  bindTo: <b class="hl-keyword">function</b>(source, event, callback) {
+    source.bind(event, callback, <b class="hl-keyword">this</b>);
+    <b class="hl-keyword">this</b>.bindings.push({ source: source, event: event, callback: callback });
   },
 
-  unbindFromAll: function() {
-    _.each(this.bindings, function(binding) {
+  unbindFromAll: <b class="hl-keyword">function</b>() {
+    _.each(<b class="hl-keyword">this</b>.bindings, <b class="hl-keyword">function</b>(binding) {
       binding.source.unbind(binding.event, binding.callback);
     });
-    this.bindings = [];
+    <b class="hl-keyword">this</b>.bindings = [];
   }
 });</pre>
 <p>These functions, <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code>, can be extracted into a
@@ -626,25 +626,25 @@ up the event binding when they are disposed.</p>
 should clean up any event handlers bound on <span class="strong"><strong>itself</strong></span> for events that it
 triggers.</p>
 <p>This is handled by invoking <code class="literal">Backbone.Events.unbind()</code>:</p>
-<pre class="programlisting">var FilteringView = Backbone.View.extend({
-  // snip...
+<pre class="programlisting"><b class="hl-keyword">var</b> FilteringView = Backbone.View.extend({
+  <i class="hl-comment" style="color: silver">// snip...</i>
 
   events: {
-    "click a.filter": "changeFilter"
+    <b class="hl-string"><i style="color:red">"click a.filter"</i></b>: <b class="hl-string"><i style="color:red">"changeFilter"</i></b>
   },
 
-  changeFilter: function() {
-    if (someLogic()) {
-      this.trigger("filtered", { some: options });
+  changeFilter: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">if</b> (someLogic()) {
+      <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"filtered"</i></b>, { some: options });
     }
   },
 
-  leave: function() {
-    this.unbind(); // Clean up any event handlers bound on this view
-    this.remove();
+  leave: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.unbind(); <i class="hl-comment" style="color: silver">// Clean up any event handlers bound on this view</i>
+    <b class="hl-keyword">this</b>.remove();
   }
 
-  // snip...
+  <i class="hl-comment" style="color: silver">// snip...</i>
 });</pre>
 </div>
 <div class="section" lang="en">
@@ -667,15 +667,15 @@ and <code class="literal">CompositeView</code>.</p>
 We discussed previously a convention of writing a <code class="literal">view.leave()</code>
 Let’s augment our view to include the ability to clean itself up by "leaving"
 the DOM:</p>
-<pre class="programlisting">var MyView = Backbone.View.extend({
-  // ...
+<pre class="programlisting"><b class="hl-keyword">var</b> MyView = Backbone.View.extend({
+  <i class="hl-comment" style="color: silver">// ...</i>
 
-  leave: function() {
-    this.unbind();
-    this.remove();
+  leave: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.unbind();
+    <b class="hl-keyword">this</b>.remove();
   },
 
-  // ...
+  <i class="hl-comment" style="color: silver">// ...</i>
 });</pre>
 <p>The <code class="literal">unbind()</code> and <code class="literal">remove()</code> functions are provided by <code class="literal">Backbone.Events</code> and
 <code class="literal">Backbone.Events.unbind()</code> will remove all callbacks registered on the view,
@@ -686,19 +686,19 @@ shared layout). We introduce a convention that all actions underneath one
 <p>Now, a <code class="literal">SwappingRouter</code> can take advantage of the <code class="literal">leave()</code> function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
 rendering that view into its own <code class="literal">el</code>:</p>
-<pre class="programlisting">Support.SwappingRouter = function(options) {
-  Backbone.Router.apply(this, [options]);
+<pre class="programlisting">Support.SwappingRouter = <b class="hl-keyword">function</b>(options) {
+  Backbone.Router.apply(<b class="hl-keyword">this</b>, [options]);
 };
 
-_.extend(Support.SwappingRouter.prototype, Backbone.Router.prototype, {
-  swap: function(newView) {
-    if (this.currentView &amp;&amp; this.currentView.leave) {
-      this.currentView.leave();
+_.extend(Support.SwappingRouter.<b class="hl-keyword">prototype</b>, Backbone.Router.<b class="hl-keyword">prototype</b>, {
+  swap: <b class="hl-keyword">function</b>(newView) {
+    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.currentView &amp;&amp; <b class="hl-keyword">this</b>.currentView.leave) {
+      <b class="hl-keyword">this</b>.currentView.leave();
     }
 
-    this.currentView = newView;
-    this.currentView.render();
-    $(this.el).empty().append(this.currentView.el);
+    <b class="hl-keyword">this</b>.currentView = newView;
+    <b class="hl-keyword">this</b>.currentView.render();
+    $(<b class="hl-keyword">this</b>.el).empty().append(<b class="hl-keyword">this</b>.currentView.el);
   }
 });
 
@@ -735,18 +735,18 @@ that includes the <code class="literal">swap</code> function.</p>
 <p>Finally, the subclass cake is topped off with some Backbone frosting: setting
 <code class="literal">extend</code>, which is a self-propagating function that all Backbone public classes
 use. Let’s take a quick look at this function, as of Backbone 0.5.3:</p>
-<pre class="programlisting">var extend = function (protoProps, classProps) {
-  var child = inherits(this, protoProps, classProps);
-  child.extend = this.extend;
-  return child;
+<pre class="programlisting"><b class="hl-keyword">var</b> extend = <b class="hl-keyword">function</b> (protoProps, classProps) {
+  <b class="hl-keyword">var</b> child = inherits(<b class="hl-keyword">this</b>, protoProps, classProps);
+  child.extend = <b class="hl-keyword">this</b>.extend;
+  <b class="hl-keyword">return</b> child;
 };
 
-// Helper function to correctly set up the prototype chain, for subclasses.
-// Similar to `goog.inherits`, but uses a hash of prototype properties and
-// class properties to be extended.
-var inherits = function(parent, protoProps, staticProps) {
-  // sparing our readers the internals of this function... for a deep dive
-  // into the dark realms of JavaScript's prototype system, read the source!
+<i class="hl-comment" style="color: silver">// Helper function to correctly set up the prototype chain, for subclasses.</i>
+<i class="hl-comment" style="color: silver">// Similar to `goog.inherits`, but uses a hash of prototype properties and</i>
+<i class="hl-comment" style="color: silver">// class properties to be extended.</i>
+<b class="hl-keyword">var</b> inherits = <b class="hl-keyword">function</b>(parent, protoProps, staticProps) {
+  <i class="hl-comment" style="color: silver">// sparing our readers the internals of this function... for a deep dive</i>
+  <i class="hl-comment" style="color: silver">// into the dark realms of JavaScript's prototype system, read the source!</i>
 }</pre>
 <p>So, it’s a function that calls <code class="literal">inherits</code> to make a new subclass.  The comments
 reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
@@ -777,134 +777,134 @@ concerns to keep in mind while creating your views.</p>
 <p>One of the first refactorings you find yourself doing in a non-trivial Backbone
 app is splitting up large views into composable parts. Let’s take another look
 at the <code class="literal">TaskDetail</code> source code from the beginning of this section:</p>
-<pre class="programlisting">var TaskDetail = Backbone.View.extend({
-  template: JST['tasks/tasks_detail'],
-  tagName: 'section',
-  id: 'task',
+<pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = Backbone.View.extend({
+  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_detail'</i></b>],
+  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
+  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
 
   events: {
-    "click .comments .form-inputs button": "createComment"
+    <b class="hl-string"><i style="color:red">"click .comments .form-inputs button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
   },
 
-  initialize: function() {
-    _.bindAll(this, "render");
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
 
-    this.model.bind("change", this.render);
-    this.model.comments.bind("change", this.render);
-    this.model.comments.bind("add", this.render);
+    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
-  render: function() {
-    $(this.el).html(this.template({task: this.model}));
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({task: <b class="hl-keyword">this</b>.model}));
   },
 
-  createComment: function() {
-    var comment = new Comment({ text: this.$('.new-comment-input').val() });
-    this.$('.new-comment-input').val('');
-    this.model.comments.create(comment);
+  createComment: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
+    <b class="hl-keyword">this</b>.model.comments.create(comment);
   }
 });</pre>
 <p>The view class references a template, which renders out the HTML for this page:</p>
-<pre class="programlisting">&lt;section class="task-details"&gt;
-  &lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
-  &lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;
-&lt;/section&gt;
+<pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span>
 
-&lt;section class="comments"&gt;
-  &lt;ul&gt;
-    &lt;% task.comments.each(function(comment) { %&gt;
-      &lt;li&gt;
-        &lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
-        &lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;
-      &lt;/li&gt;
-    &lt;% } %&gt;
-  &lt;/ul&gt;
+<span class="hl-attribute" style="color: #F5844C">&lt;section</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;ul&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">task.comments.each(function(comment)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;li&gt;</span>
+        <span class="hl-attribute" style="color: #F5844C">&lt;h4&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
+        <span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;/li&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">}</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+  <span class="hl-attribute" style="color: #F5844C">&lt;/ul&gt;</span>
 
-  &lt;div class="form-inputs"&gt;
-    &lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
-    &lt;textarea id="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
-    &lt;button&gt;Add Comment&lt;/button&gt;
-  &lt;/div&gt;
-&lt;/section&gt;</pre>
+  <span class="hl-attribute" style="color: #F5844C">&lt;div</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"form-inputs"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/div&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre>
 <p>There are clearly several concerns going on here: rendering the task, rendering
 the comments that folks have left, and rendering the form to create new
 comments. Let’s separate those concerns. A first approach might be to just
 break up the template files:</p>
-<pre class="programlisting">&lt;!-- tasks/show.jst --&gt;
-&lt;section class="task-details"&gt;
-  &lt;%= JST['tasks/details']({ task: task }) %&gt;
-&lt;/section&gt;
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/show.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">JST['tasks/details']({</span> <span class="hl-attribute" style="color: #F5844C">task:</span> <span class="hl-attribute" style="color: #F5844C">task</span> <span class="hl-attribute" style="color: #F5844C">})</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span>
 
-&lt;section class="comments"&gt;
-  &lt;%= JST['comments/list']({ task: task }) %&gt;
-&lt;/section&gt;</pre>
-<pre class="programlisting">&lt;!-- tasks/details.jst --&gt;
-&lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
-&lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/list.jst --&gt;
-&lt;ul&gt;
-  &lt;% task.comments.each(function(comment) { %&gt;
-    &lt;%= JST['comments/item']({ comment: comment }) %&gt;
-  &lt;% } %&gt;
-&lt;/ul&gt;
+<span class="hl-attribute" style="color: #F5844C">&lt;section</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">JST['comments/list']({</span> <span class="hl-attribute" style="color: #F5844C">task:</span> <span class="hl-attribute" style="color: #F5844C">task</span> <span class="hl-attribute" style="color: #F5844C">})</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/details.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/list.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;ul&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">task.comments.each(function(comment)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">JST['comments</span><b class="hl-tag" style="color: #000096">/i</b>tem']({ comment: comment }) %&gt;
+  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">}</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/ul&gt;</span>
 
-&lt;%= JST['comments/new']() %&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/item.jst --&gt;
-&lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
-&lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/new.jst --&gt;
-&lt;div class="form-inputs"&gt;
-  &lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
-  &lt;textarea id="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
-  &lt;button&gt;Add Comment&lt;/button&gt;
-&lt;/div&gt;</pre>
+<span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">JST['comments</span><b class="hl-tag" style="color: #000096">/n</b>ew']() %&gt;</pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/item.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;h4&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/new.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;div</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"form-inputs"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre>
 <p>But this is really only half the story. The <code class="literal">TaskDetail</code> view class still
 handles multiple concerns: displaying the task, and creating comments. Let’s
 split that view class up, using the <code class="literal">CompositeView</code> base class:</p>
-<pre class="programlisting">Support.CompositeView = function(options) {
-  this.children = _([]);
-  Backbone.View.apply(this, [options]);
+<pre class="programlisting">Support.CompositeView = <b class="hl-keyword">function</b>(options) {
+  <b class="hl-keyword">this</b>.children = _([]);
+  Backbone.View.apply(<b class="hl-keyword">this</b>, [options]);
 };
 
-_.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
-  leave: function() {
-    this.unbind();
-    this.remove();
-    this._leaveChildren();
-    this._removeFromParent();
+_.extend(Support.CompositeView.<b class="hl-keyword">prototype</b>, Backbone.View.<b class="hl-keyword">prototype</b>, {
+  leave: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.unbind();
+    <b class="hl-keyword">this</b>.remove();
+    <b class="hl-keyword">this</b>._leaveChildren();
+    <b class="hl-keyword">this</b>._removeFromParent();
   },
 
-  renderChild: function(view) {
+  renderChild: <b class="hl-keyword">function</b>(view) {
     view.render();
-    this.children.push(view);
-    view.parent = this;
+    <b class="hl-keyword">this</b>.children.push(view);
+    view.parent = <b class="hl-keyword">this</b>;
   },
 
-  appendChild: function(view) {
-    this.renderChild(view);
-    $(this.el).append(view.el);
+  appendChild: <b class="hl-keyword">function</b>(view) {
+    <b class="hl-keyword">this</b>.renderChild(view);
+    $(<b class="hl-keyword">this</b>.el).append(view.el);
   },
 
-  renderChildInto: function(view, container) {
-    this.renderChild(view);
+  renderChildInto: <b class="hl-keyword">function</b>(view, container) {
+    <b class="hl-keyword">this</b>.renderChild(view);
     $(container).empty().append(view.el);
   },
 
-  _leaveChildren: function() {
-    this.children.chain().clone().each(function(view) {
-      if (view.leave)
+  _leaveChildren: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.children.chain().clone().each(<b class="hl-keyword">function</b>(view) {
+      <b class="hl-keyword">if</b> (view.leave)
         view.leave();
     });
   },
 
-  _removeFromParent: function() {
-    if (this.parent)
-      this.parent._removeChild(this);
+  _removeFromParent: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.parent)
+      <b class="hl-keyword">this</b>.parent._removeChild(<b class="hl-keyword">this</b>);
   },
 
-  _removeChild: function(view) {
-    var index = this.children.indexOf(view);
-    this.children.splice(index, 1);
+  _removeChild: <b class="hl-keyword">function</b>(view) {
+    <b class="hl-keyword">var</b> index = <b class="hl-keyword">this</b>.children.indexOf(view);
+    <b class="hl-keyword">this</b>.children.splice(index, <span class="hl-number">1</span>);
   }
 });
 
@@ -922,113 +922,113 @@ views is cleaned up properly.</p>
 maintain a back-reference at <code class="literal">this.parent</code>. This is used to reach up and call
 <code class="literal">this.parent.removeChild(this)</code> for these self-dismissing views.</p>
 <p>Making use of <code class="literal">CompositeView</code>, we split up the <code class="literal">TaskDetail</code> view class:</p>
-<pre class="programlisting">var TaskDetail = Backbone.View.extend({
-  tagName: 'section',
-  id: 'task',
+<pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = Backbone.View.extend({
+  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
+  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
 
-  initialize: function() {
-    _.bindAll(this, "renderDetails");
-    this.model.bind("change", this.renderDetails);
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderDetails"</i></b>);
+    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.renderDetails);
   },
 
-  render: function() {
-    this.renderLayout();
-    this.renderDetail();
-    this.renderCommentsList();
+  render: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.renderLayout();
+    <b class="hl-keyword">this</b>.renderDetail();
+    <b class="hl-keyword">this</b>.renderCommentsList();
   },
 
-  renderLayout: function() {
-    $(this.el).html(JST['tasks/show']());
+  renderLayout: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]());
   },
 
-  renderDetails: function() {
-    var detailsMarkup = JST['tasks/details']({ task: this.model });
-    this.$('.task-details').html(detailsMarkup);
+  renderDetails: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> detailsMarkup = JST[<b class="hl-string"><i style="color:red">'tasks/details'</i></b>]({ task: <b class="hl-keyword">this</b>.model });
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.task-details'</i></b>).html(detailsMarkup);
   },
 
-  renderCommentsList: function() {
-    var commentsList = new CommentsList({ model: this.model });
-    var commentsContainer = this.$('comments');
-    this.renderChildInto(commentsList, commentsContainer);
+  renderCommentsList: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> commentsList = <b class="hl-keyword">new</b> CommentsList({ model: <b class="hl-keyword">this</b>.model });
+    <b class="hl-keyword">var</b> commentsContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'comments'</i></b>);
+    <b class="hl-keyword">this</b>.renderChildInto(commentsList, commentsContainer);
   }
 });</pre>
-<pre class="programlisting">var CommentsList = CompositeView.extend({
-  tagName: 'ul',
+<pre class="programlisting"><b class="hl-keyword">var</b> CommentsList = CompositeView.extend({
+  tagName: <b class="hl-string"><i style="color:red">'ul'</i></b>,
 
-  initialize: function() {
-    this.model.comments.bind("add", this.renderComments);
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.renderComments);
   },
 
-  render: function() {
-    this.renderLayout();
-    this.renderComments();
-    this.renderCommentForm();
+  render: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.renderLayout();
+    <b class="hl-keyword">this</b>.renderComments();
+    <b class="hl-keyword">this</b>.renderCommentForm();
   },
 
-  renderLayout: function() {
-    $(this.el).html(JST['comments/list']());
+  renderLayout: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/list'</i></b>]());
   },
 
-  renderComments: function() {
-    var commentsContainer = this.$('comments-list');
-    commentsContainer.html('');
+  renderComments: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> commentsContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'comments-list'</i></b>);
+    commentsContainer.html(<b class="hl-string"><i style="color:red">''</i></b>);
 
-    this.model.comments.each(function(comment) {
-      var commentMarkup = JST['comments/item']({ comment: comment });
+    <b class="hl-keyword">this</b>.model.comments.each(<b class="hl-keyword">function</b>(comment) {
+      <b class="hl-keyword">var</b> commentMarkup = JST[<b class="hl-string"><i style="color:red">'comments/item'</i></b>]({ comment: comment });
       commentsContainer.append(commentMarkup);
     });
   },
 
-  renderCommentForm: function() {
-    var commentForm = new CommentForm({ model: this.model });
-    var commentFormContainer = this.$('.new-comment-form');
-    this.renderChildInto(commentForm, commentFormContainer);
+  renderCommentForm: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> commentForm = <b class="hl-keyword">new</b> CommentForm({ model: <b class="hl-keyword">this</b>.model });
+    <b class="hl-keyword">var</b> commentFormContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-form'</i></b>);
+    <b class="hl-keyword">this</b>.renderChildInto(commentForm, commentFormContainer);
   }
 });</pre>
-<pre class="programlisting">var CommentForm = CompositeView.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> CommentForm = CompositeView.extend({
   events: {
-    "click button": "createComment"
+    <b class="hl-string"><i style="color:red">"click button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
   },
 
-  initialize: function() {
-    this.model = this.options.model;
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.model = <b class="hl-keyword">this</b>.options.model;
   },
 
-  render: function() {
-    $(this.el).html(JST['comments/new']);
+  render: <b class="hl-keyword">function</b>() {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/new'</i></b>]);
   },
 
-  createComment: function() {
-    var comment = new Comment({ text: $('.new-comment-input').val() });
-    this.$('.new-comment-input').val('');
-    this.model.comments.create(comment);
+  createComment: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: $(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
+    <b class="hl-keyword">this</b>.model.comments.create(comment);
   }
 });</pre>
 <p>Along with this, remove the <code class="literal">&lt;%= JST(…) %&gt;</code> template nestings, allowing the
 view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:</p>
-<pre class="programlisting">&lt;!-- tasks/show.jst --&gt;
-&lt;section class="task-details"&gt;
-&lt;/section&gt;
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/show.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b>
 
-&lt;section class="comments"&gt;
-&lt;/section&gt;</pre>
-<pre class="programlisting">&lt;!-- tasks/details.jst --&gt;
-&lt;input type="checkbox"&lt;%= task.isComplete() ? ' checked="checked"' : '' %&gt; /&gt;
-&lt;h2&gt;&lt;%= task.escape("title") %&gt;&lt;/h2&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/list.jst --&gt;
-&lt;ul class="comments-list"&gt;
-&lt;/ul&gt;
+<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/details.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/list.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;ul</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments-list"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/ul&gt;</b>
 
-&lt;section class="new-comment-form"&gt;
-&lt;/section&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/item.jst --&gt;
-&lt;h4&gt;&lt;%= comment.user.escape('name') %&gt;&lt;/h4&gt;
-&lt;p&gt;&lt;%= comment.escape('text') %&gt;&lt;/p&gt;</pre>
-<pre class="programlisting">&lt;!-- comments/new.jst --&gt;
-&lt;label for="new-comment-input"&gt;Add comment&lt;/label&gt;
-&lt;textarea class="new-comment-input" cols="30" rows="10"&gt;&lt;/textarea&gt;
-&lt;button&gt;Add Comment&lt;/button&gt;</pre>
+<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"new-comment-form"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/item.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;h4&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span></pre>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/new.jst --&gt;</i>
+<b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b></pre>
 <p>There are several advantages to this approach:</p>
 <div class="itemizedlist"><ul type="disc">
 <li>

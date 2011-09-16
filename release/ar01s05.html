@@ -98,21 +98,21 @@ important. jQuery and Underscore.js must be loaded before Backbone.js, then
 the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
 models) and then your routers and views must be loaded.</p><p>Fortunately, sprockets can handle this load order for us. When all is said and
-done your application.js Sprockets manifest will be as shown below.</p><pre class="programlisting">//= require jquery
-//= require jquery_ujs
-//
-//= require underscore
-//= require backbone
-//= require backbone.authtokenadapter
-//
-//= require example_app
-//
-//= require_tree ./models
-//= require_tree ./collections
-//= require_tree ./views
-//= require_tree ./routers
-//= require_tree ../templates
-//= require_tree .</pre><p>The above is taken from the example application included with this book. You
+done your application.js Sprockets manifest will be as shown below.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//= require jquery</i>
+<i class="hl-comment" style="color: silver">//= require jquery_ujs</i>
+<i class="hl-comment" style="color: silver">//</i>
+<i class="hl-comment" style="color: silver">//= require underscore</i>
+<i class="hl-comment" style="color: silver">//= require backbone</i>
+<i class="hl-comment" style="color: silver">//= require backbone.authtokenadapter</i>
+<i class="hl-comment" style="color: silver">//</i>
+<i class="hl-comment" style="color: silver">//= require example_app</i>
+<i class="hl-comment" style="color: silver">//</i>
+<i class="hl-comment" style="color: silver">//= require_tree ./models</i>
+<i class="hl-comment" style="color: silver">//= require_tree ./collections</i>
+<i class="hl-comment" style="color: silver">//= require_tree ./views</i>
+<i class="hl-comment" style="color: silver">//= require_tree ./routers</i>
+<i class="hl-comment" style="color: silver">//= require_tree ../templates</i>
+<i class="hl-comment" style="color: silver">//= require_tree .</i></pre><p>The above is taken from the example application included with this book. You
 can view it at example_app/app/assets/javascripts/application.js.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"/>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON gets
 and posts. If you’ve ever made a JSON API for your Rails app, then for the most
 part this will be very similar.</p><p>If you’ve never made a JSON API for your Rails application before, lucky
@@ -137,24 +137,24 @@ Collections.
 Backbone.js doesn’t have the concept of relationships out of the box.
 </li></ul></div><p>With that said, lets take the simple case first and look at how you might make a
 Backbone.js version of a Rails model.</p><p>In our example application, we have a Task model. The simplest Backbone.js
-representation of this model would be as shown below.</p><pre class="programlisting">var Task = Backbone.Model.extend({
-  urlRoot: '/tasks'
+representation of this model would be as shown below.</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });</pre><p>The urlRoot property above indicates to Backbone.js that the server url for
 instances of this model will be found at /tasks/:id.</p><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
 query all tasks) through the same Task model. However, in Backbone.js models
 only represent the singular representation of a Task. Backbone.js splits out the
 plural representation of Tasks into what it calls Collections.</p><p>The simplest Backbone.js collection to represent our Tasks would be the
-following.</p><pre class="programlisting">var Tasks = Backbone.Collection.extend({
+following.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task
 });</pre><p>If we specify the url for Tasks in our collection instead, then models within
 the collection will use the collection’s url to construct their own URLs, and
 the urlRoot no longer needs to be specified in the model. If we make that
-change, then our collection and models will be as follows.</p><pre class="programlisting">var Tasks = Backbone.Collection.extend({
+change, then our collection and models will be as follows.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks'
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });
 
-var Task = Backbone.Model.extend({});</pre><p>Notice in the above model definitions that there is no specification of the
+<b class="hl-keyword">var</b> Task = Backbone.Model.extend({});</pre><p>Notice in the above model definitions that there is no specification of the
 attributes on the model. Like ActiveRecord, Backbone.js models get their
 attributes from the schema and data given to them. In the case of Backbone.js,
 this schema and data are the JSON from the server.</p><p>The default JSON representation of an ActiveRecord model is a Hash that includes
@@ -205,9 +205,9 @@ handled on the server, as fully implementing validations on the client side
 would often require duplicating a lot of server-side business logic.</p><p>TODO: Is it possible to smoothly integrate Backbone.js and the
 client_side_validations gem?</p><p>Instead, your Backbone.js applications will likely rely on server-side
 validation logic. How to handle a failure scenario is passed in to Backbone.js
-model save call as a callback, as shown below.</p><pre class="programlisting">task.save({title: "New Task title"}, {
-  error: function(){
-    // handle error from server
+model save call as a callback, as shown below.</p><pre class="programlisting">task.save({title: <b class="hl-string"><i style="color:red">"New Task title"</i></b>}, {
+  error: <b class="hl-keyword">function</b>(){
+    <i class="hl-comment" style="color: silver">// handle error from server</i>
   }
 });</pre><p>The error callback will be triggered if your server returns a non-200
 response. Therefore, you’ll want your controller to return a non-200 HTTP
@@ -234,37 +234,37 @@ of a controller, as in our example application and the tasks controller.</p><p>Y
 to reside. For more information on this namespacing see the "Namespacing your
 application" section of the Organization chapter.</p><p>This namespace variable holds your Backbone.js application’s Models,
 Collections, Views, and Routes, and has an init method which will be called to
-initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting">var ExampleApp = {
+initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
   Routers: {},
-  init: function() {
-    new ExampleApp.Routers.Tasks();
+  init: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks();
     Backbone.history.start();
   }
 };</pre><p>You can find this file in the example app in
 <code class="literal">app/assets/javascripts/example_app.js</code>.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone.js router before calling
 Backbone.history.start() otherwise Backbone.history will be undefined.</p></div><p>Then, inside app/views/tasks/index.html.erb you will call the initialize
-method. This will appear as follows.</p><pre class="programlisting">&lt;%= content_for :javascript do -%&gt;
-  &lt;%= javascript_tag do %&gt;
+method. This will appear as follows.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
+  &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init();
   &lt;% end %&gt;
 &lt;% end -%&gt;</pre><p>For performance reasons, you will almost always "prime the pump" and give
 Backbone.js its initial data within the HTML view for this page. In our
 example, the tasks have already been provided to the view in a @tasks instance
-variable, and that can be used to prime the pump, as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript do -%&gt;
-  &lt;%= javascript_tag do %&gt;
+variable, and that can be used to prime the pump, as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
+  &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
   &lt;% end %&gt;
-&lt;% end -%&gt;</pre><p>The above example uses Erb to pass the JSON for the tasks to the init method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting">var ExampleApp = {
+&lt;% end -%&gt;</pre><p>The above example uses Erb to pass the JSON for the tasks to the init method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
   Routers: {},
-  init: function(tasks) {
-    new ExampleApp.Routers.Tasks();
-    this.tasks = new ExampleApp.Collections.Tasks(tasks);
+  init: <b class="hl-keyword">function</b>(tasks) {
+    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks();
+    <b class="hl-keyword">this</b>.tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(tasks);
     Backbone.history.start();
   }
 };</pre><p>Finally, you must have a Router in place which knows what to do. We’ll cover
@@ -274,17 +274,17 @@ an important part of the infrastructure you need to start using Backbone.js
 and we can’t make our example here work without them.</p><p>Backbone.js routers provide methods for routing application flow based on
 client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
-    "": "index"
+    <b class="hl-string"><i style="color:red">""</i></b>: <b class="hl-string"><i style="color:red">"index"</i></b>
   },
 
-  index: function() {
-    // We've reached the end of Rails integration - it's all Backbone from here!
+  index: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// We've reached the end of Rails integration - it's all Backbone from here!</i>
 
-    alert('Hello, world!  This is a Backbone.js router action.');
+    alert(<b class="hl-string"><i style="color:red">'Hello, world!  This is a Backbone.js router action.'</i></b>);
 
-    // Normally you would continue down the stack, instantiating a
-    // Backbone.View class, calling render() on it, and inserting its element
-    // into the DOM.
+    <i class="hl-comment" style="color: silver">// Normally you would continue down the stack, instantiating a</i>
+    <i class="hl-comment" style="color: silver">// Backbone.View class, calling render() on it, and inserting its element</i>
+    <i class="hl-comment" style="color: silver">// into the DOM.</i>
   }
 });</pre><p>A basic router consists of a routes hash which is a mapping between url
 fragments and methods on the router. If the current URL fragment, or one that
@@ -376,21 +376,21 @@ understanding how Backbone.js views work by illustrating the conversion of a
 Rails view to a Backbone.js view.</p><p>Its important to note that a Rails view is not directly analogous to a
 Backbone.js view. A Rails view is more like a Backbone.js template, and
 Backbone.js views are more like Rails controllers. This can cause confusion
-with developers just started with Backbone.js.</p><p>Consider the following Rails view for a tasks index.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+with developers just started with Backbone.js.</p><p>Consider the following Rails view for a tasks index.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;th&gt;Title&lt;/th&gt;
-    &lt;th&gt;Completed&lt;/th&gt;
-  &lt;/tr&gt;
+<b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Title<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-  &lt;% @tasks.each do |task| %&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;%= task.title %&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;%= task.completed %&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;% end %&gt;
-&lt;/table&gt;</pre><p>Assuming we have the Backbone.js Task model and collection and the Rails Task
+  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">@tasks.each</span> <span class="hl-attribute" style="color: #F5844C">do</span> <span class="hl-attribute" style="color: #F5844C">|task|</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;tr&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">task.title</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">task.completed</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span>
+  <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">end</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>Assuming we have the Backbone.js Task model and collection and the Rails Task
 model and controller discussed above, and we’re priming the pump with
 all the tasks, before we can convert the template we must create a Backbone.js
 view which will render the Backbone.js template.</p><p>A Backbone.js view is a class that is responsible for rendering the display of
@@ -401,15 +401,15 @@ merely renders the above page markup, looping over each task in the Tasks
 collection. While this would be insufficient for most actual applications, in
 order to illustrate the building blocks of a Backbone.js view, such a view
 would be like the one shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
-  initialize: function() {
-    this.render();
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.render();
   },
 
-  render: function () {
-    $(this.el).html(JST['tasks/index']({ tasks: ExampleApp.tasks }));
-    $('body').html(this.el);
+  render: <b class="hl-keyword">function</b> () {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: ExampleApp.tasks }));
+    $(<b class="hl-string"><i style="color:red">'body'</i></b>).html(<b class="hl-keyword">this</b>.el);
 
-    return this;
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 };</pre><p>The Backbone.js view above has an initialize method which will be called when
 the view is instantiated. This initialize method calls the render method of
@@ -421,11 +421,11 @@ can be populated with content, but isn’t on the page until placed there by
 you.</p><p>Finally, the Router must be changed to instantiate this view, as shown in the
 follow Tasks router.</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
-    "": "index"
+    <b class="hl-string"><i style="color:red">""</i></b>: <b class="hl-string"><i style="color:red">"index"</i></b>
   },
 
-  index: function() {
-    new ExampleApp.Views.TasksIndex();
+  index: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">new</b> ExampleApp.Views.TasksIndex();
   }
 });</pre><p>Now that we have the Backbone.js view in place that renders the template, and
 its being called by the router, we can focus on converting the above Rails
@@ -443,21 +443,21 @@ proxies to Underscore.js to provide 26 iteration functions on
 Backbone.Collection. This means that its possible to call the Underscore.js
 methods directly on Backbone.js collections.</p><p>So we’ll use the each method to iterate through the Tasks collection that was
 passed to the view, as shown in the converted Rails template, which is now an
-Underscore.js template, below.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+Underscore.js template, below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;th&gt;Title&lt;/th&gt;
-    &lt;th&gt;Completed&lt;/th&gt;
-  &lt;/tr&gt;
+<b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Title<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-  &lt;% tasks.each(function(model) { %&gt;
-    &lt;tr&gt;
-      &lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
-      &lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;% }); %&gt;
-&lt;/table&gt;</pre><p>As you can see above in the above example, the same delimiter, and the use of
+  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">tasks.each(function(model)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;tr&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('title')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+      <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span>
+  <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">});</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>As you can see above in the above example, the same delimiter, and the use of
 the each method make the conversion of the Rails view to an Underscore.js
 template straightforward.</p><p>Finally, in Rails 3.0 and above template output is escaped. In order to ensure
 that we have the same XSS protection as we did in our Rails template, we
@@ -473,74 +473,74 @@ binding. With each of the Task models represented by an individual task view,
 when that individual model changes the view can be re-rendered automatically
 (by triggering events) and the entire page doesn’t need to be re-rendered.</p><p>Continuing our task index example from above, a TaskView will be responsible
 for rendering just the individual table row for a Task, therefore, its
-template will appear as follows.</p><pre class="programlisting">&lt;tr&gt;
-  &lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
-  &lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;
-&lt;/tr&gt;</pre><p>And the Task index template will be changed to be as shown below.</p><pre class="programlisting">&lt;h1&gt;Tasks&lt;/h1&gt;
+template will appear as follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;td&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">model.escape('title')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+  <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span></pre><p>And the Task index template will be changed to be as shown below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
-&lt;table&gt;
-  &lt;tr&gt;
-    &lt;th&gt;Title&lt;/th&gt;
-    &lt;th&gt;Completed&lt;/th&gt;
-  &lt;/tr&gt;
+<b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Title<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-&lt;/table&gt;</pre><p>As you can see above in the index template, the individual tasks are no longer
+<b class="hl-tag" style="color: #000096">&lt;/table&gt;</b></pre><p>As you can see above in the index template, the individual tasks are no longer
 iterated over and rendered inside the table. This will now happen in the
 TasksIndex and TaskView view, which is shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
-  initialize: function() {
+  initialize: <b class="hl-keyword">function</b>() {
   },
 
-  render: function () {
-    $(this.el).html(JST['tasks/view']({ model: this.model }));
-    return this;
+  render: <b class="hl-keyword">function</b> () {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 });</pre><p>The TaskView view above is very similar to the one we saw previously for the
 TasksIndex view. However, unlike the TasksIndex view, the TaskView does not
 insert itself into the DOM. Instead, it only inserts its content into it’s own
 element and the TasksIndex view be responsible for inserting the rendered task
 into the DOM, as shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
-  initialize: function() {
-    this.render();
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.render();
   },
 
-  render: function () {
-    $(this.el).html(JST['tasks/index']({ tasks: ExampleApp.tasks }));
+  render: <b class="hl-keyword">function</b> () {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: ExampleApp.tasks }));
 
-    var tasksIndexView = this;
-    ExampleApp.tasks.each(function(task) {
-      var taskView = new ExampleApp.Views.TaskView({model: task});
-      tasksIndexView.$('table').append(taskView.render().el);
+    <b class="hl-keyword">var</b> tasksIndexView = <b class="hl-keyword">this</b>;
+    ExampleApp.tasks.each(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">var</b> taskView = <b class="hl-keyword">new</b> ExampleApp.Views.TaskView({model: task});
+      tasksIndexView.$(<b class="hl-string"><i style="color:red">'table'</i></b>).append(taskView.render().el);
     });
 
-    $('body').html(this.el);
+    $(<b class="hl-string"><i style="color:red">'body'</i></b>).html(<b class="hl-keyword">this</b>.el);
 
-    return this;
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 });</pre><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
 each task, a new TaskView is instantiated, rendered, and then inserted into
-the DOM.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting">&lt;div&gt;
-  &lt;h1&gt;Tasks&lt;/h1&gt;
+the DOM.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
-  &lt;table&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Title&lt;/th&gt;
-      &lt;th&gt;Completed&lt;/th&gt;
-    &lt;/tr&gt;
+  <b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Title<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-    &lt;div&gt;
-      &lt;tr&gt;
-        &lt;td&gt;Task 1&lt;/td&gt;
-        &lt;td&gt;true&lt;/td&gt;
-      &lt;/tr&gt;
-    &lt;/div&gt;
-    &lt;div&gt;
-      &lt;tr&gt;
-        &lt;td&gt;Task 2&lt;/td&gt;
-        &lt;td&gt;false&lt;/td&gt;
-      &lt;/tr&gt;
-    &lt;/div&gt;
-  &lt;/table&gt;
-&lt;/div&gt;</pre><p>Unfortunately, we can see that there is a problem with the above rendered
+    <b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+        <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>Task 1<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+        <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>true<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/div&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+        <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>Task 2<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+        <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>false<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/div&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/table&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre><p>Unfortunately, we can see that there is a problem with the above rendered
 view, and that is the surrounding div around each of the rendered tasks.</p><p>Each of the rendered tasks has a surrounding div because this is the element
 that each view has that is accessed via this.el, and what the view’s content
 is inserted into. By default, this element is a div and therefore every view
@@ -551,37 +551,37 @@ changing the element to something other than a div. In the case of the
 TaskView, we would like this element to be a tr, then the wrapping tr can be
 removed from the task view template.</p><p>The element to use is specified by the tagName member of the TaskView, as
 shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
-  tagName: "tr",
+  tagName: <b class="hl-string"><i style="color:red">"tr"</i></b>,
 
-  initialize: function() {
+  initialize: <b class="hl-keyword">function</b>() {
   },
 
-  render: function () {
-    $(this.el).html(JST['tasks/view']({ model: this.model }));
-    return this;
+  render: <b class="hl-keyword">function</b> () {
+    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 };</pre><p>Given the above tagName customization, the task view template will be as
-follows.</p><pre class="programlisting">&lt;td&gt;&lt;%= model.escape('title') %&gt;&lt;/td&gt;
-&lt;td&gt;&lt;%= model.escape('completed') %&gt;&lt;/td&gt;</pre><p>And the resulting output of the TasksIndex will be much cleaner, as shown
-below.</p><pre class="programlisting">&lt;div&gt;
-  &lt;h1&gt;Tasks&lt;/h1&gt;
+follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;td&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">model.escape('title')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span></pre><p>And the resulting output of the TasksIndex will be much cleaner, as shown
+below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
-  &lt;table&gt;
-    &lt;tr&gt;
-      &lt;th&gt;Title&lt;/th&gt;
-      &lt;th&gt;Completed&lt;/th&gt;
-    &lt;/tr&gt;
+  <b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Title<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-    &lt;tr&gt;
-      &lt;td&gt;Task 1&lt;/td&gt;
-      &lt;td&gt;true&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;td&gt;Task 2&lt;/td&gt;
-      &lt;td&gt;false&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/table&gt;
-&lt;/div&gt;</pre><p>That is the basic building blocks of converting Rails views to Backbone.js and
+    <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>Task 1<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>true<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>Task 2<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+      <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>false<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
+    <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;/table&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre><p>That is the basic building blocks of converting Rails views to Backbone.js and
 getting a functional system. The majority of Backbone.js programming you will
 do will likely be in the Views and Templates and there is a lot more too them:
 event binding, different templating strategies, helpers, event unbinding, and
@@ -591,59 +591,59 @@ special token which is verified to ensure that the request originated from a
 user which is actually using the Rails app. In recent versions of Rails,
 Backbone.js Ajax requests are no exception.</p><p>To get around this, you have two options. Disable Rails XSS protection (not
 recommended), or make Backbone.js play nicely with Rails XSS.</p><p>To make Backbone.js play nicely with Rails XSS you can monkeypatch Backbone.js
-to include the Rails XSS token in any requests it makes.</p><p>The following is one such script.</p><pre class="programlisting">//
-// With additions by Maciej Adwent http://github.com/Maciek416
-// If token name and value are not supplied, this code Requires jQuery
-//
-// Adapted from:
-// http://www.ngauthier.com/2011/02/backbone-and-rails-forgery-protection.html
-// Nick Gauthier @ngauthier
-//
+to include the Rails XSS token in any requests it makes.</p><p>The following is one such script.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//</i>
+<i class="hl-comment" style="color: silver">// With additions by Maciej Adwent http://github.com/Maciek416</i>
+<i class="hl-comment" style="color: silver">// If token name and value are not supplied, this code Requires jQuery</i>
+<i class="hl-comment" style="color: silver">//</i>
+<i class="hl-comment" style="color: silver">// Adapted from:</i>
+<i class="hl-comment" style="color: silver">// http://www.ngauthier.com/2011/02/backbone-and-rails-forgery-protection.html</i>
+<i class="hl-comment" style="color: silver">// Nick Gauthier @ngauthier</i>
+<i class="hl-comment" style="color: silver">//</i>
 
-var BackboneRailsAuthTokenAdapter = {
+<b class="hl-keyword">var</b> BackboneRailsAuthTokenAdapter = {
 
-  //
-  // Given an instance of Backbone, route its sync() function so that
-  // it executes through this one first, which mixes in the CSRF
-  // authenticity token that Rails 3 needs to protect requests from
-  // forgery. Optionally, the token's name and value can be supplied
-  // by the caller.
-  //
-  fixSync: function(Backbone, paramName /*optional*/, paramValue /*optional*/){
+  <i class="hl-comment" style="color: silver">//</i>
+  <i class="hl-comment" style="color: silver">// Given an instance of Backbone, route its sync() function so that</i>
+  <i class="hl-comment" style="color: silver">// it executes through this one first, which mixes in the CSRF</i>
+  <i class="hl-comment" style="color: silver">// authenticity token that Rails 3 needs to protect requests from</i>
+  <i class="hl-comment" style="color: silver">// forgery. Optionally, the token's name and value can be supplied</i>
+  <i class="hl-comment" style="color: silver">// by the caller.</i>
+  <i class="hl-comment" style="color: silver">//</i>
+  fixSync: <b class="hl-keyword">function</b>(Backbone, paramName <i class="hl-comment" style="color: silver">/*optional*/</i>, paramValue <i class="hl-comment" style="color: silver">/*optional*/</i>){
 
-    if(typeof(paramName)=='string' &amp;&amp; typeof(paramValue)=='string'){
-      // Use paramName and paramValue as supplied
-    } else {
-      // Assume we've rendered meta tags with erb
-      paramName = $("meta[name='csrf-param']").attr('content');
-      paramValue = $("meta[name='csrf-token']").attr('content');
+    <b class="hl-keyword">if</b>(<b class="hl-keyword">typeof</b>(paramName)==<b class="hl-string"><i style="color:red">'string'</i></b> &amp;&amp; <b class="hl-keyword">typeof</b>(paramValue)==<b class="hl-string"><i style="color:red">'string'</i></b>){
+      <i class="hl-comment" style="color: silver">// Use paramName and paramValue as supplied</i>
+    } <b class="hl-keyword">else</b> {
+      <i class="hl-comment" style="color: silver">// Assume we've rendered meta tags with erb</i>
+      paramName = $(<b class="hl-string"><i style="color:red">"meta[name='csrf-param']"</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
+      paramValue = $(<b class="hl-string"><i style="color:red">"meta[name='csrf-token']"</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
     }
 
-    // alias away the sync method
+    <i class="hl-comment" style="color: silver">// alias away the sync method</i>
     Backbone._sync = Backbone.sync;
 
-    // define a new sync method
-    Backbone.sync = function(method, model, success, error) {
+    <i class="hl-comment" style="color: silver">// define a new sync method</i>
+    Backbone.sync = <b class="hl-keyword">function</b>(method, model, success, error) {
 
-      // only need a token for non-get requests
-      if (method == 'create' || method == 'update' || method == 'delete') {
+      <i class="hl-comment" style="color: silver">// only need a token for non-get requests</i>
+      <b class="hl-keyword">if</b> (method == <b class="hl-string"><i style="color:red">'create'</i></b> || method == <b class="hl-string"><i style="color:red">'update'</i></b> || method == <b class="hl-string"><i style="color:red">'delete'</i></b>) {
 
-        // grab the token from the meta tag rails embeds
-        var auth_options = {};
+        <i class="hl-comment" style="color: silver">// grab the token from the meta tag rails embeds</i>
+        <b class="hl-keyword">var</b> auth_options = {};
         auth_options[paramName] = paramValue;
 
-        // set it as a model attribute without triggering events
+        <i class="hl-comment" style="color: silver">// set it as a model attribute without triggering events</i>
         model.set(auth_options, {silent: true});
       }
 
-      // proxy the call to the old sync method
-      return Backbone._sync(method, model, success, error);
+      <i class="hl-comment" style="color: silver">// proxy the call to the old sync method</i>
+      <b class="hl-keyword">return</b> Backbone._sync(method, model, success, error);
     };
   },
 
 
-  // change Backbone's sync function back to the original one
-  restoreSync: function(Backbone){
+  <i class="hl-comment" style="color: silver">// change Backbone's sync function back to the original one</i>
+  restoreSync: <b class="hl-keyword">function</b>(Backbone){
     Backbone.sync = Backbone._sync;
   }
 };
