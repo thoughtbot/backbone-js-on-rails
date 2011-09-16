@@ -1,6 +1,6 @@
 source :rubygems
 
-gem "git-scribe"
+gem "git-scribe", :git => "git://github.com/thoughtbot/git-scribe"
 gem "guard"
 gem "guard-git-scribe"
 gem "rake"

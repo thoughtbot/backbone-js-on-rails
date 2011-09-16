@@ -1,9 +1,14 @@
-GEM
-  remote: http://rubygems.org/
+GIT
+  remote: git://github.com/thoughtbot/git-scribe
+  revision: 187875fe21dd082fbde43cf291f736156291ee2d
   specs:
     git-scribe (0.0.9)
       liquid
       nokogiri
+
+GEM
+  remote: http://rubygems.org/
+  specs:
     growl (1.0.3)
     guard (0.5.1)
       thor (~> 0.14.6)
@@ -18,7 +23,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  git-scribe
+  git-scribe!
   growl
   guard
   guard-git-scribe
