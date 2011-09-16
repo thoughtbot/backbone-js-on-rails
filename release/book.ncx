@@ -45,20 +45,4 @@
 <navLabel><text>Models and collections</text></navLabel>
 <content src="book.html#_models_and_collections"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_8" playOrder="9">
-<navLabel><text>Testing (section unstarted)</text></navLabel>
-<content src="book.html#_testing_section_unstarted"/>
-</navPoint>
-<navPoint class="chapter" id="chapter_9" playOrder="10">
-<navLabel><text>The JavaScript language (section unstarted)</text></navLabel>
-<content src="book.html#_the_javascript_language_section_unstarted"/>
-</navPoint>
-<navPoint class="chapter" id="chapter_10" playOrder="11">
-<navLabel><text>Security (stub)</text></navLabel>
-<content src="book.html#_security_stub"/>
-</navPoint>
-<navPoint class="chapter" id="chapter_11" playOrder="12">
-<navLabel><text>Performance (stub)</text></navLabel>
-<content src="book.html#_performance_stub"/>
-</navPoint>
 </navMap></ncx>

@@ -31,10 +31,10 @@
     <hr/>
 
     <div class="content">
-      <div class="section" lang="en" xml:lang="en">
+      <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a id="_routers_views_and_templates"></a>Routers, Views, and Templates</h2></div></div></div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_view_explanation"></a>View explanation</h3></div></div></div>
 <p>A Backbone.js view is a class that is responsible for rendering the display of
@@ -73,7 +73,7 @@ with Backbone.js.</p>
     // do something
   }
 };</pre>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_initialization"></a>Initialization</h4></div></div></div>
 <p>The Backbone.js view above has an initialize function which will be called
@@ -92,7 +92,7 @@ members in the view directly. These are <code class="literal">model</code>, <cod
 a model option with <code class="literal">new ExampleView({ model: Task })</code> then inside of the view
 the model you passed in as an option will be available in <code class="literal">this.model</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_the_view_8217_s_element"></a>The View’s Element</h4></div></div></div>
 <p>Each Backbone.js view has an element which is stores in <code class="literal">this.el</code>. This element
@@ -108,7 +108,7 @@ option to the view constructor with <code class="literal">new ExampleView({ el: 
 created for the view. If no customization is done, the element is an empty
 <code class="literal">div</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_customizing_the_view_8217_s_element"></a>Customizing the View’s Element</h4></div></div></div>
 <p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
@@ -125,7 +125,7 @@ view’s element being an <code class="literal">li</code> rather than a <code cl
 the view. For example, setting <code class="literal">className: "example"</code> on the view will result
 in view’s element with that additional class like <code class="literal">&lt;div class="example"&gt;</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_rendering"></a>Rendering</h4></div></div></div>
 <p>The <code class="literal">render</code> function above renders the <code class="literal">example/view</code> template. Template
@@ -142,7 +142,7 @@ this.el)</code></p>
 <p>A nice convention of the render function is to return <code class="literal">this</code> at the end of
 render to enable chained calls on the view.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_events"></a>Events</h4></div></div></div>
 <p>The view’s <code class="literal">events</code> hash specifies a mapping of the events and elements that
@@ -156,9 +156,68 @@ event handlers' <code class="literal">this</code> to the view instance using <co
 <p>Event binding is covered in great detail in the "Event binding" chapter.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_templating_strategy_chapter_unstarted"></a>Templating strategy (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_templating_strategy"></a>Templating strategy</h3></div></div></div>
+<p>There’s no shortage of templating options for JavaScript.</p>
+<p>TODO: Link and/or describe one or more?
+<a class="ulink" href="http://ajaxpatterns.org/Browser-Side_Templating" target="_top">http://ajaxpatterns.org/Browser-Side_Templating</a>
+<a class="ulink" href="http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery" target="_top">http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery</a>
+<a class="ulink" href="http://code.google.com/closure/templates/docs/helloworld_js.html" target="_top">http://code.google.com/closure/templates/docs/helloworld_js.html</a></p>
+<p>They generally fall into three categories:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+HTML with JavaScript expressions interpolated.  Examples: <code class="literal">_.template</code>, EJS.
+</li>
+<li>
+HTML with other expressions interpolated, often logic-free.  Examples: mustache, handlebars, <code class="literal">jQuery.tmpl</code>
+</li>
+<li>
+Selector-based content declarations.  Examples: PURE, just using jQuery from view classes.
+</li>
+</ul></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_choosing_a_strategy"></a>Choosing a strategy</h3></div></div></div>
+<p>Like any technology choice, there are tradeoffs to evaluate and external forces
+to consider when choosing a templating approach.</p>
+<p>The scenarios we’ve encountered usually involve weighing these questions: do I already have server-side templates written that I’d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</p>
+<p>Here are the scenarios we’ve
+gone through:</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_when_you_are_adding_backbone_to_existing_rails_views"></a>When you are adding Backbone to existing Rails views</h4></div></div></div>
+<p>If you are replacing existing Rails app pages with Backbone, you are already using a templating engine, and it’s likely ERb.  When making the switch to Backbone, change as few things as possible at a time, and stick with your existing templating approach.</p>
+<p>If you’re using ERb, give <code class="literal">_.template</code> a shot.  It defaults to the same delimiters as ERb for interpolation and evaluation, <code class="literal">&lt;%= %&gt;</code> and <code class="literal">&lt;% %&gt;</code>, which can be a boon or can be confusing.  If you’d like to change them, you can update <code class="literal">.templateSettings</code> - check the underscore docs.</p>
+<p>If you’re using Haml, check out the <code class="literal">jquery-haml</code> and <code class="literal">haml-js</code> projects.</p>
+<p>If you’re using Mustache.rb or Handlebars.rb, you’re likely aware that JavaScript implementations of these both exist, and that your existing templates can be moved over much like the ERb case.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_when_you_are_writing_new_backbone_functionality_from_scratch"></a>When you are writing new Backbone functionality from scratch</h4></div></div></div>
+<p>If you’re not migrating from (or re-using) existing server-side view templates, you have more freedom of choice.  Strongly consider the option of no templating at all, but rather using plain HTML templates, and then decorating the DOM from your view class.</p>
+<p>You can build static HTML mockups of the application first, and pull these mockups directly in as templates, without modifying them.</p>
+<pre class="programlisting">&lt;!-- snip --&gt;
+&lt;section id="songs"&gt;
+  &lt;nav&gt;
+    &lt;a class="home"    href="#/"&gt;Home&lt;/a&gt;
+    &lt;a class="profile" href="/profile.html"&gt;My Profile&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;ol&gt;
+    &lt;li&gt;Here is a song&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/section&gt;
+&lt;!-- snip --&gt;</pre>
+<pre class="programlisting">MyView = Backbone.View.extend({
+  render: function() {
+    // TODO...
+  }
+});</pre>
+<p>TODO: Can you render with this.$(<span class="emphasis"><em>#songs nav a.profile</em></span>).attr(<span class="emphasis"><em>…</em></span>) before inserting into the DOM?  That way, unpopulated HTML is never displayed to the user.</p>
+</div>
+</div>
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_routers"></a>Routers</h3></div></div></div>
 <p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
@@ -205,7 +264,7 @@ currently use URL fragments and not pushState.</p>
     // Render the show view
   }
 });</pre>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_the_routes_hash"></a>The Routes Hash</h4></div></div></div>
 <p>The basic router consists of a routes hash which is a mapping between URL
@@ -233,7 +292,7 @@ triggered. For example, when the <code class="literal">show</code> route above i
 <code class="literal">route:show</code> will be fired. This is so that other objects can listen to the
 router, and be notified about certain routes.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_initializing_a_router"></a>Initializing a Router</h4></div></div></div>
 <p>It is possible to specify an <code class="literal">initialize</code> function in a Router which will be
@@ -245,11 +304,11 @@ that this will override any routes defined in the routes hash on the router
 itself.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_view_helpers_chapter_unstarted"></a>View helpers (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_form_helpers_chapter_unstarted"></a>Form helpers (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_event_binding"></a>Event binding</h3></div></div></div>
 <p>A big part of writing snappy rich client applications is building models and
@@ -279,7 +338,7 @@ need to be handled in a different way.</p>
 <p>TODO: Consider promoting events and binding/unbinding to its own top-level
 section; this isn’t view-specific, although the view layer is where you’ll be
 doing most of your binding.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_binding_to_dom_events_within_the_view_element"></a>Binding to DOM events within the view element</h4></div></div></div>
 <p>The primary function of a view class is to provide behavior for its markup’s DOM elements.  You can attach event listeners by hand if you like:</p>
@@ -318,7 +377,7 @@ function.  It binds DOM events with <code class="literal">$.delegate()</code>, w
 <code class="literal">.delegate()</code> function.</p>
 <p>It also takes care of binding the event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_binding_to_events_triggered_by_literal_this_model_literal_or_literal_this_collection_literal"></a>Binding to events triggered by <code class="literal">this.model</code> or <code class="literal">this.collection</code>
 </h4></div></div></div>
@@ -346,7 +405,7 @@ model is added:</p>
   }
 });</pre>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_binding_to_custom_events"></a>Binding to custom events</h4></div></div></div>
 <p>With sufficiently complex views, you may encounter a situation where you want
@@ -383,25 +442,25 @@ with <code class="literal">Backbone.Events.prototype.trigger()</code> when it ch
 observes this event, and filters its own collection in response.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_cleaning_up_unbinding"></a>Cleaning Up: Unbinding</h3></div></div></div>
 <p>In the last section, we discussed three different kinds of event binding in
 your <code class="literal">Backbone.Views</code> classes: DOM events, model/collection events, and custom
 view events.  Next we’ll discuss unbinding these events: why it’s a good idea,
 and how to do it.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_why_do_i_have_to_unbind_events"></a>Why do I have to unbind events?</h4></div></div></div>
 <p>Consider two views in a Todo app: an index view which contains all the tasks
 that need to be done:</p>
 <div class="figure">
-<a id="id449791"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
+<a id="d0e1386"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-index.png" alt="views_and_templates/tasks-index.png"></div></div>
 </div>
 <br class="figure-break"><p>and a detail view that shows detail on one task:</p>
 <div class="figure">
-<a id="id449818"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
+<a id="d0e1397"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/tasks-detail.png" alt="views_and_templates/tasks-detail.png"></div></div>
 </div>
 <br class="figure-break"><p>The interface switches between the two views.</p>
@@ -467,7 +526,7 @@ collection" for views in Backbone, so your application needs to manage this
 itself.</p>
 <p>Let’s take a look at how to unbind various kinds of events.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_unbinding_dom_events"></a>Unbinding DOM events</h4></div></div></div>
 <p>When you call <code class="literal">this.remove()</code> in your view, it delegates to <code class="literal">jQuery.remove()</code>
@@ -476,7 +535,7 @@ cleaning up any events bound on DOM elements within your view, regardless of
 whether you bound them with the Backbone <code class="literal">events</code> hash or by hand; for
 example, with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, or <code class="literal">$.live()</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_unbinding_model_and_collection_events"></a>Unbinding model and collection events</h4></div></div></div>
 <p>If your view binds to events on a model or collection, you are responsible for
@@ -509,7 +568,7 @@ done:</p>
   // snip...
 });</pre>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_keep_track_of_literal_bind_literal_calls_to_unbind_more_easily"></a>Keep track of <code class="literal">bind()</code> calls to unbind more easily</h4></div></div></div>
 <p>In the example above, unbinding the collection change event isn’t too much
@@ -522,6 +581,7 @@ function that keeps track of all the event handlers we bind, and then issue a
 single call to <code class="literal">unbindFromAll()</code> to unbind them:</p>
 <pre class="programlisting">var SomeCollectionView = Backbone.View.extend({
   initialize: function() {
+    this.bindings = [];
     this.bindTo(this.collection, "change", this.render);
   },
 
@@ -552,7 +612,7 @@ functionality is provided by Backbone.Events?
 <p>TODO: Wrap <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code> into <code class="literal">Observer</code> which gets mixed
 into <code class="literal">CompositeView</code>.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_unbinding_custom_events"></a>Unbinding custom events</h4></div></div></div>
 <p>With the first two kinds of event binding that we discussed, DOM and
@@ -587,7 +647,7 @@ triggers.</p>
   // snip...
 });</pre>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_establish_a_convention_for_consistent_and_correct_unbinding"></a>Establish a convention for consistent and correct unbinding</h4></div></div></div>
 <p>There’s no built-in garbage collection for Backbone’s event bindings, and
@@ -600,7 +660,7 @@ concrete, reusable approaches in the next two sections about <code class="litera
 and <code class="literal">CompositeView</code>.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_swapping_router"></a>Swapping router</h3></div></div></div>
 <p>When switching from one view to another, we should clean up the previous view.
@@ -626,11 +686,11 @@ shared layout). We introduce a convention that all actions underneath one
 <p>Now, a <code class="literal">SwappingRouter</code> can take advantage of the <code class="literal">leave()</code> function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
 rendering that view into its own <code class="literal">el</code>:</p>
-<pre class="programlisting">SwappingRouter = function(options) {
+<pre class="programlisting">Support.SwappingRouter = function(options) {
   Backbone.Router.apply(this, [options]);
 };
 
-_.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
+_.extend(Support.SwappingRouter.prototype, Backbone.Router.prototype, {
   swap: function(newView) {
     if (this.currentView &amp;&amp; this.currentView.leave) {
       this.currentView.leave();
@@ -642,13 +702,13 @@ _.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
   }
 });
 
-SwappingRouter.extend = Backbone.Router.extend;</pre>
+Support.SwappingRouter.extend = Backbone.Router.extend;</pre>
 <p>Now all you need to do in a route function is call <code class="literal">swap()</code>, passing in the
 new view that should be rendered. The <code class="literal">swap()</code> function’s job is to call
 <code class="literal">leave()</code> on the current view, render the new view and append it to the
 router’s <code class="literal">el</code>, and finally store who the current view is, so that next time
 <code class="literal">swap()</code> is invoked, it can be properly cleaned up as well.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="swapping-internals"></a>SwappingRouter and Backbone internals</h4></div></div></div>
 <p>If the code for <code class="literal">SwappingRouter</code> seems a little confusing, don’t fret: it is,
@@ -695,7 +755,7 @@ utility functions to allow more class-style inheritance.</p>
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
 <code class="literal">TasksRouter</code> would then look like:</p>
 <div class="figure">
-<a id="id450675"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
+<a id="d0e1747"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="views_and_templates/router-diagram.png" alt="views_and_templates/router-diagram.png"></div></div>
 </div>
 <br class="figure-break"><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
@@ -703,7 +763,7 @@ taught you that although it’s more code, it’s hopefully going to save time d
 the road for those maintaining your code.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_composite_views"></a>Composite views</h3></div></div></div>
 <p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
@@ -711,7 +771,7 @@ This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
 over the Composite View pattern, the <code class="literal">CompositeView</code> class itself, and some
 concerns to keep in mind while creating your views.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_refactoring_from_a_large_view"></a>Refactoring from a large view</h4></div></div></div>
 <p>One of the first refactorings you find yourself doing in a non-trivial Backbone
@@ -801,22 +861,17 @@ break up the template files:</p>
 <p>But this is really only half the story. The <code class="literal">TaskDetail</code> view class still
 handles multiple concerns: displaying the task, and creating comments. Let’s
 split that view class up, using the <code class="literal">CompositeView</code> base class:</p>
-<pre class="programlisting">CompositeView = function(options) {
-  this.children = [];
+<pre class="programlisting">Support.CompositeView = function(options) {
+  this.children = _([]);
   Backbone.View.apply(this, [options]);
 };
 
-_.extend(CompositeView.prototype, Backbone.View.prototype, {
+_.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
   leave: function() {
-    this._leaveChildren();
     this.unbind();
     this.remove();
+    this._leaveChildren();
     this._removeFromParent();
-  },
-
-  removeChild: function(view) {
-    var index = this.children.indexOf(view);
-    this.children.splice(index, 1);
   },
 
   renderChild: function(view) {
@@ -832,26 +887,28 @@ _.extend(CompositeView.prototype, Backbone.View.prototype, {
 
   renderChildInto: function(view, container) {
     this.renderChild(view);
-    $(container).html('').append(view.el);
+    $(container).empty().append(view.el);
   },
 
   _leaveChildren: function() {
-    var clonedChildren = this.children.slice(0);
-    _.each(clonedChildren, function(view) {
-      if (view.leave) {
+    this.children.chain().clone().each(function(view) {
+      if (view.leave)
         view.leave();
-      }
     });
   },
 
   _removeFromParent: function() {
-    if (this.parent) {
-      this.parent.removeChild(this);
-    }
+    if (this.parent)
+      this.parent._removeChild(this);
+  },
+
+  _removeChild: function(view) {
+    var index = this.children.indexOf(view);
+    this.children.splice(index, 1);
   }
 });
 
-CompositeView.extend = Backbone.View.extend;</pre>
+Support.CompositeView.extend = Backbone.View.extend;</pre>
 <p>TODO: Re-link to swapping-internals anchor once <a class="ulink" href="https://github.com/schacon/git-scribe/issues/33" target="_top">https://github.com/schacon/git-scribe/issues/33</a> is fixed</p>
 <p>Similar to the <code class="literal">SwappingRouter</code>, the <code class="literal">CompositeView</code> base class solves common
 housekeeping problems by establishing a convention. See the Swapping Router and
@@ -988,17 +1045,32 @@ The task view performs better, since adding new comments or updating the task
 </li>
 </ul></div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_cleaning_up_views_properly"></a>Cleaning up views properly</h4></div></div></div>
 <p>We now have a full set of tools to clean up views properly.</p>
 <p>TODO: Wrap up and re-state the "cleaning up, swappingrouter, compositeview" sections.  Mix <code class="literal">Observer</code> into <code class="literal">CompositeView</code>.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_how_to_use_multiple_views_on_the_same_model_collection_chapter_unstarted"></a>How to use multiple views on the same model/collection (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_internationalization_chapter_unstarted"></a>Internationalization (chapter unstarted)</h3></div></div></div></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_internationalization_stub"></a>Internationalization (stub)</h3></div></div></div>
+<p>When you move your application’s view logic onto the client, such as with
+Backbone, you quickly find that the library support for views is not as
+comprehensive as what you have on the server. The
+<a class="ulink" href="http://guides.rubyonrails.org/i18n.html" target="_top">Rails internationalization (i18n) API</a>,
+provided via the <a class="ulink" href="https://rubygems.org/gems/i18n" target="_top">i18n gem</a>, is not automatically
+available to client-side view rendering.  We’d like to take advantage of that
+framework, as well as any localization work you’ve done if you are adding
+Backbone into an existing app.</p>
+<p>TODO: Discuss our progress with copycopter_client javascript integration.  For
+most i18n cases, this plugin will suffice: <a class="ulink" href="https://github.com/fnando/i18n-js" target="_top">https://github.com/fnando/i18n-js</a>
+For copycopter, however, we’d like new translations to show up while the app is
+running.  Likely we will provide Rack middleware that products the translations
+as jsonp.  Waiting until we make more progress for copycopter</p>
+</div>
 </div>
 
     </div>

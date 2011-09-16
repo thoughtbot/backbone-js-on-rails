@@ -1,8 +1,8 @@
-SwappingRouter = function(options) {
+Support.SwappingRouter = function(options) {
   Backbone.Router.apply(this, [options]);
 };
 
-_.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
+_.extend(Support.SwappingRouter.prototype, Backbone.Router.prototype, {
   swap: function(newView) {
     if (this.currentView && this.currentView.leave) {
       this.currentView.leave();
@@ -14,4 +14,4 @@ _.extend(SwappingRouter.prototype, Backbone.Router.prototype, {
   }
 });
 
-SwappingRouter.extend = Backbone.Router.extend;
+Support.SwappingRouter.extend = Backbone.Router.extend;

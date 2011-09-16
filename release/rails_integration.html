@@ -31,16 +31,16 @@
     <hr/>
 
     <div class="content">
-      <div class="section" lang="en" xml:lang="en">
+      <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a id="_rails_integration"></a>Rails Integration</h2></div></div></div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_organizing_your_backbone_js_code_in_a_rails_app"></a>Organizing your Backbone.js code in a Rails app</h3></div></div></div>
 <p>When using Backbone.js in a Rails app, you’ll have two kinds of
 Backbone.js-related assets: classes and templates.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_rails_3_0_and_prior"></a>Rails 3.0 and prior</h3></div></div></div>
 <p>With Rails 3.0 and prior, store your Backbone.js classes in
@@ -89,10 +89,10 @@ precompiling templates:</p>
 <p>Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:</p>
-<pre class="programlisting">JST['todos/index']</pre>
+<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'todos/index'</i></b>]</pre>
 <p>Variables can be passed to the templates by passing a Hash to the template, as
 shown below.</p>
-<pre class="programlisting">JST['todos/index']({ model: this.model })</pre>
+<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'todos/index'</i></b>]({ model: <b class="hl-keyword">this</b>.model })</pre>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Note</h3>
 <p>Jammit and a JST naming gotcha</p>
@@ -103,33 +103,33 @@ template subdirectory to multiple template subdirectories.</p>
 <p>Let’s say you place templates in app/templates. You work for a while on the
 "Tasks" feature, placing templates under app/templates/tasks. So, window.JST
 looks something like:</p>
-<pre class="programlisting">JST['form']
-JST['show']
-JST['index']</pre>
+<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'form'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'show'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'index'</i></b>]</pre>
 <p>Now, you add another directory under app/templates, say app/templates/user.
 Now, all JST references are prefixed with their parent directory name so they
 are unambiguous:</p>
-<pre class="programlisting">JST['tasks/form']
-JST['tasks/show']
-JST['tasks/index']
-JST['users/new']
-JST['users/show']
-JST['users/index']</pre>
+<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'tasks/form'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'users/new'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'users/show'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'users/index'</i></b>]</pre>
 <p>This breaks existing JST references. You can work around this issue by applying
 the following monkeypatch to Jammit, in config/initializers/jammit.rb</p>
-<pre class="programlisting">Jammit::Compressor.class_eval do
+<pre class="programlisting">Jammit::Compressor.class_eval <b class="hl-keyword">do</b>
   private
-  def find_base_path(path)
-    File.expand_path(Rails.root.join('app','templates'))
-  end
-end</pre>
+  <b class="hl-keyword">def</b> find_base_path(path)
+    File.expand_path(Rails.root.join(<b class="hl-string"><i style="color:red">'app'</i></b>,<b class="hl-string"><i style="color:red">'templates'</i></b>))
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>As applications are moving to Rails 3.1, they’re also moving to Sprockets for
 the asset packager.  Until then, many apps are using Jammit for asset
 packaging.  We have an open issue and workaround:</p>
 <p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_rails_3_1"></a>Rails 3.1</h3></div></div></div>
 <p>Rails 3.1 introduces the asset pipeline:</p>
@@ -204,7 +204,7 @@ done your application.js Sprockets manifest will be as shown below.</p>
 <p>The above is taken from the example application included with this book. You
 can view it at example_app/app/assets/javascripts/application.js.</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"></a>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div>
 <p>By default Backbone.js communicates with your Rails application via JSON gets
@@ -212,7 +212,7 @@ and posts. If you’ve ever made a JSON API for your Rails app, then for the mos
 part this will be very similar.</p>
 <p>If you’ve never made a JSON API for your Rails application before, lucky
 you, it’s pretty straightforward.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_setting_up_rails_models"></a>Setting Up Rails Models</h4></div></div></div>
 <p>One important aspect to keep in mind as you plan out how your Backbone.js
@@ -284,7 +284,7 @@ as those are stored in a <code class="literal">relation_name_id</code> attribute
 <code class="literal">as_json</code> method in your model.  We’ll touch on this more later in the
 section "Customizing your Rails-generated JSON."</p>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_setting_up_rails_controllers"></a>Setting Up Rails Controllers</h4></div></div></div>
 <p>The Backbone models and collections will talk to your Rails controllers. While
@@ -303,31 +303,31 @@ way is to use the respond_with method introduced in Rails 3.0.</p>
 supported with the method respond_to. In your individual actions, you then
 specify the resource or resources to be delivered using respond_with, as shown
 in the example Tasks controller and index action below.</p>
-<pre class="programlisting">class TasksController &lt; ApplicationController::Base
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :html, :json
 
-  def index
+  <b class="hl-keyword">def</b> index
     respond_with(@tasks = Task.all)
-  end
-end</pre>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>In the above example Tasks controller, the respond_to line declares that this
 controller should respond to both the HTML and JSON formats. Then, in the
 index action, the respond_with call will perform the appropriate action for
 the requested format.</p>
 <p>The above controller is equivalent to the following one, using the older
 respond_to method.</p>
-<pre class="programlisting">class TasksController &lt; ApplicationController::Base
-  def index
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
+  <b class="hl-keyword">def</b> index
     @tasks = Task.all
-    respond_to do |format|
+    respond_to <b class="hl-keyword">do</b> |format|
       format.html
       format.json { render :json =&gt; @tasks }
-    end
-  end
-end</pre>
+    <b class="hl-keyword">end</b>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>Using respond_with you can create succinct controllers that respond with a
 normal web page, but also expose a JSON API that Backbone.js will use.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h5 class="title">
 <a id="_validations_and_your_http_api"></a>Validations and your HTTP API</h5></div></div></div>
 <p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated
@@ -355,18 +355,18 @@ model save call as a callback, as shown below.</p>
 response. Therefore, you’ll want your controller to return a non-200 HTTP
 response code if validations fail.</p>
 <p>A controller that does this would be as shown in the following example.</p>
-<pre class="programlisting">class TasksController &lt; ApplicationController::Base
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :json
 
-  def create
+  <b class="hl-keyword">def</b> create
     @task = Task.new(params[:task])
-    if @task.save
+    <b class="hl-keyword">if</b> @task.save
       respond_with(@task)
-    else
+    <b class="hl-keyword">else</b>
       respond_with(@task, :status =&gt; :unprocessable_entity)
-    end
-  end
-end</pre>
+    <b class="hl-keyword">end</b>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
@@ -374,7 +374,7 @@ application. For more information about handling and displaying errors, see
 the Form helpers section of the Views and Templates chapter.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_setting_up_views"></a>Setting Up Views</h4></div></div></div>
 <p>Most Backbone.js applications will be a "single-page app". This means that
@@ -468,7 +468,7 @@ rendered which properly initialized Backbone.js and its dependencies and the
 Backbone.js models, collections, routers, and views.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_customizing_your_rails_generated_json"></a>Customizing your Rails-generated JSON</h3></div></div></div>
 <p>There are a few common things you’ll do in your Rails app when working with
@@ -483,48 +483,48 @@ the JSON when it shouldn’t be there.</p>
 <p>If you’re concerned about sensitive data unintentionally being included in the
 JSON when it shouldn’t be then you’ll want to whitelist, to switch to everything
 being explicitly included in the JSON with the <code class="literal">:only</code> option:</p>
-<pre class="programlisting">def as_json(options = {})
-  super(options.merge(:only =&gt; [ :id, :title ]))
-end</pre>
+<pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
+  <b class="hl-keyword">super</b>(options.merge(:only =&gt; [ :id, :title ]))
+<b class="hl-keyword">end</b></pre>
 <p>The above <code class="literal">as_json</code> override will make it so that the JSON will <span class="emphasis"><em>only</em></span> include the
 id and title attributes, even if there are many other attributes on the model.</p>
 <p>If instead you want to include all attributes by default and just exclude a few,
 you accomplish this with the <code class="literal">:except</code> option:</p>
-<pre class="programlisting">def as_json(options = {})
-  super(options.merge(:except =&gt; [ :encrypted_password ]))
-end</pre>
+<pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
+  <b class="hl-keyword">super</b>(options.merge(:except =&gt; [ :encrypted_password ]))
+<b class="hl-keyword">end</b></pre>
 <p>Another common customization you will want to do in the JSON is include the
 output of methods (say, calculated values) on your model. This is accomplished
 with the <code class="literal">:methods</code> option, as shown in the following example.</p>
-<pre class="programlisting">def as_json(options = {})
-  super(options.merge(:methods =&gt; [ :calculated_value ]))
-end</pre>
+<pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
+  <b class="hl-keyword">super</b>(options.merge(:methods =&gt; [ :calculated_value ]))
+<b class="hl-keyword">end</b></pre>
 <p>The final thing you’ll most commonly do with your JSON is include related
 objects. If the <code class="literal">Task</code> model <code class="literal">has_many :comments</code>, include all of the JSON for
 comments in the JSON for a Task with the <code class="literal">:include</code> option:</p>
-<pre class="programlisting">def as_json(options = {})
-  super(options.merge(:include =&gt; [ :comments ]))
-end</pre>
+<pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
+  <b class="hl-keyword">super</b>(options.merge(:include =&gt; [ :comments ]))
+<b class="hl-keyword">end</b></pre>
 <p>As you probably suspect, you can then customize the JSON for the comments by
 overriding the <code class="literal">as_json</code> method on the <code class="literal">Comment</code> model.</p>
 <p>While these are the most common <code class="literal">as_json</code> options you’ll use when working with
 Backbone.js, it certainly isn’t all of them. The official, complete,
 documentation for the <code class="literal">as_json</code> method can be found here:
 <a class="ulink" href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json" target="_top">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_activerecord_base_include_root_in_json"></a>ActiveRecord::Base.include_root_in_json</h4></div></div></div>
 <p>Depending on the versions, Backbone.js and Rails may have different expectations
 about the format of JSON structures; specifically, whether or not a root key is
 present.  When generating JSON from Rails, this is controlled by the
 ActiveRecord setting <code class="literal">ActiveRecord::Base.include_root_in_json</code>.</p>
-<pre class="programlisting">  &gt; ActiveRecord::Base.include_root_in_json = false
+<pre class="programlisting">  &gt; ActiveRecord::Base.include_root_in_json = <b class="hl-keyword">false</b>
   &gt; Task.last.as_json
- =&gt; {"id"=&gt;4, "title"=&gt;"Enjoy a three mile swim"}
+ =&gt; {<b class="hl-string"><i style="color:red">"id"</i></b>=&gt;<span class="hl-number">4</span>, <b class="hl-string"><i style="color:red">"title"</i></b>=&gt;<b class="hl-string"><i style="color:red">"Enjoy a three mile swim"</i></b>}
 
-  &gt; ActiveRecord::Base.include_root_in_json = true
+  &gt; ActiveRecord::Base.include_root_in_json = <b class="hl-keyword">true</b>
   &gt; Task.last.as_json
- =&gt; {"task"=&gt;{"id"=&gt;4, "title"=&gt;"Enjoy a three mile swim"}}</pre>
+ =&gt; {<b class="hl-string"><i style="color:red">"task"</i></b>=&gt;{<b class="hl-string"><i style="color:red">"id"</i></b>=&gt;<span class="hl-number">4</span>, <b class="hl-string"><i style="color:red">"title"</i></b>=&gt;<b class="hl-string"><i style="color:red">"Enjoy a three mile swim"</i></b>}}</pre>
 <p>In Rails 3.0, <code class="literal">ActiveRecord::Base.include_root_in_json</code> is set to true. In 3.1,
 it defaults to false. This reversal was made to simplify the JSON returned by
 default in Rails application, but it is fairly big change from the default
@@ -535,27 +535,27 @@ have a published API; you may need to expose a new version of your API.</p>
 <p>From the Backbone.js side, the default behavior expects no root node.  This
 behavior is defined in a few places: <code class="literal">Backbone.Collection.prototype.parse</code>,
 <code class="literal">Backbone.Model.prototype.parse</code>, and <code class="literal">Backbone.Model.prototype.toJSON</code>:</p>
-<pre class="programlisting">_.extend(Backbone.Collection.prototype, Backbone.Events, {
-  // http://documentcloud.github.com/backbone/#Collection-parse
-  parse : function(resp, xhr) {
-    return resp;
+<pre class="programlisting">_.extend(Backbone.Collection.<b class="hl-keyword">prototype</b>, Backbone.Events, {
+  <i class="hl-comment" style="color: silver">// http://documentcloud.github.com/backbone/#Collection-parse</i>
+  parse : <b class="hl-keyword">function</b>(resp, xhr) {
+    <b class="hl-keyword">return</b> resp;
   },
 
-  // snip...
+  <i class="hl-comment" style="color: silver">// snip...</i>
 });
 
-_.extend(Backbone.Model.prototype, Backbone.Events, {
-  // http://documentcloud.github.com/backbone/#Model-toJSON
-  toJSON : function() {
-    return _.clone(this.attributes);
+_.extend(Backbone.Model.<b class="hl-keyword">prototype</b>, Backbone.Events, {
+  <i class="hl-comment" style="color: silver">// http://documentcloud.github.com/backbone/#Model-toJSON</i>
+  toJSON : <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> _.clone(<b class="hl-keyword">this</b>.attributes);
   },
 
-  // http://documentcloud.github.com/backbone/#Model-parse
-  parse : function(resp, xhr) {
-    return resp;
+  <i class="hl-comment" style="color: silver">// http://documentcloud.github.com/backbone/#Model-parse</i>
+  parse : <b class="hl-keyword">function</b>(resp, xhr) {
+    <b class="hl-keyword">return</b> resp;
   },
 
-  // snip...
+  <i class="hl-comment" style="color: silver">// snip...</i>
 });</pre>
 <p>If you need to accept JSON with a root node, you can override <code class="literal">parse</code> in each of
 your models, or override the prototype’s function.  You’ll need to override it
@@ -564,20 +564,20 @@ on the appropriate collection(s), too.</p>
 override <code class="literal">toJSON</code>, per-model or across all models.  When you do this, you’ll
 need to explicitly specify the name of the root key.  We use a convention of a
 <code class="literal">modelName</code> function on your model to provide this:</p>
-<pre class="programlisting">Backbone.Model.prototype.toJSON = function() {
-  var hashWithRoot = {};
-  hashWithRoot[this.modelName] = this.attributes;
-  return _.clone(hashWithRoot);
+<pre class="programlisting">Backbone.Model.<b class="hl-keyword">prototype</b>.toJSON = <b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">var</b> hashWithRoot = {};
+  hashWithRoot[<b class="hl-keyword">this</b>.modelName] = <b class="hl-keyword">this</b>.attributes;
+  <b class="hl-keyword">return</b> _.clone(hashWithRoot);
 };
 
-var Task = Backbone.Model.extend({
-  modelName: "task",
+<b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  modelName: <b class="hl-string"><i style="color:red">"task"</i></b>,
 
-  // ...
+  <i class="hl-comment" style="color: silver">// ...</i>
 });</pre>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_converting_an_existing_page_view_area_to_use_backbone_js"></a>Converting an existing page/view area to use Backbone.js</h3></div></div></div>
 <p>We’ll cover Backbone.js Views and Templates in more detail in the Routers,
@@ -697,7 +697,7 @@ template straightforward.</p>
 that we have the same XSS protection as we did in our Rails template, we
 access and output the Backbone.js model attributes using the escape method
 instead of the normal get method.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_breaking_out_the_taskview"></a>Breaking out the TaskView</h4></div></div></div>
 <p>As mentioned above, this simple conversion of the index which merely loops
@@ -849,7 +849,7 @@ event binding, different templating strategies, helpers, event unbinding, and
 more. All of which are covered in the Routers, Views, and Templates chapter.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_automatically_using_the_rails_authentication_token"></a>Automatically using the Rails authentication token</h3></div></div></div>
 <p>When using Backbone.js in a Rails app, you will run into a conflict with the

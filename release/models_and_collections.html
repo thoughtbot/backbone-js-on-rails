@@ -21,9 +21,6 @@
         
       </td><td width="33%" align="right">
         
-          <a href="testing_section_unstarted_.html">Next</a><br/>
-          Testing (section unstarted)
-        
       </td></tr>
     </table>
     </div>
@@ -31,20 +28,20 @@
     <hr/>
 
     <div class="content">
-      <div class="section" lang="en" xml:lang="en">
+      <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a id="_models_and_collections"></a>Models and collections</h2></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_naming_conventions_chapter_unstarted"></a>Naming conventions (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_nested_resources_chapter_unstarted"></a>Nested resources (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_model_associations"></a>Model associations</h3></div></div></div>
 <p>Backbone.js doesn’t prescribe a way to define associations between models, so
 we need to get creative and use the power of JavaScript to set up associations
 in such a way that its usage is natural.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_belongs_to_associations"></a>Belongs to associations</h4></div></div></div>
 <p>Setting up a <code class="literal">belongs_to</code> association in Backbone is a two step process. Let’s
@@ -53,30 +50,30 @@ The end result of the approach is a <code class="literal">Task</code> instance h
 <code class="literal">user</code> where we store the associated <code class="literal">User</code> object.</p>
 <p>To set this up, let’s start by telling Rails to augment the task’s JSON
 representation to also send over the associated user attributes:</p>
-<pre class="programlisting">class Task &lt; ActiveRecord::Base
+<pre class="programlisting"><b class="hl-keyword">class</b> Task &lt; ActiveRecord::Base
   belongs_to :user
 
-  def as_json(options = {})
-    super(include: { user: { only: [:name, :email] } })
-  end
-end</pre>
+  <b class="hl-keyword">def</b> as_json(options = {})
+    <b class="hl-keyword">super</b>(options.merge(include: { user: { only: [:name, :email] } }))
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>This means that when Backbone calls <code class="literal">fetch()</code> for a <code class="literal">Task</code> model, it will
 include the name and email of the associated user nested within the task JSON
 representation. Something like this:</p>
 <pre class="programlisting">{
-  "title": "Buy more Cheeseburgers",
-  "due_date": "2011-03-04",
-  "user": {
-    "name": "Robert McGraffalon",
-    "email": "bobby@themcgraffalons.com"
+  <b class="hl-string"><i style="color:red">"title"</i></b>: <b class="hl-string"><i style="color:red">"Buy more Cheeseburgers"</i></b>,
+  <b class="hl-string"><i style="color:red">"due_date"</i></b>: <b class="hl-string"><i style="color:red">"2011-03-04"</i></b>,
+  <b class="hl-string"><i style="color:red">"user"</i></b>: {
+    <b class="hl-string"><i style="color:red">"name"</i></b>: <b class="hl-string"><i style="color:red">"Robert McGraffalon"</i></b>,
+    <b class="hl-string"><i style="color:red">"email"</i></b>: <b class="hl-string"><i style="color:red">"bobby@themcgraffalons.com"</i></b>
   }
 }</pre>
 <p>Now that we receive user data with the task’s JSON representation, let’s tell
 our Backbone User model to store the User object. We do that on the task’s
 initializer. Here’s a first cut at that:</p>
-<pre class="programlisting">var Task = Backbone.Model.extend({
-  initialize: function() {
-    this.user = new User(this.get('user'));
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.user = <b class="hl-keyword">new</b> User(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'user'</i></b>));
   }
 });</pre>
 <p>We can make a couple of improvements to the above. First, you’ll soon realize
@@ -84,24 +81,24 @@ that you might be setting the user outside of the initialize as well. Second,
 the initializer should check whether there is user data in the first place. To
 address the first concern, let’s create a setter for the object. Backbone
 provides a handy function called <code class="literal">has</code> that returns true or false depending on
-whether the provided option is set for the object:</p>
-<pre class="programlisting">var Task = Backbone.Model.extend({
-  initialize: function() {
-    if (this.has('user')) {
-      this.setUser(new User(this.get('user')));
+whether the provided attribute is set for the object:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.has(<b class="hl-string"><i style="color:red">'user'</i></b>)) {
+      <b class="hl-keyword">this</b>.setUser(<b class="hl-keyword">new</b> User(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'user'</i></b>)));
     }
   },
 
-  setUser: function(user) {
-    this.user = user;
+  setUser: <b class="hl-keyword">function</b>(user) {
+    <b class="hl-keyword">this</b>.user = user;
   }
 });</pre>
 <p>The final setup allows for a nice clean interface to a task’s user, by
 accessing the task property of the user instance.</p>
-<pre class="programlisting">var task = Task.fetch(1);
-console.log(task.get('title') + ' is being worked on by ' + task.user.get('name'));</pre>
+<pre class="programlisting"><b class="hl-keyword">var</b> task = Task.fetch(<span class="hl-number">1</span>);
+console.log(task.get(<b class="hl-string"><i style="color:red">'title'</i></b>) + <b class="hl-string"><i style="color:red">' is being worked on by '</i></b> + task.user.get(<b class="hl-string"><i style="color:red">'name'</i></b>));</pre>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_has_many_associations"></a>Has many associations</h4></div></div></div>
 <p>You can take a similar approach to set up a <code class="literal">has_many</code> association on the
@@ -109,23 +106,23 @@ client side models. This time, however, the object’s property will be a
 Backbone collection.</p>
 <p>Following the example, say we need access to a user’s tasks. Let’s set up the
 JSON representation on the Rails side first:</p>
-<pre class="programlisting">class User &lt; ActiveRecord::Base
+<pre class="programlisting"><b class="hl-keyword">class</b> User &lt; ActiveRecord::Base
   has_many :tasks
 
-  def as_json(options = {})
-    super(include: { tasks: { only: [:body, :due_date] } })
-  end
-end</pre>
+  <b class="hl-keyword">def</b> as_json(options = {})
+    <b class="hl-keyword">super</b>(options.merge(include: { tasks: { only: [:body, :due_date] } }))
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>Now, on the Backbone <code class="literal">User</code> model’s initializer, let’s call the <code class="literal">setTasks</code>
 function:</p>
-<pre class="programlisting">var User = Backbone.Model.extend({
-  initialize: function() {
-    var tasks = new Tasks.reset(this.get('tasks'));
-    this.setTasks(tasks);
+<pre class="programlisting"><b class="hl-keyword">var</b> User = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> tasks = <b class="hl-keyword">new</b> Tasks.reset(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'tasks'</i></b>));
+    <b class="hl-keyword">this</b>.setTasks(tasks);
   },
 
-  setTasks: function(tasks) {
-    this.tasks = tasks;
+  setTasks: <b class="hl-keyword">function</b>(tasks) {
+    <b class="hl-keyword">this</b>.tasks = tasks;
   }
 });</pre>
 <p>Note that we are setting the relation to an instance of the <code class="literal">Tasks</code> collection.</p>
@@ -138,197 +135,783 @@ Backbone.js should be completely extracted into the JSON API endpoint controller
 action, or even a separate presenter class.</p>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_filters_and_sorting"></a>Filters and sorting</h3></div></div></div>
 <p>When using our Backbone models and collections, it’s often handy to filter the
 collections by reusable criteria, or sort them by several different criteria.</p>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_filters"></a>Filters</h4></div></div></div>
 <p>To filter a <code class="literal">Backbone.Collection</code>, like with Rails named scopes, define
 functions on your collections that filter by your criteria, using the <code class="literal">select</code>
 function from Underscore.js, and return new instances of the collection class. A
 first implementation might look like this:</p>
-<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  complete: function() {
-    var filteredTasks = this.select(function(task) {
-      return task.get('completed_at') !== null;
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
     });
-    return new Tasks(filteredTasks);
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
   }
 });</pre>
 <p>Let’s refactor this a bit.  Ideally, the filter functions will reuse logic
 already defined in your model class:</p>
-<pre class="programlisting">var Task = Backbone.Model.extend({
-  isComplete: function() {
-    return this.get('completed_at') !== null;
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
   }
 });
 
-var Tasks = Backbone.Collection.extend({
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  complete: function() {
-    var filteredTasks = this.select(function(task) {
-      return task.isComplete();
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
     });
-    return new Tasks(filteredTasks);
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
   }
 });</pre>
 <p>Going further, notice that there are actually two concerns in this function.
 The first is the notion of filtering the collection, and the other is the
 specific filtering criteria (<code class="literal">task.isComplete()</code>).</p>
 <p>Let’s separate the two concerns here, and extract a <code class="literal">filtered</code> function:</p>
-<pre class="programlisting">var Task = Backbone.Model.extend({
-  isComplete: function() {
-    return this.get('completed_at') !== null;
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
   }
 });
 
-var Tasks = Backbone.Collection.extend({
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  complete: function() {
-    return this.filtered(function(task) {
-      return task.isComplete();
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
     });
   },
 
-  filtered: function(criteriaFunction) {
-    return new Tasks(this.select(criteriaFunction));
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.select(criteriaFunction));
   }
 });</pre>
 <p>We can extract this function into a reusable mixin, abstracting the <code class="literal">Tasks</code>
 collection class using <code class="literal">this.constructor</code>:</p>
-<pre class="programlisting">FilterableCollectionMixin = {
-  filtered: function(criteriaFunction) {
-    return new this.constructor(this.select(criteriaFunction));
+<pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.select(criteriaFunction));
   }
 };
 
-var Task = Backbone.Model.extend({
-  isComplete: function() {
-    return this.get('completed_at') !== null;
+<b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
   }
 });
 
-var Tasks = Backbone.Collection.extend(_.extend({
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend(_.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  complete: function() {
-    return this.filtered(function(task) {
-      return task.isComplete();
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
     });
   }
 }, FilterableCollectionMixin));</pre>
 </div>
-<div class="section" lang="en" xml:lang="en">
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_propagating_collection_changes"></a>Propagating collection changes</h4></div></div></div>
+<p>The <code class="literal">FilterableCollectionMixin</code>, as we’ve written it, will produce a filtered
+collection that does not update when the original collection is changed.  To do
+so, bind to the change, add, and remove events on the source collection,
+reapply the filter function, and repopulate the filtered collection:</p>
+<pre class="programlisting">var FilterableCollectionMixin = {
+  filtered: function(criteriaFunction) {
+    var sourceCollection = this;
+    var filteredCollection = new this.constructor;
+
+    var applyFilter = function() {
+      filteredCollection.reset(sourceCollection.select(criteriaFunction));
+    };
+
+    this.bind("change", applyFilter);
+    this.bind("add",    applyFilter);
+    this.bind("remove", applyFilter);
+
+    applyFilter();
+
+    return filteredCollection;
+  }
+};</pre>
+</div>
+<div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_sorting"></a>Sorting</h4></div></div></div>
 <p>The simplest way to sort a <code class="literal">Backbone.Collection</code> is to define a <code class="literal">comparator</code>
 function.  This functionality is built in:</p>
-<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  comparator: function(task) {
-    return task.dueDate;
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
   }
 });</pre>
 <p>If you’d like to provide more than one sort order on your collection, you can
 use an approach similar to the <code class="literal">filtered</code> function above, and return a new
 <code class="literal">Backbone.Collection</code> whose <code class="literal">comparator</code> is overridden.  Call <code class="literal">sort</code> to update
 the ordering on the new collection:</p>
-<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  comparator: function(task) {
-    return task.dueDate;
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
   },
 
-  byCreatedAt: function() {
-    var sortedCollection = new Tasks(this.models);
-    sortedCollection.comparator = function(task) {
-      return task.createdAt;
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = <b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
     };
     sortedCollection.sort();
-    return sortedCollection;
+    <b class="hl-keyword">return</b> sortedCollection;
   }
 });</pre>
 <p>Similarly, you can extract the reusable concern to another function:</p>
-<pre class="programlisting">var Tasks = Backbone.Collection.extend({
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  comparator: function(task) {
-    return task.dueDate;
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
   },
 
-  byCreatedAt: function() {
-    return this.sortedBy(function(task) {
-      return task.createdAt;
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
     });
   },
 
-  byCompletedAt: function() {
-    return this.sortedBy(function(task) {
-      return task.completedAt;
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
     });
   },
 
-  sortedBy: function(comparator) {
-    var sortedCollection = new Tasks(this.models);
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
     sortedCollection.comparator = comparator;
     sortedCollection.sort();
-    return sortedCollection;
+    <b class="hl-keyword">return</b> sortedCollection;
   }
 });</pre>
 <p>And then into another reusable mixin:</p>
-<pre class="programlisting">var SortableCollectionMixin = {
-  sortedBy: function(comparator) {
-    var sortedCollection = new this.constructor(this.models);
+<pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.models);
     sortedCollection.comparator = comparator;
     sortedCollection.sort();
-    return sortedCollection;
+    <b class="hl-keyword">return</b> sortedCollection;
   }
 };
 
-var Tasks = Backbone.Collection.extend(_.extend({
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend(_.extend({
   model: Task,
-  url: '/tasks',
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-  comparator: function(task) {
-    return task.dueDate;
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
   },
 
-  byCreatedAt: function() {
-    return this.sortedBy(function(task) {
-      return task.createdAt;
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
     });
   },
 
-  byCompletedAt: function() {
-    return this.sortedBy(function(task) {
-      return task.completedAt;
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
     });
   }
 }, SortableCollectionMixin));</pre>
+<p>Just as with the <code class="literal">FilterableCollectionMixin</code> before, the
+<code class="literal">SortableCollectionMixin</code> should observe its source if updates are to propagate
+from one collection to another:</p>
+<pre class="programlisting">var SortableCollectionMixin = {
+  sortedBy: function(comparator) {
+    var sourceCollection = this;
+    var sortedCollection = new this.constructor;
+    sortedCollection.comparator = comparator;
+
+    var applySort = function() {
+      sortedCollection.reset(sourceCollection.models);
+      sortedCollection.sort();
+    };
+
+    this.bind("change", applySort);
+    this.bind("add",    applySort);
+    this.bind("remove", applySort);
+
+    applySort();
+
+    return sortedCollection;
+  }
+};</pre>
 </div>
 </div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
+<div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title">
 <a id="_client_server_duplicated_business_logic_chapter_unstarted"></a>Client/Server duplicated business logic (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_validations_chapter_unstarted"></a>Validations (chapter unstarted)</h3></div></div></div></div>
-<div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h3 class="title">
-<a id="_synchronizing_between_clients_chapter_unstarted"></a>Synchronizing between clients (chapter unstarted)</h3></div></div></div></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_validations"></a>Validations</h3></div></div></div>
+<p>The server is the authoritative place for verifying whether data that is being
+stored is valid. Even though backbone.js
+<a class="ulink" href="http://documentcloud.github.com/backbone/#Model-validate" target="_top">exposes an API</a>
+for performing client side validations, when it comes to validating user data
+in a backbone.js application we want to continue to use the very same
+mechanisms on the server side that we’ve used in Rails all along: the
+ActiveModel validations API.</p>
+<p>The challenge is tying the two together: letting your ActiveRecord objects
+reject invalid user data, and having the errors bubble up all the way to the
+interface for user feedback - and having it all be seamless to the user and
+easy for the developer.</p>
+<p>Let’s wire this up. To get started, we’ll add a validation on the task’s title
+attribute on the ActiveRecord model like so:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> Task &lt; ActiveRecord::Base
+  validates :title, presence: <b class="hl-keyword">true</b>
+<b class="hl-keyword">end</b></pre>
+<p>On the backbone side of the world, we have a Backbone task called
+YourApp.Models.Task:</p>
+<pre class="programlisting">YourApp.Models.Task = Backbone.Model.extend({
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
+});</pre>
+<p>We also have a place where users enter new tasks - just a form on the task
+list.</p>
+<pre class="programlisting">&lt;form&gt;
+  &lt;ul&gt;
+     &lt;li <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"task_title_input"</i></b>&gt;
+       &lt;label <b class="hl-keyword">for</b>=<b class="hl-string"><i style="color:red">"title"</i></b>&gt;Title&lt;/label&gt;
+       &lt;input id=<b class="hl-string"><i style="color:red">"title"</i></b> maxlength=<b class="hl-string"><i style="color:red">"255"</i></b> name=<b class="hl-string"><i style="color:red">"title"</i></b> type=<b class="hl-string"><i style="color:red">"text"</i></b>&gt;
+     &lt;/li&gt;
+     &lt;button <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"submit"</i></b> id=<b class="hl-string"><i style="color:red">"create-task"</i></b>&gt;Create task&lt;/button&gt;
+  &lt;/ul&gt;
+&lt;/form&gt;</pre>
+<p>On the NewTask backbone view, we bind the button’s click event to a new
+function that we’ll call createTask.</p>
+<pre class="programlisting">YourApp.Views.NewTask = Backbone.View.extend({
+  events: {
+    <b class="hl-string"><i style="color:red">"click #create-task"</i></b>: <b class="hl-string"><i style="color:red">"createTask"</i></b>
+  },
+
+  createTask: {
+    <i class="hl-comment" style="color: silver">// grab attribute values from the form</i>
+    <i class="hl-comment" style="color: silver">// storing them on the attributes hash</i>
+    <b class="hl-keyword">var</b> attributes = {};
+    _.each(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form input, form select'</i></b>), <b class="hl-keyword">function</b>(element) {
+      <b class="hl-keyword">var</b> element = $(element);
+      <b class="hl-keyword">if</b>(element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>) != <b class="hl-string"><i style="color:red">"commit"</i></b>) {
+        attributes[element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>)] = element.val();
+      }
+    });
+
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <i class="hl-comment" style="color: silver">// create a new task and save it to the server</i>
+    <b class="hl-keyword">new</b> YourApp.Models.Task(attributes).save({
+        success: <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">// handle success }</i>
+        error:   <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">// validation error occurred, show user }</i>
+      });
+    <b class="hl-keyword">return</b> false;
+  }
+})</pre>
+<p>When you call save() on a backbone model, Backbone will delegate to .sync() and
+create a POST request on the model’s URL where the payload are the attributes
+that you’ve passed onto the save() call.</p>
+<p>The easiest way to handle this in Rails is to use respond_to/respond_with
+available in Rails 3 applciations:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
+  respond_to :json
+  <b class="hl-keyword">def</b> create
+    task = Task.create(params)
+    respond_with task
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
+<p>When the task is created successfully, Rails will render the show action using
+the object that you’ve passed to the respond_with call, so make sure the show
+action is defined in your routes:</p>
+<pre class="programlisting">resources :tasks, only: [:create, :show]</pre>
+<p>When the task cannot be created successfully because some validation constraint
+is not met, the the Rails responder will render the model’s errors as a JSON
+object, and use an HTTP status code of 422, which will alert backbone that it
+there was an error in the request and it was not processed.</p>
+<p>The response from Rails in that case looks something like this:</p>
+<pre class="programlisting">{ <b class="hl-string"><i style="color:red">"title"</i></b>: [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>] }</pre>
+<p>So that two line action in a Rails controller is all we need to talk to our
+backbone models and handle error cases.</p>
+<p>Back to the backbone model’s save() call, Backbone will invoke one of two
+callbacks when it receives a response from the rails app, so we simply pass in
+a hash containing a function to run both for the success and the error cases.</p>
+<p>In the success case, we may want to add the new model instance to a global
+collection of tasks. Backbone will trigger the add event on that collection, so
+there’s your chance for some other view to bind to that event and rerender
+itself so that the new task appears on the page.</p>
+<p>In the error case, however, we want to display inline errors on the form. When
+backbone triggers the error callback, it passes along two parameters: the model
+being saved and the raw response. We have to parse the JSON response and
+iterate through it rendering an inline error on the form corresponding to each
+of the errors. Let’s introduce a couple of new classes that will help along the</p>
+<p>First off is the ErrorList. An ErrorList encapsulates parsing of the raw JSON
+that came in from the server and provides an iterator to easily loop through
+errors:</p>
+<pre class="programlisting">ErrorList = <b class="hl-keyword">function</b> (response) {
+  <b class="hl-keyword">if</b> (response &amp;&amp; response.responseText) {
+    <b class="hl-keyword">this</b>.attributesWithErrors = JSON.parse(response.responseText);
+  }
+};
+
+_.extend(ErrorList.<b class="hl-keyword">prototype</b>, {
+  each: <b class="hl-keyword">function</b> (iterator) {
+    _.each(attributesWithErrors, iterator);
+  },
+
+  size: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> _.size(attributesWithErrors);
+  }
+});</pre>
+<p>Next up is the ErrorView, who’s in charge of taking the errorlist, and
+appending each inline error in the form, providing feedback to the user that
+their input is invalid.</p>
+<pre class="programlisting">ErrorView = Backbone.View.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderError"</i></b>);
+  },
+
+  render: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">".error"</i></b>).removeClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">"p.inline-errors"</i></b>).remove();
+    <b class="hl-keyword">this</b>.options.errors.each(<b class="hl-keyword">this</b>.renderError);
+  },
+
+  renderError: <b class="hl-keyword">function</b>(errors, attribute) {
+    <b class="hl-keyword">var</b> errorString = errors.join(<b class="hl-string"><i style="color:red">", "</i></b>);
+    <b class="hl-keyword">var</b> field = <b class="hl-keyword">this</b>.fieldFor(attribute);
+    <b class="hl-keyword">var</b> errorTag = $(<b class="hl-string"><i style="color:red">'&lt;p&gt;'</i></b>).addClass(<b class="hl-string"><i style="color:red">'inline-errors'</i></b>).text(errorString);
+    field.append(errorTag);
+    field.addClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+  },
+
+  fieldFor: <b class="hl-keyword">function</b>(attribute) {
+    <b class="hl-keyword">return</b> $(<b class="hl-keyword">this</b>.options.el).find(<b class="hl-string"><i style="color:red">'[id*="_'</i></b> + attribute + <b class="hl-string"><i style="color:red">'_input"]'</i></b>).first();
+  }
+});</pre>
+<p>Note the fieldFor function. It expects a field with an id containing a certain
+format. Therefore, in order for this to work the form’s HTML must contain a
+matching element. In our case, it was the list item with an id of
+task_title_input.</p>
+<p>When a backbone view’s el is already on the DOM, we need to pass it into the
+view’s constructor. In the case of the ErrorView class, we want to operate on
+the view that contains the form that originated the errors.</p>
+<p>To use these classes, we take the response from the server and pass that along
+to the ErrorList constructor, which we then pass to the ErrorView that will do
+it’s fine job in inserting the inline errors when we call render() on it.
+Putting it all together, our save call’s callbacks now look like this:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+<b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> YourApp.Models.Task(attributes);
+model.save({
+  error: <b class="hl-keyword">function</b>(model, response) {
+    <b class="hl-keyword">var</b> errors = <b class="hl-keyword">new</b> ErrorList(response);
+    <b class="hl-keyword">var</b> view   = <b class="hl-keyword">new</b> ErrorView( { el: self.el, errors: errors } );
+    view.render();
+  }
+});</pre>
+<p>There still is a part of this action that doesn’t feel quite right, and that’s
+the fact that we are looping through the elements in a form in order to build
+the attributes hash for the new object, which is an entirely separate concern.
+Let’s extend the Backbone.Model prototype so that it can handle saving from
+forms and we can reuse it throughout the app.</p>
+<p>TODO: Introduce Backbone.Model.saveFromForm function</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_synchronizing_between_clients"></a>Synchronizing between clients</h3></div></div></div>
+<p>A big driving force behind the move to rich client web apps is to improve the user experience. These applications are more responsive and can support more detailed and stateful interactions.</p>
+<p>One such interaction involves multiple concurrent users interacting with the same resource in realtime. We can deliver a more seamless experience by propagating users' changes to one another as they take place: when we edit the same document, I see your changes on my screen as you type them. If you’ve ever used Google Docs or Google Wave, you’ve seen this in action.</p>
+<p>So, how can we build this functionality into our own applications?</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_the_moving_parts"></a>The moving parts</h4></div></div></div>
+<p>There are a few different pieces that we’ll put together for this.  The basic parts are:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Change events. The fundamental unit of information that we broadcast through our system to keep clients in sync.  Delivered as messages, these events contain enough information for any receiving client to update its own data without needing a full re-fetch from the server.
+</li>
+<li>
+An event source.  With trusted clients, changes can originate directly from the client.  More often, however, we will want the server to arbitrate changes so that it can apply authorization, data filtering, and validations.
+</li>
+<li>
+A transport layer that supports pushing to clients.  <a class="ulink" href="http://www.w3.org/TR/websockets/" target="_top">The WebSocket API</a> is such a transport, and is ideal for its low overhead and latency.
+</li>
+<li>
+Event-driven clients.  Clients should be able to react to incoming change events, ideally handling them with incremental UI updates rather than re-drawing themselves entirely.  Backbone.js helps out in this department, as your client-side application app is likely already set up to handle such events.
+</li>
+<li>
+A message bus.  Separating the concern of message delivery from our main application helps it stay smaller and helps us scale our messaging and application infrastructure separately. There are already several great off-the-shelf tools we can use for this.
+</li>
+</ol></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_putting_it_together_a_look_at_the_lifecycle_of_a_change"></a>Putting it together: a look at the lifecycle of a change</h4></div></div></div>
+<p>Revisiting our todo application, we’d like to add the ability to collaborate on todo lists.  Different users will be able to work on the same todo list concurrently.  Several users can look at the same list; adding, changing, and checking off items.</p>
+<p>There are a few technical decisions mentioned previously.  For this example, we will:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Use Rails on the server and Backbone on the client.
+</li>
+<li>
+Use the server as the canonical event source so that clients do not have to trust one another.  In particular, we’ll employ an <code class="literal">ActiveRecord::Observer</code> that observes Rails model changes and dispatches a change event.
+</li>
+<li>
+Use <a class="ulink" href="http://faye.jcoglan.com" target="_top">Faye</a> as the messaging backend, which has Ruby and JavaScript implementations for clients and server.  Faye implements the <a class="ulink" href="http://svn.cometd.com/trunk/bayeux/bayeux.html" target="_top">Bayeux protocol</a>, prefers WebSocket for transport (thought it gracefully degrades to long polling, CORS, or JSON-P), and supports a bunch of other goodies like clustering and extensions (inbound- and outbound- message filtering, like Rack middleware).
+</li>
+</ol></div>
+<p>In our application, there are several connected clients viewing the same todo list, and one user Alice makes a change to an item on the list.</p>
+<p>Let’s take a look at the lifecycle of one change event.</p>
+<p>TODO: System-partitioned sequence diagram</p>
+<p>Setup:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+An instance of JavaScript class <code class="literal">BackboneSync.FayeSubscriber</code> is instantiated on each client.  It is configured with a channel to listen to, and a collection to update.
+</li>
+<li>
+The Faye server is started.
+</li>
+<li>
+The Rails server is started, and several clients are connected and viewing <code class="literal">#todo_lists/1</code>.
+</li>
+</ol></div>
+<p>On the Alice’s machine, the client responsible for the change:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Alice clicks "Save" in her view of the list.
+</li>
+<li>
+The "save" view event is triggered.
+</li>
+<li>
+The event handler invokes <code class="literal">this.model.save(attributes)</code>.
+</li>
+<li>
+<code class="literal">Backbone.Model.prototype.save</code> calls <code class="literal">Backbone.sync</code>.
+</li>
+<li>
+<code class="literal">Backbone.sync</code> invokes <code class="literal">$.ajax</code> and issues an HTTP PUT request to the server.
+</li>
+</ol></div>
+<p>On the server:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Rails handles the PUT request and calls <code class="literal">#update_attributes</code> on an ActiveRecord model instance.
+</li>
+<li>
+An <code class="literal">ActiveRecord::Observer</code> observing this model gets its <code class="literal">#after_save</code> method invoked.
+</li>
+<li>
+The observer dispatches a change event message to Faye.
+</li>
+<li>
+Faye broadcasts the change event to all subscribers.
+</li>
+</ol></div>
+<p>On all clients:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+<code class="literal">FayeSubscriber</code> receives the change event message, likely over a WebSocket.
+</li>
+<li>
+The subscriber parses the event message, picking out the event (<code class="literal">update</code>), the <code class="literal">id</code> of the model to update, and a new set of attributes to apply.
+</li>
+<li>
+The <code class="literal">FayeSubscriber</code> fetches the model from the collection, and calls <code class="literal">set</code> on it to update its attributes.
+</li>
+</ol></div>
+<p>Now all the clients have received the changeset that Alice made.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementation_step_1_faye_server"></a>Implementation: Step 1, Faye server</h4></div></div></div>
+<p>We’ll need to run Faye to relay messages from publishers to subscribers.  For
+Rails apps that depend on Faye, I like to keep a <code class="literal">faye/</code> subdirectory under the
+app root that contains a <code class="literal">Gemfile</code> and <code class="literal">config.ru</code>, and maybe a shell script to
+start Faye:</p>
+<pre class="programlisting">$ cat faye/Gemfile
+
+source 'http://rubygems.org'
+gem 'faye'
+
+$ cat faye/config.ru
+
+require 'faye'
+bayeux = Faye::RackAdapter.new(:mount =&gt; '/faye', :timeout =&gt; 25)
+bayeux.listen(9292)
+
+$ cat faye/run.sh
+
+#!/usr/bin/env bash
+BASEDIR=$(dirname $0)
+BUNDLE_GEMFILE=$BASEDIR/Gemfile bundle exec rackup $BASEDIR/config.ru -s thin -E production
+
+$ ./faye/run.sh
+
+&gt;&gt; Thin web server (v1.2.11 codename Bat-Shit Crazy)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:9292, CTRL+C to stop</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementing_it_step_2_activerecord_observers"></a>Implementing it: Step 2, ActiveRecord observers</h4></div></div></div>
+<p>Now that the message bus is running, let’s walk through the server code.  The
+Rails app’s responsibility is this: whenever a Todo model is created, updated,
+or deleted, publish a change event message.</p>
+<p>This is implemented with an ActiveRecord::Observer.  We provide the
+functionality in a module:</p>
+<pre class="programlisting"><b class="hl-keyword">module</b> BackboneSync
+  <b class="hl-keyword">module</b> Rails
+    <b class="hl-keyword">module</b> Faye
+      mattr_accessor :root_address
+      <b class="hl-keyword">self</b>.root_address = <b class="hl-string"><i style="color:red">'http://localhost:9292'</i></b>
+
+      <b class="hl-keyword">module</b> Observer
+        <b class="hl-keyword">def</b> after_update(model)
+          Event.new(model, :update).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_create(model)
+          Event.new(model, :create).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_destroy(model)
+          Event.new(model, :destroy).publish
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+
+      <b class="hl-keyword">class</b> Event
+        <b class="hl-keyword">def</b> initialize(model, event)
+          @model = model
+          @event = event
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> broadcast
+          Net::HTTP.post_form(uri, :message =&gt; message)
+        <b class="hl-keyword">end</b>
+
+        private
+
+        <b class="hl-keyword">def</b> uri
+          URI.parse(<b class="hl-string"><i style="color:red">"#{BackboneSync::Rails::Faye.root_address}/faye"</i></b>)
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> message
+          { :channel =&gt; channel,
+            :data =&gt; data          }.to_json
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> channel
+          <b class="hl-string"><i style="color:red">"/sync/#{@model.class.table_name}"</i></b>
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> data
+          { @event =&gt; { @model.id =&gt; @model.as_json } }
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+    <b class="hl-keyword">end</b>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
+<p>and then mix it into a concrete Observer class in our application.  In this
+case, we name it <code class="literal">TodoObserver</code>:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TodoObserver &lt; ActiveRecord::Observer
+  include BackboneSync::Rails::Faye::Observer
+<b class="hl-keyword">end</b></pre>
+<p>This observer is triggered each time a Rails <code class="literal">Todo</code> model is created, updated,
+or destroyed.  When one of these events happen, the Observer sends along a
+message to our message bus, indicating the change.</p>
+<p>Let’s say that a <code class="literal">Todo</code> was just created:</p>
+<p>&gt;&gt; Todo.create(title: "Buy some tasty kale juice")
+⇒ #&lt;Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09"&gt;</p>
+<p>The message looks like this:</p>
+<pre class="programlisting">{
+  "channel": "/sync/todos",
+  "data": {
+    "create": {
+      "17": {
+        "id": 17,
+        "title": "Buy some tasty kale juice",
+        "created_at": "2011-09-06T20:49:03Z",
+        "updated_at": "2011-09-07T15:01:09Z"
+      }
+    }
+  }
+}</pre>
+<p>Received by Faye, the message is broadcast to all clients subscribing to the
+<code class="literal">/sync/todos</code> channel, including our browser-side <code class="literal">FayeSubscriber</code> objects.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementing_it_step_3_in_browser_subscribers"></a>Implementing it: Step 3, In-browser subscribers</h4></div></div></div>
+<p>In each browser, we want to connect to the Faye server, subscribe to events on
+channels that interest us, and update Backbone collections based on those
+messages.</p>
+<p>Faye runs an HTTP server, and serves up its own client library, so that’s easy to pull in:</p>
+<pre class="programlisting">&lt;script type="text/javascript" src="http://localhost:9292/faye.js"&gt;&lt;/script&gt;</pre>
+<p>To subscribe to Faye channels, instantiate a <code class="literal">Faye.Client</code> and call <code class="literal">subscribe</code> on it:</p>
+<pre class="programlisting">var client = new Faye.Client('http://localhost:9292/faye');
+client.subscribe('/some/channel', function(message) {
+  // handle message
+});</pre>
+<p>When the browser receives messages from Faye, we want to update a Backbone
+collection.  Let’s wrap up those two concerns into a <code class="literal">FayeSubscriber</code>:</p>
+<pre class="programlisting">this.BackboneSync = this.BackboneSync || {};
+
+BackboneSync.RailsFayeSubscriber = (function() {
+  function RailsFayeSubscriber(collection, options) {
+    this.collection = collection;
+    this.client = new Faye.Client('&lt;%= BackboneSync::Rails::Faye.root_address %&gt;/faye');
+    this.channel = options.channel;
+    this.subscribe();
+  }
+
+  RailsFayeSubscriber.prototype.subscribe = function() {
+    return this.client.subscribe("/sync/" + this.channel, _.bind(this.receive, this));
+  };
+
+  RailsFayeSubscriber.prototype.receive = function(message) {
+    var self = this;
+    return $.each(message, function(event, eventArguments) {
+      return self[event](eventArguments);
+    });
+  };
+
+  RailsFayeSubscriber.prototype.update = function(params) {
+    var self = this;
+    return $.each(params, function(id, attributes) {
+      var model = self.collection.get(id);
+      return model.set(attributes);
+    });
+  };
+
+  RailsFayeSubscriber.prototype.create = function(params) {
+    var self = this;
+    return $.each(params, function(id, attributes) {
+      var model = new self.collection.model(attributes);
+      return self.collection.add(model);
+    });
+  };
+
+  RailsFayeSubscriber.prototype.destroy = function(params) {
+    var self = this;
+    return $.each(params, function(id, attributes) {
+      var model = self.collection.get(id);
+      return self.collection.remove(model);
+    });
+  };
+
+  return RailsFayeSubscriber;
+})();</pre>
+<p>Now, for each collection that we’d like to keep in sync, we instantiate a
+corresponding <code class="literal">FayeSubscriber</code>.  Say, in your application bootstrap code:</p>
+<pre class="programlisting">MyApp.Routers.TodosRouter = Backbone.Router.extend({
+  initialize: function(options) {
+    this.todos = new Todos.Collections.TodosCollection();
+    new BackboneSync.FayeSubscriber(this.todos, { channel: 'todos' });
+    this.todos.reset(options.todos);
+  },
+
+  // ...
+});
+
+Now run the app, and watch browsers receive push updates!
+
+==== Testing synchronization
+TODO: Testing client-client sync.  `Capybara.using_session` for multiple concurrent actors.
+
+==== More reading
+NOTE: Faye implements a messaging protocol called Bayeux: http://svn.cometd.com/trunk/bayeux/bayeux.html
+
+NOTE: Read up on idempotent messages.  Check out this solid, readable article http://devhawk.net/2007/11/09/the-importance-of-idempotence/[The Importance of Idempotence].
+
+
+== Testing (section unstarted)
+=== Full-stack integration testing
+=== Isolated unit testing
+
+== The JavaScript language (section unstarted)
+=== Model attribute types and serialization
+=== Context binding (JS +this+)
+=== CoffeeScript with Backbone.js
+
+== Security (stub)
+
+=== XSS with JSON bootstrapping (stub)
+
+Use +json2.js+ and:
+
+[js]
+source~~~~
+&lt;script type="text/json" id="something"&gt;
+  &lt;%= something.to_json %&gt;
+&lt;/script&gt;
+
+&lt;script type="text/javascript"&gt;
+  (function () {
+    var something = JSON.parse($('#something').text());
+    someJavascriptFunction(something);
+  })();
+&lt;/script&gt;
+source~~~~
+
+=== XSS in HTML templates (stub)
+
+TODO: Discuss +Backbone.Model.escape+, +_.escape+, defaulting to escape with +&lt;%=+ vs +&lt;%==+, escaping in other templating.
+
+== Performance (stub)
+
+=== Dependency choice
+
+Backbone.js defines a +$+ variable that defers to jQuery if present.
+
+If you are only targeting mobile platforms, Backbone will handily fall back to
+Zepto http://zeptojs.com for a more lightweight dependency.  Zepto is "a
+minimalist JavaScript framework for mobile WebKit browsers, with a
+jQuery-compatible syntax."  From +backbone.js+:
+
+[javascript]
+source~~~~
+(function(){
+
+  // Initial Setup
+  // -------------
+
+  // Save a reference to the global object.
+  var root = this;
+
+  // For Backbone's purposes, jQuery or Zepto owns the `$` variable.
+  var $ = root.jQuery || root.Zepto;
+
+  // ...
+
+}).call(this);
+source~~~~</pre>
+</div>
+</div>
 </div>
 
     </div>
@@ -348,9 +931,6 @@ var Tasks = Backbone.Collection.extend(_.extend({
          Backbone.js on Rails
         
       </td><td width="33%" align="right">
-        
-          <a href="testing_section_unstarted_.html">Next</a><br/>
-          Testing (section unstarted)
         
       </td></tr>
     </table>
