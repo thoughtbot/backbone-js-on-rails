@@ -1,3 +1,10 @@
+<h1>Tasks</h1>
+
+<div id="tasks">
+</div>
+
+<a class="create" href="#new">Add task</a>
+
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.init(<%== @tasks.to_json %>);

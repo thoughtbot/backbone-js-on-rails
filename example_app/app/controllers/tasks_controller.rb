@@ -4,4 +4,8 @@ class TasksController < ApplicationController
   def index
     respond_with(@tasks = Task.all)
   end
+
+  def create
+    respond_with(Task.create(params[:task]))
+  end
 end

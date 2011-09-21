@@ -1,6 +1,7 @@
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   initialize: function() {
-    this.render();
+    _.bindAll(this, "render");
+    ExampleApp.tasks.bind("add", this.render)
   },
 
   render: function () {
@@ -11,8 +12,6 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
       var taskView = new ExampleApp.Views.TaskView({model: task});
       tasksIndexView.$('table').append(taskView.render().el);
     });
-
-    $('body').html(this.el);
 
     return this;
   }
