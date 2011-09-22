@@ -117,6 +117,10 @@ GEM
       activesupport (= 3.1.0)
       bundler (~> 1.0)
       railties (= 3.1.0)
+    rails-backbone (0.5.3)
+      coffee-script (~> 2.2.0)
+      ejs (~> 1.0.0)
+      rails (~> 3.1.0.rc5)
     railties (3.1.0)
       actionpack (= 3.1.0)
       activesupport (= 3.1.0)
@@ -199,6 +203,7 @@ DEPENDENCIES
   launchy
   nokogiri
   rails (= 3.1.0)
+  rails-backbone
   rspec-rails (~> 2.6.1)
   ruby-debug19
   sass-rails (~> 3.1.0)
