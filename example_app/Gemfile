@@ -17,6 +17,7 @@ end
 group :development, :test do
   gem "rspec-rails", "~> 2.6.1"
   gem "ruby-debug19"
+  gem 'jasmine', "= 1.1.0.rc4"
 end
 
 group :test do
