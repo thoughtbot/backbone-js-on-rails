@@ -6,9 +6,9 @@ Feature: Viewing Tasks
   @javascript
   Scenario: View tasks
     Given the following tasks exist:
-    | Title                                                |
-    | Purchase the backbone on rails ebook from thoughtbot |
-    | Master backbone                                      |
-  And I am on the tasks page
-  Then I should see "Master backbone"
-  And I should see "Purchase the backbone on rails ebook from thoughtbot"
+      | Title                                                |
+      | Purchase the backbone on rails ebook from thoughtbot |
+      | Master backbone                                      |
+    And I am on the home page
+    Then I should see "Master backbone" within the tasks list
+    And I should see "Purchase the backbone on rails ebook from thoughtbot" within the tasks list
