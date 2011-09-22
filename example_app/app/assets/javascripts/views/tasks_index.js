@@ -1,7 +1,7 @@
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   initialize: function() {
-    _.bindAll(this, "render");
-    ExampleApp.tasks.bind("add", this.render)
+    // _.bindAll(this, "render");
+    // ExampleApp.tasks.bind("add", this.render)
   },
 
   render: function () {
