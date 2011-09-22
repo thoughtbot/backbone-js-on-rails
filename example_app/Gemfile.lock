@@ -76,6 +76,7 @@ GEM
       factory_girl (~> 2.1.0)
       railties (>= 3.0.0)
     ffi (1.0.9)
+    flutie (1.3.2)
     gherkin (2.4.21)
       json (>= 1.4.6)
     hike (1.2.1)
@@ -193,6 +194,7 @@ DEPENDENCIES
   database_cleaner
   ejs
   factory_girl_rails
+  flutie (~> 1.3.2)
   jquery-rails
   launchy
   nokogiri
