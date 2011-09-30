@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <?asciidoc-toc?>
 <?asciidoc-numbered?>
 
-<article lang="en">
-<articleinfo>
+<book lang="en">
+<bookinfo>
     <title>Backbone.js on Rails</title>
-</articleinfo>
-<section id="_preface_section_unstarted">
+</bookinfo>
+<chapter id="_preface_section_unstarted">
 <title>Preface (section unstarted)</title>
-</section>
-<section id="_getting_up_to_speed_section_unstarted">
-<title>Getting up to speed (section unstarted)</title>
+</chapter>
+<chapter id="_getting_up_to_speed">
+<title>Getting up to speed</title>
 <section id="_backbone_js_online_resources">
 <title>Backbone.js online resources</title>
 <simpara>This book is not an introduction, and assumes you have some knowledge of
@@ -35,17 +35,18 @@ JavaScript development practices and takes a deep dive on language
 fundamentals:</simpara>
 <simpara><ulink url="http://tddjs.com/">http://tddjs.com/</ulink></simpara>
 </section>
-</section>
-<section id="_introduction_section_unstarted">
-<title>Introduction (section unstarted)</title>
+</chapter>
+<chapter id="_introduction">
+<title>Introduction</title>
 <section id="_why_use_backbone_js">
 <title>Why use Backbone.js</title>
-</section>
-<section id="_when_not_to_use_backbone_js">
-<title>When not to use Backbone.js</title>
-</section>
-<section id="_why_not_sproutcore_cappuccino_knockout_js_spine_etc">
-<title>Why not SproutCore, Cappuccino, Knockout.js, Spine, etc.</title>
+<simpara>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</simpara>
+<simpara>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</simpara>
+<simpara>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</simpara>
+<simpara>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</simpara>
+<simpara>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</simpara>
+<simpara>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</simpara>
+<simpara>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</simpara>
 </section>
 <section id="_the_example_application">
 <title>The Example Application</title>
@@ -58,8 +59,8 @@ compress and minify them.</simpara>
 example code normal Javascript as we believe that will be the most understandable to
 the current readers.</simpara>
 </section>
-</section>
-<section id="_organization">
+</chapter>
+<chapter id="_organization">
 <title>Organization</title>
 <section id="_backbone_js_and_mvc">
 <title>Backbone.js and MVC</title>
@@ -289,8 +290,8 @@ This app variable will look like the following.</simpara>
 
 _.extend(SomeCollectionView.prototype, Observer);</programlisting>
 </section>
-</section>
-<section id="_rails_integration">
+</chapter>
+<chapter id="_rails_integration">
 <title>Rails Integration</title>
 <section id="_organizing_your_backbone_js_code_in_a_rails_app">
 <title>Organizing your Backbone.js code in a Rails app</title>
@@ -1180,8 +1181,8 @@ file.</simpara>
 app, you can find this this in
 example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</simpara>
 </section>
-</section>
-<section id="_routers_views_and_templates">
+</chapter>
+<chapter id="_routers_views_and_templates">
 <title>Routers, Views, and Templates</title>
 <section id="_view_explanation">
 <title>View explanation</title>
@@ -1306,6 +1307,8 @@ event handlers' <literal>this</literal> to the view instance using <literal>_.bi
 <ulink url="http://ajaxpatterns.org/Browser-Side_Templating">http://ajaxpatterns.org/Browser-Side_Templating</ulink>
 <ulink url="http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery">http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery</ulink>
 <ulink url="http://code.google.com/closure/templates/docs/helloworld_js.html">http://code.google.com/closure/templates/docs/helloworld_js.html</ulink></simpara>
+<simpara>A whole bunch of "micro" templating libraries:
+<ulink url="http://microjs.com/#templating">http://microjs.com/#templating</ulink></simpara>
 <simpara>They generally fall into three categories:</simpara>
 <itemizedlist>
 <listitem>
@@ -2221,8 +2224,8 @@ For copycopter, however, we&#8217;d like new translations to show up while the a
 running.  Likely we will provide Rack middleware that products the translations
 as jsonp.  Waiting until we make more progress for copycopter</simpara>
 </section>
-</section>
-<section id="_models_and_collections">
+</chapter>
+<chapter id="_models_and_collections">
 <title>Models and collections</title>
 <section id="_naming_conventions_chapter_unstarted">
 <title>Naming conventions (chapter unstarted)</title>
@@ -2415,6 +2418,7 @@ var Tasks = Backbone.Collection.extend(_.extend({
     });
   }
 }, FilterableCollectionMixin));</programlisting>
+<simpara>TODO: Update syntax, use a separate _.extend invocation above.</simpara>
 </section>
 <section id="_propagating_collection_changes">
 <title>Propagating collection changes</title>
@@ -2532,6 +2536,7 @@ var Tasks = Backbone.Collection.extend(_.extend({
     });
   }
 }, SortableCollectionMixin));</programlisting>
+<simpara>TODO: Update syntax, use a separate _.extend invocation above.</simpara>
 <simpara>Just as with the <literal>FilterableCollectionMixin</literal> before, the
 <literal>SortableCollectionMixin</literal> should observe its source if updates are to propagate
 from one collection to another:</simpara>
@@ -3078,17 +3083,552 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
 <note><simpara>Read up on idempotent messages.  Check out this solid, readable article <ulink url="http://devhawk.net/2007/11/09/the-importance-of-idempotence/">The Importance of Idempotence</ulink>.</simpara></note>
 </section>
 </section>
+</chapter>
+<chapter id="_testing">
+<title>Testing</title>
+<section id="_full_stack_integration_testing_1_todo">
+<title>Full-stack integration testing (1 todo)</title>
+<simpara>Your application is built from a collection of loosely coupled modules,
+spreading across several layers of the development stack.  To ensure the
+application works correctly from the perspective of the end-user, full-stack
+integration testing drives your application and verifies correct functionality
+from the user interface level.  This is also referred to as acceptance testing.</simpara>
+<section id="_introduction_2">
+<title>Introduction</title>
+<simpara>TODO: No real special Backbone concerns, just integration test with a @js driver
+like normal.</simpara>
 </section>
-<section id="_testing_section_unstarted">
-<title>Testing (section unstarted)</title>
-<section id="_full_stack_integration_testing">
-<title>Full-stack integration testing</title>
+<section id="_capybara">
+<title>Capybara</title>
+<simpara>Thought there is a host of tools available to you for writing automated
+integration tests, we recommend
+[capybara](<ulink url="https://github.com/jnicklas/capybara">https://github.com/jnicklas/capybara</ulink>).  In a hybrid Rails
+application, where some portions are regular request/response and other portions
+are JavaScript, it&#8217;s valuable to have a testing framework that abstracts the
+difference as much as possible.</simpara>
+<simpara>Capybara is a high-level library that allows you to write tests from a user&#8217;s
+perspective.  Consider this example, which uses RSpec:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">describe "the login process", :type =&gt; :request do
+  it "accepts an email and password" do
+    User.create(:email =&gt; 'alice@example.com', :password =&gt; 'password')
+    visit '/'
+    fill_in 'Email', :with =&gt; 'alice@example.com'
+    fill_in 'Password', :with =&gt; 'password'
+    click_button 'Log in'
+    page.should have_content('You are logged in as alice@example.com')
+  end
+end</programlisting>
+<simpara>Notice that, as you read the spec, you&#8217;re not concerned about whether the login
+interface is rendered with JavaScript, or whether the authentication request is
+over AJAX or not.  A high-level library like Capybara keeps you from having to
+consider the back-end implementation, freeing you to focus on describing the
+application&#8217;s behavior from an end-user&#8217;s perspective.  This perspective of
+writing specs is often called behavior-driven development (BDD).</simpara>
 </section>
-<section id="_isolated_unit_testing">
-<title>Isolated unit testing</title>
+<section id="_cucumber">
+<title>Cucumber</title>
+<simpara>You can take another step toward natural language tests, using Cucumber to
+define mappings.  Cucumber is a test runner and a mapping layer.  The specs you
+write in Cucumber are user stories, written in a constrained subset of English.
+The individual steps in these stories are mapped to a testing library.  In our
+case, and probably most cases, to Capybara.</simpara>
+<simpara>This additional layer of abstraction can be helpful for a few reasons.</simpara>
+<simpara>Some teams have nontechnical stakeholders writing integration specs as user
+stories.  Cucumber sits at a level of abstraction that fits comfortably there:
+high level enough for nontechnical stakeholders to write in, but precise enough
+to be translated into automated tests.</simpara>
+<simpara>On other teams, the person writing the story is the same person who implements
+it.  Still, it is valuable to use a tool that reinforces the distinction between
+the description phase and the implementation phase of the test.  In the
+description phase, you are writing an English description of the software
+interaction:</simpara>
+<programlisting language="cucumber" linenumbering="unnumbered">Given there is a user account "alice@example.com" with the password "password"
+When I go to the home page
+And I fill in the login form with "alice@example.com" and "password"
+And I click the login button
+Then I should see "You are logged in as alice@example.com"</programlisting>
+<simpara>In the implementation phase of the test, you define what these steps do.  In
+this case, they are defined to run Capybara methods:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">Given /^there is a user account "(.*)" with the password "(.*)"$/ do |email, password|
+  User.create(:email =&gt; email, :password =&gt; password)
+end
+
+When "I go to the home page" do
+  visit "/"
+end
+
+When /^I fill in the login form with "(.*)" and "(.*)"$/ do |email, password|
+  fill_in 'Email', :with =&gt; email
+  fill_in 'Password', :with =&gt; password
+end
+
+When "I click the login button" do
+  click_button "Login"
+end
+
+Then /^I should see "(.*)"$/ do |text|
+  page.should have_content(text)
+end</programlisting>
+</section>
+<section id="_drivers">
+<title>Drivers</title>
+<itemizedlist>
+<listitem>
+<simpara>
+Integration test with:
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+[capybara-webkit](<ulink url="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</ulink>) for fast, headless, accurate WebKit testing
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Selenium for other browsers, or if capybara-webkit has issues.
+</simpara>
+</listitem>
+</itemizedlist>
 </section>
 </section>
-<section id="_the_javascript_language_section_unstarted">
+<section id="_isolated_unit_testing_some_stubs_some_wip">
+<title>Isolated unit testing (some stubs, some wip)</title>
+<simpara>Integration testing your application is great for ensuring that the product
+functions as intended, and works to mitigate against risk of regressions.
+There are additional benefits, though, to writing tests for individual units
+of your application in isolation.  Two of them are focused failures and
+decoupled code.</simpara>
+<simpara>When an integration test fails, it can be difficult to pin down the exact reason
+why; particularly when a regression is introduced in a part of the application
+seemingly far away from where you&#8217;re working.  With the finer granularity of a
+unit test suite, failures are more targeted and help you get to the root of the
+problem more quickly.</simpara>
+<simpara>Another benefit comes from unit testing when you test-drive code; when you write
+the tests before the implementation.  Since you are starting with a piece of
+code which is client to your implementation modules, setup and dependency
+concerns are brought to your attention at the beginning of implementation,
+rather than much later during development when modules are integrated. Thinking
+about these concerns earlier helps you design modules which are more loosely
+coupled, have smaller interfaces, and are easier to set up.  If code is hard to
+test, it will be hard to use.  Writing the test first, you have a clear and
+concrete opportunity to make your implementation easier to use.</simpara>
+<simpara>If you&#8217;d like to read more on test-driven development, check out Kent Beck&#8217;s
+<emphasis>Test Driven Development: By Example</emphasis> and Gerard Meszaros' <emphasis>xUnit Test Patterns:
+Refactoring Test Code</emphasis>.</simpara>
+<simpara>As there is plentiful content available for testing tools and strategies in
+Rails, we&#8217;ll focus on isolation testing your Backbone code.</simpara>
+<section id="_isolation_testing_in_javascript">
+<title>Isolation testing in JavaScript</title>
+<simpara>There are many JavaScript testing frameworks available.  Some run in-browser and
+provide facility for setting up DOM fixtures.  Others are designed for
+standalone JavaScript code and can run on browserless JavaScript runtimes.</simpara>
+<simpara>We&#8217;ll use the Jasmine framework for writing our isolation specs.  It integrates
+easily into a Rails application, and provides an RSpec-like syntax for writing
+specs:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">describe("App.Models.User", function() {
+  it("knows its full name, given a first and last name", function() {
+    var user = new App.Models.User({
+      first_name: 'Alice',
+      last_name:  'Appleton'
+    });
+
+    expect(user.fullName()).toEqual('Alice Appleton');
+  });
+});</programlisting>
+</section>
+<section id="_what_to_test">
+<title>What to test?</title>
+<simpara>TODO: Discuss cost/benefit tradeoffs of isolation testing.  Discuss code
+coverage, and relative value w.r.t. overlap with integration testing.  In our
+experience so far, most value is in testing Backbone views and models; guided by
+a general principle of valuing test coverage over complex or high-churn code
+areas (which models and views generally qualify for)&#8201;&#8212;&#8201;routers <emphasis role="strong">should</emphasis> be very
+low on logic and just delegate to models and views (think Rails skinny
+controllers).  Since isolation tests for them generally involves a fair amount
+of stubbing/spying/mocking, they tend to be more brittle and less valuable.</simpara>
+</section>
+<section id="_stubbing_mocking_spying">
+<title>Stubbing, mocking, spying</title>
+<simpara>TODO: Discuss sinon.js and syntax for stubs, spies, mocks.</simpara>
+</section>
+<section id="_helpful_tools">
+<title>Helpful Tools</title>
+<simpara>TODO: Some of these (e.g. sinon, maybe rosie) will be introduced earlier.  Those
+that remain should be explained in more detail.</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Spy/stub/mock, even your HTTP, with [sinon.js](<ulink url="http://sinonjs.org/">http://sinonjs.org/</ulink>)
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+If you&#8217;re looking for factory_girl.js, it&#8217;s called [Rosie](<ulink url="https://github.com/bkeepers/rosie">https://github.com/bkeepers/rosie</ulink>)
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+[guard-jasmine](<ulink url="https://github.com/netzpirat/guard-jasmine">https://github.com/netzpirat/guard-jasmine</ulink>) autotest your Jasmine with headless webkit ([phantomjs](<ulink url="http://www.phantomjs.org/">http://www.phantomjs.org/</ulink>))
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Write in CoffeeScript and use the 3.1 asset pipeline with [jasminerice](<ulink url="https://github.com/bradphelan/jasminerice">https://github.com/bradphelan/jasminerice</ulink>)
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+See other examples on James Newbery&#8217;s blog: [testing Backbone with Jasmine](<ulink url="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html">http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html</ulink>) and check out his [examples on GitHub](<ulink url="https://github.com/froots/backbone-jasmine-examples">https://github.com/froots/backbone-jasmine-examples</ulink>)
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</section>
+<section id="_example_test_driving_a_task_application">
+<title>Example: Test-driving a Task application</title>
+<simpara>TODO: This writing is terse.  Come back and improve flow.</simpara>
+<simpara>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</simpara>
+<simpara>TODO: Discuss setting up tools: jasminerice, cucumber, capybara-webkit/selenium</simpara>
+<simpara>We have a basic application set up for testing, with the following Gemfile:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">source 'http://rubygems.org'
+
+gem 'rails', '3.1.0'
+gem 'sqlite3'
+
+gem 'rails-backbone'
+gem 'jquery-rails'
+gem 'ejs'
+gem "flutie", "~&gt; 1.3.2"
+
+group :assets do
+  gem 'sass-rails', "  ~&gt; 3.1.0"
+  gem 'coffee-rails', "~&gt; 3.1.0"
+  gem 'uglifier'
+end
+
+group :development, :test do
+  gem "rspec-rails", "~&gt; 2.6.1"
+  gem "ruby-debug19"
+  gem 'jasmine', "= 1.1.0.rc4"
+  gem 'jasminerice'
+end
+
+group :test do
+  gem 'turn', :require =&gt; false
+  gem "capybara", "~&gt; 1.0.1"
+  gem "selenium-webdriver", "~&gt; 2.5.0"
+  gem 'cucumber-rails', "~&gt; 1.0.2"
+  gem "factory_girl_rails"
+  gem "bourne"
+  gem "database_cleaner"
+  gem "nokogiri"
+  gem "shoulda"
+  gem "launchy"
+end</programlisting>
+<simpara>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
+parts: a list of existing tasks, and an interface for adding new items to
+the list.  We&#8217;ll start with the list of items, and create fixture data with
+[Factory Girl Cucumber
+steps](<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</ulink>):</simpara>
+<programlisting language="text" linenumbering="unnumbered">Feature: Viewing Tasks
+  As a user
+  So that I can see what I have to do
+  I want to be able to see all my tasks
+
+  @javascript
+  Scenario: View tasks
+    Given the following tasks exist:
+      | Title                                |
+      | Purchase the backbone on rails ebook |
+      | Master backbone                      |
+    And I am on the home page
+    And I pause
+    Then I should see "Master backbone" within the tasks list
+    And I should see "Purchase the backbone on rails ebook" within the tasks list</programlisting>
+<simpara>Running this, we see a failure:</simpara>
+<programlisting language="text" linenumbering="unnumbered">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
+  Unable to find css "#tasks table" (Capybara::ElementNotFound)
+  (eval):2:in `find'
+  ./features/step_definitions/web_steps.rb:29:in `with_scope'
+  ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
+  features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</programlisting>
+<note><simpara>A common gotchya when testing Backbone.js Rails apps is seeing false
+positives in bootstrapped data. Consider that, if we had just written the step
+<literal>Then I should see "Master backbone"</literal> instead of scoping it with <literal>within the
+tasks list</literal>, then some test drivers would count the JSON that is used to
+bootstrap Backbone collections as visible text on the page, and the test would
+pass without us actually rendering the text to the page.</simpara></note>
+<simpara>Since this we are doing outside-in development and testing for user interface,
+we will need outline the UI first.  To do this, first we&#8217;ll need a page to host
+our code.  Let&#8217;s create and route a Rails <literal>TasksController</literal>. We&#8217;ll bootstrap the
+Backbone app on <literal>tasks#index</literal>.</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">ExampleApp::Application.routes.draw do
+  resources :tasks
+  root :to =&gt; 'tasks#index'
+
+  if ["development", "test"].include? Rails.env
+    mount Jasminerice::Engine =&gt; "/jasmine"
+  end
+end</programlisting>
+<note><simpara>You can also see the route for the
+[jasminerice gem](<ulink url="http://rubygems.org/gems/jasminerice">http://rubygems.org/gems/jasminerice</ulink>), which makes the Rails
+3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</simpara></note>
+<programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController
+  respond_to :html, :json
+
+  def index
+    respond_with(@tasks = Task.all)
+  end
+
+  def create
+    respond_with(Task.create(params[:task]))
+  end
+end</programlisting>
+<simpara>To render our tasks, we&#8217;ll want a TasksIndex Backbone view class.  But before we
+write this class, we&#8217;ll motivate it with a Jasmine isolation spec:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">describe("ExampleApp.Views.TasksIndex", function() {
+  it("renders a task table", function() {
+    var view = new ExampleApp.Views.TasksIndex();
+    view.render();
+
+    var $el = $(view.el);
+
+    expect($el).toBe("#tasks");
+    expect($el).toContain("table");
+  });
+});</programlisting>
+<simpara>We use the [jasmine-jquery](<ulink url="https://github.com/velesin/jasmine-jquery">https://github.com/velesin/jasmine-jquery</ulink>) library
+(provided by jasminerice) to provide DOM matchers for Jasmine like
+<literal>toContain()</literal>.</simpara>
+<simpara>To run the Jasmine spec, run the Rails server and visit <ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink></simpara>
+<simpara>To make this test pass, we&#8217;ll add a small template and make the <literal>TasksIndex</literal>
+view render it:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+  tagName: 'div',
+  id: 'tasks',
+
+  initialize: function() {
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/index']({}));
+    return this;
+  }
+});</programlisting>
+<simpara>The <literal>app/assets/templates/tasks/index.jst.ejs</literal> template:</simpara>
+<programlisting language="html" linenumbering="unnumbered">&lt;table&gt;&lt;/table&gt;</programlisting>
+<simpara>Now our Jasmine specs pass:</simpara>
+<figure><title>Passing Jasmine spec</title>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="testing/jasmine-passing.png"/>
+  </imageobject>
+  <textobject><phrase>testing/jasmine-passing.png</phrase></textobject>
+</mediaobject>
+</figure>
+<simpara>Since the Jasmine specs pass, we&#8217;ll pop back up a level and run the Cucumber
+story.  Running it again, the failure is slightly different.  The <literal>"#tasks
+table"</literal> element is present on the page, but doesn&#8217;t contain the content we want.</simpara>
+<programlisting language="text" linenumbering="unnumbered">@javascript
+Scenario: View tasks                                          # features/view_tasks.feature:7
+  Given the following tasks exist:                            # factory_girl-2.1.0/lib/factory_girl/step_definitions.rb:99
+    | Title                                |
+    | Purchase the backbone on rails ebook |
+    | Master backbone                      |
+  And I am on the home page                                   # features/step_definitions/web_steps.rb:44
+  Then I should see "Master backbone" within the tasks list   # features/step_definitions/web_steps.rb:35
+    expected there to be content "Master backbone" in "Title Completed" (RSpec::Expectations::ExpectationNotMetError)
+    ./features/step_definitions/web_steps.rb:107:in `/^(?:|I )should see "([^"]*)"$/'
+    features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</programlisting>
+<simpara>Drop back down to Jasmine and write a spec motivating the TasksIndex view to
+accept a collection and render it.  We&#8217;ll rewrite our existing spec, since we
+are changing the TasksIndex interface to require that a collection be passed in:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">//= require application
+
+describe("ExampleApp.Views.TasksIndex", function() {
+  it("renders a collection of tasks", function() {
+    var tasksCollection = new ExampleApp.Collections.Tasks();
+    tasksCollection.reset([
+      { title: "Wake up" },
+      { title: "Brush your teeth" }
+    ]);
+
+    var view = new ExampleApp.Views.TasksIndex({collection: tasksCollection});
+    var $el = $(view.render().el);
+
+    expect($el).toHaveText(/Wake up/);
+    expect($el).toHaveText(/Brush your teeth/);
+  });
+});</programlisting>
+<simpara>This spec fails:</simpara>
+<programlisting language="text" linenumbering="unnumbered">1 spec, 1 failure in 0.008sFinished at Thu Sep 22 2011 18:10:26 GMT-0400 (EDT)
+ExampleApp.Views.TasksIndex
+renders a collection of tasks
+TypeError: undefined is not a function
+TypeError: undefined is not a function
+    at [object Object].&lt;anonymous&gt; (http://localhost:3000/assets/views/tasks_index_spec.js?body=1:4:27)</programlisting>
+<simpara>It&#8217;s failing because we haven&#8217;t defined <literal>ExampleApp.Collections.Tasks</literal> yet.  We
+need to define a Task model and Tasks collection.  We&#8217;ll define the model:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Models.Task = Backbone.Model.extend({
+  // Is this used in the app anywhere? (e.g. a model outside a collection)
+  // If not, it's not needed.
+  urlRoot: '/tasks'
+});</programlisting>
+<simpara>and test-drive the collection:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">describe("ExampleApp.Collections.Tasks", function() {
+  it("contains instances of ExampleApp.Models.Task", function() {
+    var collection = new ExampleApp.Collections.Tasks();
+    expect(collection.model).toEqual(ExampleApp.Models.Task);
+  });
+
+  it("is persisted at /tasks", function() {
+    var collection = new ExampleApp.Collections.Tasks();
+    expect(collection.url).toEqual("/tasks");
+  });
+});</programlisting>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Collections.Tasks = Backbone.Collection.extend({
+  model: ExampleApp.Models.Task,
+  url: '/tasks'
+});</programlisting>
+<simpara>Running the Jasmine specs again, we&#8217;re making progress.  The TasksIndex view is
+accepting a collection of tasks, and now we have to render it:</simpara>
+<programlisting language="text" linenumbering="unnumbered">Expected '&lt;div id="tasks"&gt;&lt;table&gt; &lt;tbody&gt;&lt;tr&gt; &lt;th&gt;Title&lt;/th&gt; &lt;th&gt;Completed&lt;/th&gt; &lt;/tr&gt; &lt;/tbody&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/table&gt; &lt;/div&gt;' to have text 'Wake up'.</programlisting>
+<simpara>The simplest thing we can do to get the spec passing is to pass the <literal>tasks</literal>
+collection into the template, and iterate over it there:</simpara>
+<simpara>app/assets/javascripts/views/tasks_index.js:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+  id: 'tasks',
+  tagName: 'div',
+
+  initialize: function() {
+    _.bindAll(this, "render");
+    this.collection.bind("add", this.render);
+  },
+
+  render: function () {
+    $(this.el).html(JST['tasks/index']({ tasks: this.collection }));
+    return this;
+  }
+});</programlisting>
+<simpara>app/assets/javascripts/templates/tasks/index.jst.ejs:</simpara>
+<programlisting language="text" linenumbering="unnumbered">&lt;table&gt;
+  &lt;tr&gt;
+    &lt;th&gt;Title&lt;/th&gt;
+    &lt;th&gt;Completed&lt;/th&gt;
+  &lt;/tr&gt;
+  &lt;% tasks.each(function(task) { %&gt;
+    &lt;tr&gt;
+      &lt;td&gt;&lt;%= task.escape('title') %&gt;&lt;/td&gt;
+      &lt;td&gt;&lt;%= task.escape('completed') %&gt;&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;% }); %&gt;
+&lt;/table&gt;</programlisting>
+<simpara>Now, Jasmine passes.  But the Cucumber story is still failing: this is because
+the Jasmine spec is an isolation spec, and verifies that the TasksIndex view
+works in isolation.</simpara>
+<programlisting language="text" linenumbering="unnumbered">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
+Unable to find css "#tasks table" (Capybara::ElementNotFound)</programlisting>
+<simpara>However, there is additional code we need to write to integrate the data present
+in the Rails test database with the Backbone view.  Adding this code to
+bootstrap the Backbone application should wrap up our exercise and get the tests
+passing.</simpara>
+<simpara>We&#8217;ll motivate writing a top-level Backbone application object with a spec.
+Note the use of a <literal>sinon.spy</literal> for verifying the router instantiation:</simpara>
+<simpara>spec/javascripts/example_app_spec.js</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">describe("ExampleApp", function(){
+  it("has a namespace for Models", function() {
+    expect(ExampleApp.Models).toBeTruthy();
+  });
+
+  it("has a namespace for Collections", function() {
+    expect(ExampleApp.Collections).toBeTruthy();
+  });
+
+  it("has a namespace for Views", function() {
+    expect(ExampleApp.Views).toBeTruthy();
+  });
+
+  it("has a namespace for Routers", function() {
+    expect(ExampleApp.Routers).toBeTruthy();
+  });
+
+  describe("init()", function() {
+    it("accepts task JSON and instantiates a collection from it", function() {
+      var tasksJSON = [{"title":"thing to do"}, {"title":"another thing"}];
+      ExampleApp.init(tasksJSON);
+
+      expect(ExampleApp.tasks).not.toEqual(undefined);
+      expect(ExampleApp.tasks.length).toEqual(2);
+      expect(ExampleApp.tasks.models[0].get('title')).toEqual("thing to do");
+      expect(ExampleApp.tasks.models[1].get('title')).toEqual("another thing");
+    });
+
+    it("instantiates a Tasks router", function() {
+      ExampleApp.Routers.Tasks = sinon.spy();
+      ExampleApp.init();
+      expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
+    });
+
+    it("starts Backbone.history", function() {
+      Backbone.history = { start: sinon.spy() };
+      ExampleApp.init();
+      expect(Backbone.history.start).toHaveBeenCalled();
+    });
+  });
+});</programlisting>
+<simpara>Get it to green:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">var ExampleApp = {
+  Models: {},
+  Collections: {},
+  Views: {},
+  Routers: {},
+  init: function(tasks) {
+    new ExampleApp.Routers.Tasks();
+    this.tasks = new ExampleApp.Collections.Tasks(tasks);
+    try {
+      Backbone.history.start()
+    } catch(exception) {}
+  }
+};</programlisting>
+<simpara>Then we bootstrap the app from the Rails view:</simpara>
+<programlisting language="html" linenumbering="unnumbered">&lt;h1&gt;Tasks&lt;/h1&gt;
+
+&lt;div id="tasks"&gt;
+&lt;/div&gt;
+
+&lt;a class="create" href="#new"&gt;Add task&lt;/a&gt;
+
+&lt;%= content_for :javascript do -%&gt;
+  &lt;%= javascript_tag do %&gt;
+    ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
+  &lt;% end %&gt;
+&lt;% end -%&gt;</programlisting>
+<simpara>And the integration test passes!</simpara>
+<programlisting language="text" linenumbering="unnumbered">Feature: Viewing Tasks
+  As a user
+  So that I can see what I have to do
+  I want to be able to see all my tasks
+
+  @javascript
+  Scenario: View tasks
+    Given the following tasks exist:
+      | Title                                |
+      | Purchase the backbone on rails ebook |
+      | Master backbone                      |
+    And I am on the home page
+    Then I should see "Master backbone" within the tasks list
+    And I should see "Purchase the backbone on rails ebook" within the tasks list
+
+1 scenario (1 passed)
+5 steps (5 passed)</programlisting>
+<simpara>TODO: Refactoring step.  Extract a TaskView class and loop &amp; iterate.  Note
+specs passing, cukes passing.</simpara>
+<simpara>TODO: Possible, bind events on the child views to motivate making TasksIndex a
+CompositeView to avoid leaking refs.</simpara>
+<simpara>TODO: Optionally TDD through the new/create cycle, too.</simpara>
+</section>
+</chapter>
+<chapter id="_the_javascript_language_section_unstarted">
 <title>The JavaScript language (section unstarted)</title>
 <section id="_model_attribute_types_and_serialization">
 <title>Model attribute types and serialization</title>
@@ -3099,8 +3639,8 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
 <section id="_coffeescript_with_backbone_js">
 <title>CoffeeScript with Backbone.js</title>
 </section>
-</section>
-<section id="_security_stub">
+</chapter>
+<chapter id="_security_stub">
 <title>Security (stub)</title>
 <section id="_xss_with_json_bootstrapping_stub">
 <title>XSS with JSON bootstrapping (stub)</title>
@@ -3120,8 +3660,8 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
 <title>XSS in HTML templates (stub)</title>
 <simpara>TODO: Discuss <literal>Backbone.Model.escape</literal>, <literal>_.escape</literal>, defaulting to escape with <literal>&lt;%=</literal> vs <literal>&lt;%==</literal>, escaping in other templating.</simpara>
 </section>
-</section>
-<section id="_performance_stub">
+</chapter>
+<chapter id="_performance_stub">
 <title>Performance (stub)</title>
 <section id="_dependency_choice">
 <title>Dependency choice</title>
@@ -3145,5 +3685,5 @@ jQuery-compatible syntax."  From <literal>backbone.js</literal>:</simpara>
 
 }).call(this);</programlisting>
 </section>
-</section>
-</article>
+</chapter>
+</book>
