@@ -8,14 +8,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
   },
 
   render: function () {
-    $(this.el).html(JST['tasks/index']({ tasks: ExampleApp.tasks }));
-
-    var tasksIndexView = this;
-    ExampleApp.tasks.each(function(task) {
-      var taskView = new ExampleApp.Views.TaskView({model: task});
-      tasksIndexView.$('table').append(taskView.render().el);
-    });
-
+    $(this.el).html(JST['tasks/index']({ tasks: this.collection }));
     return this;
   }
 });

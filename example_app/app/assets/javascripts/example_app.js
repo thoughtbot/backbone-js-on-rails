@@ -6,6 +6,8 @@ var ExampleApp = {
   init: function(tasks) {
     new ExampleApp.Routers.Tasks();
     this.tasks = new ExampleApp.Collections.Tasks(tasks);
-    Backbone.history.start();
+    try {
+      Backbone.history.start()
+    } catch(exception) {}
   }
 };

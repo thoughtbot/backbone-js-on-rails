@@ -5,7 +5,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
   },
 
   index: function() {
-    var tasksIndexView = new ExampleApp.Views.TasksIndex();
+    var tasksIndexView = new ExampleApp.Views.TasksIndex({ collection: ExampleApp.tasks });
     $('#tasks').html(tasksIndexView.render().el);
   },
 
@@ -13,7 +13,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     $("a.create").hide();
 
     var tasksNewView = new ExampleApp.Views.TasksNew();
-    $('#tasks').after(tasksNewView.render().el);
+    $('#tasks').empty().html(tasksNewView.render().el);
     $('#task_title').focus();
   }
 });

@@ -3,4 +3,10 @@
     <th>Title</th>
     <th>Completed</th>
   </tr>
+  <% tasks.each(function(task) { %>
+    <tr>
+      <td><%= task.escape('title') %></td>
+      <td><%= task.escape('completed') %></td>
+    </tr>
+  <% }); %>
 </table>
