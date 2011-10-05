@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN" "http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
 <?asciidoc-toc?>
 <?asciidoc-numbered?>
 
-<book lang="en">
-<bookinfo>
+<article lang="en">
+<articleinfo>
     <title>Backbone.js on Rails</title>
-</bookinfo>
-<chapter id="_preface_section_unstarted">
+</articleinfo>
+<section id="_preface_section_unstarted">
 <title>Preface (section unstarted)</title>
-</chapter>
-<chapter id="_getting_up_to_speed">
+</section>
+<section id="_getting_up_to_speed">
 <title>Getting up to speed</title>
 <section id="_backbone_js_online_resources">
 <title>Backbone.js online resources</title>
@@ -35,8 +35,8 @@ JavaScript development practices and takes a deep dive on language
 fundamentals:</simpara>
 <simpara><ulink url="http://tddjs.com/">http://tddjs.com/</ulink></simpara>
 </section>
-</chapter>
-<chapter id="_introduction">
+</section>
+<section id="_introduction">
 <title>Introduction</title>
 <section id="_why_use_backbone_js">
 <title>Why use Backbone.js</title>
@@ -59,8 +59,8 @@ compress and minify them.</simpara>
 example code normal Javascript as we believe that will be the most understandable to
 the current readers.</simpara>
 </section>
-</chapter>
-<chapter id="_organization">
+</section>
+<section id="_organization">
 <title>Organization</title>
 <section id="_backbone_js_and_mvc">
 <title>Backbone.js and MVC</title>
@@ -290,8 +290,8 @@ This app variable will look like the following.</simpara>
 
 _.extend(SomeCollectionView.prototype, Observer);</programlisting>
 </section>
-</chapter>
-<chapter id="_rails_integration">
+</section>
+<section id="_rails_integration">
 <title>Rails Integration</title>
 <section id="_organizing_your_backbone_js_code_in_a_rails_app">
 <title>Organizing your Backbone.js code in a Rails app</title>
@@ -1181,8 +1181,8 @@ file.</simpara>
 app, you can find this this in
 example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</simpara>
 </section>
-</chapter>
-<chapter id="_routers_views_and_templates">
+</section>
+<section id="_routers_views_and_templates">
 <title>Routers, Views, and Templates</title>
 <section id="_view_explanation">
 <title>View explanation</title>
@@ -2224,8 +2224,8 @@ For copycopter, however, we&#8217;d like new translations to show up while the a
 running.  Likely we will provide Rack middleware that products the translations
 as jsonp.  Waiting until we make more progress for copycopter</simpara>
 </section>
-</chapter>
-<chapter id="_models_and_collections">
+</section>
+<section id="_models_and_collections">
 <title>Models and collections</title>
 <section id="_naming_conventions_chapter_unstarted">
 <title>Naming conventions (chapter unstarted)</title>
@@ -3083,8 +3083,8 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
 <note><simpara>Read up on idempotent messages.  Check out this solid, readable article <ulink url="http://devhawk.net/2007/11/09/the-importance-of-idempotence/">The Importance of Idempotence</ulink>.</simpara></note>
 </section>
 </section>
-</chapter>
-<chapter id="_testing">
+</section>
+<section id="_testing">
 <title>Testing</title>
 <section id="_full_stack_integration_testing_1_todo">
 <title>Full-stack integration testing (1 todo)</title>
@@ -3627,8 +3627,8 @@ specs passing, cukes passing.</simpara>
 CompositeView to avoid leaking refs.</simpara>
 <simpara>TODO: Optionally TDD through the new/create cycle, too.</simpara>
 </section>
-</chapter>
-<chapter id="_the_javascript_language_section_unstarted">
+</section>
+<section id="_the_javascript_language_section_unstarted">
 <title>The JavaScript language (section unstarted)</title>
 <section id="_model_attribute_types_and_serialization">
 <title>Model attribute types and serialization</title>
@@ -3639,8 +3639,8 @@ CompositeView to avoid leaking refs.</simpara>
 <section id="_coffeescript_with_backbone_js">
 <title>CoffeeScript with Backbone.js</title>
 </section>
-</chapter>
-<chapter id="_security_stub">
+</section>
+<section id="_security_stub">
 <title>Security (stub)</title>
 <section id="_xss_with_json_bootstrapping_stub">
 <title>XSS with JSON bootstrapping (stub)</title>
@@ -3660,8 +3660,8 @@ CompositeView to avoid leaking refs.</simpara>
 <title>XSS in HTML templates (stub)</title>
 <simpara>TODO: Discuss <literal>Backbone.Model.escape</literal>, <literal>_.escape</literal>, defaulting to escape with <literal>&lt;%=</literal> vs <literal>&lt;%==</literal>, escaping in other templating.</simpara>
 </section>
-</chapter>
-<chapter id="_performance_stub">
+</section>
+<section id="_performance_stub">
 <title>Performance (stub)</title>
 <section id="_dependency_choice">
 <title>Dependency choice</title>
@@ -3685,5 +3685,5 @@ jQuery-compatible syntax."  From <literal>backbone.js</literal>:</simpara>
 
 }).call(this);</programlisting>
 </section>
-</chapter>
-</book>
+</section>
+</article>
