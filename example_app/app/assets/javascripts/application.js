@@ -5,6 +5,9 @@
 //= require backbone
 //= require backbone.authtokenadapter
 //
+//= require backbone-forms.js
+//= require jquery-ui-editors.js
+//
 //= require example_app
 //
 //= require_tree ./models
