@@ -1,19 +1,21 @@
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
+  initialize: function() {
+    console.log("setting collection on router");
+    this.collection = ExampleApp.tasks; // eventually pass in
+  },
+
   routes: {
     "": "index",
     "new" : "newTask"
   },
 
   index: function() {
-    var tasksIndexView = new ExampleApp.Views.TasksIndex({ collection: ExampleApp.tasks });
-    $('#tasks').html(tasksIndexView.render().el);
+    var tasksIndexView = new ExampleApp.Views.TasksIndex({ el: '#tasks', collection: this.collection });
+    tasksIndexView.render();
   },
 
   newTask: function() {
-    $("a.create").hide();
-
-    var tasksNewView = new ExampleApp.Views.TasksNew();
-    $('#tasks').empty().html(tasksNewView.render().el);
-    $('#task_title').focus();
+    var tasksNewView = new ExampleApp.Views.TasksNew({ el: '#tasks', collection: this.collection });
+    tasksNewView.render();
   }
 });

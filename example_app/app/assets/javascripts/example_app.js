@@ -4,8 +4,9 @@ var ExampleApp = {
   Views: {},
   Routers: {},
   init: function(tasks) {
-    new ExampleApp.Routers.Tasks();
     this.tasks = new ExampleApp.Collections.Tasks(tasks);
+
+    new ExampleApp.Routers.Tasks();
     if (!Backbone.history.started) {
       Backbone.history.start();
       Backbone.history.started = true;
