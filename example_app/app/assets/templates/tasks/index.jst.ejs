@@ -1,14 +1,12 @@
 <table id="tasks-list">
-  <tr>
-    <th>Title</th>
-    <th>Completed</th>
-  </tr>
-  <% tasks.each(function(task) { %>
+  <thead>
     <tr>
-      <td><%= task.escape('title') %></td>
-      <td><%= task.escape('completed') %></td>
+      <th>Title</th>
+      <th>Completed</th>
     </tr>
-  <% }); %>
+  </thead>
+  <tbody>
+  </tbody>
 </table>
 
 <a class="create" href="#new">Add task</a>

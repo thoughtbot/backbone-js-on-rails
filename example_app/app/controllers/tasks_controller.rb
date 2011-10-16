@@ -8,4 +8,10 @@ class TasksController < ApplicationController
   def create
     respond_with(Task.create(params[:task]))
   end
+
+  def update
+    task = Task.find(params[:id])
+    task.update_attributes(params[:task])
+    respond_with(task)
+  end
 end

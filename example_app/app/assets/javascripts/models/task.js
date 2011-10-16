@@ -3,5 +3,9 @@ ExampleApp.Models.Task = Backbone.Model.extend({
     title: { type: "Text" }
   },
 
-  urlRoot: '/tasks'
+  urlRoot: '/tasks',
+
+  isComplete: function() {
+    return this.get('complete');
+  }
 });
