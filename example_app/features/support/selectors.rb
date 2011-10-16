@@ -11,11 +11,9 @@ module HtmlSelectorsHelpers
     when "the page"
       "html > body"
     when "the task form"
-      "#new_task form"
+      "form#new-task"
     when "the tasks list"
-      "#tasks table"
-    when "task title input"
-      "#task_title"
+      "table#tasks-list"
 
     # Add more mappings here.
     # Here is an example that pulls values out of the Regexp:

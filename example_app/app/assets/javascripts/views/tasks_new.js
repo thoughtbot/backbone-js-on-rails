@@ -1,55 +1,48 @@
 ExampleApp.Views.TasksNew = Backbone.View.extend({
-  id: "new_task",
+  tagName: 'form',
+  id: "new-task",
 
   events: {
-    "submit form": "save",
+    "submit": "save",
     "click a.leave": "leave"
   },
 
   initialize: function() {
     _.bindAll(this, "render", "saved");
-
-    this.setNewModel();
+    this.newTask();
   },
 
-  setNewModel: function() {
-    if (this.model) {
-      this.model.unbind("save", "saved");
-    }
-
+  newTask: function() {
     this.model = new ExampleApp.Models.Task();
-    this.model.bind("save", "saved");
+    this.form = new Backbone.Form({ model: this.model });
   },
 
   render: function () {
-    this.form = new Backbone.Form({ model: this.model });
-    this.form.render();
-
-    $(this.el).empty().append("<form></form>");
-    $('form', this.el)
-      .append(this.form.el)
-      .append('<li class="bbf-field"><input type="submit" value="Create task"></li>')
-      .append('<li class="bbf-field leave"><a href="#">I\'m done adding tasks</a></li>');
-    $('#task_title').focus();
+    $(this.el).html(this.form.render().el);
+    this.$('ul').append(JST['tasks/form_buttons']());
     return this;
   },
 
+  renderFlash: function(flashText) {
+    $(this.el).prepend(JST['tasks/flash']({ flashText: flashText, type: 'success' }));
+  },
+
   save: function(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
     this.form.commit();
-    this.model.save();
-
+    this.model.save({}, { success: this.saved });
     return false;
   },
 
   saved: function() {
+    var flash = "Created task: " + this.model.escape('title');
+
     this.collection.add(this.model);
+    this.newTask();
+    this.render();
+    this.renderFlash(flash);
   },
 
   leave: function() {
-    this.form.leave();
     this.unbind();
     this.remove();
   }

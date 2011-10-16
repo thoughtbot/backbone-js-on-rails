@@ -1,7 +1,6 @@
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   initialize: function() {
-    console.log("setting collection on router");
-    this.collection = ExampleApp.tasks; // eventually pass in
+    this.collection = ExampleApp.tasks; // TODO eventually pass in
   },
 
   routes: {
@@ -10,12 +9,12 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
   },
 
   index: function() {
-    var tasksIndexView = new ExampleApp.Views.TasksIndex({ el: '#tasks', collection: this.collection });
-    tasksIndexView.render();
+    var view = new ExampleApp.Views.TasksIndex({ collection: this.collection });
+    $('#tasks').html(view.render().el);
   },
 
   newTask: function() {
-    var tasksNewView = new ExampleApp.Views.TasksNew({ el: '#tasks', collection: this.collection });
-    tasksNewView.render();
+    var view = new ExampleApp.Views.TasksNew({ collection: this.collection });
+    $('#tasks').html(view.render().el);
   }
 });
