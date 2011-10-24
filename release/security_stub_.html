@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>Security (stub)</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="testing.html">Prev</a><br/>
+         Testing
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         <strong>Backbone.js on Rails</strong>
+        
+      </td><td width="33%" align="right">
+        
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      <div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a id="_security_stub"></a>Security (stub)</h2></div></div></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_xss_with_json_bootstrapping_stub"></a>XSS with JSON bootstrapping (stub)</h3></div></div></div>
+<p>Use <code class="literal">json2.js</code> and:</p>
+<pre class="programlisting">&lt;script type=<b class="hl-string"><i style="color:red">"text/json"</i></b> id=<b class="hl-string"><i style="color:red">"something"</i></b>&gt;
+  &lt;%= something.to_json %&gt;
+&lt;/script&gt;
+
+&lt;script type=<b class="hl-string"><i style="color:red">"text/javascript"</i></b>&gt;
+  (<b class="hl-keyword">function</b> () {
+    <b class="hl-keyword">var</b> something = JSON.parse($(<b class="hl-string"><i style="color:red">'#something'</i></b>).text());
+    someJavascriptFunction(something);
+  })();
+&lt;/script&gt;</pre>
+</div>
+</div>
+
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="testing.html">Prev</a><br/>
+         Testing
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         Backbone.js on Rails
+        
+      </td><td width="33%" align="right">
+        
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>
