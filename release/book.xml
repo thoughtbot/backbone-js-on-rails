@@ -1368,7 +1368,7 @@ mockups directly in as templates, without modifying them.</simpara>
     var audio = this.$('audio');
     audio.empty();
     this.model.formats.each(function(format) {
-      $("&lt;source&gt;&lt;/source"&gt;)
+      $("&lt;source&gt;&lt;/source&gt;")
         .attr("src",  format.get('src'))
         .attr("type", format.get('type'))
         .appendTo(audio);
@@ -1818,6 +1818,8 @@ and <literal>CompositeView</literal>.</simpara>
 </section>
 <section id="_swapping_router">
 <title>Swapping router</title>
+<simpara>TODO: Build out an example in the example_app with swapping router, probably
+task list vs task detail.</simpara>
 <simpara>When switching from one view to another, we should clean up the previous view.
 We discussed previously a convention of writing a <literal>view.leave()</literal>
 Let&#8217;s augment our view to include the ability to clean itself up by "leaving"
@@ -1923,6 +1925,7 @@ the road for those maintaining your code.</simpara>
 </section>
 <section id="_composite_views">
 <title>Composite views</title>
+<simpara>TODO: Build out an example in the example_app with composite views.</simpara>
 <simpara>The <literal>SwappingRouter</literal> above calls <literal>leave()</literal> on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
@@ -2863,9 +2866,211 @@ forms and we can reuse it throughout the app.</simpara>
 <simpara>TODO: Introduce FormSerializer class or referenceBackbone.Form or some
 construct for encapsulating the serialization</simpara>
 </section>
-<section id="_nested_resources_chapter_unstarted">
-<title>Nested resources (chapter unstarted)</title>
-<simpara>Unstarted</simpara>
+<section id="_model_relationships">
+<title>Model relationships</title>
+<simpara>In any non-trivial application, you will have relationships in your domain model
+that are valuable to express on the client side.  For example, consider a
+contact management application where each person in your contact list has many
+phone numbers, each of a different kind.</simpara>
+<simpara>Or, consider a project planning application where there are Teams, Members, and
+Projects as resources (models and collections).  There are relationships between
+each of these primary resources, and those relationships in turn may be exposed
+as first-class resources: a Membership to link a Team and a Member, or a
+Permission to link a Team with a Project.  These relationships are often exposed
+as first-class models so they can be created and destroyed the same way as other
+models, and so that additional domain information about the relationship, such
+as a duration, rate, or quantity, can be described.</simpara>
+<simpara>These model relationships don&#8217;t have to be persisted by a relational database.
+In a chatroom application whose data is persisted in a key-value store, the data
+could still be modeled as a Room which has many Messages, as well as Memberships
+that link the Room to Users.  A content management application that stores its
+data in a document database still has the notion of hierarchy, where a Site
+contains many Pages, each of which is constitutes of zero or more Sections.</simpara>
+<simpara>In a vanilla Rails application, the object model is describe on the server side
+with ActiveRecord subclasses, and exposed to the Backbone.js client through a
+JSON HTTP API.  You have a few choices to make when designing this API, largely
+focused on the (bundling/locus/concordance/co-habitance/dependency/???) of data&#8201;&#8212;&#8201;when you handle a request for one resource, which of its associated resources
+(if any) do you deliver, too?</simpara>
+<simpara>Then, on the client side, you have a wide degree of choice in how to model the
+relationships, when to eagerly pre-fetch associations and when to lazily defer
+loading, and whether to employ a supporting library to help define your model
+relationships.</simpara>
+<section id="_relations_in_the_task_app">
+<title>Relations in the Task App</title>
+<simpara>In the example application, there are Users which have many Tasks through
+Lists. Each Task has many Comments and Attachments.</simpara>
+<informalfigure>
+<mediaobject>
+  <imageobject>
+  <imagedata fileref="image/TaskAppEntityRelationships.png" width="65%" scalefit="1" align="center"/>
+  </imageobject>
+  <textobject><phrase>image/TaskAppEntityRelationships.png</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section id="_deciding_how_to_deliver_data_to_the_client">
+<title>Deciding how to deliver data to the client</title>
+<simpara>Before you decide how to model your JSON API or how to declare, your client-side model
+relationships, step back and consider the user experience of your application.
+For TaskApp, we decided to have interactions as follows:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+A user signs up or logs in
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+The user is directed to their dashboard
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+The dashboard shows all lists and the tasks on each list, but not the
+  comments or attachments.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+When a user views the details of an individual task, the comments and
+  attachments for that task are displayed.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>This leads us to see that the Lists and Tasks for a user are used immediately
+upon navigating to the dasboard, but the Comment and Attachment data for a Task
+are not needed upon initial page load, and are possibly never needed at all.</simpara>
+<simpara>Let&#8217;s say that we are also planning for the user to have continuous network
+access, but not to necessarily have a high speed connection.  Also, users tend
+to view their lists of tasks frequently, but rarely view the comments and
+attachments.</simpara>
+<simpara>Based on this, we will bootstrap the collections of Lists and Tasks inside the
+dashboard, and defer loading of associated Comments and Attachments until after
+the user clicks through to a task.</simpara>
+<simpara>We could have selected from several other alternatives, including:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Don&#8217;t preload any information, and deliver only static assets (HTML, CSS, JS)
+  on the dashboard request.  Fetch all resources over separate XHR calls.  This
+  can provide for a faster initial page load, at the cost of a longer time to
+  actual interactivity: although the byte size of the page plus data is roughly
+  the same, the overhead of additional HTTP requests incurs the extra load time.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Preload all the information, including Comments and Attachments.  This would
+  work well if we expected users to frequently access the comments and
+  attachments of many tasks.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Use localStorage as the primary storage engine, and sync to the Rails server
+  in the background.  This would be advantageous if we expected network access
+  to be intermittent, although it incurs the additional complexity of having to
+  resolve conflicts on the server if two clients submit conflicting updates.
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
+<section id="_designing_the_http_json_api">
+<title>Designing the HTTP JSON API</title>
+<simpara>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we should decide how to deliver the deferred content.  We have two
+options here.  Our goal is to fetch to comments and attachments for an
+individual task.</simpara>
+<simpara>One way we could approach this is the issue separate API calls for each
+nested resource:</simpara>
+<programlisting language="bash" linenumbering="unnumbered">$ curl http://tasksapp.local:3000/tasks/78/comments.json | ppjson
+[
+  {
+    "id": 208,
+    "user_id": 3,
+    "body": "What do you think of this mock? (See attachment)"
+  },
+  {
+    "id": 209,
+    "user_id": 1,
+    "body": "Looks great!  I'll implement that."
+  }
+]
+
+$ curl http://tasksapp.local:3000/tasks/78/attachments.json | ppjson
+[
+  {
+    "id": "32",
+    "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+  }
+]</programlisting>
+<note><simpara>We will authenticate API requests with cookies, just like normal user
+login, so the actual curl request would need to include a cookie from a logged
+in user.</simpara></note>
+<simpara>This approach has the advantage of adhering more to convention, and requiring
+less code in both the server-side JSON presentation and the client-side JSON
+parsing.  Its disadvantage is performance: to fetch a task&#8217;s associated data, we
+need to send 2 HTTP requests.  When more kinds of associated resources are added
+in the future, the number of requests will go up.</simpara>
+<simpara>Another way we could approach this is to embed the comment and attachment data in
+the JSON representation of an individual task, and deliver this data from the
+"/tasks/:id" endpoint:</simpara>
+<programlisting language="bash" linenumbering="unnumbered">$ curl http://tasksapp.local:3000/tasks/78.json | ppjson
+{
+  "id": 78,
+  "user_id": 1,
+  "title": "Clean up landing page",
+  "comments": [
+    {
+      "id": 208,
+      "user_id": 3,
+      "body": "What do you think of this mock? (See attachment)"
+    },
+    {
+      "id": 209,
+      "user_id": 1,
+      "body": "Looks great!  I'll implement that."
+    }
+  ]
+  "attachments": [
+    {
+      "id": "32",
+      "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+    }
+  ],
+  /* some attributes left out for clarity */
+}</programlisting>
+<simpara>This approach involves additional code in both producing the JSON on the server
+side and parsing the JSON on the client side.  We&#8217;ll take this approach for the
+example application, both because it requires fewer HTTP requests and because
+it&#8217;s a more interesting example and illustrates the technique of parsing child
+models in Backbone.js.</simpara>
+<simpara>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we know that our HTTP JSON API should support at least the
+following Rails routes:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">resources :lists, :only =&gt; [:create, :update, :delete]
+resources :tasks, :only =&gt; [:show, :create, :update, :delete]</programlisting>
+<tip><simpara>In some applications, you choose to expose a user-facing API.  It&#8217;s often
+valuable to dogfood this endpoint by making use of it from your own Backbone
+code.  Often these APIs will be scoped under an "/api" namespace, possibly with
+an API version namespace as well.</simpara></tip>
+</section>
+<section id="_implementing_the_api_presenting_the_json">
+<title>Implementing the API: presenting the JSON</title>
+<simpara>TODO: Expand outline</simpara>
+<simpara>Outline: For building the JSON presentation, we have a few options.  The easiest
+thing is to override Task#as_json, although this isn&#8217;t really where this
+presentation concern belongs.  Better options to construct the JSON include: in
+the controller, in a builder-like view, in a separate presentation object.
+Mention <ulink url="https://github.com/nesquena/rabl">https://github.com/nesquena/rabl</ulink></simpara>
+</section>
+<section id="_parsing_the_json_and_instantiating_client_side_models">
+<title>Parsing the JSON and instantiating client-side models</title>
+<simpara>TODO: Expand outline</simpara>
+<simpara>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+Discuss <ulink url="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</ulink></simpara>
+</section>
 </section>
 <section id="_duplicating_business_logic_across_the_client_and_server">
 <title>Duplicating business logic across the client and server</title>
@@ -3053,6 +3258,7 @@ does&#8230;</simpara>
 </section>
 <section id="_querying">
 <title>Querying</title>
+<simpara>TODO: Expand on outline.</simpara>
 <simpara>Outline: I think it&#8217;s possible to establish conventions here, similar to
 validations, so that server-side scopes can be converted to client-side
 collection filtering.  However, is this valuable?  Do you actually often
@@ -3063,6 +3269,7 @@ with that too?</simpara>
 </section>
 <section id="_callbacks">
 <title>Callbacks</title>
+<simpara>TODO: Expand on outline.</simpara>
 <simpara>Outline: These often depend on server-side persistence, so would you even want
 them on the client side?  Perhaps, e.g. same lifecycle events for the analagous
 client-side models, but it&#8217;s actually likely that your client-side models will
@@ -3071,6 +3278,7 @@ models that these concerns won&#8217;t be duplicates, so it&#8217;s less of a wo
 </section>
 <section id="_algorithms">
 <title>Algorithms</title>
+<simpara>TODO: Expand on outline.</simpara>
 <simpara>Outline: General algorithms are often the trickiest. It&#8217;s possibly to write the
 logic in JS and then make that available to Ruby, if you have a REALLY large
 piece of logic, but weigh the cost of that overhead against the cost of

@@ -231,7 +231,7 @@ view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Bac
     $(this.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
-});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e2990"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
+});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3101"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The <code class="literal">"#tasks
 table"</code> element is present on the page, but doesn’t contain the content we want.</p><pre class="programlisting">@javascript
 Scenario: View tasks                                          # features/view_tasks.feature:7

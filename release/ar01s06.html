@@ -114,7 +114,7 @@ mockups directly in as templates, without modifying them.</p><pre class="program
     <b class="hl-keyword">var</b> audio = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'audio'</i></b>);
     audio.empty();
     <b class="hl-keyword">this</b>.model.formats.each(<b class="hl-keyword">function</b>(format) {
-      $(<b class="hl-string"><i style="color:red">"&lt;source&gt;&lt;/source"</i></b>&gt;)
+      $(<b class="hl-string"><i style="color:red">"&lt;source&gt;&lt;/source&gt;"</i></b>)
         .attr(<b class="hl-string"><i style="color:red">"src"</i></b>,  format.get(<b class="hl-string"><i style="color:red">'src'</i></b>))
         .attr(<b class="hl-string"><i style="color:red">"type"</i></b>, format.get(<b class="hl-string"><i style="color:red">'type'</i></b>))
         .appendTo(audio);
@@ -418,7 +418,8 @@ this is two-fold: write a set of reusable functions that manage cleaning up a
 view’s bindings, and use these functions where ever views are instantiated: in
 <code class="literal">Router</code> instances, and in composite views.  We’ll take a look at these
 concrete, reusable approaches in the next two sections about <code class="literal">SwappingRouter</code>
-and <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router"/>Swapping router</h3></div></div></div><p>When switching from one view to another, we should clean up the previous view.
+and <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router"/>Swapping router</h3></div></div></div><p>TODO: Build out an example in the example_app with swapping router, probably
+task list vs task detail.</p><p>When switching from one view to another, we should clean up the previous view.
 We discussed previously a convention of writing a <code class="literal">view.leave()</code>
 Let’s augment our view to include the ability to clean itself up by "leaving"
 the DOM:</p><pre class="programlisting"><b class="hl-keyword">var</b> MyView = Backbone.View.extend({
@@ -492,9 +493,9 @@ use. Let’s take a quick look at this function, as of Backbone 0.5.3:</p><pre c
 reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
 utility functions to allow more class-style inheritance.</p><p>The end result here is that whenever you make a custom controller, internally
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
-<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1755"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
+<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1757"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
 taught you that although it’s more code, it’s hopefully going to save time down
-the road for those maintaining your code.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"/>Composite views</h3></div></div></div><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
+the road for those maintaining your code.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"/>Composite views</h3></div></div></div><p>TODO: Build out an example in the example_app with composite views.</p><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
 over the Composite View pattern, the <code class="literal">CompositeView</code> class itself, and some

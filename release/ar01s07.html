@@ -400,7 +400,136 @@ the fact that we are looping through the elements in a form in order to build
 the attributes hash for the new object, which is an entirely separate concern.
 Let’s extend the Backbone.Model prototype so that it can handle saving from
 forms and we can reuse it throughout the app.</p><p>TODO: Introduce FormSerializer class or referenceBackbone.Form or some
-construct for encapsulating the serialization</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_nested_resources_chapter_unstarted"/>Nested resources (chapter unstarted)</h3></div></div></div><p>Unstarted</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_duplicating_business_logic_across_the_client_and_server"/>Duplicating business logic across the client and server</h3></div></div></div><p>When you’re building a multi-tier application where business logic is spread
+construct for encapsulating the serialization</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_model_relationships"/>Model relationships</h3></div></div></div><p>In any non-trivial application, you will have relationships in your domain model
+that are valuable to express on the client side.  For example, consider a
+contact management application where each person in your contact list has many
+phone numbers, each of a different kind.</p><p>Or, consider a project planning application where there are Teams, Members, and
+Projects as resources (models and collections).  There are relationships between
+each of these primary resources, and those relationships in turn may be exposed
+as first-class resources: a Membership to link a Team and a Member, or a
+Permission to link a Team with a Project.  These relationships are often exposed
+as first-class models so they can be created and destroyed the same way as other
+models, and so that additional domain information about the relationship, such
+as a duration, rate, or quantity, can be described.</p><p>These model relationships don’t have to be persisted by a relational database.
+In a chatroom application whose data is persisted in a key-value store, the data
+could still be modeled as a Room which has many Messages, as well as Memberships
+that link the Room to Users.  A content management application that stores its
+data in a document database still has the notion of hierarchy, where a Site
+contains many Pages, each of which is constitutes of zero or more Sections.</p><p>In a vanilla Rails application, the object model is describe on the server side
+with ActiveRecord subclasses, and exposed to the Backbone.js client through a
+JSON HTTP API.  You have a few choices to make when designing this API, largely
+focused on the (bundling/locus/concordance/co-habitance/dependency/???) of data — when you handle a request for one resource, which of its associated resources
+(if any) do you deliver, too?</p><p>Then, on the client side, you have a wide degree of choice in how to model the
+relationships, when to eagerly pre-fetch associations and when to lazily defer
+loading, and whether to employ a supporting library to help define your model
+relationships.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_relations_in_the_task_app"/>Relations in the Task App</h4></div></div></div><p>In the example application, there are Users which have many Tasks through
+Lists. Each Task has many Comments and Attachments.</p><div class="informalfigure"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="image/TaskAppEntityRelationships.png" align="middle" width="100%" alt="image/TaskAppEntityRelationships.png"/></td></tr></table></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_deciding_how_to_deliver_data_to_the_client"/>Deciding how to deliver data to the client</h4></div></div></div><p>Before you decide how to model your JSON API or how to declare, your client-side model
+relationships, step back and consider the user experience of your application.
+For TaskApp, we decided to have interactions as follows:</p><div class="itemizedlist"><ul type="disc"><li>
+A user signs up or logs in
+</li><li>
+The user is directed to their dashboard
+</li><li>
+The dashboard shows all lists and the tasks on each list, but not the
+  comments or attachments.
+</li><li>
+When a user views the details of an individual task, the comments and
+  attachments for that task are displayed.
+</li></ul></div><p>This leads us to see that the Lists and Tasks for a user are used immediately
+upon navigating to the dasboard, but the Comment and Attachment data for a Task
+are not needed upon initial page load, and are possibly never needed at all.</p><p>Let’s say that we are also planning for the user to have continuous network
+access, but not to necessarily have a high speed connection.  Also, users tend
+to view their lists of tasks frequently, but rarely view the comments and
+attachments.</p><p>Based on this, we will bootstrap the collections of Lists and Tasks inside the
+dashboard, and defer loading of associated Comments and Attachments until after
+the user clicks through to a task.</p><p>We could have selected from several other alternatives, including:</p><div class="itemizedlist"><ul type="disc"><li>
+Don’t preload any information, and deliver only static assets (HTML, CSS, JS)
+  on the dashboard request.  Fetch all resources over separate XHR calls.  This
+  can provide for a faster initial page load, at the cost of a longer time to
+  actual interactivity: although the byte size of the page plus data is roughly
+  the same, the overhead of additional HTTP requests incurs the extra load time.
+</li><li>
+Preload all the information, including Comments and Attachments.  This would
+  work well if we expected users to frequently access the comments and
+  attachments of many tasks.
+</li><li>
+Use localStorage as the primary storage engine, and sync to the Rails server
+  in the background.  This would be advantageous if we expected network access
+  to be intermittent, although it incurs the additional complexity of having to
+  resolve conflicts on the server if two clients submit conflicting updates.
+</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_designing_the_http_json_api"/>Designing the HTTP JSON API</h4></div></div></div><p>Now that we know we’ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we should decide how to deliver the deferred content.  We have two
+options here.  Our goal is to fetch to comments and attachments for an
+individual task.</p><p>One way we could approach this is the issue separate API calls for each
+nested resource:</p><pre class="programlisting">$ curl http://tasksapp.local:3000/tasks/78/comments.json | ppjson
+[
+  {
+    "id": 208,
+    "user_id": 3,
+    "body": "What do you think of this mock? (See attachment)"
+  },
+  {
+    "id": 209,
+    "user_id": 1,
+    "body": "Looks great!  I'll implement that."
+  }
+]
+
+$ curl http://tasksapp.local:3000/tasks/78/attachments.json | ppjson
+[
+  {
+    "id": "32",
+    "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+  }
+]</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>We will authenticate API requests with cookies, just like normal user
+login, so the actual curl request would need to include a cookie from a logged
+in user.</p></div><p>This approach has the advantage of adhering more to convention, and requiring
+less code in both the server-side JSON presentation and the client-side JSON
+parsing.  Its disadvantage is performance: to fetch a task’s associated data, we
+need to send 2 HTTP requests.  When more kinds of associated resources are added
+in the future, the number of requests will go up.</p><p>Another way we could approach this is to embed the comment and attachment data in
+the JSON representation of an individual task, and deliver this data from the
+"/tasks/:id" endpoint:</p><pre class="programlisting">$ curl http://tasksapp.local:3000/tasks/78.json | ppjson
+{
+  "id": 78,
+  "user_id": 1,
+  "title": "Clean up landing page",
+  "comments": [
+    {
+      "id": 208,
+      "user_id": 3,
+      "body": "What do you think of this mock? (See attachment)"
+    },
+    {
+      "id": 209,
+      "user_id": 1,
+      "body": "Looks great!  I'll implement that."
+    }
+  ]
+  "attachments": [
+    {
+      "id": "32",
+      "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+    }
+  ],
+  /* some attributes left out for clarity */
+}</pre><p>This approach involves additional code in both producing the JSON on the server
+side and parsing the JSON on the client side.  We’ll take this approach for the
+example application, both because it requires fewer HTTP requests and because
+it’s a more interesting example and illustrates the technique of parsing child
+models in Backbone.js.</p><p>Now that we know we’ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we know that our HTTP JSON API should support at least the
+following Rails routes:</p><pre class="programlisting">resources :lists, :only =&gt; [:create, :update, :delete]
+resources :tasks, :only =&gt; [:show, :create, :update, :delete]</pre><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3><p>In some applications, you choose to expose a user-facing API.  It’s often
+valuable to dogfood this endpoint by making use of it from your own Backbone
+code.  Often these APIs will be scoped under an "/api" namespace, possibly with
+an API version namespace as well.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_implementing_the_api_presenting_the_json"/>Implementing the API: presenting the JSON</h4></div></div></div><p>TODO: Expand outline</p><p>Outline: For building the JSON presentation, we have a few options.  The easiest
+thing is to override Task#as_json, although this isn’t really where this
+presentation concern belongs.  Better options to construct the JSON include: in
+the controller, in a builder-like view, in a separate presentation object.
+Mention <a class="ulink" href="https://github.com/nesquena/rabl" target="_top">https://github.com/nesquena/rabl</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_parsing_the_json_and_instantiating_client_side_models"/>Parsing the JSON and instantiating client-side models</h4></div></div></div><p>TODO: Expand outline</p><p>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+Discuss <a class="ulink" href="https://github.com/PaulUithol/Backbone-relational" target="_top">https://github.com/PaulUithol/Backbone-relational</a></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_duplicating_business_logic_across_the_client_and_server"/>Duplicating business logic across the client and server</h3></div></div></div><p>When you’re building a multi-tier application where business logic is spread
 across tiers, one big challenge you face is to avoid duplicating that logic
 across tiers.  There is a tradeoff here, between duplication and performance.
 It’s desirable to have one and only one implementation of a partciular concern
@@ -491,7 +620,7 @@ client-side or server-side errors:</p><pre class="programlisting"><b class="hl-k
 validated.  For the user experience with the quickest response, we could observe
 changes on the email form field, updating the model’s <code class="literal">email</code> attribute whenever
 it changes, and displaying the inline error message immediately.</p><p>With ErrorView able to handle either client-side or server-side error messages,
-we have a server-side guarantee of data correctness, <sup>[<a id="d0e2376" href="#ftn.d0e2376" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
+we have a server-side guarantee of data correctness, <sup>[<a id="d0e2481" href="#ftn.d0e2481" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
 without round-tripping to the server.</p><p>The tradeoff we’ve made is that of duplication; the concern of "what constituted
 a valid Member" is written twice — in two different languages, no less.  In
 some cases this is unavoidable.  In others, there are mitigation strategies for
@@ -531,16 +660,16 @@ implementation, or a custom-written client-side implementation - a duplicate
 implementation.</p><p>TODO: This is actually what the
 <a class="ulink" href="https://github.com/bcardarella/client_side_validations" target="_top">client_side_validations gem</a>
 does…</p><p>TODO: The csv model branch is a wip for Backbone compliance, pretty neat:
-<a class="ulink" href="https://github.com/bcardarella/client_side_validations/tree/model" target="_top">https://github.com/bcardarella/client_side_validations/tree/model</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_querying"/>Querying</h4></div></div></div><p>Outline: I think it’s possible to establish conventions here, similar to
+<a class="ulink" href="https://github.com/bcardarella/client_side_validations/tree/model" target="_top">https://github.com/bcardarella/client_side_validations/tree/model</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_querying"/>Querying</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: I think it’s possible to establish conventions here, similar to
 validations, so that server-side scopes can be converted to client-side
 collection filtering.  However, is this valuable?  Do you actually often
 duplicate the same querying (sorting/filter) concerns across client and server?</p><p>Also, since this whole discussion is about perf, consider tradeoff of paginating
 anyways, that’s interesting, so can you reduce duplication and generate code
-with that too?</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_callbacks"/>Callbacks</h4></div></div></div><p>Outline: These often depend on server-side persistence, so would you even want
+with that too?</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_callbacks"/>Callbacks</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: These often depend on server-side persistence, so would you even want
 them on the client side?  Perhaps, e.g. same lifecycle events for the analagous
 client-side models, but it’s actually likely that your client-side models will
 differ sufficiently (since they’re in the presentation tier) from server-side
-models that these concerns won’t be duplicates, so it’s less of a worry.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_algorithms"/>Algorithms</h4></div></div></div><p>Outline: General algorithms are often the trickiest. It’s possibly to write the
+models that these concerns won’t be duplicates, so it’s less of a worry.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_algorithms"/>Algorithms</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: General algorithms are often the trickiest. It’s possibly to write the
 logic in JS and then make that available to Ruby, if you have a REALLY large
 piece of logic, but weigh the cost of that overhead against the cost of
 duplicating the logic.  At some point it probably makes sense, though.  Also
@@ -758,7 +887,7 @@ As in, someBackboneModel.save() can’t just send a file to the server like othe
 attributes. We save the attachment in a separate request, and then just swap in
 an attachment id on the model. This does mean that you can have "unclaimed"
 attachments if somebody bails before saving the parent model, but that’s not
-really an issue.</p></div><div class="footnotes"><br/><hr width="100" align="left"/><div class="footnote"><p><sup>[<a id="ftn.d0e2376" href="#d0e2376" class="simpara">1</a>] </sup>At least, we
+really an issue.</p></div><div class="footnotes"><br/><hr width="100" align="left"/><div class="footnote"><p><sup>[<a id="ftn.d0e2481" href="#d0e2481" class="simpara">1</a>] </sup>At least, we
 have a guarantee at the application level - database integrity and the
 possibility of skew between Rails models and DB content is another discussion
 entirely.</p></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Routers, Views, and Templates </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Testing</td></tr></table></div></body></html>

@@ -2007,7 +2007,7 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> audio <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>$<span style="color: #990000">(</span><span style="color: #FF0000">'audio'</span><span style="color: #990000">);</span>
     audio<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">empty</span></span><span style="color: #990000">();</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>model<span style="color: #990000">.</span>formats<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">each</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">(</span>format<span style="color: #990000">)</span> <span style="color: #FF0000">{</span>
-      $<span style="color: #990000">(</span><span style="color: #FF0000">"&lt;source&gt;&lt;/source"</span><span style="color: #990000">&gt;)</span>
+      $<span style="color: #990000">(</span><span style="color: #FF0000">"&lt;source&gt;&lt;/source&gt;"</span><span style="color: #990000">)</span>
         <span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">attr</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"src"</span><span style="color: #990000">,</span>  format<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'src'</span><span style="color: #990000">))</span>
         <span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">attr</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"type"</span><span style="color: #990000">,</span> format<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'type'</span><span style="color: #990000">))</span>
         <span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">appendTo</span></span><span style="color: #990000">(</span>audio<span style="color: #990000">);</span>
@@ -2515,6 +2515,8 @@ and <tt>CompositeView</tt>.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_swapping_router">Swapping router</h3>
+<div class="paragraph"><p>TODO: Build out an example in the example_app with swapping router, probably
+task list vs task detail.</p></div>
 <div class="paragraph"><p>When switching from one view to another, we should clean up the previous view.
 We discussed previously a convention of writing a <tt>view.leave()</tt>
 Let&#8217;s augment our view to include the ability to clean itself up by "leaving"
@@ -2633,6 +2635,7 @@ the road for those maintaining your code.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_composite_views">Composite views</h3>
+<div class="paragraph"><p>TODO: Build out an example in the example_app with composite views.</p></div>
 <div class="paragraph"><p>The <tt>SwappingRouter</tt> above calls <tt>leave()</tt> on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
@@ -3816,8 +3819,236 @@ forms and we can reuse it throughout the app.</p></div>
 construct for encapsulating the serialization</p></div>
 </div>
 <div class="sect2">
-<h3 id="_nested_resources_chapter_unstarted">Nested resources (chapter unstarted)</h3>
-<div class="paragraph"><p>Unstarted</p></div>
+<h3 id="_model_relationships">Model relationships</h3>
+<div class="paragraph"><p>In any non-trivial application, you will have relationships in your domain model
+that are valuable to express on the client side.  For example, consider a
+contact management application where each person in your contact list has many
+phone numbers, each of a different kind.</p></div>
+<div class="paragraph"><p>Or, consider a project planning application where there are Teams, Members, and
+Projects as resources (models and collections).  There are relationships between
+each of these primary resources, and those relationships in turn may be exposed
+as first-class resources: a Membership to link a Team and a Member, or a
+Permission to link a Team with a Project.  These relationships are often exposed
+as first-class models so they can be created and destroyed the same way as other
+models, and so that additional domain information about the relationship, such
+as a duration, rate, or quantity, can be described.</p></div>
+<div class="paragraph"><p>These model relationships don&#8217;t have to be persisted by a relational database.
+In a chatroom application whose data is persisted in a key-value store, the data
+could still be modeled as a Room which has many Messages, as well as Memberships
+that link the Room to Users.  A content management application that stores its
+data in a document database still has the notion of hierarchy, where a Site
+contains many Pages, each of which is constitutes of zero or more Sections.</p></div>
+<div class="paragraph"><p>In a vanilla Rails application, the object model is describe on the server side
+with ActiveRecord subclasses, and exposed to the Backbone.js client through a
+JSON HTTP API.  You have a few choices to make when designing this API, largely
+focused on the (bundling/locus/concordance/co-habitance/dependency/???) of data&#8201;&#8212;&#8201;when you handle a request for one resource, which of its associated resources
+(if any) do you deliver, too?</p></div>
+<div class="paragraph"><p>Then, on the client side, you have a wide degree of choice in how to model the
+relationships, when to eagerly pre-fetch associations and when to lazily defer
+loading, and whether to employ a supporting library to help define your model
+relationships.</p></div>
+<div class="sect3">
+<h4 id="_relations_in_the_task_app">Relations in the Task App</h4>
+<div class="paragraph"><p>In the example application, there are Users which have many Tasks through
+Lists. Each Task has many Comments and Attachments.</p></div>
+<div class="imageblock" style="text-align:center;">
+<div class="content">
+<img src="image/TaskAppEntityRelationships.png" alt="image/TaskAppEntityRelationships.png" />
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_deciding_how_to_deliver_data_to_the_client">Deciding how to deliver data to the client</h4>
+<div class="paragraph"><p>Before you decide how to model your JSON API or how to declare, your client-side model
+relationships, step back and consider the user experience of your application.
+For TaskApp, we decided to have interactions as follows:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+A user signs up or logs in
+</p>
+</li>
+<li>
+<p>
+The user is directed to their dashboard
+</p>
+</li>
+<li>
+<p>
+The dashboard shows all lists and the tasks on each list, but not the
+  comments or attachments.
+</p>
+</li>
+<li>
+<p>
+When a user views the details of an individual task, the comments and
+  attachments for that task are displayed.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>This leads us to see that the Lists and Tasks for a user are used immediately
+upon navigating to the dasboard, but the Comment and Attachment data for a Task
+are not needed upon initial page load, and are possibly never needed at all.</p></div>
+<div class="paragraph"><p>Let&#8217;s say that we are also planning for the user to have continuous network
+access, but not to necessarily have a high speed connection.  Also, users tend
+to view their lists of tasks frequently, but rarely view the comments and
+attachments.</p></div>
+<div class="paragraph"><p>Based on this, we will bootstrap the collections of Lists and Tasks inside the
+dashboard, and defer loading of associated Comments and Attachments until after
+the user clicks through to a task.</p></div>
+<div class="paragraph"><p>We could have selected from several other alternatives, including:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Don&#8217;t preload any information, and deliver only static assets (HTML, CSS, JS)
+  on the dashboard request.  Fetch all resources over separate XHR calls.  This
+  can provide for a faster initial page load, at the cost of a longer time to
+  actual interactivity: although the byte size of the page plus data is roughly
+  the same, the overhead of additional HTTP requests incurs the extra load time.
+</p>
+</li>
+<li>
+<p>
+Preload all the information, including Comments and Attachments.  This would
+  work well if we expected users to frequently access the comments and
+  attachments of many tasks.
+</p>
+</li>
+<li>
+<p>
+Use localStorage as the primary storage engine, and sync to the Rails server
+  in the background.  This would be advantageous if we expected network access
+  to be intermittent, although it incurs the additional complexity of having to
+  resolve conflicts on the server if two clients submit conflicting updates.
+</p>
+</li>
+</ul></div>
+</div>
+<div class="sect3">
+<h4 id="_designing_the_http_json_api">Designing the HTTP JSON API</h4>
+<div class="paragraph"><p>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we should decide how to deliver the deferred content.  We have two
+options here.  Our goal is to fetch to comments and attachments for an
+individual task.</p></div>
+<div class="paragraph"><p>One way we could approach this is the issue separate API calls for each
+nested resource:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ curl http<span style="color: #990000">:</span>//tasksapp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">local</span></span><span style="color: #990000">:</span><span style="color: #993399">3000</span>/tasks<span style="color: #990000">/</span><span style="color: #993399">78</span>/comments<span style="color: #990000">.</span>json <span style="color: #990000">|</span> ppjson
+<span style="color: #990000">[</span>
+  {
+    <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">208</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">3</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"body"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"What do you think of this mock? (See attachment)"</span>
+  }<span style="color: #990000">,</span>
+  {
+    <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">209</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"body"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"Looks great!  I'll implement that."</span>
+  }
+<span style="color: #990000">]</span>
+
+$ curl http<span style="color: #990000">:</span>//tasksapp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">local</span></span><span style="color: #990000">:</span><span style="color: #993399">3000</span>/tasks<span style="color: #990000">/</span><span style="color: #993399">78</span>/attachments<span style="color: #990000">.</span>json <span style="color: #990000">|</span> ppjson
+<span style="color: #990000">[</span>
+  {
+    <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"32"</span><span style="color: #990000">,</span>
+    <span style="color: #FF0000">"file_url"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"</span>
+  }
+<span style="color: #990000">]</span></tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">We will authenticate API requests with cookies, just like normal user
+login, so the actual curl request would need to include a cookie from a logged
+in user.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>This approach has the advantage of adhering more to convention, and requiring
+less code in both the server-side JSON presentation and the client-side JSON
+parsing.  Its disadvantage is performance: to fetch a task&#8217;s associated data, we
+need to send 2 HTTP requests.  When more kinds of associated resources are added
+in the future, the number of requests will go up.</p></div>
+<div class="paragraph"><p>Another way we could approach this is to embed the comment and attachment data in
+the JSON representation of an individual task, and deliver this data from the
+"/tasks/:id" endpoint:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>$ curl http<span style="color: #990000">:</span>//tasksapp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">local</span></span><span style="color: #990000">:</span><span style="color: #993399">3000</span>/tasks<span style="color: #990000">/</span><span style="color: #993399">78</span><span style="color: #990000">.</span>json <span style="color: #990000">|</span> ppjson
+{
+  <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">78</span><span style="color: #990000">,</span>
+  <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+  <span style="color: #FF0000">"title"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"Clean up landing page"</span><span style="color: #990000">,</span>
+  <span style="color: #FF0000">"comments"</span><span style="color: #990000">:</span> <span style="color: #990000">[</span>
+    {
+      <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">208</span><span style="color: #990000">,</span>
+      <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">3</span><span style="color: #990000">,</span>
+      <span style="color: #FF0000">"body"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"What do you think of this mock? (See attachment)"</span>
+    }<span style="color: #990000">,</span>
+    {
+      <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">209</span><span style="color: #990000">,</span>
+      <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
+      <span style="color: #FF0000">"body"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"Looks great!  I'll implement that."</span>
+    }
+  <span style="color: #990000">]</span>
+  <span style="color: #FF0000">"attachments"</span><span style="color: #990000">:</span> <span style="color: #990000">[</span>
+    {
+      <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"32"</span><span style="color: #990000">,</span>
+      <span style="color: #FF0000">"file_url"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"</span>
+    }
+  <span style="color: #990000">],</span>
+  <span style="color: #990000">/*</span> some attributes left out <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> clarity <span style="color: #990000">*/</span>
+}</tt></pre></div></div>
+<div class="paragraph"><p>This approach involves additional code in both producing the JSON on the server
+side and parsing the JSON on the client side.  We&#8217;ll take this approach for the
+example application, both because it requires fewer HTTP requests and because
+it&#8217;s a more interesting example and illustrates the technique of parsing child
+models in Backbone.js.</p></div>
+<div class="paragraph"><p>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we know that our HTTP JSON API should support at least the
+following Rails routes:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>resources <span style="color: #990000">:</span>lists<span style="color: #990000">,</span> <span style="color: #990000">:</span>only <span style="color: #990000">=&gt;</span> <span style="color: #990000">[:</span>create<span style="color: #990000">,</span> <span style="color: #990000">:</span>update<span style="color: #990000">,</span> <span style="color: #990000">:</span>delete<span style="color: #990000">]</span>
+resources <span style="color: #990000">:</span>tasks<span style="color: #990000">,</span> <span style="color: #990000">:</span>only <span style="color: #990000">=&gt;</span> <span style="color: #990000">[:</span>show<span style="color: #990000">,</span> <span style="color: #990000">:</span>create<span style="color: #990000">,</span> <span style="color: #990000">:</span>update<span style="color: #990000">,</span> <span style="color: #990000">:</span>delete<span style="color: #990000">]</span></tt></pre></div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Tip</div>
+</td>
+<td class="content">In some applications, you choose to expose a user-facing API.  It&#8217;s often
+valuable to dogfood this endpoint by making use of it from your own Backbone
+code.  Often these APIs will be scoped under an "/api" namespace, possibly with
+an API version namespace as well.</td>
+</tr></table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_implementing_the_api_presenting_the_json">Implementing the API: presenting the JSON</h4>
+<div class="paragraph"><p>TODO: Expand outline</p></div>
+<div class="paragraph"><p>Outline: For building the JSON presentation, we have a few options.  The easiest
+thing is to override Task#as_json, although this isn&#8217;t really where this
+presentation concern belongs.  Better options to construct the JSON include: in
+the controller, in a builder-like view, in a separate presentation object.
+Mention <a href="https://github.com/nesquena/rabl">https://github.com/nesquena/rabl</a></p></div>
+</div>
+<div class="sect3">
+<h4 id="_parsing_the_json_and_instantiating_client_side_models">Parsing the JSON and instantiating client-side models</h4>
+<div class="paragraph"><p>TODO: Expand outline</p></div>
+<div class="paragraph"><p>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+Discuss <a href="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</a></p></div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_duplicating_business_logic_across_the_client_and_server">Duplicating business logic across the client and server</h3>
@@ -4035,6 +4266,7 @@ does&#8230;</p></div>
 </div>
 <div class="sect3">
 <h4 id="_querying">Querying</h4>
+<div class="paragraph"><p>TODO: Expand on outline.</p></div>
 <div class="paragraph"><p>Outline: I think it&#8217;s possible to establish conventions here, similar to
 validations, so that server-side scopes can be converted to client-side
 collection filtering.  However, is this valuable?  Do you actually often
@@ -4045,6 +4277,7 @@ with that too?</p></div>
 </div>
 <div class="sect3">
 <h4 id="_callbacks">Callbacks</h4>
+<div class="paragraph"><p>TODO: Expand on outline.</p></div>
 <div class="paragraph"><p>Outline: These often depend on server-side persistence, so would you even want
 them on the client side?  Perhaps, e.g. same lifecycle events for the analagous
 client-side models, but it&#8217;s actually likely that your client-side models will
@@ -4053,6 +4286,7 @@ models that these concerns won&#8217;t be duplicates, so it&#8217;s less of a wo
 </div>
 <div class="sect3">
 <h4 id="_algorithms">Algorithms</h4>
+<div class="paragraph"><p>TODO: Expand on outline.</p></div>
 <div class="paragraph"><p>Outline: General algorithms are often the trickiest. It&#8217;s possibly to write the
 logic in JS and then make that available to Ruby, if you have a REALLY large
 piece of logic, but weigh the cost of that overhead against the cost of
@@ -5120,7 +5354,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-10-24 14:51:51 EDT
+Last updated 2011-10-28 13:37:26 EDT
 </div>
 </div>
 </body>
