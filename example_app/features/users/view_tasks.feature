@@ -3,6 +3,10 @@ Feature: Viewing Tasks
   So that I can see what I have to do
   I want to be able to see all my tasks
 
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+
   @javascript
   Scenario: View tasks
     Given the following tasks exist:

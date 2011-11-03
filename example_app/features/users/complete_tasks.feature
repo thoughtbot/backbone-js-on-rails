@@ -4,6 +4,10 @@ Feature: Complete tasks
   I want to complete tasks
   So that I can track what I've done
 
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+
   Scenario: Tasks start as uncomplete
     When I go to the tasks page
     And I create a task "Make shopping list"

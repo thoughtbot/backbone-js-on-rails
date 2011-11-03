@@ -3,6 +3,10 @@ Feature: Create Task
   I want to create a task
   So that I can track what to do
 
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+
   @javascript
   Scenario: Create task
     When I go to the tasks page

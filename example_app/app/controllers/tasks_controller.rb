@@ -1,4 +1,5 @@
 class TasksController < ApplicationController
+  before_filter :authorize
   respond_to :html, :json
 
   def index
