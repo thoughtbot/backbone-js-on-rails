@@ -54,6 +54,7 @@ function uploader(input, options) {
   // The actual upload calls
   this.upload = function(data){
     $this.xhr.open('POST',$this.settings.url, true);
+    if($this.prefilter) $this.prefilter();
     $this.xhr.send(data);
   };
 
