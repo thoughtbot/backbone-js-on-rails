@@ -33,4 +33,6 @@ group :test do
   gem "nokogiri"
   gem "shoulda"
   gem "launchy"
+  gem "guard-spork"
+  gem "spork", "~> 0.9.0.rc"
 end
