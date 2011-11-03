@@ -10,9 +10,9 @@ Feature: Viewing Tasks
   @javascript
   Scenario: View tasks
     Given the following tasks exist:
-      | Title                                |
-      | Purchase the backbone on rails ebook |
-      | Master backbone                      |
+      | Title                                | user                     |
+      | Purchase the backbone on rails ebook | email: email@example.com |
+      | Master backbone                      | email: email@example.com |
     And I am on the home page
     Then I should see "Master backbone" within the tasks list
     And I should see "Purchase the backbone on rails ebook" within the tasks list

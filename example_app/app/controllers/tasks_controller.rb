@@ -3,15 +3,15 @@ class TasksController < ApplicationController
   respond_to :html, :json
 
   def index
-    respond_with(@tasks = Task.all)
+    respond_with(@tasks = current_user.tasks)
   end
 
   def create
-    respond_with(Task.create(params[:task]))
+    respond_with(current_user.tasks.create(params[:task]))
   end
 
   def update
-    task = Task.find(params[:id])
+    task = current_user.tasks.find(params[:id])
     task.update_attributes(params[:task])
     respond_with(task)
   end
