@@ -7,6 +7,7 @@
 //
 //= require backbone-forms.js
 //= require jquery-ui-editors.js
+//= require uploader.js
 //
 //= require example_app
 //
