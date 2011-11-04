@@ -28,7 +28,40 @@ describe("ExampleApp.Views.TaskShow", function() {
     var $input = $el.find('.upload input');
     expect($label.attr('for')).toEqual($input.attr('id'));
   });
+});
 
+describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
+  var task, view, $el;
+
+  beforeEach(function() {
+    task = new ExampleApp.Models.Task({
+      id: 1,
+      title: "Buy pies",
+      attachments: [
+        {
+          upload_file_name: "blueberries.jpg",
+          upload_url: "http://www.realblueberries.com/images/Blueberry-Cluster-1.jpg"
+        },
+        {
+          upload_file_name: "strawberries.jpg",
+          upload_url: "http://strawberriesweb.com/three-strawberries.jpg"
+        }
+      ]
+    });
+
+    view = new ExampleApp.Views.TaskShow({ model: task });
+    $el = $(view.render().el);
+  });
+
+  it("displays attachments", function() {
+    expect($el).toContain(".attachments img[src='http://www.realblueberries.com/images/Blueberry-Cluster-1.jpg']")
+    expect($el).toContain(".attachments img[src='http://strawberriesweb.com/three-strawberries.jpg']")
+  });
+
+  it("displays attachment filenames", function() {
+    expect($el).toHaveText('Attached: blueberries.jpg');
+    expect($el).toHaveText('Attached: strawberries.jpg');
+  });
 });
 
 describe("ExampleApp.Views.TaskShow uploading", function() {

@@ -10,5 +10,27 @@ describe("ExampleApp.Models.Tasks", function() {
     var incompleteTask = new ExampleApp.Models.Task({ complete: false });
     expect(incompleteTask.isComplete()).toBe(false);
   });
+});
 
+// describe("ExampleApp.Models.Tasks#parse", function() {
+//   it("parses nested attachments", function() {
+//     var json = '{"id":1,"title":"Sweet Task","attachments":[{"upload_url":"/uploads/1.jpg"},{"upload_url":"/uploads/2.jpg"}]}';
+//     var attributes = ExampleApp.Models.Task.prototype.parse(json);
+//   });
+// });
+
+describe("ExampleApp.Models.Tasks#initialize", function() {
+  it("creates collections for nested attachments", function() {
+    var attributes = {"id":1,"title":"Sweet Task","attachments":[{"upload_url":"/uploads/1.jpg"},{"upload_url":"/uploads/2.jpg"}]};
+    var task = new ExampleApp.Models.Task(attributes);
+
+    expect(task.attachments instanceof ExampleApp.Collections.Attachments).toEqual(true);
+    expect(task.attachments.size()).toEqual(2);
+
+    expect(task.attachments.first() instanceof ExampleApp.Models.Attachment).toEqual(true);
+    expect(task.attachments.last() instanceof ExampleApp.Models.Attachment).toEqual(true);
+
+    expect(task.attachments.first().get('upload_url')).toEqual('/uploads/1.jpg');
+    expect(task.attachments.last().get('upload_url')).toEqual('/uploads/2.jpg');
+  });
 });

@@ -10,6 +10,7 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
   render: function () {
     this.renderTemplate();
     this.renderTask();
+    this.renderAttachments();
     this.attachUploader();
     return this;
   },
@@ -22,6 +23,19 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
     this.$('p').text(this.model.escape('title'));
     this.$('.upload input').attr('id',  'upload_' + this.model.get('id'));
     this.$('.upload label').attr('for', 'upload_' + this.model.get('id'));
+  },
+
+  renderAttachments: function() {
+    var self = this;
+    var $attachments = this.$('ul.attachments');
+    $attachments.html('');
+
+    this.model.attachments.each(function(attachment) {
+      var attachmentView = $('<li><p></p><img></li>');
+      $('p', attachmentView).text("Attached: " + attachment.escape('upload_file_name'));
+      $('img', attachmentView).attr("src", attachment.get('upload_url'));
+      $attachments.append(attachmentView);
+    });
   },
 
   uploadInput: function() {
