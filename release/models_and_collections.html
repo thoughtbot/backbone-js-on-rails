@@ -733,7 +733,8 @@ Mention <a class="ulink" href="https://github.com/nesquena/rabl" target="_top">h
 <a id="_parsing_the_json_and_instantiating_client_side_models"></a>Parsing the JSON and instantiating client-side models</h4></div></div></div>
 <p>TODO: Expand outline</p>
 <p>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
-parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
+(parse not invoked during reset, only fetch/set etc)
 Discuss <a class="ulink" href="https://github.com/PaulUithol/Backbone-relational" target="_top">https://github.com/PaulUithol/Backbone-relational</a></p>
 </div>
 </div>
@@ -850,7 +851,7 @@ validated.  For the user experience with the quickest response, we could observe
 changes on the email form field, updating the model’s <code class="literal">email</code> attribute whenever
 it changes, and displaying the inline error message immediately.</p>
 <p>With ErrorView able to handle either client-side or server-side error messages,
-we have a server-side guarantee of data correctness, <sup>[<a id="d0e2481" href="#ftn.d0e2481" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
+we have a server-side guarantee of data correctness, <sup>[<a id="d0e2512" href="#ftn.d0e2512" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
 without round-tripping to the server.</p>
 <p>The tradeoff we’ve made is that of duplication; the concern of "what constituted
 a valid Member" is written twice — in two different languages, no less.  In
@@ -1281,10 +1282,13 @@ attributes. We save the attachment in a separate request, and then just swap in
 an attachment id on the model. This does mean that you can have "unclaimed"
 attachments if somebody bails before saving the parent model, but that’s not
 really an issue.</p>
+<p>Assumes XHR2 (at least FormData) so no IE, but simple impl:
+* <a class="ulink" href="https://github.com/mockenoff/HTML5-AJAX-File-Uploader" target="_top">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</a>
+* <a class="ulink" href="https://developer.mozilla.org/en/XMLHttpRequest/FormData" target="_top">https://developer.mozilla.org/en/XMLHttpRequest/FormData</a></p>
 </div>
 <div class="footnotes">
 <br><hr width="100" align="left">
-<div class="footnote"><p><sup>[<a id="ftn.d0e2481" href="#d0e2481" class="simpara">1</a>] </sup>At least, we
+<div class="footnote"><p><sup>[<a id="ftn.d0e2512" href="#d0e2512" class="simpara">1</a>] </sup>At least, we
 have a guarantee at the application level - database integrity and the
 possibility of skew between Rails models and DB content is another discussion
 entirely.</p></div>

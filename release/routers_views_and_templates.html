@@ -177,7 +177,7 @@ Selector-based content declarations.  Examples: PURE, just using jQuery from vie
 <p>Like any technology choice, there are tradeoffs to evaluate and external forces
 to consider when choosing a templating approach.</p>
 <p>The scenarios we’ve encountered usually involve weighing these questions: do I already have server-side templates written that I’d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</p>
-<p>TODO: flesh this out a bit, or cut this ^ preface section entirely</p>
+<p>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_when_you_are_adding_backbone_to_existing_rails_views"></a>When you are adding Backbone to existing Rails views</h4></div></div></div>
@@ -471,12 +471,12 @@ and how to do it.</p>
 <p>Consider two views in a Todo app: an index view which contains all the tasks
 that need to be done:</p>
 <div class="figure">
-<a id="d0e1394"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
+<a id="d0e1425"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"></td></tr></table></div></div>
 </div>
 <br class="figure-break"><p>and a detail view that shows detail on one task:</p>
 <div class="figure">
-<a id="d0e1405"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
+<a id="d0e1436"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"></td></tr></table></div></div>
 </div>
 <br class="figure-break"><p>The interface switches between the two views.</p>
@@ -773,7 +773,7 @@ utility functions to allow more class-style inheritance.</p>
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
 <code class="literal">TasksRouter</code> would then look like:</p>
 <div class="figure">
-<a id="d0e1757"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
+<a id="d0e1788"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"></div></div>
 </div>
 <br class="figure-break"><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
@@ -952,7 +952,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
 
   render: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.renderLayout();
-    <b class="hl-keyword">this</b>.renderDetail();
+    <b class="hl-keyword">this</b>.renderDetails();
     <b class="hl-keyword">this</b>.renderCommentsList();
   },
 

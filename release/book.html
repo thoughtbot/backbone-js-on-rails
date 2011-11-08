@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.5" />
+<meta name="generator" content="AsciiDoc 8.6.3" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* ---------------------------------------------------------------------------
@@ -186,6 +186,7 @@ h5 {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -247,25 +248,6 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
-  if (!toc) {
-    return;
-  }
-
-  // Delete existing TOC entries in case we're reloading the TOC.
-  var tocEntriesToRemove = [];
-  var i;
-  for (i = 0; i < toc.childNodes.length; i++) {
-    var entry = toc.childNodes[i];
-    if (entry.nodeName == 'DIV'
-     && entry.getAttribute("class")
-     && entry.getAttribute("class").match(/^toclevel/))
-      tocEntriesToRemove.push(entry);
-  }
-  for (i = 0; i < tocEntriesToRemove.length; i++) {
-    toc.removeChild(tocEntriesToRemove[i]);
-  }
-
-  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -293,44 +275,24 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  // Delete existing footnote entries in case we're reloading the footnodes.
-  var i;
-  var noteholder = document.getElementById("footnotes");
-  if (!noteholder) {
-    return;
-  }
-  var entriesToRemove = [];
-  for (i = 0; i < noteholder.childNodes.length; i++) {
-    var entry = noteholder.childNodes[i];
-    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
-      entriesToRemove.push(entry);
-  }
-  for (i = 0; i < entriesToRemove.length; i++) {
-    noteholder.removeChild(entriesToRemove[i]);
-  }
-
-  // Rebuild footnote entries.
   var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      var note = spans[i].getAttribute("data-note");
-      if (!note) {
-        // Use [\s\S] in place of . so multi-line matches work.
-        // Because JavaScript has no s (dotall) regex flag.
-        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
-        spans[i].innerHTML =
-          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-          "' title='View footnote' class='footnote'>" + n + "</a>]";
-        spans[i].setAttribute("data-note", note);
-      }
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -350,32 +312,9 @@ footnotes: function () {
       }
     }
   }
-},
-
-install: function(toclevels) {
-  var timerId;
-
-  function reinstall() {
-    asciidoc.footnotes();
-    if (toclevels) {
-      asciidoc.toc(toclevels);
-    }
-  }
-
-  function reinstallAndRemoveTimer() {
-    clearInterval(timerId);
-    reinstall();
-  }
-
-  timerId = setInterval(reinstall, 500);
-  if (document.addEventListener)
-    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
-  else
-    window.onload = reinstallAndRemoveTimer;
 }
 
 }
-asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -385,9 +324,92 @@ asciidoc.install();
 </div>
 <div id="content">
 <div class="sect1">
-<h2 id="_preface_unstarted">Preface (Unstarted)</h2>
+<h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
-<div class="paragraph"><p>(Unstarted)</p></div>
+<div class="paragraph"><p>Modern web applications are increasingly rich, shifting their complexity onto
+the client side.  While there are very well-understood approaches embodied in
+mature frameworks to organize server-side code, framworks for organizing your
+client-side code are newer and generally still emerging.  Backbone is one such
+library that provides a set of structures to help you organize your JavaScript
+code.</p></div>
+<div class="paragraph"><p>Libraries like jQuery have done a great deal to help abstract across browser
+inconsistencies and provide a high-level API for making AJAX request and
+performing DOM manipulation, but larger rich client-side applications that lack
+decoupled and modular organizational structures often fall to the same few kinds
+of technical debt.</p></div>
+<div class="paragraph"><p>These apps are often highly asynchronous and the path of least resistance
+implementation is often to have deeply nested callbacks to describe asynchronous
+concerns, with nested <tt>$.ajax</tt> calls and success/failure conditional concerns
+going several layers deep.</p></div>
+<div class="paragraph"><p>Seoncd, rich client-side applications also often involve a layer of state and
+logic on the client side.  One tempting way to implement this is to store domain
+objects or business logic state in the DOM.  However, relying on the DOM as a
+persistence layer - stashing your application&#8217;s data in hidden <tt>&lt;div&gt;</tt> elements
+that you clone and graft and toggle into and out of view, or reading and writing
+to lengthy sets of HTML <tt>data-*</tt> attributes - can quickly get cumbersome,
+repetitive, and confusing.</p></div>
+<div class="paragraph"><p>A third common feature in rich client-side apps is presenting multiple views on
+a single domain object.  Consider a web conferencing application with multiple
+views on the memberes of your contact list - each contact is rendered in brief
+inside a list view, and in more specificity in a detail view.  Additionally,
+your conference call history includes information about the people who
+participated.  Each time an individual contact&#8217;s information changes, this
+information needs to cascade to all the view representations.</p></div>
+<div class="paragraph"><p>Often this leads to a tight coupling of persistence and presentation: invoking
+<tt>$.ajax</tt> to save a user&#8217;s update and then updating several specific DOM elements
+upon success.</p></div>
+<div class="paragraph"><p>Perhaps you&#8217;ve seen code like this:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>TODO<span style="color: #990000">:</span> Contact app example<span style="color: #990000">,</span> $<span style="color: #990000">.</span>ajax nested a few layers deep<span style="color: #990000">,</span> updating hidden DOM
+elements or a global object e<span style="color: #990000">.</span>g<span style="color: #990000">.</span> <span style="color: #FF0000">"window.contactsJSON"</span> as persistence<span style="color: #990000">,</span> then
+cascading update to several views</tt></pre></div></div>
+<div class="paragraph"><p>What if it could look like this instead:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>TODO<span style="color: #990000">:</span> Backbone refactoring of above example<span style="color: #990000">.</span></tt></pre></div></div>
+<div class="paragraph"><p>By separating business logic, persistence, and presentation concerns, and
+providing a decoupled, event-driven way to cascade changes through a system of
+observers, each module of code is more well-encapsulated and expresses a
+cohesive set of responsibilities without being coupled to outside concerns.
+Your application code becomes easier to test, modify, and extend, and your
+application can manage itself complexity while its feature set grows.</p></div>
+<div class="paragraph"><p>It&#8217;s important to note that Backbone is a library, not a framework.  Though the
+distinction may seem subtle, it&#8217;s largely one of intent and purpose.  If you&#8217;re
+coming from a Rails background, you understand that a large part of Rails' value
+is expressing and implementing highly-opinionated conventions that guide
+development decisions.  Backbone doesn&#8217;t do this - conventions for rich
+client-side applications aren&#8217;t as well set-down and individual use cases vary
+more widely.  Instead of trying to serve as "the one way" etc (TODO: elaborate)
+Backbone provides a set of structures that help you organize your application by
+building your own framework with its own set of conventions.</p></div>
+<div class="sect2">
+<h3 id="_why_use_backbone_js">Why use Backbone.js</h3>
+<div class="paragraph"><p>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</p></div>
+<div class="paragraph"><p>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</p></div>
+<div class="paragraph"><p>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</p></div>
+<div class="paragraph"><p>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</p></div>
+<div class="paragraph"><p>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</p></div>
+<div class="paragraph"><p>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</p></div>
+<div class="paragraph"><p>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</p></div>
+</div>
+<div class="sect2">
+<h3 id="_the_example_application">The Example Application</h3>
+<div class="paragraph"><p>Rails 3.1.0.rc5</p></div>
+<div class="paragraph"><p>Ruby 1.9.2</p></div>
+<div class="paragraph"><p>Backbone.js and Underscore.js are the non-minified versions. This is for
+informational purposes, but also because the Rails 3.1 asset pipeline will
+compress and minify them.</p></div>
+<div class="paragraph"><p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
+example code normal Javascript as we believe that will be the most understandable to
+the current readers.</p></div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -415,32 +437,6 @@ ins and outs how to test-drive your code, but covers good fundamental
 JavaScript development practices and takes a deep dive on language
 fundamentals:</p></div>
 <div class="paragraph"><p><a href="http://tddjs.com/">http://tddjs.com/</a></p></div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_introduction">Introduction</h2>
-<div class="sectionbody">
-<div class="sect2">
-<h3 id="_why_use_backbone_js">Why use Backbone.js</h3>
-<div class="paragraph"><p>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</p></div>
-<div class="paragraph"><p>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</p></div>
-<div class="paragraph"><p>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</p></div>
-<div class="paragraph"><p>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</p></div>
-<div class="paragraph"><p>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</p></div>
-<div class="paragraph"><p>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</p></div>
-<div class="paragraph"><p>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</p></div>
-</div>
-<div class="sect2">
-<h3 id="_the_example_application">The Example Application</h3>
-<div class="paragraph"><p>Rails 3.1.0.rc5</p></div>
-<div class="paragraph"><p>Ruby 1.9.2</p></div>
-<div class="paragraph"><p>Backbone.js and Underscore.js are the non-minified versions. This is for
-informational purposes, but also because the Rails 3.1 asset pipeline will
-compress and minify them.</p></div>
-<div class="paragraph"><p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
-example code normal Javascript as we believe that will be the most understandable to
-the current readers.</p></div>
 </div>
 </div>
 </div>
@@ -905,6 +901,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="font-style: italic"><span style="color: #9A1900">//</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">//= require backbone-forms.js</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">//= require jquery-ui-editors.js</span></span>
+<span style="font-style: italic"><span style="color: #9A1900">//= require uploader.js</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">//</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">//= require example_app</span></span>
 <span style="font-style: italic"><span style="color: #9A1900">//</span></span>
@@ -1950,7 +1947,7 @@ Selector-based content declarations.  Examples: PURE, just using jQuery from vie
 <div class="paragraph"><p>Like any technology choice, there are tradeoffs to evaluate and external forces
 to consider when choosing a templating approach.</p></div>
 <div class="paragraph"><p>The scenarios we&#8217;ve encountered usually involve weighing these questions: do I already have server-side templates written that I&#8217;d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</p></div>
-<div class="paragraph"><p>TODO: flesh this out a bit, or cut this ^ preface section entirely</p></div>
+<div class="paragraph"><p>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</p></div>
 <div class="sect3">
 <h4 id="_when_you_are_adding_backbone_to_existing_rails_views">When you are adding Backbone to existing Rails views</h4>
 <div class="paragraph"><p>If you are replacing existing Rails app pages with Backbone, you are already using a templating engine, and it&#8217;s likely ERb.  When making the switch to Backbone, change as few things as possible at a time, and stick with your existing templating approach.</p></div>
@@ -2847,7 +2844,7 @@ http://www.gnu.org/software/src-highlite -->
 
   render<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">renderLayout</span></span><span style="color: #990000">();</span>
-    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">renderDetail</span></span><span style="color: #990000">();</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">renderDetails</span></span><span style="color: #990000">();</span>
     <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">renderCommentsList</span></span><span style="color: #990000">();</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
 
@@ -4046,7 +4043,8 @@ Mention <a href="https://github.com/nesquena/rabl">https://github.com/nesquena/r
 <h4 id="_parsing_the_json_and_instantiating_client_side_models">Parsing the JSON and instantiating client-side models</h4>
 <div class="paragraph"><p>TODO: Expand outline</p></div>
 <div class="paragraph"><p>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
-parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
+(parse not invoked during reset, only fetch/set etc)
 Discuss <a href="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</a></p></div>
 </div>
 </div>
@@ -4713,6 +4711,9 @@ attributes. We save the attachment in a separate request, and then just swap in
 an attachment id on the model. This does mean that you can have "unclaimed"
 attachments if somebody bails before saving the parent model, but that&#8217;s not
 really an issue.</p></div>
+<div class="paragraph"><p>Assumes XHR2 (at least FormData) so no IE, but simple impl:
+* <a href="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</a>
+* <a href="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</a></p></div>
 </div>
 </div>
 </div>
@@ -4949,6 +4950,8 @@ gem <span style="color: #FF0000">'rails-backbone'</span>
 gem <span style="color: #FF0000">'jquery-rails'</span>
 gem <span style="color: #FF0000">'ejs'</span>
 gem <span style="color: #FF0000">"flutie"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.3.2"</span>
+gem <span style="color: #FF0000">"clearance"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 0.13.0"</span>
+gem <span style="color: #FF0000">'paperclip'</span>
 
 group <span style="color: #990000">:</span>assets <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
   gem <span style="color: #FF0000">'sass-rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"  ~&gt; 3.1.0"</span>
@@ -4974,6 +4977,8 @@ group <span style="color: #990000">:</span>test <span style="font-weight: bold">
   gem <span style="color: #FF0000">"nokogiri"</span>
   gem <span style="color: #FF0000">"shoulda"</span>
   gem <span style="color: #FF0000">"launchy"</span>
+  gem <span style="color: #FF0000">"guard-spork"</span>
+  gem <span style="color: #FF0000">"spork"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 0.9.0.rc"</span>
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
 <div class="paragraph"><p>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
@@ -5008,7 +5013,10 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>ExampleApp<span style="color: #990000">::</span>Application<span style="color: #990000">.</span>routes<span style="color: #990000">.</span>draw <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
-  resources <span style="color: #990000">:</span>tasks
+  resources <span style="color: #990000">:</span>tasks <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
+    resources <span style="color: #990000">:</span>attachments<span style="color: #990000">,</span> <span style="color: #990000">:</span>only <span style="color: #990000">=&gt;</span> <span style="color: #990000">[:</span>create<span style="color: #990000">,</span> <span style="color: #990000">:</span>show<span style="color: #990000">]</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
   root <span style="color: #990000">:</span>to <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">'tasks#index'</span>
 
   <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">[</span><span style="color: #FF0000">"development"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"test"</span><span style="color: #990000">].</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span><span style="color: #990000">?</span> Rails<span style="color: #990000">.</span>env
@@ -5031,18 +5039,19 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #0000FF">class</span></span> TasksController <span style="color: #990000">&lt;</span> ApplicationController
+  before_filter <span style="color: #990000">:</span>authorize
   respond_to <span style="color: #990000">:</span>html<span style="color: #990000">,</span> <span style="color: #990000">:</span>json
 
   <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> index
-    respond_with<span style="color: #990000">(</span><span style="color: #009900">@tasks</span> <span style="color: #990000">=</span> Task<span style="color: #990000">.</span>all<span style="color: #990000">)</span>
+    respond_with<span style="color: #990000">(</span><span style="color: #009900">@tasks</span> <span style="color: #990000">=</span> current_user<span style="color: #990000">.</span>tasks<span style="color: #990000">)</span>
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 
   <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> create
-    respond_with<span style="color: #990000">(</span>Task<span style="color: #990000">.</span>create<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>task<span style="color: #990000">]))</span>
+    respond_with<span style="color: #990000">(</span>current_user<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span>create<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>task<span style="color: #990000">]))</span>
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 
   <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> update
-    task <span style="color: #990000">=</span> Task<span style="color: #990000">.</span>find<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>id<span style="color: #990000">])</span>
+    task <span style="color: #990000">=</span> current_user<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span>find<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>id<span style="color: #990000">])</span>
     task<span style="color: #990000">.</span>update_attributes<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>task<span style="color: #990000">])</span>
     respond_with<span style="color: #990000">(</span>task<span style="color: #990000">)</span>
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
@@ -5354,7 +5363,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-10-28 13:37:26 EDT
+Last updated 2011-11-08 15:37:02 EST
 </div>
 </div>
 </body>

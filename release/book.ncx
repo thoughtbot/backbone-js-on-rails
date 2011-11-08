@@ -18,38 +18,34 @@
 <content src="toc.html"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_1" playOrder="2">
-<navLabel><text>Preface (Unstarted)</text></navLabel>
-<content src="book.html#_preface_unstarted"/>
+<navLabel><text>Introduction</text></navLabel>
+<content src="book.html#_introduction"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_2" playOrder="3">
 <navLabel><text>Getting up to speed</text></navLabel>
 <content src="book.html#_getting_up_to_speed"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_3" playOrder="4">
-<navLabel><text>Introduction</text></navLabel>
-<content src="book.html#_introduction"/>
-</navPoint>
-<navPoint class="chapter" id="chapter_4" playOrder="5">
 <navLabel><text>Organization</text></navLabel>
 <content src="book.html#_organization"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_5" playOrder="6">
+<navPoint class="chapter" id="chapter_4" playOrder="5">
 <navLabel><text>Rails Integration</text></navLabel>
 <content src="book.html#_rails_integration"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_6" playOrder="7">
+<navPoint class="chapter" id="chapter_5" playOrder="6">
 <navLabel><text>Routers, Views, and Templates</text></navLabel>
 <content src="book.html#_routers_views_and_templates"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_7" playOrder="8">
+<navPoint class="chapter" id="chapter_6" playOrder="7">
 <navLabel><text>Models and collections</text></navLabel>
 <content src="book.html#_models_and_collections"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_8" playOrder="9">
+<navPoint class="chapter" id="chapter_7" playOrder="8">
 <navLabel><text>Testing</text></navLabel>
 <content src="book.html#_testing"/>
 </navPoint>
-<navPoint class="chapter" id="chapter_9" playOrder="10">
+<navPoint class="chapter" id="chapter_8" playOrder="9">
 <navLabel><text>Security (stub)</text></navLabel>
 <content src="book.html#_security_stub"/>
 </navPoint>

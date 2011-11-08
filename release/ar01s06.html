@@ -1,825 +1,896 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Routers, Views, and Templates</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s05.html" title="Rails Integration"/><link rel="next" href="ar01s07.html" title="Models and collections"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Routers, Views, and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_routers_views_and_templates"/>Routers, Views, and Templates</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation"/>View explanation</h3></div></div></div><p>A Backbone.js view is a class that is responsible for rendering the display of
-a logical element on the page. A view can also bind to events which may cause
-it to be re-rendered.</p><p>Its important to note that a Rails view is not directly analogous to a
-Backbone.js view. A Rails view is more like a Backbone.js template, and
-Backbone.js views are often more like Rails controllers, in that they are
-responsible for logic about what should be rendered and how and rendering the
-actual template file. This can cause confusion with developers just started
-with Backbone.js.</p><p>A basic Backbone.js view appears as follows.</p><pre class="programlisting">ExampleApp.Views.ExampleView = Backbone.View.extend({
-  tagName: <b class="hl-string"><i style="color:red">"li"</i></b>,
-  className: <b class="hl-string"><i style="color:red">"example"</i></b>,
-  id: <b class="hl-string"><i style="color:red">"example_view"</i></b>,
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Models and collections</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s05.html" title="Routers, Views, and Templates"/><link rel="next" href="ar01s07.html" title="Testing"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Models and collections</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_models_and_collections"/>Models and collections</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_model_associations"/>Model associations</h3></div></div></div><p>Backbone.js doesn’t prescribe a way to define associations between models, so
+we need to get creative and use the power of JavaScript to set up associations
+in such a way that its usage is natural.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_belongs_to_associations"/>Belongs to associations</h4></div></div></div><p>Setting up a <code class="literal">belongs_to</code> association in Backbone is a two step process. Let’s
+discuss setting up the association that may occur between a task and a user.
+The end result of the approach is a <code class="literal">Task</code> instance having a property called
+<code class="literal">user</code> where we store the associated <code class="literal">User</code> object.</p><p>To set this up, let’s start by telling Rails to augment the task’s JSON
+representation to also send over the associated user attributes:</p><pre class="programlisting"><b class="hl-keyword">class</b> Task &lt; ActiveRecord::Base
+  belongs_to :user
 
-  events: {
-    <b class="hl-string"><i style="color:red">"click a.save"</i></b>: <b class="hl-string"><i style="color:red">"save"</i></b>
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'example/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
-    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
-  },
-
-  save: <b class="hl-keyword">function</b>() {
-    <i class="hl-comment" style="color: silver">// do something</i>
+  <b class="hl-keyword">def</b> as_json(options = <b class="hl-keyword">nil</b>)
+    <b class="hl-keyword">super</b>((options || {}).merge(include: { user: { only: [:name, :email] } }))
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre><p>This means that when Backbone calls <code class="literal">fetch()</code> for a <code class="literal">Task</code> model, it will
+include the name and email of the associated user nested within the task JSON
+representation. Something like this:</p><pre class="programlisting">{
+  <b class="hl-string"><i style="color:red">"title"</i></b>: <b class="hl-string"><i style="color:red">"Buy more Cheeseburgers"</i></b>,
+  <b class="hl-string"><i style="color:red">"due_date"</i></b>: <b class="hl-string"><i style="color:red">"2011-03-04"</i></b>,
+  <b class="hl-string"><i style="color:red">"user"</i></b>: {
+    <b class="hl-string"><i style="color:red">"name"</i></b>: <b class="hl-string"><i style="color:red">"Robert McGraffalon"</i></b>,
+    <b class="hl-string"><i style="color:red">"email"</i></b>: <b class="hl-string"><i style="color:red">"bobby@themcgraffalons.com"</i></b>
   }
-};</pre><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initialization"/>Initialization</h4></div></div></div><p>The Backbone.js view above has an initialize function which will be called
-when the view is instantiated.</p><p>You only need to specify the initialize function if you wish to do something
-custom. For example, the above view’s initialize function calls the render
-function of the view. It’s not necessary to immediately render upon
-initialization, but it’s relatively common to do so.</p><p>You create a new view by instantiating it with <code class="literal">new</code>. For example <code class="literal">new
-ExampleView()</code>. It is possible to pass in a hash of options with <code class="literal">new
-ExampleView(options)</code>. Any options you pass into the constructor will be
-available inside of the view in <code class="literal">this.options</code>.</p><p>There are a few special options that, when passed, will be assigned to other
-members in the view directly. These are <code class="literal">model</code>, <code class="literal">collection</code>, <code class="literal">el</code>, <code class="literal">id</code>,
-<code class="literal">className</code>, and <code class="literal">tagName</code>. For example, if you create a new view and give it
-a model option with <code class="literal">new ExampleView({ model: Task })</code> then inside of the view
-the model you passed in as an option will be available in <code class="literal">this.model</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_view_8217_s_element"/>The View’s Element</h4></div></div></div><p>Each Backbone.js view has an element which is stores in <code class="literal">this.el</code>. This element
-can be populated with content, but isn’t on the page until placed there by
-you. Using this strategy it is then possible to render views outside of the
-current DOM at any time, inserting the new elements all at once. In this way,
-high performance rendering of views can be achieved with as few reflows and
-repaints as possible.</p><p>It is possible to create a view that references an element already in the DOM,
-instead of a new element. To do this, pass in the existing element as an
-option to the view constructor with <code class="literal">new ExampleView({ el: existingElement })</code>.</p><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
-created for the view. If no customization is done, the element is an empty
-<code class="literal">div</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_customizing_the_view_8217_s_element"/>Customizing the View’s Element</h4></div></div></div><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
-created for the view. If no customization is done, the element is an empty
-<code class="literal">div</code>.</p><p><code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> can either be specified directly on the view
-or passed in as options at instantiation time. Since <code class="literal">id</code> is likely to be
-individual to each model, its most likely to pass that in as an option rather
-than declaring it statically in the view.</p><p><code class="literal">tagName</code> will change the element that is created from a <code class="literal">div</code> to something
-else that you specify. For example, setting <code class="literal">tagName: "li"</code> will result in the
-view’s element being an <code class="literal">li</code> rather than a <code class="literal">div</code>.</p><p><code class="literal">className</code> will add an additional class to the element that is created for
-the view. For example, setting <code class="literal">className: "example"</code> on the view will result
-in view’s element with that additional class like <code class="literal">&lt;div class="example"&gt;</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_rendering"/>Rendering</h4></div></div></div><p>The <code class="literal">render</code> function above renders the <code class="literal">example/view</code> template. Template
-rendering is covered in depth in the "Templating strategy" chapter. Suffice to
-say, nearly every view’s render function will render some form of template. Once
-that template is rendered, any other actions to modify the view may be taken.</p><p>Typical functionality in <code class="literal">render</code> in addition to rendering a template would be
-to add additional classes or attributes to <code class="literal">this.el</code> or fire or bind other
-events.</p><p>Backbone.js, when used with jQuery (or Zepto) provides a convenience function
-of <code class="literal">this.$</code> that can be used for selecting elements inside of the view.
-<code class="literal">this.$(selector)</code> is equivalent to the jQuery function call <code class="literal">$(selector,
-this.el)</code></p><p>A nice convention of the render function is to return <code class="literal">this</code> at the end of
-render to enable chained calls on the view.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_events"/>Events</h4></div></div></div><p>The view’s <code class="literal">events</code> hash specifies a mapping of the events and elements that
-should have events bound, and the functions that should be bound to those
-events. In the example above the <code class="literal">click</code> event is being bound to the
-element(s) that match the selector <code class="literal">a.save</code> within the view’s element. When
-that event fires, the <code class="literal">save</code> function will be called on the view.</p><p>Events bound automatically with the <code class="literal">events</code> hash, the DOM events are bound
-with the <code class="literal">$.delegate()</code> function. Backbone.js also takes care of binding the
-event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p><p>Event binding is covered in great detail in the "Event binding" chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_stub"/>Templating strategy (stub)</h3></div></div></div><p>There’s no shortage of templating options for JavaScript.</p><p>TODO: Link and/or describe one or more?
-<a class="ulink" href="http://ajaxpatterns.org/Browser-Side_Templating" target="_top">http://ajaxpatterns.org/Browser-Side_Templating</a>
-<a class="ulink" href="http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery" target="_top">http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery</a>
-<a class="ulink" href="http://code.google.com/closure/templates/docs/helloworld_js.html" target="_top">http://code.google.com/closure/templates/docs/helloworld_js.html</a></p><p>A whole bunch of "micro" templating libraries:
-<a class="ulink" href="http://microjs.com/#templating" target="_top">http://microjs.com/#templating</a></p><p>They generally fall into three categories:</p><div class="itemizedlist"><ul type="disc"><li>
-HTML with JavaScript expressions interpolated.  Examples: <code class="literal">_.template</code>, EJS.
-</li><li>
-HTML with other expressions interpolated, often logic-free.  Examples: mustache, handlebars, <code class="literal">jQuery.tmpl</code>
-</li><li>
-Selector-based content declarations.  Examples: PURE, just using jQuery from view classes.
-</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_choosing_a_strategy"/>Choosing a strategy</h3></div></div></div><p>Like any technology choice, there are tradeoffs to evaluate and external forces
-to consider when choosing a templating approach.</p><p>The scenarios we’ve encountered usually involve weighing these questions: do I already have server-side templates written that I’d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</p><p>TODO: flesh this out a bit, or cut this ^ preface section entirely</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_adding_backbone_to_existing_rails_views"/>When you are adding Backbone to existing Rails views</h4></div></div></div><p>If you are replacing existing Rails app pages with Backbone, you are already using a templating engine, and it’s likely ERb.  When making the switch to Backbone, change as few things as possible at a time, and stick with your existing templating approach.</p><p>If you’re using ERb, give <code class="literal">_.template</code> a shot.  It defaults to the same delimiters as ERb for interpolation and evaluation, <code class="literal">&lt;%= %&gt;</code> and <code class="literal">&lt;% %&gt;</code>, which can be a boon or can be confusing.  If you’d like to change them, you can update <code class="literal">.templateSettings</code> - check the underscore docs.</p><p>If you’re using Haml, check out the <code class="literal">jquery-haml</code> and <code class="literal">haml-js</code> projects.</p><p>If you’re using Mustache.rb or Handlebars.rb, you’re likely aware that JavaScript implementations of these both exist, and that your existing templates can be moved over much like the ERb case.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_writing_new_backbone_functionality_from_scratch"/>When you are writing new Backbone functionality from scratch</h4></div></div></div><p>If you’re not migrating from (or re-using) existing server-side view templates,
-you have more freedom of choice.  Strongly consider the option of no templating
-at all, but rather using plain HTML templates, and then decorating the DOM from
-your view class.</p><p>You can build static HTML mockups of the application first, and pull these
-mockups directly in as templates, without modifying them.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- snip --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;div</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"song-player"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;nav&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"home"</span>    <span class="hl-attribute" style="color: #F5844C">href</span>=<span class="hl-value" style="color: #993300">"#/"</span><b class="hl-tag" style="color: #000096">&gt;</b>Home<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"profile"</span> <span class="hl-attribute" style="color: #F5844C">href</span>=<span class="hl-value" style="color: #993300">"/profile.html"</span><b class="hl-tag" style="color: #000096">&gt;</b>My Profile<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;/nav&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;h2&gt;</b>Song title<b class="hl-tag" style="color: #000096">&lt;/h2&gt;</b>
-
-  <b class="hl-tag" style="color: #000096">&lt;audio</b> <span class="hl-attribute" style="color: #F5844C">controls</span>=<span class="hl-value" style="color: #993300">"controls"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;source</b> <span class="hl-attribute" style="color: #F5844C">src</span>=<span class="hl-value" style="color: #993300">"/test.ogg"</span> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"audio/ogg"</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
-    Your browser does not support the audio element.
-  <b class="hl-tag" style="color: #000096">&lt;/audio&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b>
-<i class="hl-comment" style="color: silver">&lt;!-- snip --&gt;</i></pre><pre class="programlisting">MyView = Backbone.View.extend({
-  render: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.renderTemplate();
-    <b class="hl-keyword">this</b>.fillTemplate();
-  },
-
-  renderTemplate: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'songs/index'</i></b>]();
-  },
-
-  fillTemplate: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'nav a.profile'</i></b>).text(App.currentUser().fullName());
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'h2'</i></b>).text(<b class="hl-keyword">this</b>.model.escape(<b class="hl-string"><i style="color:red">'title'</i></b>));
-
-    <b class="hl-keyword">var</b> audio = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'audio'</i></b>);
-    audio.empty();
-    <b class="hl-keyword">this</b>.model.formats.each(<b class="hl-keyword">function</b>(format) {
-      $(<b class="hl-string"><i style="color:red">"&lt;source&gt;&lt;/source&gt;"</i></b>)
-        .attr(<b class="hl-string"><i style="color:red">"src"</i></b>,  format.get(<b class="hl-string"><i style="color:red">'src'</i></b>))
-        .attr(<b class="hl-string"><i style="color:red">"type"</i></b>, format.get(<b class="hl-string"><i style="color:red">'type'</i></b>))
-        .appendTo(audio);
-    });
-  }
-});</pre><p>You can see an example of this in the example application’s <code class="literal">TaskItem</code> view
-class, at <code class="literal">app/assets/javascripts/views/task_item.js</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_routers"/>Routers</h3></div></div></div><p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
-routers provide methods for routing application flow based on client-side URL
-fragments (#fragment).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
-instead of url fragments for routing.</p><p>However, pushState support in Backbone.js is fully opt-in due to lack of
-browser support and that additional server-side work is required to support it.</p><p>pushState support is current limited to the latest versions of Firefox,
-Chrome, and Safari and Mobile Safari. For a full listing of support and more
-information about the History API, of which pushState is a part, visit
-<a class="ulink" href="http://diveintohtml5.org/history.html#how" target="_top">http://diveintohtml5.org/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
-support pushState will continue to use hash-based URL fragments, and if a hash
-URL is visited by a pushState-capable browser, it will be transparently
-upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
-each of the URLs. For example, if your Backbone.js application has a route of
-/tasks/1, your server-side application must be able to respond to that page if
-the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
-would have for the root URL and letting Backbone.js handle the rest of the
-routing to the proper location. But for full search-engine crawlability, your
-server-side application will need to render the entire HTML of the requested page.</p><p>For all the reasons and complications above, the examples in this book all
-currently use URL fragments and not pushState.</p></div><p>A typical Backbone.js router will appear as shown below.</p><pre class="programlisting">ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
-  routes: {
-    <b class="hl-string"><i style="color:red">""</i></b>         : <b class="hl-string"><i style="color:red">"index"</i></b>
-    <b class="hl-string"><i style="color:red">"show/:id"</i></b> : <b class="hl-string"><i style="color:red">"show"</i></b>
-  },
-
-  index: <b class="hl-keyword">function</b>() {
-    <i class="hl-comment" style="color: silver">// Render the index view</i>
-  }
-
-  show: <b class="hl-keyword">function</b>(id) {
-    <i class="hl-comment" style="color: silver">// Render the show view</i>
-  }
-});</pre><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_routes_hash"/>The Routes Hash</h4></div></div></div><p>The basic router consists of a routes hash which is a mapping between URL
-fragments and methods on the router. If the current URL fragment, or one that
-is being visited matches one of the routes in the hash, its method will be
-called.</p><p>Like Rails routes, Backbone.js routes can contain parameter parts, as seen in
-the <code class="literal">show</code> route in the example above. In this route, the part of the fragment
-after <code class="literal">show/</code> will then be based as an argument to the <code class="literal">show</code> method.</p><p>Multiple parameters are possible, as well. For example, a route of
-<code class="literal">search/:query/p:page</code> will match a fragment of <code class="literal">search/completed/p2</code> passing
-passing <code class="literal">completed</code> and <code class="literal">2</code> to the action.</p><p>In the routes, <code class="literal">/</code> is the natural separator. For example, a route of
-<code class="literal">show/:id</code> will not match a fragment of <code class="literal">show/1/2</code>. To match through route,
-Backbone.js provides the concept of splat parts, identified by <code class="literal">*</code> instead of
-<code class="literal">:</code>. For example, a route of <code class="literal">show/*id</code> would match the previous fragment, and
-<code class="literal">1/2</code> would be passed to the action as the <code class="literal">id</code> variable.</p><p>Routing occurs when the browser’s URL changes. This can occur when clicking on
-a link, entering a URL into the browser’s URL bar, or clicking the back
-button. In all of those cases, Backbone.js will look to see if the new URL
-matches an existing route. If it does, the specified function will be called
-with any parameters.</p><p>In addition, an event with the name of "route" and the function will be
-triggered. For example, when the <code class="literal">show</code> route above is routed, an event of
-<code class="literal">route:show</code> will be fired. This is so that other objects can listen to the
-router, and be notified about certain routes.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initializing_a_router"/>Initializing a Router</h4></div></div></div><p>It is possible to specify an <code class="literal">initialize</code> function in a Router which will be
-called when the Router is instantiated. Any arguments passed to the Routes
-constructor will be passed to this <code class="literal">initialize</code> function.</p><p>Additionally, it is possible to pass the routes for a router via the
-constructor like <code class="literal">new ExampleRouter({ routes: { "" : "index" }}</code>. But note
-that this will override any routes defined in the routes hash on the router
-itself.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding"/>Event binding</h3></div></div></div><p>A big part of writing snappy rich client applications is building models and
-views that update in real-time with respect to one another.  With Backbone.js
-you accomplish this with events.</p><p>TODO: This is probably the first time we dive into events, unless we touch on
-them earlier in the models/collections sections.  Might want to introduce the
-topic with a basic example that uses <code class="literal">Backbone.Events</code> without views &amp; models.</p><p>There are three primary kinds of events that your views will bind to:</p><div class="itemizedlist"><ul type="disc"><li>
-DOM events within the view’s <code class="literal">this.el</code> element
-</li><li>
-Backbone events triggered by the view’s model or collection
-</li><li>
-Custom view events
-</li></ul></div><p>TODO: This three-point breakdown is the wrong way to slice this.  Instead of
-"DOM, model/collection, custom" it should be "DOM, events I observe, events I
-publish".  Events that your view observes need to be cleaned up upon disposing
-the view, regardless of where those events are triggered (models, collections,
-or other views, or other arbitrary objects).  Events that your view publishes
-need to be handled in a different way.</p><p>TODO: Consider promoting events and binding/unbinding to its own top-level
-section; this isn’t view-specific, although the view layer is where you’ll be
-doing most of your binding.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_dom_events_within_the_view_element"/>Binding to DOM events within the view element</h4></div></div></div><p>The primary function of a view class is to provide behavior for its markup’s DOM elements.  You can attach event listeners by hand if you like:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- templates/soundboard.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Honk<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Beep<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b></pre><pre class="programlisting"><b class="hl-keyword">var</b> SoundBoard = Backbone.View.extend({
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">"a.sound"</i></b>).bind(<b class="hl-string"><i style="color:red">"click"</i></b>, <b class="hl-keyword">this</b>.playSound);
-  },
-
-  playSound: <b class="hl-keyword">function</b>() {
-    <i class="hl-comment" style="color: silver">// play sound for this element</i>
-  }
-});</pre><p>But Backbone provides an easier and more declarative approach with the <code class="literal">events</code> hash:</p><pre class="programlisting"><b class="hl-keyword">var</b> SoundBoard = Backbone.View.extend({
-  events: {
-    <b class="hl-string"><i style="color:red">"click a.sound"</i></b>: <b class="hl-string"><i style="color:red">"playSound"</i></b>
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
-  },
-
-  playSound: <b class="hl-keyword">function</b>() {
-    <i class="hl-comment" style="color: silver">// play sound for this element</i>
-  }
-});</pre><p>Backbone will bind the events with the
-<a class="ulink" href="http://documentcloud.github.com/backbone/#View-delegateEvents" target="_top">Backbone.View.prototype.delegateEvents()</a>
-function.  It binds DOM events with <code class="literal">$.delegate()</code>, whether you’re using the
-<a class="ulink" href="http://api.jquery.com/delegate/" target="_top">jQuery</a> or
-<a class="ulink" href="https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108" target="_top">Zepto</a>
-<code class="literal">.delegate()</code> function.</p><p>It also takes care of binding the event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_events_triggered_by_literal_this_model_literal_or_literal_this_collection_literal"/>Binding to events triggered by <code class="literal">this.model</code> or <code class="literal">this.collection</code></h4></div></div></div><p>In almost every view you write, the view will be bound to a <code class="literal">Backbone.Model</code> or
-<code class="literal">Backbone.Collection</code>, most often with the convenience properties <code class="literal">this.model</code>
-or <code class="literal">this.collection</code>.</p><p>TODO: Make sure we discussed the convenience properties previously?</p><p>Consider a view that displays a collection of <code class="literal">Task</code> models.  It will re-render
-itself when any model in the collection is changed or removed, or when a new
-model is added:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
-  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
-  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
-  id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
-
+}</pre><p>Now that we receive user data with the task’s JSON representation, let’s tell
+our Backbone User model to store the User object. We do that on the task’s
+initializer. Here’s a first cut at that:</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
   initialize: <b class="hl-keyword">function</b>() {
-    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, <b class="hl-keyword">this</b>.render);
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({tasks: <b class="hl-keyword">this</b>.collection}));
+    <b class="hl-keyword">this</b>.user = <b class="hl-keyword">new</b> User(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'user'</i></b>));
   }
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_custom_events"/>Binding to custom events</h4></div></div></div><p>With sufficiently complex views, you may encounter a situation where you want
-one view to change in response to another.</p><p>TODO: Expound on this situation, discuss that it’s unlikely, and you should
-consider whether you should be binding to models instead.  However, sometimes
-it’s useful.</p><p>Consider a simple example with a table of users and a toggle control that
-filters the users to a particular gender:</p><pre class="programlisting">GenderFilter = Backbone.View.extend({
-  events: {
-    <b class="hl-string"><i style="color:red">"click .show-male"</i></b>:   <b class="hl-string"><i style="color:red">"showMale"</i></b>,
-    <b class="hl-string"><i style="color:red">"click .show-female"</i></b>: <b class="hl-string"><i style="color:red">"showFemale"</i></b>,
-    <b class="hl-string"><i style="color:red">"click .show-both"</i></b>:   <b class="hl-string"><i style="color:red">"showBoth"</i></b>
-  },
-
-  showMale: <b class="hl-keyword">function</b>()   { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"male"</i></b>);   },
-  showFemale: <b class="hl-keyword">function</b>() { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"female"</i></b>); },
-  showBoth: <b class="hl-keyword">function</b>()   { <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-string"><i style="color:red">"both"</i></b>);   }
-});
-
-UsersTable = Backbone.View.extend({
+});</pre><p>We can make a couple of improvements to the above. First, you’ll soon realize
+that you might be setting the user outside of the initialize as well. Second,
+the initializer should check whether there is user data in the first place. To
+address the first concern, let’s create a setter for the object. Backbone
+provides a handy function called <code class="literal">has</code> that returns true or false depending on
+whether the provided attribute is set for the object:</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
   initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.filterView = <b class="hl-keyword">new</b> UserFilter();
-    <b class="hl-keyword">this</b>.filterView.bind(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-keyword">this</b>.filterByGender);
-  },
-
-  filterByGender: <b class="hl-keyword">function</b>(gender) {
-    <b class="hl-keyword">this</b>.filteredCollection = <b class="hl-keyword">this</b>.collection.byGender(gender);
-  }
-});</pre><p><code class="literal">GenderFilter</code> is responsible for the filter control, and triggers an event
-with <code class="literal">Backbone.Events.prototype.trigger()</code> when it changes.  <code class="literal">UsersTable</code>
-observes this event, and filters its own collection in response.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_unbinding"/>Cleaning Up: Unbinding</h3></div></div></div><p>In the last section, we discussed three different kinds of event binding in
-your <code class="literal">Backbone.Views</code> classes: DOM events, model/collection events, and custom
-view events.  Next we’ll discuss unbinding these events: why it’s a good idea,
-and how to do it.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_why_do_i_have_to_unbind_events"/>Why do I have to unbind events?</h4></div></div></div><p>Consider two views in a Todo app: an index view which contains all the tasks
-that need to be done:</p><div class="figure"><a id="d0e1394"/><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="d0e1405"/><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
-  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
-  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
-  id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
-
-  initialize: <b class="hl-keyword">function</b>() {
-    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, <b class="hl-keyword">this</b>.render);
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({tasks: <b class="hl-keyword">this</b>.collection}));
-  }
-});</pre><p>and the source for the individual task detail view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = Backbone.View.extend({
-  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_detail'</i></b>],
-  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
-  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
-
-  events: {
-    <b class="hl-string"><i style="color:red">"click .comments .form-inputs button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
-  },
-
-  initialize: <b class="hl-keyword">function</b>() {
-    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
-
-    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({task: <b class="hl-keyword">this</b>.model}));
-  },
-
-  createComment: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
-    <b class="hl-keyword">this</b>.model.comments.create(comment);
-  }
-});</pre><p>Each task on the index page links to the detail view for itself. When a user
-follows one of these links and navigates from the index page to the detail
-page, then interacts with the detail view to change a model, the <code class="literal">change</code> event
-on the <code class="literal">TaskApp.tasks</code> collection is fired. One consequence of this is that
-the index view, which is still bound and observing the <code class="literal">change</code> event, will
-re-render itself.</p><p>This is both a functional bug and a memory leak: not only will the index view
-re-render and disrupt the detail display momentarily, but navigating back and
-forth between the views without disposing of the previous view will keep
-creating more views and binding more events on the associated models or
-collections.</p><p>These can be extremely tricky to track down on a production application,
-especially if you are nesting child views. Sadly, there’s no "garbage
-collection" for views in Backbone, so your application needs to manage this
-itself.</p><p>Let’s take a look at how to unbind various kinds of events.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_dom_events"/>Unbinding DOM events</h4></div></div></div><p>When you call <code class="literal">this.remove()</code> in your view, it delegates to <code class="literal">jQuery.remove()</code>
-by invoking <code class="literal">$(this.el).remove()</code>.  This means that jQuery takes care of
-cleaning up any events bound on DOM elements within your view, regardless of
-whether you bound them with the Backbone <code class="literal">events</code> hash or by hand; for
-example, with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, or <code class="literal">$.live()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_model_and_collection_events"/>Unbinding model and collection events</h4></div></div></div><p>If your view binds to events on a model or collection, you are responsible for
-unbinding these events.  You do this with a simple call to
-<code class="literal">this.model.unbind()</code> or <code class="literal">this.collection.unbind()</code>; the
-<a class="ulink" href="http://documentcloud.github.com/backbone/#Events-unbind" target="_top"><code class="literal">Backbone.Events.unbind()</code>
-function</a> removes all callbacks on that object.</p><p>When should we unbind these handlers?  Whenever the view is going away.  This
-means that any pieces of code that create new instances of this view become
-responsible for cleaning up after it.  That doesn’t sound like a very cohesive
-approach, so let’s include the cleanup responsibility on this view.</p><p>TODO: Consider just overriding <code class="literal">Backbone.View.prototype.remove()</code> instead of
-making a new function, since <code class="literal">remove()</code> is very simple.  What are the pros/cons?</p><p>Let’s write a <code class="literal">leave()</code> function on our view that wraps <code class="literal">remove()</code> and handles
-any additional event unbinding we need to do.  As a convention, when we use
-this view elsewhere, we’ll call <code class="literal">leave()</code> instead of <code class="literal">remove()</code> when we’re
-done:</p><pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectionView = Backbone.View.extend({
-  <i class="hl-comment" style="color: silver">// snip...</i>
-
-  initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-  },
-
-  leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.collection.unbind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.remove();
-  }
-
-  <i class="hl-comment" style="color: silver">// snip...</i>
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_keep_track_of_literal_bind_literal_calls_to_unbind_more_easily"/>Keep track of <code class="literal">bind()</code> calls to unbind more easily</h4></div></div></div><p>In the example above, unbinding the collection change event isn’t too much
-hassle; since we’re only observing one thing, we only have to unbind one
-thing.  But even the addition of one line to <code class="literal">leave()</code> is easy to forget, and
-if you bind to multiple events then it only gets more verbose.</p><p>Let’s add a step of indirection in event binding so that we can automatically
-clean up all the events with one call.  We’ll add and use a <code class="literal">bindTo()</code>
-function that keeps track of all the event handlers we bind, and then issue a
-single call to <code class="literal">unbindFromAll()</code> to unbind them:</p><pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectionView = Backbone.View.extend({
-  initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.bindings = [];
-    <b class="hl-keyword">this</b>.bindTo(<b class="hl-keyword">this</b>.collection, <b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-  },
-
-  leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbindFromAll();
-    <b class="hl-keyword">this</b>.remove();
-  },
-
-  bindTo: <b class="hl-keyword">function</b>(source, event, callback) {
-    source.bind(event, callback, <b class="hl-keyword">this</b>);
-    <b class="hl-keyword">this</b>.bindings.push({ source: source, event: event, callback: callback });
-  },
-
-  unbindFromAll: <b class="hl-keyword">function</b>() {
-    _.each(<b class="hl-keyword">this</b>.bindings, <b class="hl-keyword">function</b>(binding) {
-      binding.source.unbind(binding.event, binding.callback);
-    });
-    <b class="hl-keyword">this</b>.bindings = [];
-  }
-});</pre><p>These functions, <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code>, can be extracted into a
-reusable mixin or superclass.  Then, we just have to use <code class="literal">bindTo()</code> instead of
-<code class="literal">model.bind()</code> and be assured that the handlers will be cleaned up during
-<code class="literal">leave()</code>.</p><p>TODO: Is it viable to use Function.caller inside Backbone.Events so this
-functionality is provided by Backbone.Events?
-<a class="ulink" href="https://gist.github.com/158a4172aea28876d0fc" target="_top">https://gist.github.com/158a4172aea28876d0fc</a></p><p>TODO: Wrap <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code> into <code class="literal">Observer</code> which gets mixed
-into <code class="literal">CompositeView</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_custom_events"/>Unbinding custom events</h4></div></div></div><p>With the first two kinds of event binding that we discussed, DOM and
-model/collection, the view is the observer.  The responsibility to clean up is
-on the observer, and here the responsibility consists of unbinding the event
-handler when the view is being removed.</p><p>But other times, our view classes will trigger (emit) events of their own.
-In this case, other objects are the observer, and are responsible for cleaning
-up the event binding when they are disposed.</p><p>However, additionally, when the view itself is disposed of with <code class="literal">leave()</code>, it
-should clean up any event handlers bound on <span class="strong"><strong>itself</strong></span> for events that it
-triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Events.unbind()</code>:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilteringView = Backbone.View.extend({
-  <i class="hl-comment" style="color: silver">// snip...</i>
-
-  events: {
-    <b class="hl-string"><i style="color:red">"click a.filter"</i></b>: <b class="hl-string"><i style="color:red">"changeFilter"</i></b>
-  },
-
-  changeFilter: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">if</b> (someLogic()) {
-      <b class="hl-keyword">this</b>.trigger(<b class="hl-string"><i style="color:red">"filtered"</i></b>, { some: options });
+    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.has(<b class="hl-string"><i style="color:red">'user'</i></b>)) {
+      <b class="hl-keyword">this</b>.setUser(<b class="hl-keyword">new</b> User(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'user'</i></b>)));
     }
   },
 
-  leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbind(); <i class="hl-comment" style="color: silver">// Clean up any event handlers bound on this view</i>
-    <b class="hl-keyword">this</b>.remove();
+  setUser: <b class="hl-keyword">function</b>(user) {
+    <b class="hl-keyword">this</b>.user = user;
   }
+});</pre><p>The final setup allows for a nice clean interface to a task’s user, by
+accessing the task property of the user instance.</p><pre class="programlisting"><b class="hl-keyword">var</b> task = Task.fetch(<span class="hl-number">1</span>);
+console.log(task.get(<b class="hl-string"><i style="color:red">'title'</i></b>) + <b class="hl-string"><i style="color:red">' is being worked on by '</i></b> + task.user.get(<b class="hl-string"><i style="color:red">'name'</i></b>));</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_has_many_associations"/>Has many associations</h4></div></div></div><p>You can take a similar approach to set up a <code class="literal">has_many</code> association on the
+client side models. This time, however, the object’s property will be a
+Backbone collection.</p><p>Following the example, say we need access to a user’s tasks. Let’s set up the
+JSON representation on the Rails side first:</p><pre class="programlisting"><b class="hl-keyword">class</b> User &lt; ActiveRecord::Base
+  has_many :tasks
 
-  <i class="hl-comment" style="color: silver">// snip...</i>
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_establish_a_convention_for_consistent_and_correct_unbinding"/>Establish a convention for consistent and correct unbinding</h4></div></div></div><p>There’s no built-in garbage collection for Backbone’s event bindings, and
-forgetting to unbind can cause bugs and memory leaks. The solution is to make
-sure you unbind events and remove views when you leave them. Our approach to
-this is two-fold: write a set of reusable functions that manage cleaning up a
-view’s bindings, and use these functions where ever views are instantiated: in
-<code class="literal">Router</code> instances, and in composite views.  We’ll take a look at these
-concrete, reusable approaches in the next two sections about <code class="literal">SwappingRouter</code>
-and <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router"/>Swapping router</h3></div></div></div><p>TODO: Build out an example in the example_app with swapping router, probably
-task list vs task detail.</p><p>When switching from one view to another, we should clean up the previous view.
-We discussed previously a convention of writing a <code class="literal">view.leave()</code>
-Let’s augment our view to include the ability to clean itself up by "leaving"
-the DOM:</p><pre class="programlisting"><b class="hl-keyword">var</b> MyView = Backbone.View.extend({
-  <i class="hl-comment" style="color: silver">// ...</i>
-
-  leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbind();
-    <b class="hl-keyword">this</b>.remove();
+  <b class="hl-keyword">def</b> as_json(options = <b class="hl-keyword">nil</b>)
+    <b class="hl-keyword">super</b>((options || {}).merge(include: { tasks: { only: [:body, :due_date] } }))
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre><p>Now, on the Backbone <code class="literal">User</code> model’s initializer, let’s call the <code class="literal">setTasks</code>
+function:</p><pre class="programlisting"><b class="hl-keyword">var</b> User = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> tasks = <b class="hl-keyword">new</b> Tasks.reset(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'tasks'</i></b>));
+    <b class="hl-keyword">this</b>.setTasks(tasks);
   },
 
-  <i class="hl-comment" style="color: silver">// ...</i>
-});</pre><p>The <code class="literal">unbind()</code> and <code class="literal">remove()</code> functions are provided by <code class="literal">Backbone.Events</code> and
-<code class="literal">Backbone.Events.unbind()</code> will remove all callbacks registered on the view,
-and <code class="literal">remove()</code> will remove the view’s element from the DOM.</p><p>In simple cases, we replace one full page view with another full page (less any
-shared layout). We introduce a convention that all actions underneath one
-<code class="literal">Router</code> share the same root element, and define it as <code class="literal">el</code> on the router.</p><p>Now, a <code class="literal">SwappingRouter</code> can take advantage of the <code class="literal">leave()</code> function, and clean
-up any existing views before swapping to a new one.  It swaps into a new view by
-rendering that view into its own <code class="literal">el</code>:</p><pre class="programlisting">Support.SwappingRouter = <b class="hl-keyword">function</b>(options) {
-  Backbone.Router.apply(<b class="hl-keyword">this</b>, [options]);
-};
+  setTasks: <b class="hl-keyword">function</b>(tasks) {
+    <b class="hl-keyword">this</b>.tasks = tasks;
+  }
+});</pre><p>Note that we are setting the relation to an instance of the <code class="literal">Tasks</code> collection.</p><p>TODO: Let’s exapnd upon this, as it isn’t the most flexible solution.  (It is
+a good start.) We are setting the JSON representation of the Rails models to
+suit the Backbone.js concerns.  Additionally, the <code class="literal">Task#as_json</code> method at the
+top is concerned with the User JSON representation.  It should at least delegate
+to User#as_json. Going further, the JSON presentation for consumption by
+Backbone.js should be completely extracted into the JSON API endpoint controller
+action, or even a separate presenter class.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_filters_and_sorting"/>Filters and sorting</h3></div></div></div><p>When using our Backbone models and collections, it’s often handy to filter the
+collections by reusable criteria, or sort them by several different criteria.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_filters"/>Filters</h4></div></div></div><p>To filter a <code class="literal">Backbone.Collection</code>, like with Rails named scopes, define
+functions on your collections that filter by your criteria, using the <code class="literal">select</code>
+function from Underscore.js, and return new instances of the collection class. A
+first implementation might look like this:</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-_.extend(Support.SwappingRouter.<b class="hl-keyword">prototype</b>, Backbone.Router.<b class="hl-keyword">prototype</b>, {
-  swap: <b class="hl-keyword">function</b>(newView) {
-    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.currentView &amp;&amp; <b class="hl-keyword">this</b>.currentView.leave) {
-      <b class="hl-keyword">this</b>.currentView.leave();
-    }
-
-    <b class="hl-keyword">this</b>.currentView = newView;
-    <b class="hl-keyword">this</b>.currentView.render();
-    $(<b class="hl-keyword">this</b>.el).empty().append(<b class="hl-keyword">this</b>.currentView.el);
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+    });
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
+  }
+});</pre><p>Let’s refactor this a bit.  Ideally, the filter functions will reuse logic
+already defined in your model class:</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
   }
 });
 
-Support.SwappingRouter.extend = Backbone.Router.extend;</pre><p>Now all you need to do in a route function is call <code class="literal">swap()</code>, passing in the
-new view that should be rendered. The <code class="literal">swap()</code> function’s job is to call
-<code class="literal">leave()</code> on the current view, render the new view and append it to the
-router’s <code class="literal">el</code>, and finally store who the current view is, so that next time
-<code class="literal">swap()</code> is invoked, it can be properly cleaned up as well.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="swapping-internals"/>SwappingRouter and Backbone internals</h4></div></div></div><p>If the code for <code class="literal">SwappingRouter</code> seems a little confusing, don’t fret: it is,
-thanks to JavaScript’s object model! Sadly, it’s not as simple to just drop in
-the <code class="literal">swap</code> method into <code class="literal">Backbone.Router</code>, or call <code class="literal">Backbone.Router.extend</code> to
-mixin the function we need.</p><p>Our goal here is essentially to create a subclass of <code class="literal">Backbone.Router</code>, and to
-extend it without modifying the original class. This gives us a few benefits:
-first, <code class="literal">SwappingRouter</code> should work with Backbone upgrades. Second, it should be
-<span class="strong"><strong>obvious</strong></span>  and <span class="strong"><strong>intention-revealing</strong></span> when a controller needs to swap views. If
-we chose to just mix in a <code class="literal">swap</code> method, and called it from a direct descendant
-of <code class="literal">Backbone.Router</code>, an unaware (and unlucky) programmer now needs to go on a
-deep source dive in an attempt to figure out where that’s coming from. At least
-with a subclass, the hunt should start at the file where it was defined.</p><p>The procedure used to create <code class="literal">SwappingRouter</code> is onerous thanks to a mix of
-Backbone-isms and just how clunky inheritance is in JavaScript. First off, we
-need to define the constructor, which delegates to the <code class="literal">Backbone.Router</code>
-constructor with the use of <code class="literal">Function#apply</code>. The next block of code uses
-Underscore’s <code class="literal">Object#extend</code> to create the set of functions and properties that
-will become <code class="literal">SwappingRouter</code>. The <code class="literal">extend</code> function takes a destination, in
-this case the empty prototype for <code class="literal">SwappingRouter</code>, and copies in the
-properties in the <code class="literal">Backbone.Router</code> prototype along with our new custom object
-that includes the <code class="literal">swap</code> function.</p><p>Finally, the subclass cake is topped off with some Backbone frosting: setting
-<code class="literal">extend</code>, which is a self-propagating function that all Backbone public classes
-use. Let’s take a quick look at this function, as of Backbone 0.5.3:</p><pre class="programlisting"><b class="hl-keyword">var</b> extend = <b class="hl-keyword">function</b> (protoProps, classProps) {
-  <b class="hl-keyword">var</b> child = inherits(<b class="hl-keyword">this</b>, protoProps, classProps);
-  child.extend = <b class="hl-keyword">this</b>.extend;
-  <b class="hl-keyword">return</b> child;
-};
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
-<i class="hl-comment" style="color: silver">// Helper function to correctly set up the prototype chain, for subclasses.</i>
-<i class="hl-comment" style="color: silver">// Similar to `goog.inherits`, but uses a hash of prototype properties and</i>
-<i class="hl-comment" style="color: silver">// class properties to be extended.</i>
-<b class="hl-keyword">var</b> inherits = <b class="hl-keyword">function</b>(parent, protoProps, staticProps) {
-  <i class="hl-comment" style="color: silver">// sparing our readers the internals of this function... for a deep dive</i>
-  <i class="hl-comment" style="color: silver">// into the dark realms of JavaScript's prototype system, read the source!</i>
-}</pre><p>So, it’s a function that calls <code class="literal">inherits</code> to make a new subclass.  The comments
-reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
-utility functions to allow more class-style inheritance.</p><p>The end result here is that whenever you make a custom controller, internally
-in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
-<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1757"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
-taught you that although it’s more code, it’s hopefully going to save time down
-the road for those maintaining your code.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"/>Composite views</h3></div></div></div><p>TODO: Build out an example in the example_app with composite views.</p><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
-This function is not part of Backbone itself, and is part of our extension
-library to help make views more modular and maintainable. This section goes
-over the Composite View pattern, the <code class="literal">CompositeView</code> class itself, and some
-concerns to keep in mind while creating your views.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_refactoring_from_a_large_view"/>Refactoring from a large view</h4></div></div></div><p>One of the first refactorings you find yourself doing in a non-trivial Backbone
-app is splitting up large views into composable parts. Let’s take another look
-at the <code class="literal">TaskDetail</code> source code from the beginning of this section:</p><pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = Backbone.View.extend({
-  template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_detail'</i></b>],
-  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
-  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
+  }
+});</pre><p>Going further, notice that there are actually two concerns in this function.
+The first is the notion of filtering the collection, and the other is the
+specific filtering criteria (<code class="literal">task.isComplete()</code>).</p><p>Let’s separate the two concerns here, and extract a <code class="literal">filtered</code> function:</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+  }
+});
 
-  events: {
-    <b class="hl-string"><i style="color:red">"click .comments .form-inputs button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
   },
 
-  initialize: <b class="hl-keyword">function</b>() {
-    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.select(criteriaFunction));
+  }
+});</pre><p>We can extract this function into a reusable mixin, abstracting the <code class="literal">Tasks</code>
+collection class using <code class="literal">this.constructor</code>:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.select(criteriaFunction));
+  }
+};
 
-    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
+<b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+  }
+});
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend(_.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
+  }
+}, FilterableCollectionMixin));</pre><p>TODO: Update syntax, use a separate _.extend invocation above.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_propagating_collection_changes"/>Propagating collection changes</h4></div></div></div><p>The <code class="literal">FilterableCollectionMixin</code>, as we’ve written it, will produce a filtered
+collection that does not update when the original collection is changed.  To do
+so, bind to the change, add, and remove events on the source collection,
+reapply the filter function, and repopulate the filtered collection:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> filteredCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
+
+    <b class="hl-keyword">var</b> applyFilter = <b class="hl-keyword">function</b>() {
+      filteredCollection.reset(sourceCollection.select(criteriaFunction));
+    };
+
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, applyFilter);
+
+    applyFilter();
+
+    <b class="hl-keyword">return</b> filteredCollection;
+  }
+};</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_sorting"/>Sorting</h4></div></div></div><p>The simplest way to sort a <code class="literal">Backbone.Collection</code> is to define a <code class="literal">comparator</code>
+function.  This functionality is built in:</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  }
+});</pre><p>If you’d like to provide more than one sort order on your collection, you can
+use an approach similar to the <code class="literal">filtered</code> function above, and return a new
+<code class="literal">Backbone.Collection</code> whose <code class="literal">comparator</code> is overridden.  Call <code class="literal">sort</code> to update
+the ordering on the new collection:</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = <b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    };
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+});</pre><p>Similarly, you can extract the reusable concern to another function:</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    });
+  },
+
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
+    });
+  },
+
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+});</pre><p>And then into another reusable mixin:</p><pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+};
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend(_.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    });
+  },
+
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
+    });
+  }
+}, SortableCollectionMixin));</pre><p>TODO: Update syntax, use a separate _.extend invocation above.</p><p>Just as with the <code class="literal">FilterableCollectionMixin</code> before, the
+<code class="literal">SortableCollectionMixin</code> should observe its source if updates are to propagate
+from one collection to another:</p><pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
+    sortedCollection.comparator = comparator;
+
+    <b class="hl-keyword">var</b> applySort = <b class="hl-keyword">function</b>() {
+      sortedCollection.reset(sourceCollection.models);
+      sortedCollection.sort();
+    };
+
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, applySort);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    applySort);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, applySort);
+
+    applySort();
+
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+};</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_validations"/>Validations</h3></div></div></div><p>The server is the authoritative place for verifying whether data that is being
+stored is valid. Even though backbone.js
+<a class="ulink" href="http://documentcloud.github.com/backbone/#Model-validate" target="_top">exposes an API</a>
+for performing client side validations, when it comes to validating user data
+in a backbone.js application we want to continue to use the very same
+mechanisms on the server side that we’ve used in Rails all along: the
+ActiveModel validations API.</p><p>The challenge is tying the two together: letting your ActiveRecord objects
+reject invalid user data, and having the errors bubble up all the way to the
+interface for user feedback - and having it all be seamless to the user and
+easy for the developer.</p><p>Let’s wire this up. To get started, we’ll add a validation on the task’s title
+attribute on the ActiveRecord model like so:</p><pre class="programlisting"><b class="hl-keyword">class</b> Task &lt; ActiveRecord::Base
+  validates :title, presence: <b class="hl-keyword">true</b>
+<b class="hl-keyword">end</b></pre><p>On the backbone side of the world, we have a Backbone task called
+YourApp.Models.Task:</p><pre class="programlisting">YourApp.Models.Task = Backbone.Model.extend({
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
+});</pre><p>We also have a place where users enter new tasks - just a form on the task
+list.</p><pre class="programlisting">&lt;form&gt;
+  &lt;ul&gt;
+     &lt;li <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"task_title_input"</i></b>&gt;
+       &lt;label <b class="hl-keyword">for</b>=<b class="hl-string"><i style="color:red">"title"</i></b>&gt;Title&lt;/label&gt;
+       &lt;input id=<b class="hl-string"><i style="color:red">"title"</i></b> maxlength=<b class="hl-string"><i style="color:red">"255"</i></b> name=<b class="hl-string"><i style="color:red">"title"</i></b> type=<b class="hl-string"><i style="color:red">"text"</i></b>&gt;
+     &lt;/li&gt;
+     &lt;button <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"submit"</i></b> id=<b class="hl-string"><i style="color:red">"create-task"</i></b>&gt;Create task&lt;/button&gt;
+  &lt;/ul&gt;
+&lt;/form&gt;</pre><p>On the NewTask backbone view, we bind the button’s click event to a new
+function that we’ll call createTask.</p><pre class="programlisting">YourApp.Views.NewTask = Backbone.View.extend({
+  events: {
+    <b class="hl-string"><i style="color:red">"click #create-task"</i></b>: <b class="hl-string"><i style="color:red">"createTask"</i></b>
+  },
+
+  createTask: {
+    <i class="hl-comment" style="color: silver">// grab attribute values from the form</i>
+    <i class="hl-comment" style="color: silver">// storing them on the attributes hash</i>
+    <b class="hl-keyword">var</b> attributes = {};
+    _.each(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form input, form select'</i></b>), <b class="hl-keyword">function</b>(element) {
+      <b class="hl-keyword">var</b> element = $(element);
+      <b class="hl-keyword">if</b>(element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>) != <b class="hl-string"><i style="color:red">"commit"</i></b>) {
+        attributes[element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>)] = element.val();
+      }
+    });
+
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <i class="hl-comment" style="color: silver">// create a new task and save it to the server</i>
+    <b class="hl-keyword">new</b> YourApp.Models.Task(attributes).save({
+        success: <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* handle success */</i> }
+        error:   <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* validation error occurred, show user */</i> }
+      });
+    <b class="hl-keyword">return</b> false;
+  }
+})</pre><p>When you call save() on a backbone model, Backbone will delegate to .sync() and
+create a POST request on the model’s URL where the payload are the attributes
+that you’ve passed onto the save() call.</p><p>The easiest way to handle this in Rails is to use respond_to/respond_with
+available in Rails 3 applciations:</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
+  respond_to :json
+  <b class="hl-keyword">def</b> create
+    task = Task.create(params)
+    respond_with task
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre><p>When the task is created successfully, Rails will render the show action using
+the object that you’ve passed to the respond_with call, so make sure the show
+action is defined in your routes:</p><pre class="programlisting">resources :tasks, only: [:create, :show]</pre><p>When the task cannot be created successfully because some validation constraint
+is not met, the the Rails responder will render the model’s errors as a JSON
+object, and use an HTTP status code of 422, which will alert backbone that it
+there was an error in the request and it was not processed.</p><p>The response from Rails in that case looks something like this:</p><pre class="programlisting">{ <b class="hl-string"><i style="color:red">"title"</i></b>: [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>] }</pre><p>So that two line action in a Rails controller is all we need to talk to our
+backbone models and handle error cases.</p><p>Back to the backbone model’s save() call, Backbone will invoke one of two
+callbacks when it receives a response from the rails app, so we simply pass in
+a hash containing a function to run both for the success and the error cases.</p><p>In the success case, we may want to add the new model instance to a global
+collection of tasks. Backbone will trigger the add event on that collection, so
+there’s your chance for some other view to bind to that event and rerender
+itself so that the new task appears on the page.</p><p>In the error case, however, we want to display inline errors on the form. When
+backbone triggers the error callback, it passes along two parameters: the model
+being saved and the raw response. We have to parse the JSON response and
+iterate through it rendering an inline error on the form corresponding to each
+of the errors. Let’s introduce a couple of new classes that will help along the</p><p>First off is the ErrorList. An ErrorList encapsulates parsing of the raw JSON
+that came in from the server and provides an iterator to easily loop through
+errors:</p><pre class="programlisting">ErrorList = <b class="hl-keyword">function</b> (response) {
+  <b class="hl-keyword">if</b> (response &amp;&amp; response.responseText) {
+    <b class="hl-keyword">this</b>.attributesWithErrors = JSON.parse(response.responseText);
+  }
+};
+
+_.extend(ErrorList.<b class="hl-keyword">prototype</b>, {
+  each: <b class="hl-keyword">function</b> (iterator) {
+    _.each(attributesWithErrors, iterator);
+  },
+
+  size: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> _.size(attributesWithErrors);
+  }
+});</pre><p>Next up is the ErrorView, who’s in charge of taking the errorlist, and
+appending each inline error in the form, providing feedback to the user that
+their input is invalid.</p><pre class="programlisting">ErrorView = Backbone.View.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderError"</i></b>);
   },
 
   render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({task: <b class="hl-keyword">this</b>.model}));
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">".error"</i></b>).removeClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">"p.inline-errors"</i></b>).remove();
+    <b class="hl-keyword">this</b>.options.errors.each(<b class="hl-keyword">this</b>.renderError);
   },
 
-  createComment: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
-    <b class="hl-keyword">this</b>.model.comments.create(comment);
+  renderError: <b class="hl-keyword">function</b>(errors, attribute) {
+    <b class="hl-keyword">var</b> errorString = errors.join(<b class="hl-string"><i style="color:red">", "</i></b>);
+    <b class="hl-keyword">var</b> field = <b class="hl-keyword">this</b>.fieldFor(attribute);
+    <b class="hl-keyword">var</b> errorTag = $(<b class="hl-string"><i style="color:red">'&lt;p&gt;'</i></b>).addClass(<b class="hl-string"><i style="color:red">'inline-errors'</i></b>).text(errorString);
+    field.append(errorTag);
+    field.addClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+  },
+
+  fieldFor: <b class="hl-keyword">function</b>(attribute) {
+    <b class="hl-keyword">return</b> $(<b class="hl-keyword">this</b>.options.el).find(<b class="hl-string"><i style="color:red">'[id*="_'</i></b> + attribute + <b class="hl-string"><i style="color:red">'_input"]'</i></b>).first();
   }
-});</pre><p>The view class references a template, which renders out the HTML for this page:</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span>
-
-<span class="hl-attribute" style="color: #F5844C">&lt;section</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;ul&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">task.comments.each(function(comment)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-      <span class="hl-attribute" style="color: #F5844C">&lt;li&gt;</span>
-        <span class="hl-attribute" style="color: #F5844C">&lt;h4&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
-        <span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span>
-      <span class="hl-attribute" style="color: #F5844C">&lt;/li&gt;</span>
-    <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">}</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-  <span class="hl-attribute" style="color: #F5844C">&lt;/ul&gt;</span>
-
-  <span class="hl-attribute" style="color: #F5844C">&lt;div</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"form-inputs"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
-    <b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;/div&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre><p>There are clearly several concerns going on here: rendering the task, rendering
-the comments that folks have left, and rendering the form to create new
-comments. Let’s separate those concerns. A first approach might be to just
-break up the template files:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/show.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">JST['tasks/details']({</span> <span class="hl-attribute" style="color: #F5844C">task:</span> <span class="hl-attribute" style="color: #F5844C">task</span> <span class="hl-attribute" style="color: #F5844C">})</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span>
-
-<span class="hl-attribute" style="color: #F5844C">&lt;section</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">JST['comments/list']({</span> <span class="hl-attribute" style="color: #F5844C">task:</span> <span class="hl-attribute" style="color: #F5844C">task</span> <span class="hl-attribute" style="color: #F5844C">})</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/section&gt;</span></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/details.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/list.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;ul&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">task.comments.each(function(comment)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-    <span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">JST['comments</span><b class="hl-tag" style="color: #000096">/i</b>tem']({ comment: comment }) %&gt;
-  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">}</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/ul&gt;</span>
-
-<span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">JST['comments</span><b class="hl-tag" style="color: #000096">/n</b>ew']() %&gt;</pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/item.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;h4&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/new.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;div</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"form-inputs"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">id</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
-  <b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre><p>But this is really only half the story. The <code class="literal">TaskDetail</code> view class still
-handles multiple concerns: displaying the task, and creating comments. Let’s
-split that view class up, using the <code class="literal">CompositeView</code> base class:</p><pre class="programlisting">Support.CompositeView = <b class="hl-keyword">function</b>(options) {
-  <b class="hl-keyword">this</b>.children = _([]);
-  Backbone.View.apply(<b class="hl-keyword">this</b>, [options]);
-};
-
-_.extend(Support.CompositeView.<b class="hl-keyword">prototype</b>, Backbone.View.<b class="hl-keyword">prototype</b>, {
-  leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbind();
-    <b class="hl-keyword">this</b>.remove();
-    <b class="hl-keyword">this</b>._leaveChildren();
-    <b class="hl-keyword">this</b>._removeFromParent();
-  },
-
-  renderChild: <b class="hl-keyword">function</b>(view) {
+});</pre><p>Note the fieldFor function. It expects a field with an id containing a certain
+format. Therefore, in order for this to work the form’s HTML must contain a
+matching element. In our case, it was the list item with an id of
+task_title_input.</p><p>When a backbone view’s el is already on the DOM, we need to pass it into the
+view’s constructor. In the case of the ErrorView class, we want to operate on
+the view that contains the form that originated the errors.</p><p>To use these classes, we take the response from the server and pass that along
+to the ErrorList constructor, which we then pass to the ErrorView that will do
+it’s fine job in inserting the inline errors when we call render() on it.
+Putting it all together, our save call’s callbacks now look like this:</p><pre class="programlisting"><b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+<b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> YourApp.Models.Task(attributes);
+model.save({
+  error: <b class="hl-keyword">function</b>(model, response) {
+    <b class="hl-keyword">var</b> errors = <b class="hl-keyword">new</b> ErrorList(response);
+    <b class="hl-keyword">var</b> view   = <b class="hl-keyword">new</b> ErrorView( { el: self.el, errors: errors } );
     view.render();
-    <b class="hl-keyword">this</b>.children.push(view);
-    view.parent = <b class="hl-keyword">this</b>;
-  },
-
-  appendChild: <b class="hl-keyword">function</b>(view) {
-    <b class="hl-keyword">this</b>.renderChild(view);
-    $(<b class="hl-keyword">this</b>.el).append(view.el);
-  },
-
-  renderChildInto: <b class="hl-keyword">function</b>(view, container) {
-    <b class="hl-keyword">this</b>.renderChild(view);
-    $(container).empty().append(view.el);
-  },
-
-  _leaveChildren: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.children.chain().clone().each(<b class="hl-keyword">function</b>(view) {
-      <b class="hl-keyword">if</b> (view.leave)
-        view.leave();
-    });
-  },
-
-  _removeFromParent: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">if</b> (<b class="hl-keyword">this</b>.parent)
-      <b class="hl-keyword">this</b>.parent._removeChild(<b class="hl-keyword">this</b>);
-  },
-
-  _removeChild: <b class="hl-keyword">function</b>(view) {
-    <b class="hl-keyword">var</b> index = <b class="hl-keyword">this</b>.children.indexOf(view);
-    <b class="hl-keyword">this</b>.children.splice(index, <span class="hl-number">1</span>);
   }
-});
-
-Support.CompositeView.extend = Backbone.View.extend;</pre><p>TODO: Re-link to swapping-internals anchor once <a class="ulink" href="https://github.com/schacon/git-scribe/issues/33" target="_top">https://github.com/schacon/git-scribe/issues/33</a> is fixed</p><p>Similar to the <code class="literal">SwappingRouter</code>, the <code class="literal">CompositeView</code> base class solves common
-housekeeping problems by establishing a convention. See the Swapping Router and
-Backbone internals section for an in-depth analysis of how this subclassing
-pattern works.</p><p>Now our <code class="literal">CompositeView</code> maintains an array of its immediate children as
-<code class="literal">this.children</code>.  With this reference in place, a parent view’s <code class="literal">leave()</code> method
-can invoke <code class="literal">leave()</code> on its children, ensuring that an entire tree of composed
-views is cleaned up properly.</p><p>For child views that can dismiss themselves, such as dialog boxes, children
-maintain a back-reference at <code class="literal">this.parent</code>. This is used to reach up and call
-<code class="literal">this.parent.removeChild(this)</code> for these self-dismissing views.</p><p>Making use of <code class="literal">CompositeView</code>, we split up the <code class="literal">TaskDetail</code> view class:</p><pre class="programlisting"><b class="hl-keyword">var</b> TaskDetail = CompositeView.extend({
-  tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
-  id: <b class="hl-string"><i style="color:red">'task'</i></b>,
-
-  initialize: <b class="hl-keyword">function</b>() {
-    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderDetails"</i></b>);
-    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.renderDetails);
+});</pre><p>There still is a part of this action that doesn’t feel quite right, and that’s
+the fact that we are looping through the elements in a form in order to build
+the attributes hash for the new object, which is an entirely separate concern.
+Let’s extend the Backbone.Model prototype so that it can handle saving from
+forms and we can reuse it throughout the app.</p><p>TODO: Introduce FormSerializer class or referenceBackbone.Form or some
+construct for encapsulating the serialization</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_model_relationships"/>Model relationships</h3></div></div></div><p>In any non-trivial application, you will have relationships in your domain model
+that are valuable to express on the client side.  For example, consider a
+contact management application where each person in your contact list has many
+phone numbers, each of a different kind.</p><p>Or, consider a project planning application where there are Teams, Members, and
+Projects as resources (models and collections).  There are relationships between
+each of these primary resources, and those relationships in turn may be exposed
+as first-class resources: a Membership to link a Team and a Member, or a
+Permission to link a Team with a Project.  These relationships are often exposed
+as first-class models so they can be created and destroyed the same way as other
+models, and so that additional domain information about the relationship, such
+as a duration, rate, or quantity, can be described.</p><p>These model relationships don’t have to be persisted by a relational database.
+In a chatroom application whose data is persisted in a key-value store, the data
+could still be modeled as a Room which has many Messages, as well as Memberships
+that link the Room to Users.  A content management application that stores its
+data in a document database still has the notion of hierarchy, where a Site
+contains many Pages, each of which is constitutes of zero or more Sections.</p><p>In a vanilla Rails application, the object model is describe on the server side
+with ActiveRecord subclasses, and exposed to the Backbone.js client through a
+JSON HTTP API.  You have a few choices to make when designing this API, largely
+focused on the (bundling/locus/concordance/co-habitance/dependency/???) of data — when you handle a request for one resource, which of its associated resources
+(if any) do you deliver, too?</p><p>Then, on the client side, you have a wide degree of choice in how to model the
+relationships, when to eagerly pre-fetch associations and when to lazily defer
+loading, and whether to employ a supporting library to help define your model
+relationships.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_relations_in_the_task_app"/>Relations in the Task App</h4></div></div></div><p>In the example application, there are Users which have many Tasks through
+Lists. Each Task has many Comments and Attachments.</p><div class="informalfigure"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="image/TaskAppEntityRelationships.png" align="middle" width="100%" alt="image/TaskAppEntityRelationships.png"/></td></tr></table></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_deciding_how_to_deliver_data_to_the_client"/>Deciding how to deliver data to the client</h4></div></div></div><p>Before you decide how to model your JSON API or how to declare, your client-side model
+relationships, step back and consider the user experience of your application.
+For TaskApp, we decided to have interactions as follows:</p><div class="itemizedlist"><ul type="disc"><li>
+A user signs up or logs in
+</li><li>
+The user is directed to their dashboard
+</li><li>
+The dashboard shows all lists and the tasks on each list, but not the
+  comments or attachments.
+</li><li>
+When a user views the details of an individual task, the comments and
+  attachments for that task are displayed.
+</li></ul></div><p>This leads us to see that the Lists and Tasks for a user are used immediately
+upon navigating to the dasboard, but the Comment and Attachment data for a Task
+are not needed upon initial page load, and are possibly never needed at all.</p><p>Let’s say that we are also planning for the user to have continuous network
+access, but not to necessarily have a high speed connection.  Also, users tend
+to view their lists of tasks frequently, but rarely view the comments and
+attachments.</p><p>Based on this, we will bootstrap the collections of Lists and Tasks inside the
+dashboard, and defer loading of associated Comments and Attachments until after
+the user clicks through to a task.</p><p>We could have selected from several other alternatives, including:</p><div class="itemizedlist"><ul type="disc"><li>
+Don’t preload any information, and deliver only static assets (HTML, CSS, JS)
+  on the dashboard request.  Fetch all resources over separate XHR calls.  This
+  can provide for a faster initial page load, at the cost of a longer time to
+  actual interactivity: although the byte size of the page plus data is roughly
+  the same, the overhead of additional HTTP requests incurs the extra load time.
+</li><li>
+Preload all the information, including Comments and Attachments.  This would
+  work well if we expected users to frequently access the comments and
+  attachments of many tasks.
+</li><li>
+Use localStorage as the primary storage engine, and sync to the Rails server
+  in the background.  This would be advantageous if we expected network access
+  to be intermittent, although it incurs the additional complexity of having to
+  resolve conflicts on the server if two clients submit conflicting updates.
+</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_designing_the_http_json_api"/>Designing the HTTP JSON API</h4></div></div></div><p>Now that we know we’ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we should decide how to deliver the deferred content.  We have two
+options here.  Our goal is to fetch to comments and attachments for an
+individual task.</p><p>One way we could approach this is the issue separate API calls for each
+nested resource:</p><pre class="programlisting">$ curl http://tasksapp.local:3000/tasks/78/comments.json | ppjson
+[
+  {
+    "id": 208,
+    "user_id": 3,
+    "body": "What do you think of this mock? (See attachment)"
   },
-
-  render: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.renderLayout();
-    <b class="hl-keyword">this</b>.renderDetail();
-    <b class="hl-keyword">this</b>.renderCommentsList();
-  },
-
-  renderLayout: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]());
-  },
-
-  renderDetails: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> detailsMarkup = JST[<b class="hl-string"><i style="color:red">'tasks/details'</i></b>]({ task: <b class="hl-keyword">this</b>.model });
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.task-details'</i></b>).html(detailsMarkup);
-  },
-
-  renderCommentsList: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> commentsList = <b class="hl-keyword">new</b> CommentsList({ model: <b class="hl-keyword">this</b>.model });
-    <b class="hl-keyword">var</b> commentsContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'comments'</i></b>);
-    <b class="hl-keyword">this</b>.renderChildInto(commentsList, commentsContainer);
+  {
+    "id": 209,
+    "user_id": 1,
+    "body": "Looks great!  I'll implement that."
   }
-});</pre><pre class="programlisting"><b class="hl-keyword">var</b> CommentsList = CompositeView.extend({
-  tagName: <b class="hl-string"><i style="color:red">'ul'</i></b>,
+]
 
-  initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.renderComments);
-  },
-
-  render: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.renderLayout();
-    <b class="hl-keyword">this</b>.renderComments();
-    <b class="hl-keyword">this</b>.renderCommentForm();
-  },
-
-  renderLayout: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/list'</i></b>]());
-  },
-
-  renderComments: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> commentsContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'comments-list'</i></b>);
-    commentsContainer.html(<b class="hl-string"><i style="color:red">''</i></b>);
-
-    <b class="hl-keyword">this</b>.model.comments.each(<b class="hl-keyword">function</b>(comment) {
-      <b class="hl-keyword">var</b> commentMarkup = JST[<b class="hl-string"><i style="color:red">'comments/item'</i></b>]({ comment: comment });
-      commentsContainer.append(commentMarkup);
-    });
-  },
-
-  renderCommentForm: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> commentForm = <b class="hl-keyword">new</b> CommentForm({ model: <b class="hl-keyword">this</b>.model });
-    <b class="hl-keyword">var</b> commentFormContainer = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-form'</i></b>);
-    <b class="hl-keyword">this</b>.renderChildInto(commentForm, commentFormContainer);
+$ curl http://tasksapp.local:3000/tasks/78/attachments.json | ppjson
+[
+  {
+    "id": "32",
+    "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
   }
-});</pre><pre class="programlisting"><b class="hl-keyword">var</b> CommentForm = CompositeView.extend({
+]</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>We will authenticate API requests with cookies, just like normal user
+login, so the actual curl request would need to include a cookie from a logged
+in user.</p></div><p>This approach has the advantage of adhering more to convention, and requiring
+less code in both the server-side JSON presentation and the client-side JSON
+parsing.  Its disadvantage is performance: to fetch a task’s associated data, we
+need to send 2 HTTP requests.  When more kinds of associated resources are added
+in the future, the number of requests will go up.</p><p>Another way we could approach this is to embed the comment and attachment data in
+the JSON representation of an individual task, and deliver this data from the
+"/tasks/:id" endpoint:</p><pre class="programlisting">$ curl http://tasksapp.local:3000/tasks/78.json | ppjson
+{
+  "id": 78,
+  "user_id": 1,
+  "title": "Clean up landing page",
+  "comments": [
+    {
+      "id": 208,
+      "user_id": 3,
+      "body": "What do you think of this mock? (See attachment)"
+    },
+    {
+      "id": 209,
+      "user_id": 1,
+      "body": "Looks great!  I'll implement that."
+    }
+  ]
+  "attachments": [
+    {
+      "id": "32",
+      "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+    }
+  ],
+  /* some attributes left out for clarity */
+}</pre><p>This approach involves additional code in both producing the JSON on the server
+side and parsing the JSON on the client side.  We’ll take this approach for the
+example application, both because it requires fewer HTTP requests and because
+it’s a more interesting example and illustrates the technique of parsing child
+models in Backbone.js.</p><p>Now that we know we’ll bootstrap the Lists and Tasks and defer the Comments and
+Associations, we know that our HTTP JSON API should support at least the
+following Rails routes:</p><pre class="programlisting">resources :lists, :only =&gt; [:create, :update, :delete]
+resources :tasks, :only =&gt; [:show, :create, :update, :delete]</pre><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3><p>In some applications, you choose to expose a user-facing API.  It’s often
+valuable to dogfood this endpoint by making use of it from your own Backbone
+code.  Often these APIs will be scoped under an "/api" namespace, possibly with
+an API version namespace as well.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_implementing_the_api_presenting_the_json"/>Implementing the API: presenting the JSON</h4></div></div></div><p>TODO: Expand outline</p><p>Outline: For building the JSON presentation, we have a few options.  The easiest
+thing is to override Task#as_json, although this isn’t really where this
+presentation concern belongs.  Better options to construct the JSON include: in
+the controller, in a builder-like view, in a separate presentation object.
+Mention <a class="ulink" href="https://github.com/nesquena/rabl" target="_top">https://github.com/nesquena/rabl</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_parsing_the_json_and_instantiating_client_side_models"/>Parsing the JSON and instantiating client-side models</h4></div></div></div><p>TODO: Expand outline</p><p>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
+(parse not invoked during reset, only fetch/set etc)
+Discuss <a class="ulink" href="https://github.com/PaulUithol/Backbone-relational" target="_top">https://github.com/PaulUithol/Backbone-relational</a></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_duplicating_business_logic_across_the_client_and_server"/>Duplicating business logic across the client and server</h3></div></div></div><p>When you’re building a multi-tier application where business logic is spread
+across tiers, one big challenge you face is to avoid duplicating that logic
+across tiers.  There is a tradeoff here, between duplication and performance.
+It’s desirable to have one and only one implementation of a partciular concern
+in your domain, but it’s also desirable for your application to perform
+responsively.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_an_example_model_validations"/>An example: model validations</h4></div></div></div><p>For example, let’s say that a user must have an email address.</p><p>At one end of the scale, there is no duplication: all business logic is defined
+in one tier, and other tiers access the logic by remote invocation.  Your Rails
+<code class="literal">Member</code> model provides a validation:</p><pre class="programlisting"><b class="hl-keyword">class</b> Member &lt; ActiveRecord::Base
+  validate :email, :presence =&gt; <b class="hl-keyword">true</b>
+<b class="hl-keyword">end</b></pre><p>The Backbone view attempts to persist the Member as usual, binding to its
+<code class="literal">error</code> event to handle the server side error:</p><pre class="programlisting"><b class="hl-keyword">var</b> MemberFormView = Backbone.View.extend({
   events: {
-    <b class="hl-string"><i style="color:red">"click button"</i></b>: <b class="hl-string"><i style="color:red">"createComment"</i></b>
+    <b class="hl-string"><i style="color:red">"submit form"</i></b>: <b class="hl-string"><i style="color:red">"submit"</i></b>
   },
 
   initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.model = <b class="hl-keyword">this</b>.options.model;
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.bindTo(<b class="hl-keyword">this</b>.model, <b class="hl-string"><i style="color:red">"error"</i></b>, <b class="hl-keyword">this</b>.error);
   },
 
   render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/new'</i></b>]);
+    <i class="hl-comment" style="color: silver">// render form...</i>
   },
 
-  createComment: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> comment = <b class="hl-keyword">new</b> Comment({ text: $(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val() });
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'.new-comment-input'</i></b>).val(<b class="hl-string"><i style="color:red">''</i></b>);
-    <b class="hl-keyword">this</b>.model.comments.create(comment);
+  submit: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attributes = <b class="hl-keyword">new</b> FormSerializer(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form'</i></b>)).attributes();
+    <b class="hl-keyword">this</b>.model.save(attributes);
+  },
+
+  error: <b class="hl-keyword">function</b>(model, errorResponse) {
+    <b class="hl-keyword">new</b> ErrorView(errorResponse, <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form'</i></b>)).render();
   }
-});</pre><p>Along with this, remove the <code class="literal">&lt;%= JST(…) %&gt;</code> template nestings, allowing the
-view classes to assemble the templates instead. In this case, each template
-contains placeholder elements that are used to wrap child views:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/show.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"task-details"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b>
+});</pre><p>This assumes an <code class="literal">ErrorView</code> class which is able to parse the error hash returned
+from Rails, which looks like this when served as JSON:</p><pre class="programlisting">{
+  <b class="hl-string"><i style="color:red">"email"</i></b>: [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>]
+}</pre><p>An implementation of <code class="literal">ErrorView</code> might look like this:</p><pre class="programlisting"><b class="hl-keyword">var</b> ErrorView = <b class="hl-keyword">function</b>(errorResponse, form) {
+  <b class="hl-keyword">this</b>.form = $(form);
+  <b class="hl-keyword">this</b>.errors = JSON.parse(errorResponse.responseText);
+};
 
-<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- tasks/details.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;input</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"checkbox"</span><span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.isComplete()</span> <span class="hl-attribute" style="color: #F5844C">?</span> <span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">checked</span>=<span class="hl-value" style="color: #993300">"checked"</span><span class="hl-attribute" style="color: #F5844C">'</span> <span class="hl-attribute" style="color: #F5844C">:</span> <span class="hl-attribute" style="color: #F5844C">''</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span><b class="hl-tag" style="color: #000096"> /&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;h2&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h2&gt;</span></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/list.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;ul</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"comments-list"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/ul&gt;</b>
+_.extend(ErrorView.<b class="hl-keyword">prototype</b>, {
+  render: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.form.$(<b class="hl-string"><i style="color:red">".error"</i></b>).removeClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.form.$(<b class="hl-string"><i style="color:red">"p.inline-errors"</i></b>).remove();
+    <b class="hl-keyword">this</b>.errors.each(<b class="hl-keyword">this</b>.renderError);
+  },
 
-<b class="hl-tag" style="color: #000096">&lt;section</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"new-comment-form"</span><b class="hl-tag" style="color: #000096">&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/section&gt;</b></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/item.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;h4&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">comment.user.escape('name')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/h4&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;p&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">comment.escape('text')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/p&gt;</span></pre><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- comments/new.jst --&gt;</i>
-<b class="hl-tag" style="color: #000096">&lt;label</b> <span class="hl-attribute" style="color: #F5844C">for</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span><b class="hl-tag" style="color: #000096">&gt;</b>Add comment<b class="hl-tag" style="color: #000096">&lt;/label&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;textarea</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"new-comment-input"</span> <span class="hl-attribute" style="color: #F5844C">cols</span>=<span class="hl-value" style="color: #993300">"30"</span> <span class="hl-attribute" style="color: #F5844C">rows</span>=<span class="hl-value" style="color: #993300">"10"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/textarea&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;button&gt;</b>Add Comment<b class="hl-tag" style="color: #000096">&lt;/button&gt;</b></pre><p>There are several advantages to this approach:</p><div class="itemizedlist"><ul type="disc"><li>
-Each view class has a smaller and more cohesive set of responsibilities.
-</li><li>
-The comments view code, extracted and decoupled from the task view code, can
-  now be reused on other domain objects with comments.
-</li><li>
-The task view performs better, since adding new comments or updating the task
-  details will only re-render the pertinent section, instead of re-rendering the
-  entire task + comments composite.
-</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_cleaning_up_views_properly"/>Cleaning up views properly</h4></div></div></div><p>We now have a full set of tools to clean up views properly.</p><p>TODO: Wrap up and re-state the "cleaning up, swappingrouter, compositeview" sections.  Mix <code class="literal">Observer</code> into <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_forms"/>Forms</h3></div></div></div><p>Who likes writing form code by hand?  Rails' form builder API greatly helps
-reduce application code.  We aim to maintain a similar level of abstraction in
-our Backbone application code.  Let’s take a look at what we need from form
-building code to achieve this.</p><p>We have a few requirements when it comes to handling forms.  We need to:</p><div class="itemizedlist"><ul type="disc"><li>
-Build form markup and populate it with model values
-</li><li>
-Serialize a form into a model for validation and persistence
-</li><li>
-Display error messages
-</li></ul></div><p>Additionally, it’s nice to:</p><div class="itemizedlist"><ul type="disc"><li>
-Reduce boilerplate
-</li><li>
-Render consistent and stylable markup
-</li><li>
-Automatically build form structure from data structure
-</li></ul></div><p>Let’s look at the requirements one-by-one and compare approaches.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_building_markup"/>Building markup</h4></div></div></div><p>Our first requirement is the ability to build markup.  For example, consider a
-Rails model <code class="literal">User</code> that has a username and password.  We might want to build
-form markup that looks like this:</p><pre class="programlisting">&lt;form&gt;
-  &lt;li&gt;
-    &lt;label for="email"&gt;Email&lt;/label&gt;
-    &lt;input type="text" id="email" name="email"&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;label for="password"&gt;Password&lt;/label&gt;
-    &lt;input type="password" id="password" name="password"&gt;
-  &lt;/li&gt;
-&lt;/form&gt;</pre><p>One approach you could take is writing the full form markup by hand.  You could
-create a template available to Backbone via JST that contains the raw HTML.  If
-you took the above markup and saved it into <code class="literal">app/templates/users/form.jst</code> then
-it would be accessible as <code class="literal">JST["users/form"]()</code>.</p><p>You <span class="strong"><strong>could</strong></span> write all the HTML by hand, but we’d like to avoid that.</p><p>Another route that might seem appealing is reusing the Rails form builders
-through the 3.1 asset pipeline.  Consider <code class="literal">app/templates/users/form.jst.ejs.erb</code>
-which is processed first with ERb, and then made available as a JST template.
-There are a few concerns to address, such as including changing the EJS or ERb template
-delimiters <code class="literal">&lt;% %&gt;</code> to not conflict and mixing the Rails helper modules into the
-Tilt::ERbTemplate rendering context.  Yet, this approach still only generates
-markup; it doesn’t serialize forms into data hashes or Backbone models.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_serializing_forms"/>Serializing forms</h4></div></div></div><p>The second requirement is to serialize forms into objects suitable for setting
-Backbone model attributes.  Assuming the markup we discussed above, you could
-approach this manually:</p><pre class="programlisting"><b class="hl-keyword">var</b> serialize = <b class="hl-keyword">function</b>(form) {
-  <b class="hl-keyword">var</b> elements = $(<b class="hl-string"><i style="color:red">'input, select, textarea'</i></b>, form);
+  renderError: <b class="hl-keyword">function</b>(errors, attribute) {
+    <b class="hl-keyword">var</b> errorString = errors.join(<b class="hl-string"><i style="color:red">", "</i></b>);
+    <b class="hl-keyword">var</b> field = <b class="hl-keyword">this</b>.form.fieldFor(attribute);
+    <b class="hl-keyword">var</b> errorTag = $(<b class="hl-string"><i style="color:red">'&lt;p&gt;'</i></b>).addClass(<b class="hl-string"><i style="color:red">'inline-errors'</i></b>).text(errorString);
+    field.append(errorTag);
+    field.addClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+  },
 
-  <b class="hl-keyword">var</b> serializer = <b class="hl-keyword">function</b>(attributes, element) {
-    <b class="hl-keyword">var</b> element = $(element);
-    attributes[element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>)] = element.val();
+  fieldFor: <b class="hl-keyword">function</b>(attribute) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.form.find(<b class="hl-string"><i style="color:red">'[id*="_'</i></b> + attribute + <b class="hl-string"><i style="color:red">'_input"]'</i></b>).first();
+  }
+});</pre><p>In the case of no duplication, your Backbone <code class="literal">Member</code> model does not declare
+this validation.  An user fills out a form for a creating a new Member in your
+application, submits the form, and, if they forgot to include an email address,
+a validation message is displayed.  The application delegates the entire
+validation concern to the server, as we saw in the validations section.  TODO:
+Link up that reference.</p><p>However, round-tripping validation to the server can be too slow in some cases,
+and we’d like to provide feedback to the end-user more quickly.  To do this, we
+have to implement the validation concern on the client side as well.  Backbone
+provides a facility for validating models during their persistence, so we could
+write:</p><pre class="programlisting"><b class="hl-keyword">var</b> Member = Backbone.Model.extend({
+  validate: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> errors = {};
+    <b class="hl-keyword">if</b> (_.isEmpty(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'email'</i></b>))) {
+      errors.email = [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>];
+    }
+    <b class="hl-keyword">return</b> errors;
+  }
+});</pre><p>Conveniently, we’ve structured the return value of the <code class="literal">validate()</code> function to
+mirror the structure of the Rails error JSON we saw returned above.  Now, we
+could augment the <code class="literal">ErrorView</code> class’s constructor function to handle either
+client-side or server-side errors:</p><pre class="programlisting"><b class="hl-keyword">var</b> ErrorView = <b class="hl-keyword">function</b>(responseOrErrors, form) {
+  <b class="hl-keyword">this</b>.form = $(form);
+
+  <b class="hl-keyword">if</b> (responseOrErrors &amp;&amp; responseOrErrors.responseText) {
+    <b class="hl-keyword">this</b>.errors = JSON.parse(responseOrErrors.responseText);
+  } <b class="hl-keyword">else</b> {
+    <b class="hl-keyword">this</b>.errors = responseOrErrors;
+  }
+};</pre><p>Now, with Backbone, the <code class="literal">validate()</code> function is called for each invocation of
+<code class="literal">set()</code>, so as soon as we set the email address on the Member, its presence is
+validated.  For the user experience with the quickest response, we could observe
+changes on the email form field, updating the model’s <code class="literal">email</code> attribute whenever
+it changes, and displaying the inline error message immediately.</p><p>With ErrorView able to handle either client-side or server-side error messages,
+we have a server-side guarantee of data correctness, <sup>[<a id="d0e2512" href="#ftn.d0e2512" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
+without round-tripping to the server.</p><p>The tradeoff we’ve made is that of duplication; the concern of "what constituted
+a valid Member" is written twice — in two different languages, no less.  In
+some cases this is unavoidable.  In others, there are mitigation strategies for
+reducing the duplication, or at least its impact on your code quality.</p><p>Let’s take a look at what kinds of logic you might find duplicated, and then
+strategies for reducing duplication.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_kinds_of_logic_you_duplicate"/>Kinds of logic you duplicate</h4></div></div></div><p>In Rails applications, our model layer can contain a variety of kinds of
+business logic:</p><div class="itemizedlist"><ul type="disc"><li>
+Validations - This is pretty straightforward, since there’s a well-defined
+  Rails API for validating ActiveModel classes.
+</li><li>
+Querying - Sorting and filtering fall into this category.  Implementations
+  vary slightly, but are often built with <code class="literal">named_scope</code> or class methods
+  returning <code class="literal">ActiveRecord::Relation</code> instances.  Occasionally querying is
+  delegated to class other than the ActiveRecord instance.
+</li><li>
+Callbacks - Similar to validations, there’s a well-defined API for callbacks
+  (or "lifecycle events") on Rails models; <code class="literal">after_create</code> and such.
+</li><li>
+Algorithms - Everything else.  Sometimes they’re implemented on the
+  ActiveRecord instances, but are often split out into other classes and used via
+  composition.  One example from commerce apps would be an <code class="literal">Order</code> summing the
+  costs of its <code class="literal">LineItems</code>.  Or consider an example from an agile project planning
+  application, where a <code class="literal">ProjectPlan</code> recalculates a <code class="literal">Project</code>'s set of <code class="literal">UserStory</code>
+  objects into weekly <code class="literal">Iteration</code> bucket objects.
+</li></ul></div><p>There are often other methods on your Rails models, but they either are a mix of
+the above categories (a <code class="literal">state_machine</code> implementation could be considered a mix
+of validations and callback) and other methods that don’t count as business
+logic — methods that are actually implementing presentation concerns are a
+frequent example.</p><p>It’s worth considering each of these categories in turn, and how they can be
+distributed across client and server to provide a responsive experience.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_validations_2"/>Validations</h4></div></div></div><p>Validations are probably the lowest-hanging fruit.  Since the API for declaring
+validations is largely declarative and well-bounded, we can imagine providing an
+interface that introspects Rails models and builds a client-side implementation
+automatically.  Certainly there are cases which aren’t automatable, such as
+custom Ruby validation code or validations which depend on a very large dataset
+that would be impractical to deliver to the client (say, a zipcode database).
+These cases would need to fall back to either an XHR call to the server-side
+implementation, or a custom-written client-side implementation - a duplicate
+implementation.</p><p>TODO: This is actually what the
+<a class="ulink" href="https://github.com/bcardarella/client_side_validations" target="_top">client_side_validations gem</a>
+does…</p><p>TODO: The csv model branch is a wip for Backbone compliance, pretty neat:
+<a class="ulink" href="https://github.com/bcardarella/client_side_validations/tree/model" target="_top">https://github.com/bcardarella/client_side_validations/tree/model</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_querying"/>Querying</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: I think it’s possible to establish conventions here, similar to
+validations, so that server-side scopes can be converted to client-side
+collection filtering.  However, is this valuable?  Do you actually often
+duplicate the same querying (sorting/filter) concerns across client and server?</p><p>Also, since this whole discussion is about perf, consider tradeoff of paginating
+anyways, that’s interesting, so can you reduce duplication and generate code
+with that too?</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_callbacks"/>Callbacks</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: These often depend on server-side persistence, so would you even want
+them on the client side?  Perhaps, e.g. same lifecycle events for the analagous
+client-side models, but it’s actually likely that your client-side models will
+differ sufficiently (since they’re in the presentation tier) from server-side
+models that these concerns won’t be duplicates, so it’s less of a worry.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_algorithms"/>Algorithms</h4></div></div></div><p>TODO: Expand on outline.</p><p>Outline: General algorithms are often the trickiest. It’s possibly to write the
+logic in JS and then make that available to Ruby, if you have a REALLY large
+piece of logic, but weigh the cost of that overhead against the cost of
+duplicating the logic.  At some point it probably makes sense, though.  Also
+consider JS server-side and wrapping that as a webservice for Rails access…
+would that be easier?  Need specific examples to motivate this well.</p><p><a class="ulink" href="http://c2.com/cgi/wiki?HalfObjectPlusProtocol" target="_top">http://c2.com/cgi/wiki?HalfObjectPlusProtocol</a>
+<a class="ulink" href="http://c2.com/cgi/wiki?HoppPatternLanguage" target="_top">http://c2.com/cgi/wiki?HoppPatternLanguage</a></p><p>TODO: The ErrorList/ErrorView implementation here isn’t quite consistent with
+those in the prior validations chapter.  Refactor for consistency or, if that’s
+inappropriate, do a better job explaining the changes.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_synchronizing_between_clients"/>Synchronizing between clients</h3></div></div></div><p>A big driving force behind the move to rich client web apps is to improve the user experience. These applications are more responsive and can support more detailed and stateful interactions.</p><p>One such interaction involves multiple concurrent users interacting with the same resource in realtime. We can deliver a more seamless experience by propagating users' changes to one another as they take place: when we edit the same document, I see your changes on my screen as you type them. If you’ve ever used Google Docs or Google Wave, you’ve seen this in action.</p><p>So, how can we build this functionality into our own applications?</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_moving_parts"/>The moving parts</h4></div></div></div><p>There are a few different pieces that we’ll put together for this.  The basic parts are:</p><div class="orderedlist"><ol type="1"><li>
+Change events. The fundamental unit of information that we broadcast through our system to keep clients in sync.  Delivered as messages, these events contain enough information for any receiving client to update its own data without needing a full re-fetch from the server.
+</li><li>
+An event source.  With trusted clients, changes can originate directly from the client.  More often, however, we will want the server to arbitrate changes so that it can apply authorization, data filtering, and validations.
+</li><li>
+A transport layer that supports pushing to clients.  <a class="ulink" href="http://www.w3.org/TR/websockets/" target="_top">The WebSocket API</a> is such a transport, and is ideal for its low overhead and latency.
+</li><li>
+Event-driven clients.  Clients should be able to react to incoming change events, ideally handling them with incremental UI updates rather than re-drawing themselves entirely.  Backbone.js helps out in this department, as your client-side application app is likely already set up to handle such events.
+</li><li>
+A message bus.  Separating the concern of message delivery from our main application helps it stay smaller and helps us scale our messaging and application infrastructure separately. There are already several great off-the-shelf tools we can use for this.
+</li></ol></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_putting_it_together_a_look_at_the_lifecycle_of_a_change"/>Putting it together: a look at the lifecycle of a change</h4></div></div></div><p>Revisiting our todo application, we’d like to add the ability to collaborate on todo lists.  Different users will be able to work on the same todo list concurrently.  Several users can look at the same list; adding, changing, and checking off items.</p><p>There are a few technical decisions mentioned previously.  For this example, we will:</p><div class="orderedlist"><ol type="1"><li>
+Use Rails on the server and Backbone on the client.
+</li><li>
+Use the server as the canonical event source so that clients do not have to trust one another.  In particular, we’ll employ an <code class="literal">ActiveRecord::Observer</code> that observes Rails model changes and dispatches a change event.
+</li><li>
+Use <a class="ulink" href="http://faye.jcoglan.com" target="_top">Faye</a> as the messaging backend, which has Ruby and JavaScript implementations for clients and server.  Faye implements the <a class="ulink" href="http://svn.cometd.com/trunk/bayeux/bayeux.html" target="_top">Bayeux protocol</a>, prefers WebSocket for transport (thought it gracefully degrades to long polling, CORS, or JSON-P), and supports a bunch of other goodies like clustering and extensions (inbound- and outbound- message filtering, like Rack middleware).
+</li></ol></div><p>In our application, there are several connected clients viewing the same todo list, and one user Alice makes a change to an item on the list.</p><p>Let’s take a look at the lifecycle of one change event.</p><p>TODO: System-partitioned sequence diagram</p><p>Setup:</p><div class="orderedlist"><ol type="1"><li>
+An instance of JavaScript class <code class="literal">BackboneSync.FayeSubscriber</code> is instantiated on each client.  It is configured with a channel to listen to, and a collection to update.
+</li><li>
+The Faye server is started.
+</li><li>
+The Rails server is started, and several clients are connected and viewing <code class="literal">#todo_lists/1</code>.
+</li></ol></div><p>On the Alice’s machine, the client responsible for the change:</p><div class="orderedlist"><ol type="1"><li>
+Alice clicks "Save" in her view of the list.
+</li><li>
+The "save" view event is triggered.
+</li><li>
+The event handler invokes <code class="literal">this.model.save(attributes)</code>.
+</li><li>
+<code class="literal">Backbone.Model.prototype.save</code> calls <code class="literal">Backbone.sync</code>.
+</li><li>
+<code class="literal">Backbone.sync</code> invokes <code class="literal">$.ajax</code> and issues an HTTP PUT request to the server.
+</li></ol></div><p>On the server:</p><div class="orderedlist"><ol type="1"><li>
+Rails handles the PUT request and calls <code class="literal">#update_attributes</code> on an ActiveRecord model instance.
+</li><li>
+An <code class="literal">ActiveRecord::Observer</code> observing this model gets its <code class="literal">#after_save</code> method invoked.
+</li><li>
+The observer dispatches a change event message to Faye.
+</li><li>
+Faye broadcasts the change event to all subscribers.
+</li></ol></div><p>On all clients:</p><div class="orderedlist"><ol type="1"><li>
+<code class="literal">FayeSubscriber</code> receives the change event message, likely over a WebSocket.
+</li><li>
+The subscriber parses the event message, picking out the event (<code class="literal">update</code>), the <code class="literal">id</code> of the model to update, and a new set of attributes to apply.
+</li><li>
+The <code class="literal">FayeSubscriber</code> fetches the model from the collection, and calls <code class="literal">set</code> on it to update its attributes.
+</li></ol></div><p>Now all the clients have received the changeset that Alice made.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_implementation_step_1_faye_server"/>Implementation: Step 1, Faye server</h4></div></div></div><p>We’ll need to run Faye to relay messages from publishers to subscribers.  For
+Rails apps that depend on Faye, I like to keep a <code class="literal">faye/</code> subdirectory under the
+app root that contains a <code class="literal">Gemfile</code> and <code class="literal">config.ru</code>, and maybe a shell script to
+start Faye:</p><pre class="programlisting">$ cat faye/Gemfile
+
+source 'http://rubygems.org'
+gem 'faye'
+
+$ cat faye/config.ru
+
+require 'faye'
+bayeux = Faye::RackAdapter.new(:mount =&gt; '/faye', :timeout =&gt; 25)
+bayeux.listen(9292)
+
+$ cat faye/run.sh
+
+#!/usr/bin/env bash
+BASEDIR=$(dirname $0)
+BUNDLE_GEMFILE=$BASEDIR/Gemfile
+bundle exec rackup $BASEDIR/config.ru -s thin -E production
+
+$ ./faye/run.sh
+
+&gt;&gt; Thin web server (v1.2.11 codename Bat-Shit Crazy)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:9292, CTRL+C to stop</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_implementing_it_step_2_activerecord_observers"/>Implementing it: Step 2, ActiveRecord observers</h4></div></div></div><p>Now that the message bus is running, let’s walk through the server code.  The
+Rails app’s responsibility is this: whenever a Todo model is created, updated,
+or deleted, publish a change event message.</p><p>This is implemented with an ActiveRecord::Observer.  We provide the
+functionality in a module:</p><pre class="programlisting"><b class="hl-keyword">module</b> BackboneSync
+  <b class="hl-keyword">module</b> Rails
+    <b class="hl-keyword">module</b> Faye
+      mattr_accessor :root_address
+      <b class="hl-keyword">self</b>.root_address = <b class="hl-string"><i style="color:red">'http://localhost:9292'</i></b>
+
+      <b class="hl-keyword">module</b> Observer
+        <b class="hl-keyword">def</b> after_update(model)
+          Event.new(model, :update).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_create(model)
+          Event.new(model, :create).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_destroy(model)
+          Event.new(model, :destroy).publish
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+
+      <b class="hl-keyword">class</b> Event
+        <b class="hl-keyword">def</b> initialize(model, event)
+          @model = model
+          @event = event
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> broadcast
+          Net::HTTP.post_form(uri, :message =&gt; message)
+        <b class="hl-keyword">end</b>
+
+        private
+
+        <b class="hl-keyword">def</b> uri
+          URI.parse(<b class="hl-string"><i style="color:red">"#{BackboneSync::Rails::Faye.root_address}/faye"</i></b>)
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> message
+          { :channel =&gt; channel,
+            :data =&gt; data          }.to_json
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> channel
+          <b class="hl-string"><i style="color:red">"/sync/#{@model.class.table_name}"</i></b>
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> data
+          { @event =&gt; { @model.id =&gt; @model.as_json } }
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+    <b class="hl-keyword">end</b>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre><p>and then mix it into a concrete Observer class in our application.  In this
+case, we name it <code class="literal">TodoObserver</code>:</p><pre class="programlisting"><b class="hl-keyword">class</b> TodoObserver &lt; ActiveRecord::Observer
+  include BackboneSync::Rails::Faye::Observer
+<b class="hl-keyword">end</b></pre><p>This observer is triggered each time a Rails <code class="literal">Todo</code> model is created, updated,
+or destroyed.  When one of these events happen, the Observer sends along a
+message to our message bus, indicating the change.</p><p>Let’s say that a <code class="literal">Todo</code> was just created:</p><p>&gt;&gt; Todo.create(title: "Buy some tasty kale juice")
+⇒ #&lt;Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09"&gt;</p><p>The message looks like this:</p><pre class="programlisting">{
+  <b class="hl-string"><i style="color:red">"channel"</i></b>: <b class="hl-string"><i style="color:red">"/sync/todos"</i></b>,
+  <b class="hl-string"><i style="color:red">"data"</i></b>: {
+    <b class="hl-string"><i style="color:red">"create"</i></b>: {
+      <b class="hl-string"><i style="color:red">"17"</i></b>: {
+        <b class="hl-string"><i style="color:red">"id"</i></b>: <span class="hl-number">17</span>,
+        <b class="hl-string"><i style="color:red">"title"</i></b>: <b class="hl-string"><i style="color:red">"Buy some tasty kale juice"</i></b>,
+        <b class="hl-string"><i style="color:red">"created_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-06T20:49:03Z"</i></b>,
+        <b class="hl-string"><i style="color:red">"updated_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-07T15:01:09Z"</i></b>
+      }
+    }
+  }
+}</pre><p>Received by Faye, the message is broadcast to all clients subscribing to the
+<code class="literal">/sync/todos</code> channel, including our browser-side <code class="literal">FayeSubscriber</code> objects.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_implementing_it_step_3_in_browser_subscribers"/>Implementing it: Step 3, In-browser subscribers</h4></div></div></div><p>In each browser, we want to connect to the Faye server, subscribe to events on
+channels that interest us, and update Backbone collections based on those
+messages.</p><p>Faye runs an HTTP server, and serves up its own client library, so that’s easy to pull in:</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;script</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"text/javascript"</span> <span class="hl-attribute" style="color: #F5844C">src</span>=<span class="hl-value" style="color: #993300">"http://localhost:9292/faye.js"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/script&gt;</b></pre><p>To subscribe to Faye channels, instantiate a <code class="literal">Faye.Client</code> and call <code class="literal">subscribe</code> on it:</p><pre class="programlisting"><b class="hl-keyword">var</b> client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'http://localhost:9292/faye'</i></b>);
+client.subscribe(<b class="hl-string"><i style="color:red">'/some/channel'</i></b>, <b class="hl-keyword">function</b>(message) {
+  <i class="hl-comment" style="color: silver">// handle message</i>
+});</pre><p>When the browser receives messages from Faye, we want to update a Backbone
+collection.  Let’s wrap up those two concerns into a <code class="literal">FayeSubscriber</code>:</p><pre class="programlisting"><b class="hl-keyword">this</b>.BackboneSync = <b class="hl-keyword">this</b>.BackboneSync || {};
+
+BackboneSync.RailsFayeSubscriber = (<b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">function</b> RailsFayeSubscriber(collection, options) {
+    <b class="hl-keyword">this</b>.collection = collection;
+    <b class="hl-keyword">this</b>.client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'&lt;%= BackboneSync::Rails::Faye.root_address %&gt;/faye'</i></b>);
+    <b class="hl-keyword">this</b>.channel = options.channel;
+    <b class="hl-keyword">this</b>.subscribe();
+  }
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.subscribe = <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.client.subscribe(<b class="hl-string"><i style="color:red">"/sync/"</i></b> + <b class="hl-keyword">this</b>.channel, _.bind(<b class="hl-keyword">this</b>.receive, <b class="hl-keyword">this</b>));
   };
 
-  <b class="hl-keyword">return</b> _.inject(elements, serializer, []);
-};
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.receive = <b class="hl-keyword">function</b>(message) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(message, <b class="hl-keyword">function</b>(event, eventArguments) {
+      <b class="hl-keyword">return</b> self[event](eventArguments);
+    });
+  };
 
-<b class="hl-keyword">var</b> form = $(<b class="hl-string"><i style="color:red">'form'</i></b>);
-<b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> MyApp.Models.User();
-<b class="hl-keyword">var</b> attributes = serialize(form);
-model.set(attributes);</pre><p>This gets you started, but has a few shortcomings.  It doesn’t handle nested
-attributes, doesn’t handle typing (consider a date picker input; ideally it
-would set a Backbone model’s attribute to a JavaScript Date instance), and will
-include any <code class="literal">&lt;input type="submit"&gt;</code> elements when constructing the attribute
-hash.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_a_backbone_forms_library"/>A Backbone forms library</h4></div></div></div><p>If you want to avoid writing form markup by hand, your best bet is to use a
-JavaScript form builder.  Since the model data is being read and written by
-Backbone views and models, it’s ideal to have markup construction and form
-serialization implemented on the client-side.</p><p>One implementation in progress is
-[<code class="literal">backbone-forms</code> by Charles Davison](<a class="ulink" href="https://github.com/powmedia/backbone-forms" target="_top">https://github.com/powmedia/backbone-forms</a>).
-It provides markup construction and serialization, as well as a method for
-declaring your schema (data types) to support both of those facilities.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_display_error_messages"/>Display error messages</h4></div></div></div><p>We are assuming, with a hybrid Rails/Backbone application, that at least some of
-your business logic resides on the server.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization"/>Internationalization</h3></div></div></div><p>When you move your application’s view logic onto the client, such as with
-Backbone, you quickly find that the library support for views is not as
-comprehensive as what you have on the server. The
-<a class="ulink" href="http://guides.rubyonrails.org/i18n.html" target="_top">Rails internationalization (i18n) API</a>,
-provided via the <a class="ulink" href="https://rubygems.org/gems/i18n" target="_top">i18n gem</a>, is not automatically
-available to client-side view rendering.  We’d like to take advantage of that
-framework, as well as any localization work you’ve done if you are adding
-Backbone into an existing app.</p><p>There is a JavaScript library, available with Rails support as a Ruby gem
-<a class="ulink" href="https://github.com/fnando/i18n-js" target="_top"><code class="literal">i18n-js</code></a>, that provides access to your i18n
-content as a JavaScript object, similar to how the JST object provides access
-to your templates.</p><p>From the documentation, you can link the locale to the server-side locale:</p><pre class="programlisting">&lt;script type="text/javascript"&gt;
-  I18n.defaultLocale = "&lt;%= I18n.default_locale %&gt;";
-  I18n.locale = "&lt;%= I18n.locale %&gt;";
-&lt;/script&gt;</pre><p>and then use the <code class="literal">I18n</code> JavaScript object to provide translations:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">// translate with your default locale</i>
-I18n.t(<b class="hl-string"><i style="color:red">"some.scoped.translation"</i></b>);
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.update = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> model.set(attributes);
+    });
+  };
 
-<i class="hl-comment" style="color: silver">// translate with explicit setting of locale</i>
-I18n.t(<b class="hl-string"><i style="color:red">"some.scoped.translation"</i></b>, {locale: <b class="hl-string"><i style="color:red">"fr"</i></b>});</pre><p>You can use the <code class="literal">I18n.t()</code> function inside your templates, too:</p><pre class="programlisting">&lt;nav&gt;
-  &lt;a href="#/"&gt;&lt;%= I18n.t("nav.links.home") %&gt;&lt;/a&gt;
-  &lt;a href="#/projects"&gt;&lt;%= I18n.t("nav.links.projects") %&gt;&lt;/a&gt;
-  &lt;a href="#/settings"&gt;&lt;%= I18n.t("nav.links.settings") %&gt;&lt;/a&gt;
-&lt;/nav&gt;</pre><p>Number, currency, and date formatting is available with <code class="literal">i18n.js</code> as well - see
-the <a class="ulink" href="https://github.com/fnando/i18n-js" target="_top">documentation</a> for further usage
-information.</p></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Rails Integration </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Models and collections</td></tr></table></div></body></html>
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.create = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> self.collection.model(attributes);
+      <b class="hl-keyword">return</b> self.collection.add(model);
+    });
+  };
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.destroy = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> self.collection.remove(model);
+    });
+  };
+
+  <b class="hl-keyword">return</b> RailsFayeSubscriber;
+})();</pre><p>Now, for each collection that we’d like to keep in sync, we instantiate a
+corresponding <code class="literal">FayeSubscriber</code>.  Say, in your application bootstrap code:</p><pre class="programlisting">MyApp.Routers.TodosRouter = Backbone.Router.extend({
+  initialize: <b class="hl-keyword">function</b>(options) {
+    <b class="hl-keyword">this</b>.todos = <b class="hl-keyword">new</b> Todos.Collections.TodosCollection();
+    <b class="hl-keyword">new</b> BackboneSync.FayeSubscriber(<b class="hl-keyword">this</b>.todos, { channel: <b class="hl-string"><i style="color:red">'todos'</i></b> });
+    <b class="hl-keyword">this</b>.todos.reset(options.todos);
+  },
+
+  <i class="hl-comment" style="color: silver">// ...</i>
+});</pre><p>Now run the app, and watch browsers receive push updates!</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_testing_synchronization"/>Testing synchronization</h4></div></div></div><p>TODO: Testing client-client sync.  <code class="literal">Capybara.using_session</code> for multiple concurrent actors.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_more_reading"/>More reading</h4></div></div></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Faye implements a messaging protocol called Bayeux: <a class="ulink" href="http://svn.cometd.com/trunk/bayeux/bayeux.html" target="_top">http://svn.cometd.com/trunk/bayeux/bayeux.html</a></p></div><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Read up on idempotent messages.  Check out this solid, readable article <a class="ulink" href="http://devhawk.net/2007/11/09/the-importance-of-idempotence/" target="_top">The Importance of Idempotence</a>.</p></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_uploading_attachments_chapter_unstarted"/>Uploading attachments (Chapter unstarted)</h3></div></div></div><p>Notes:</p><p>If you upload to a backbone model, you can’t do it in a typical async request.
+As in, someBackboneModel.save() can’t just send a file to the server like other
+attributes. We save the attachment in a separate request, and then just swap in
+an attachment id on the model. This does mean that you can have "unclaimed"
+attachments if somebody bails before saving the parent model, but that’s not
+really an issue.</p><p>Assumes XHR2 (at least FormData) so no IE, but simple impl:
+* <a class="ulink" href="https://github.com/mockenoff/HTML5-AJAX-File-Uploader" target="_top">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</a>
+* <a class="ulink" href="https://developer.mozilla.org/en/XMLHttpRequest/FormData" target="_top">https://developer.mozilla.org/en/XMLHttpRequest/FormData</a></p></div><div class="footnotes"><br/><hr width="100" align="left"/><div class="footnote"><p><sup>[<a id="ftn.d0e2512" href="#d0e2512" class="simpara">1</a>] </sup>At least, we
+have a guarantee at the application level - database integrity and the
+possibility of skew between Rails models and DB content is another discussion
+entirely.</p></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s05.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s07.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Routers, Views, and Templates </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Testing</td></tr></table></div></body></html>

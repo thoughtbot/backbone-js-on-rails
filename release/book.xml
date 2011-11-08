@@ -7,9 +7,82 @@
 <articleinfo>
     <title>Backbone.js on Rails</title>
 </articleinfo>
-<section id="_preface_unstarted">
-<title>Preface (Unstarted)</title>
-<simpara>(Unstarted)</simpara>
+<section id="_introduction">
+<title>Introduction</title>
+<simpara>Modern web applications are increasingly rich, shifting their complexity onto
+the client side.  While there are very well-understood approaches embodied in
+mature frameworks to organize server-side code, framworks for organizing your
+client-side code are newer and generally still emerging.  Backbone is one such
+library that provides a set of structures to help you organize your JavaScript
+code.</simpara>
+<simpara>Libraries like jQuery have done a great deal to help abstract across browser
+inconsistencies and provide a high-level API for making AJAX request and
+performing DOM manipulation, but larger rich client-side applications that lack
+decoupled and modular organizational structures often fall to the same few kinds
+of technical debt.</simpara>
+<simpara>These apps are often highly asynchronous and the path of least resistance
+implementation is often to have deeply nested callbacks to describe asynchronous
+concerns, with nested <literal>$.ajax</literal> calls and success/failure conditional concerns
+going several layers deep.</simpara>
+<simpara>Seoncd, rich client-side applications also often involve a layer of state and
+logic on the client side.  One tempting way to implement this is to store domain
+objects or business logic state in the DOM.  However, relying on the DOM as a
+persistence layer - stashing your application&#8217;s data in hidden <literal>&lt;div&gt;</literal> elements
+that you clone and graft and toggle into and out of view, or reading and writing
+to lengthy sets of HTML <literal>data-*</literal> attributes - can quickly get cumbersome,
+repetitive, and confusing.</simpara>
+<simpara>A third common feature in rich client-side apps is presenting multiple views on
+a single domain object.  Consider a web conferencing application with multiple
+views on the memberes of your contact list - each contact is rendered in brief
+inside a list view, and in more specificity in a detail view.  Additionally,
+your conference call history includes information about the people who
+participated.  Each time an individual contact&#8217;s information changes, this
+information needs to cascade to all the view representations.</simpara>
+<simpara>Often this leads to a tight coupling of persistence and presentation: invoking
+<literal>$.ajax</literal> to save a user&#8217;s update and then updating several specific DOM elements
+upon success.</simpara>
+<simpara>Perhaps you&#8217;ve seen code like this:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">TODO: Contact app example, $.ajax nested a few layers deep, updating hidden DOM
+elements or a global object e.g. "window.contactsJSON" as persistence, then
+cascading update to several views</programlisting>
+<simpara>What if it could look like this instead:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">TODO: Backbone refactoring of above example.</programlisting>
+<simpara>By separating business logic, persistence, and presentation concerns, and
+providing a decoupled, event-driven way to cascade changes through a system of
+observers, each module of code is more well-encapsulated and expresses a
+cohesive set of responsibilities without being coupled to outside concerns.
+Your application code becomes easier to test, modify, and extend, and your
+application can manage itself complexity while its feature set grows.</simpara>
+<simpara>It&#8217;s important to note that Backbone is a library, not a framework.  Though the
+distinction may seem subtle, it&#8217;s largely one of intent and purpose.  If you&#8217;re
+coming from a Rails background, you understand that a large part of Rails' value
+is expressing and implementing highly-opinionated conventions that guide
+development decisions.  Backbone doesn&#8217;t do this - conventions for rich
+client-side applications aren&#8217;t as well set-down and individual use cases vary
+more widely.  Instead of trying to serve as "the one way" etc (TODO: elaborate)
+Backbone provides a set of structures that help you organize your application by
+building your own framework with its own set of conventions.</simpara>
+<section id="_why_use_backbone_js">
+<title>Why use Backbone.js</title>
+<simpara>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</simpara>
+<simpara>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</simpara>
+<simpara>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</simpara>
+<simpara>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</simpara>
+<simpara>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</simpara>
+<simpara>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</simpara>
+<simpara>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</simpara>
+</section>
+<section id="_the_example_application">
+<title>The Example Application</title>
+<simpara>Rails 3.1.0.rc5</simpara>
+<simpara>Ruby 1.9.2</simpara>
+<simpara>Backbone.js and Underscore.js are the non-minified versions. This is for
+informational purposes, but also because the Rails 3.1 asset pipeline will
+compress and minify them.</simpara>
+<simpara>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
+example code normal Javascript as we believe that will be the most understandable to
+the current readers.</simpara>
+</section>
 </section>
 <section id="_getting_up_to_speed">
 <title>Getting up to speed</title>
@@ -35,30 +108,6 @@ ins and outs how to test-drive your code, but covers good fundamental
 JavaScript development practices and takes a deep dive on language
 fundamentals:</simpara>
 <simpara><ulink url="http://tddjs.com/">http://tddjs.com/</ulink></simpara>
-</section>
-</section>
-<section id="_introduction">
-<title>Introduction</title>
-<section id="_why_use_backbone_js">
-<title>Why use Backbone.js</title>
-<simpara>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</simpara>
-<simpara>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</simpara>
-<simpara>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</simpara>
-<simpara>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</simpara>
-<simpara>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</simpara>
-<simpara>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</simpara>
-<simpara>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</simpara>
-</section>
-<section id="_the_example_application">
-<title>The Example Application</title>
-<simpara>Rails 3.1.0.rc5</simpara>
-<simpara>Ruby 1.9.2</simpara>
-<simpara>Backbone.js and Underscore.js are the non-minified versions. This is for
-informational purposes, but also because the Rails 3.1 asset pipeline will
-compress and minify them.</simpara>
-<simpara>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
-example code normal Javascript as we believe that will be the most understandable to
-the current readers.</simpara>
 </section>
 </section>
 <section id="_organization">
@@ -450,6 +499,7 @@ done your application.js Sprockets manifest will be as shown below.</simpara>
 //
 //= require backbone-forms.js
 //= require jquery-ui-editors.js
+//= require uploader.js
 //
 //= require example_app
 //
@@ -1321,7 +1371,7 @@ Selector-based content declarations.  Examples: PURE, just using jQuery from vie
 <simpara>Like any technology choice, there are tradeoffs to evaluate and external forces
 to consider when choosing a templating approach.</simpara>
 <simpara>The scenarios we&#8217;ve encountered usually involve weighing these questions: do I already have server-side templates written that I&#8217;d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</simpara>
-<simpara>TODO: flesh this out a bit, or cut this ^ preface section entirely</simpara>
+<simpara>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</simpara>
 <section id="_when_you_are_adding_backbone_to_existing_rails_views">
 <title>When you are adding Backbone to existing Rails views</title>
 <simpara>If you are replacing existing Rails app pages with Backbone, you are already using a templating engine, and it&#8217;s likely ERb.  When making the switch to Backbone, change as few things as possible at a time, and stick with your existing templating approach.</simpara>
@@ -2092,7 +2142,7 @@ maintain a back-reference at <literal>this.parent</literal>. This is used to rea
 
   render: function() {
     this.renderLayout();
-    this.renderDetail();
+    this.renderDetails();
     this.renderCommentsList();
   },
 
@@ -3068,7 +3118,8 @@ Mention <ulink url="https://github.com/nesquena/rabl">https://github.com/nesquen
 <title>Parsing the JSON and instantiating client-side models</title>
 <simpara>TODO: Expand outline</simpara>
 <simpara>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
-parsing fits into the fetch/new object lifecycle.  Point out inconsistencies.
+parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
+(parse not invoked during reset, only fetch/set etc)
 Discuss <ulink url="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</ulink></simpara>
 </section>
 </section>
@@ -3651,6 +3702,9 @@ attributes. We save the attachment in a separate request, and then just swap in
 an attachment id on the model. This does mean that you can have "unclaimed"
 attachments if somebody bails before saving the parent model, but that&#8217;s not
 really an issue.</simpara>
+<simpara>Assumes XHR2 (at least FormData) so no IE, but simple impl:
+* <ulink url="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</ulink>
+* <ulink url="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</ulink></simpara>
 </section>
 </section>
 <section id="_testing">
@@ -3868,6 +3922,8 @@ gem 'rails-backbone'
 gem 'jquery-rails'
 gem 'ejs'
 gem "flutie", "~&gt; 1.3.2"
+gem "clearance", "~&gt; 0.13.0"
+gem 'paperclip'
 
 group :assets do
   gem 'sass-rails', "  ~&gt; 3.1.0"
@@ -3893,26 +3949,15 @@ group :test do
   gem "nokogiri"
   gem "shoulda"
   gem "launchy"
+  gem "guard-spork"
+  gem "spork", "~&gt; 0.9.0.rc"
 end</programlisting>
 <simpara>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We&#8217;ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
 steps](<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</ulink>):</simpara>
-<programlisting language="text" linenumbering="unnumbered">Feature: Viewing Tasks
-  As a user
-  So that I can see what I have to do
-  I want to be able to see all my tasks
-
-  @javascript
-  Scenario: View tasks
-    Given the following tasks exist:
-      | Title                                |
-      | Purchase the backbone on rails ebook |
-      | Master backbone                      |
-    And I am on the home page
-    Then I should see "Master backbone" within the tasks list
-    And I should see "Purchase the backbone on rails ebook" within the tasks list</programlisting>
+<programlisting language="text" linenumbering="unnumbered"></programlisting>
 <simpara>Running this, we see a failure:</simpara>
 <programlisting language="text" linenumbering="unnumbered">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
@@ -3931,7 +3976,10 @@ we will need outline the UI first.  To do this, first we&#8217;ll need a page to
 our code.  Let&#8217;s create and route a Rails <literal>TasksController</literal>. We&#8217;ll bootstrap the
 Backbone app on <literal>tasks#index</literal>.</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">ExampleApp::Application.routes.draw do
-  resources :tasks
+  resources :tasks do
+    resources :attachments, :only =&gt; [:create, :show]
+  end
+
   root :to =&gt; 'tasks#index'
 
   if ["development", "test"].include? Rails.env
@@ -3942,18 +3990,19 @@ end</programlisting>
 [jasminerice gem](<ulink url="http://rubygems.org/gems/jasminerice">http://rubygems.org/gems/jasminerice</ulink>), which makes the Rails
 3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</simpara></note>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController
+  before_filter :authorize
   respond_to :html, :json
 
   def index
-    respond_with(@tasks = Task.all)
+    respond_with(@tasks = current_user.tasks)
   end
 
   def create
-    respond_with(Task.create(params[:task]))
+    respond_with(current_user.tasks.create(params[:task]))
   end
 
   def update
-    task = Task.find(params[:id])
+    task = current_user.tasks.find(params[:id])
     task.update_attributes(params[:task])
     respond_with(task)
   end

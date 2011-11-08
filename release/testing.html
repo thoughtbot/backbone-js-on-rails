@@ -242,6 +242,8 @@ gem <b class="hl-string"><i style="color:red">'rails-backbone'</i></b>
 gem <b class="hl-string"><i style="color:red">'jquery-rails'</i></b>
 gem <b class="hl-string"><i style="color:red">'ejs'</i></b>
 gem <b class="hl-string"><i style="color:red">"flutie"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.3.2"</i></b>
+gem <b class="hl-string"><i style="color:red">"clearance"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.13.0"</i></b>
+gem <b class="hl-string"><i style="color:red">'paperclip'</i></b>
 
 group :assets <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'sass-rails'</i></b>, <b class="hl-string"><i style="color:red">"  ~&gt; 3.1.0"</i></b>
@@ -267,26 +269,15 @@ group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"nokogiri"</i></b>
   gem <b class="hl-string"><i style="color:red">"shoulda"</i></b>
   gem <b class="hl-string"><i style="color:red">"launchy"</i></b>
+  gem <b class="hl-string"><i style="color:red">"guard-spork"</i></b>
+  gem <b class="hl-string"><i style="color:red">"spork"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.9.0.rc"</i></b>
 <b class="hl-keyword">end</b></pre>
 <p>We’d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We’ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
 steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md" target="_top">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</a>):</p>
-<pre class="programlisting">Feature: Viewing Tasks
-  As a user
-  So that I can see what I have to do
-  I want to be able to see all my tasks
-
-  @javascript
-  Scenario: View tasks
-    Given the following tasks exist:
-      | Title                                |
-      | Purchase the backbone on rails ebook |
-      | Master backbone                      |
-    And I am on the home page
-    Then I should see "Master backbone" within the tasks list
-    And I should see "Purchase the backbone on rails ebook" within the tasks list</pre>
+<pre class="programlisting"></pre>
 <p>Running this, we see a failure:</p>
 <pre class="programlisting">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
@@ -308,7 +299,10 @@ we will need outline the UI first.  To do this, first we’ll need a page to hos
 our code.  Let’s create and route a Rails <code class="literal">TasksController</code>. We’ll bootstrap the
 Backbone app on <code class="literal">tasks#index</code>.</p>
 <pre class="programlisting">ExampleApp::Application.routes.draw <b class="hl-keyword">do</b>
-  resources :tasks
+  resources :tasks <b class="hl-keyword">do</b>
+    resources :attachments, :only =&gt; [:create, :show]
+  <b class="hl-keyword">end</b>
+
   root :to =&gt; <b class="hl-string"><i style="color:red">'tasks#index'</i></b>
 
   <b class="hl-keyword">if</b> [<b class="hl-string"><i style="color:red">"development"</i></b>, <b class="hl-string"><i style="color:red">"test"</i></b>].include? Rails.env
@@ -322,18 +316,19 @@ Backbone app on <code class="literal">tasks#index</code>.</p>
 3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</p>
 </div>
 <pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
+  before_filter :authorize
   respond_to :html, :json
 
   <b class="hl-keyword">def</b> index
-    respond_with(@tasks = Task.all)
+    respond_with(@tasks = current_user.tasks)
   <b class="hl-keyword">end</b>
 
   <b class="hl-keyword">def</b> create
-    respond_with(Task.create(params[:task]))
+    respond_with(current_user.tasks.create(params[:task]))
   <b class="hl-keyword">end</b>
 
   <b class="hl-keyword">def</b> update
-    task = Task.find(params[:id])
+    task = current_user.tasks.find(params[:id])
     task.update_attributes(params[:task])
     respond_with(task)
   <b class="hl-keyword">end</b>
@@ -373,7 +368,7 @@ view render it:</p>
 <pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre>
 <p>Now our Jasmine specs pass:</p>
 <div class="figure">
-<a id="d0e3101"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
+<a id="d0e3138"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"></div></div>
 </div>
 <br class="figure-break"><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
