@@ -119,7 +119,7 @@ GEM
       rake
     multi_json (1.0.3)
     nokogiri (1.5.0)
-    paperclip (2.4.2)
+    paperclip (2.4.5)
       activerecord (>= 2.3.0)
       activesupport (>= 2.3.2)
       cocaine (>= 0.0.2)
@@ -209,7 +209,7 @@ GEM
       polyglot (>= 0.3.1)
     turn (0.8.2)
       ansi (>= 1.2.2)
-    tzinfo (0.3.29)
+    tzinfo (0.3.31)
     uglifier (1.0.3)
       execjs (>= 0.3.0)
       multi_json (>= 1.0.2)

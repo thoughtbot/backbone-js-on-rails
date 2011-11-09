@@ -33,3 +33,13 @@ describe("ExampleApp.Models.Tasks#initialize", function() {
     expect(task.attachments.last().get('upload_url')).toEqual('/uploads/2.jpg');
   });
 });
+
+describe("ExampleApp.Models.Task when the attachments attribute changes", function() {
+  it("re-parses the collection", function() {
+    var task = new ExampleApp.Models.Task({"attachments":[{"upload_url":"1.jpg"},{"upload_url":"2.jpg"}]});
+    expect(task.attachments.size()).toEqual(2);
+
+    task.set({"attachments":[{"upload_url":"1.jpg"}]});
+    expect(task.attachments.size()).toEqual(1);
+  });
+});

@@ -6,6 +6,10 @@ class TasksController < ApplicationController
     respond_with(@tasks = current_user.tasks)
   end
 
+  def show
+    @task = current_user.tasks.find(params[:id])
+  end
+
   def create
     respond_with(current_user.tasks.create(params[:task]))
   end
