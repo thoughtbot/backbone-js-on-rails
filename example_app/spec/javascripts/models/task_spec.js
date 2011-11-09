@@ -12,13 +12,6 @@ describe("ExampleApp.Models.Tasks", function() {
   });
 });
 
-// describe("ExampleApp.Models.Tasks#parse", function() {
-//   it("parses nested attachments", function() {
-//     var json = '{"id":1,"title":"Sweet Task","attachments":[{"upload_url":"/uploads/1.jpg"},{"upload_url":"/uploads/2.jpg"}]}';
-//     var attributes = ExampleApp.Models.Task.prototype.parse(json);
-//   });
-// });
-
 describe("ExampleApp.Models.Tasks#initialize", function() {
   var attributes, task;
 
