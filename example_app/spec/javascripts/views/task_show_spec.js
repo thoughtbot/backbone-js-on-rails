@@ -59,8 +59,8 @@ describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
   });
 
   it("displays attachment filenames", function() {
-    expect($el).toHaveText('Attached: blueberries.jpg');
-    expect($el).toHaveText('Attached: strawberries.jpg');
+    expect($el.find(".attachments p").first()).toHaveText('Attached: blueberries.jpg');
+    expect($el.find(".attachments p").last()).toHaveText('Attached: strawberries.jpg');
   });
 });
 
