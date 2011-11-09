@@ -17,15 +17,8 @@ Feature: Attach a file to a task
     Then I should see "blueberries.jpg" attached to the "Buy" task
     And I should see no attachments on the "Eat" task
 
-  # Scenario: Attach multiple files to a task
-  #   When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
-  #   And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
-  #   Then I should see "blueberries.jpg" attached to the "Buy" task
-  #   And I should see "strawberries.jpg" attached to the "Buy" task
-
-  # Scenario: Remove attached files from a task
-  #   When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
-  #   And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
-  #   And I remove the "strawberries.jpg" attachment from the "Buy" task
-  #   Then I should see "blueberries.jpg" attached to the "Buy" task
-  #   But I should not see "strawberries.jpg" attached to the "Buy" task
+  Scenario: Attach multiple files to a task
+    When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
+    And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
+    Then I should see "blueberries.jpg" attached to the "Buy" task
+    And I should see "strawberries.jpg" attached to the "Buy" task

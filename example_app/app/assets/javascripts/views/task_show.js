@@ -1,6 +1,7 @@
 ExampleApp.Views.TaskShow = Backbone.View.extend({
   initialize: function() {
-    _.bindAll(this, "render");
+    _.bindAll(this, "render", "uploadSuccess");
+    this.model.bind("change", this.render);
   },
 
   events: {
@@ -38,18 +39,12 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
     });
   },
 
-  uploadInput: function() {
-    return this.$('.upload input').get(0);
-  },
-
   attachUploader: function() {
-    var uploadUrl = "/tasks/" + this.model.get('id') + '/attachments';
+    var uploadUrl = "/tasks/" + this.model.get('id') + '/attachments.json';
 
     this.uploader = new uploader(this.uploadInput(), {
       url:      uploadUrl,
-      error:    this.uploadError,
       success:  this.uploadSuccess,
-      progress: this.uploadProgress,
       prefix:   'upload'
     });
 
@@ -59,20 +54,16 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
     }
   },
 
-  uploadProgress: function(ev) {
-    console.log('upload progress: ' + ev.loaded + " / " + ev.total);
-  },
-
-  uploadError: function(ev) {
-    console.log('upload error' + ev);
-  },
-
-  uploadSuccess: function(data) {
-    console.log('upload success');
+  uploadInput: function() {
+    return this.$('.upload input').get(0);
   },
 
   upload: function() {
     this.uploader.send();
+  },
+
+  uploadSuccess: function(data) {
+    this.model.fetch();
   }
 });
 

@@ -100,6 +100,6 @@ describe("ExampleApp.Views.TaskShow uploading", function() {
     view.upload();
 
     expect(this.requests.length).toEqual(1);
-    expect(this.requests[0].url).toEqual("/tasks/1/attachments");
+    expect(this.requests[0].url).toEqual("/tasks/1/attachments.json");
   });
 });

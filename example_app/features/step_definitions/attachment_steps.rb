@@ -16,18 +16,6 @@ Then /^I should see no attachments on the "([^"]*)" task$/ do |task_name|
   page.should have_no_content("Attached:")
 end
 
-When /^I remove the "([^"]*)" attachment from the "([^"]*)" task$/ do |attachment_filename, task_name|
-  visit root_path
-  find_task_details_link(task_name).click
-  pending # express the regexp above with the code you wish you had
-end
-
-Then /^I should not see "([^"]*)" attached to the "([^"]*)" task$/ do |attachment_filename, task_name|
-  visit root_path
-  find_task_details_link(task_name).click
-  pending # express the regexp above with the code you wish you had
-end
-
 module AttachmentStepsHelpers
   def find_task_details_link(task_name)
     page.find(:xpath, "//label[contains(text(),'#{task_name}')]/following-sibling::a")
