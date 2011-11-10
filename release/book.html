@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.3" />
+<meta name="generator" content="AsciiDoc 8.6.5" />
 <title>Backbone.js on Rails</title>
 <style type="text/css">
 /* ---------------------------------------------------------------------------
@@ -186,7 +186,6 @@ h5 {
 </style>
 <script type="text/javascript">
 /*<![CDATA[*/
-window.onload = function(){asciidoc.footnotes();}
 var asciidoc = {  // Namespace.
 
 /////////////////////////////////////////////////////////////////////
@@ -248,6 +247,25 @@ toc: function (toclevels) {
   }
 
   var toc = document.getElementById("toc");
+  if (!toc) {
+    return;
+  }
+
+  // Delete existing TOC entries in case we're reloading the TOC.
+  var tocEntriesToRemove = [];
+  var i;
+  for (i = 0; i < toc.childNodes.length; i++) {
+    var entry = toc.childNodes[i];
+    if (entry.nodeName == 'DIV'
+     && entry.getAttribute("class")
+     && entry.getAttribute("class").match(/^toclevel/))
+      tocEntriesToRemove.push(entry);
+  }
+  for (i = 0; i < tocEntriesToRemove.length; i++) {
+    toc.removeChild(tocEntriesToRemove[i]);
+  }
+
+  // Rebuild TOC entries.
   var entries = tocEntries(document.getElementById("content"), toclevels);
   for (var i = 0; i < entries.length; ++i) {
     var entry = entries[i];
@@ -275,24 +293,44 @@ toc: function (toclevels) {
  */
 
 footnotes: function () {
-  var cont = document.getElementById("content");
+  // Delete existing footnote entries in case we're reloading the footnodes.
+  var i;
   var noteholder = document.getElementById("footnotes");
+  if (!noteholder) {
+    return;
+  }
+  var entriesToRemove = [];
+  for (i = 0; i < noteholder.childNodes.length; i++) {
+    var entry = noteholder.childNodes[i];
+    if (entry.nodeName == 'DIV' && entry.getAttribute("class") == "footnote")
+      entriesToRemove.push(entry);
+  }
+  for (i = 0; i < entriesToRemove.length; i++) {
+    noteholder.removeChild(entriesToRemove[i]);
+  }
+
+  // Rebuild footnote entries.
+  var cont = document.getElementById("content");
   var spans = cont.getElementsByTagName("span");
   var refs = {};
   var n = 0;
   for (i=0; i<spans.length; i++) {
     if (spans[i].className == "footnote") {
       n++;
-      // Use [\s\S] in place of . so multi-line matches work.
-      // Because JavaScript has no s (dotall) regex flag.
-      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      var note = spans[i].getAttribute("data-note");
+      if (!note) {
+        // Use [\s\S] in place of . so multi-line matches work.
+        // Because JavaScript has no s (dotall) regex flag.
+        note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+        spans[i].innerHTML =
+          "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+        spans[i].setAttribute("data-note", note);
+      }
       noteholder.innerHTML +=
         "<div class='footnote' id='_footnote_" + n + "'>" +
         "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
         n + "</a>. " + note + "</div>";
-      spans[i].innerHTML =
-        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
-        "' title='View footnote' class='footnote'>" + n + "</a>]";
       var id =spans[i].getAttribute("id");
       if (id != null) refs["#"+id] = n;
     }
@@ -312,9 +350,32 @@ footnotes: function () {
       }
     }
   }
+},
+
+install: function(toclevels) {
+  var timerId;
+
+  function reinstall() {
+    asciidoc.footnotes();
+    if (toclevels) {
+      asciidoc.toc(toclevels);
+    }
+  }
+
+  function reinstallAndRemoveTimer() {
+    clearInterval(timerId);
+    reinstall();
+  }
+
+  timerId = setInterval(reinstall, 500);
+  if (document.addEventListener)
+    document.addEventListener("DOMContentLoaded", reinstallAndRemoveTimer, false);
+  else
+    window.onload = reinstallAndRemoveTimer;
 }
 
 }
+asciidoc.install();
 /*]]>*/
 </script>
 </head>
@@ -1176,10 +1237,10 @@ http://www.gnu.org/software/src-highlite -->
     ExampleApp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">init</span></span><span style="color: #990000">();</span>
   <span style="color: #990000">&lt;%</span> end <span style="color: #990000">%&gt;</span>
 <span style="color: #990000">&lt;%</span> end <span style="color: #990000">-%&gt;</span></tt></pre></div></div>
-<div class="paragraph"><p>For performance reasons, you will almost always "prime the pump" and give
+<div class="paragraph"><p>For performance reasons, you will almost always "bootstrap" and give
 Backbone.js its initial data within the HTML view for this page. In our
 example, the tasks have already been provided to the view in a @tasks instance
-variable, and that can be used to prime the pump, as shown below.</p></div>
+variable, and that can be used to bootstrap, as shown below.</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -3312,6 +3373,7 @@ top is concerned with the User JSON representation.  It should at least delegate
 to User#as_json. Going further, the JSON presentation for consumption by
 Backbone.js should be completely extracted into the JSON API endpoint controller
 action, or even a separate presenter class.</p></div>
+<div class="paragraph"><p>TODO: Some of this is repeated in the model_relationships section, unify.</p></div>
 </div>
 </div>
 <div class="sect2">
@@ -3980,6 +4042,8 @@ http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>$ curl http<span style="color: #990000">:</span>//tasksapp<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #0000FF">local</span></span><span style="color: #990000">:</span><span style="color: #993399">3000</span>/tasks<span style="color: #990000">/</span><span style="color: #993399">78</span><span style="color: #990000">.</span>json <span style="color: #990000">|</span> ppjson
 {
+  <span style="color: #990000">/*</span> some attributes left out <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> clarity <span style="color: #990000">*/</span>
+
   <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #993399">78</span><span style="color: #990000">,</span>
   <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
   <span style="color: #FF0000">"title"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"Clean up landing page"</span><span style="color: #990000">,</span>
@@ -3994,22 +4058,21 @@ http://www.gnu.org/software/src-highlite -->
       <span style="color: #FF0000">"user_id"</span><span style="color: #990000">:</span> <span style="color: #993399">1</span><span style="color: #990000">,</span>
       <span style="color: #FF0000">"body"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"Looks great!  I'll implement that."</span>
     }
-  <span style="color: #990000">]</span>
+  <span style="color: #990000">],</span>
   <span style="color: #FF0000">"attachments"</span><span style="color: #990000">:</span> <span style="color: #990000">[</span>
     {
       <span style="color: #FF0000">"id"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"32"</span><span style="color: #990000">,</span>
-      <span style="color: #FF0000">"file_url"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"</span>
+      <span style="color: #FF0000">"upload_url"</span><span style="color: #990000">:</span> <span style="color: #FF0000">"https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"</span>
     }
-  <span style="color: #990000">],</span>
-  <span style="color: #990000">/*</span> some attributes left out <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> clarity <span style="color: #990000">*/</span>
+  <span style="color: #990000">]</span>
 }</tt></pre></div></div>
 <div class="paragraph"><p>This approach involves additional code in both producing the JSON on the server
 side and parsing the JSON on the client side.  We&#8217;ll take this approach for the
 example application, both because it requires fewer HTTP requests and because
-it&#8217;s a more interesting example and illustrates the technique of parsing child
+it&#8217;s a more interesting example and illustrates the technique of parsing nested
 models in Backbone.js.</p></div>
 <div class="paragraph"><p>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
-Associations, we know that our HTTP JSON API should support at least the
+Attachments, we know that our HTTP JSON API should support at least the
 following Rails routes:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
@@ -4036,7 +4099,7 @@ an API version namespace as well.</td>
 <div class="paragraph"><p>Outline: For building the JSON presentation, we have a few options.  The easiest
 thing is to override Task#as_json, although this isn&#8217;t really where this
 presentation concern belongs.  Better options to construct the JSON include: in
-the controller, in a builder-like view, in a separate presentation object.
+the controller, in a builder-like view, or in a separate presentation object.
 Mention <a href="https://github.com/nesquena/rabl">https://github.com/nesquena/rabl</a></p></div>
 </div>
 <div class="sect3">
@@ -4046,6 +4109,15 @@ Mention <a href="https://github.com/nesquena/rabl">https://github.com/nesquena/r
 parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
 (parse not invoked during reset, only fetch/set etc)
 Discuss <a href="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</a></p></div>
+<div class="paragraph"><p>TODO: If a Backbone Task doesn&#8217;t always have its associations filled (e.g. when
+rendering the TasksIndex Backbone view, whose JSON is built by bootstrapping, in
+<tt>Tasks#index</tt>), when you move from TasksIndex to TasksShow, you need to invoke
+task.fetch() to pull all the task attributes from <tt>GET /tasks/:id</tt> and populate
+the associations.  Whose concern is that?  Presumably the TaskShow view.  You
+could discuss lazily populating this by making the task associations functions
+instead of properties (compare task.attachments.each to task.attachments().each;
+in the latter, you could lazily fetch and populate, but then you run into the
+issue that fetch is async.)</p></div>
 </div>
 </div>
 <div class="sect2">
@@ -4703,17 +4775,205 @@ http://www.gnu.org/software/src-highlite -->
 </div>
 </div>
 <div class="sect2">
-<h3 id="_uploading_attachments_chapter_unstarted">Uploading attachments (Chapter unstarted)</h3>
-<div class="paragraph"><p>Notes:</p></div>
+<h3 id="_uploading_attachments">Uploading attachments</h3>
+<div class="paragraph"><p>While Ruby gems such as paperclip make the API for attaching files to models
+very similar to the standard ActiveModel attribute persistence API, attaching
+files to Backbone models is not quite as straightforward.  In this section,
+we&#8217;ll take a look at the general approach for attaching files, and then examine
+the specific implementation used in the example application.</p></div>
+<div class="sect3">
+<h4 id="_how_to_attach_files_to_backbone_models">How to attach files to Backbone models</h4>
 <div class="paragraph"><p>If you upload to a backbone model, you can&#8217;t do it in a typical async request.
-As in, someBackboneModel.save() can&#8217;t just send a file to the server like other
-attributes. We save the attachment in a separate request, and then just swap in
-an attachment id on the model. This does mean that you can have "unclaimed"
-attachments if somebody bails before saving the parent model, but that&#8217;s not
-really an issue.</p></div>
-<div class="paragraph"><p>Assumes XHR2 (at least FormData) so no IE, but simple impl:
-* <a href="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</a>
-* <a href="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</a></p></div>
+Meaning, <tt>model.save()</tt> can&#8217;t just send a file to the server like other
+attributes.  Instead, we save the attachment in a separate request, and then
+just swap in an attachment id on the model. This does mean that you can have
+unclaimed attachments if the end user leaves the page before saving the parent
+model, but those can be periodically cleaned out if the disk usage is an issue.</p></div>
+<div class="paragraph"><p>When modeling this from the Rails side, you can choose to persist the file
+upload identifier (e.g. the local path or S3 URL) on one of your models
+directly, or you can break the attachment out into its own ActiveRecord model.
+It&#8217;s generally more straightforward to break the attachment out into its own
+model, because this can greatly simplify grabbing a reference to</p></div>
+<div class="paragraph"><p>There are quite a few approaches to uploading files asynchronously, and browser
+support varies.  There are features like multiple file upload and drag-and-drop
+to consider, too.</p></div>
+<div class="paragraph"><p>We&#8217;ll use the HTML5 File API because it&#8217;s a straightforward approach that is
+supported by modern browsers.  The API is small and the wrapper code that we
+start with:</p></div>
+<div class="paragraph"><p><a href="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</a></p></div>
+<div class="paragraph"><p>is easy to read.  This approach requires XHR2 and FormData:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</a>
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>If you would like to provide fallback support for older
+browsers, using Flash or iframes, you can do so with plugins like (TODO:
+recommend plugins).</p></div>
+</div>
+<div class="sect3">
+<h4 id="_example_attaching_images_to_tasks">Example: Attaching images to Tasks</h4>
+<div class="paragraph"><p>In our example task management app, we&#8217;d like for the owner of a task to attach
+several images to each task.  We want uploads to happen in the task detail view,
+and for the uploads to appear in-page as soon as they are uploaded.  We don&#8217;t
+need to display uploads on the index view.</p></div>
+<div class="paragraph"><p>First, let&#8217;s write an acceptance test to drive the functionality:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+<div class="paragraph"><p>The first failures we get are from the lack of upload UI.  We&#8217;ll drop down to
+unit tests to drive this out:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>include<span style="color: #990000">::..</span><span style="color: #FF6600">/../</span>example_app<span style="color: #990000">/</span>spec<span style="color: #990000">/</span>javascripts<span style="color: #990000">/</span>views<span style="color: #990000">/</span>task_show_spec<span style="color: #990000">.</span>js</tt></pre></div></div>
+<div class="paragraph"><p>Then, we&#8217;ll add the upload form to the TaskShow view to the <tt>tasks/show.jst.ejs</tt>
+template, so the UI elements are in place:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>include::../../example_app/app/assets/templates/tasks/show.jst.ejs</tt></pre></div></div>
+<div class="paragraph"><p>Once our units pass, we run the acceptance tests again. The next failure we see
+is that nothing happens upon upload.  We&#8217;ll drop down to Jasmine here to write
+unit tests for the uploading:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>include<span style="color: #990000">::..</span><span style="color: #FF6600">/../</span>example_app<span style="color: #990000">/</span>spec<span style="color: #990000">/</span>javascripts<span style="color: #990000">/</span>views<span style="color: #990000">/</span>task_show_uploading_spec<span style="color: #990000">.</span>js</tt></pre></div></div>
+<div class="paragraph"><p>TODO: Finish outline:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+NB: You can&#8217;t overwrite input.files (a FileList instance), so you&#8217;ll have to
+provide a point of fake injection; in our case, TaskShow#uploadInput().
+</p>
+</li>
+<li>
+<p>
+Make it pass by adding uploader.js and adding uploader logic to TaskShow view
+</p>
+</li>
+<li>
+<p>
+Now we are uploading, but the server isn&#8217;t accepting/persisting
+</p>
+</li>
+<li>
+<p>
+Test-drive persistence on server side:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+Add paperclip gem
+</p>
+</li>
+<li>
+<p>
+Create Attachment model, route, controller.  Test-drive the units.
+</p>
+</li>
+<li>
+<p>
+NB on integration point: XHR requests from BB to Rails needs CSRF tokens, so inject
+   as uploader.prefilter, analagous to $.ajaxPrefilter <a href="http://api.jquery.com/extending-ajax/">http://api.jquery.com/extending-ajax/</a>
+</p>
+</li>
+</ul></div>
+</li>
+<li>
+<p>
+Next, display existing attachments to the user.
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>For structuring the attachments in Backbone, we want to be able to do something
+like the following:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>&lt;% this.task.attachments.each(function(attachment) { %&gt;
+  Attached: <span style="font-weight: bold"><span style="color: #0000FF">&lt;img</span></span> <span style="color: #009900">src</span><span style="color: #990000">=</span><span style="color: #FF0000">"&lt;%= attachment.get('upload_url')"</span> <span style="font-weight: bold"><span style="color: #0000FF">/&gt;</span></span> %&gt;
+&lt;% }); %&gt;</tt></pre></div></div>
+<div class="paragraph"><p>So, the Task model will have attachments property that is instantiates with an
+AttachmentsCollection instance.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">This is written assuming that the model_relationships.asc chapter came
+first and discusses how to structure the JSON, which is bundling the comments
+and attachments associations under the Task&#8217;s JSON representation.  It should
+introduce and discuss using Rabl, too. Depending on how in-depth that section
+is, we may need to write more here to contextualize.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>We&#8217;re providing a JSON represenatation using Rabl, rooted at the Task:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">include</span></span><span style="color: #990000">::..</span><span style="color: #FF6600">/../example_app/app/views/tasks/</span>show<span style="color: #990000">.</span>json<span style="color: #990000">.</span>rabl</tt></pre></div></div>
+<div class="paragraph"><p>Note that you have to have to tell Rabl to suppress the root JSON node, just
+like we suppress the root JSON node in ActiveRecord with
+<tt>ActiveRecord::Base.include_root_in_json = false</tt>:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-style: italic"><span style="color: #9A1900"># config/initializers/rabl_init.rb</span></span>
+Rabl<span style="color: #990000">.</span>configure <span style="font-weight: bold"><span style="color: #0000FF">do</span></span> <span style="color: #990000">|</span>config<span style="color: #990000">|</span>
+  config<span style="color: #990000">.</span>include_json_root <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>We can test drive the attachment display from Jasmine, see task_show_spec.js:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>include<span style="color: #990000">::..</span><span style="color: #FF6600">/../</span>example_app<span style="color: #990000">/</span>spec<span style="color: #990000">/</span>javascripts<span style="color: #990000">/</span>views<span style="color: #990000">/</span>task_show_with_attachments_spec<span style="color: #990000">.</span>js</tt></pre></div></div>
+<div class="paragraph"><p>This depends on parsing the JSON from the client side, so test drive that for
+the ExampleApp.Models.Tasks Jasmine spec:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+Include spec/javascripts/models/task_spec.js
+</p>
+</li>
+<li>
+<p>
+Implement in task.js
+</p>
+</li>
+<li>
+<p>
+TDD Attachments collection and Attachment model
+</p>
+</li>
+<li>
+<p>
+Implement Attachments collection and Attachment model
+</p>
+</li>
+<li>
+<p>
+Green?
+</p>
+</li>
+</ul></div>
+</div>
 </div>
 </div>
 </div>
@@ -4952,6 +5212,7 @@ gem <span style="color: #FF0000">'ejs'</span>
 gem <span style="color: #FF0000">"flutie"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.3.2"</span>
 gem <span style="color: #FF0000">"clearance"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 0.13.0"</span>
 gem <span style="color: #FF0000">'paperclip'</span>
+gem <span style="color: #FF0000">'rabl'</span>
 
 group <span style="color: #990000">:</span>assets <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
   gem <span style="color: #FF0000">'sass-rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"  ~&gt; 3.1.0"</span>
@@ -4968,8 +5229,8 @@ group <span style="color: #990000">:</span>development<span style="color: #99000
 
 group <span style="color: #990000">:</span>test <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
   gem <span style="color: #FF0000">'turn'</span><span style="color: #990000">,</span> <span style="color: #990000">:</span><span style="font-weight: bold"><span style="color: #000080">require</span></span> <span style="color: #990000">=&gt;</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span>
-  gem <span style="color: #FF0000">"capybara"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.0.1"</span>
-  gem <span style="color: #FF0000">"selenium-webdriver"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 2.5.0"</span>
+  gem <span style="color: #FF0000">"capybara"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.1.1"</span>
+  gem <span style="color: #FF0000">"selenium-webdriver"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 2.10.0"</span>
   gem <span style="color: #FF0000">'cucumber-rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.0.2"</span>
   gem <span style="color: #FF0000">"factory_girl_rails"</span>
   gem <span style="color: #FF0000">"bourne"</span>
@@ -5044,6 +5305,10 @@ http://www.gnu.org/software/src-highlite -->
 
   <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> index
     respond_with<span style="color: #990000">(</span><span style="color: #009900">@tasks</span> <span style="color: #990000">=</span> current_user<span style="color: #990000">.</span>tasks<span style="color: #990000">)</span>
+  <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
+
+  <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> show
+    <span style="color: #009900">@task</span> <span style="color: #990000">=</span> current_user<span style="color: #990000">.</span>tasks<span style="color: #990000">.</span>find<span style="color: #990000">(</span>params<span style="color: #990000">[:</span>id<span style="color: #990000">])</span>
   <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 
   <span style="font-weight: bold"><span style="color: #0000FF">def</span></span> create
@@ -5152,6 +5417,15 @@ by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt>ExampleApp<span style="color: #990000">.</span>Models<span style="color: #990000">.</span>Task <span style="color: #990000">=</span> Backbone<span style="color: #990000">.</span>Model<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">extend</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
+  initialize<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">bind</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"change:attachments"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>parseAttachments<span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">parseAttachments</span></span><span style="color: #990000">();</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
+  parseAttachments<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span>attachments <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Collections<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">Attachments</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">this</span></span><span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">get</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'attachments'</span><span style="color: #990000">));</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
+
   schema<span style="color: #990000">:</span> <span style="color: #FF0000">{</span>
     title<span style="color: #990000">:</span> <span style="color: #FF0000">{</span> type<span style="color: #990000">:</span> <span style="color: #FF0000">"Text"</span> <span style="color: #FF0000">}</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">,</span>
@@ -5363,7 +5637,7 @@ http://www.gnu.org/software/src-highlite -->
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2011-11-08 15:37:02 EST
+Last updated 2011-11-10 10:29:18 EST
 </div>
 </div>
 </body>

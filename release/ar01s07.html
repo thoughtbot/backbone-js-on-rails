@@ -128,6 +128,7 @@ gem <b class="hl-string"><i style="color:red">'ejs'</i></b>
 gem <b class="hl-string"><i style="color:red">"flutie"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.3.2"</i></b>
 gem <b class="hl-string"><i style="color:red">"clearance"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.13.0"</i></b>
 gem <b class="hl-string"><i style="color:red">'paperclip'</i></b>
+gem <b class="hl-string"><i style="color:red">'rabl'</i></b>
 
 group :assets <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'sass-rails'</i></b>, <b class="hl-string"><i style="color:red">"  ~&gt; 3.1.0"</i></b>
@@ -144,8 +145,8 @@ group :development, :test <b class="hl-keyword">do</b>
 
 group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'turn'</i></b>, :require =&gt; <b class="hl-keyword">false</b>
-  gem <b class="hl-string"><i style="color:red">"capybara"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.1"</i></b>
-  gem <b class="hl-string"><i style="color:red">"selenium-webdriver"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 2.5.0"</i></b>
+  gem <b class="hl-string"><i style="color:red">"capybara"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.1.1"</i></b>
+  gem <b class="hl-string"><i style="color:red">"selenium-webdriver"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 2.10.0"</i></b>
   gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>
   gem <b class="hl-string"><i style="color:red">"factory_girl_rails"</i></b>
   gem <b class="hl-string"><i style="color:red">"bourne"</i></b>
@@ -159,7 +160,24 @@ group :test <b class="hl-keyword">do</b>
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We’ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
-steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md" target="_top">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</a>):</p><pre class="programlisting"/><p>Running this, we see a failure:</p><pre class="programlisting">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
+steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md" target="_top">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</a>):</p><pre class="programlisting">Feature: Viewing Tasks
+  As a user
+  So that I can see what I have to do
+  I want to be able to see all my tasks
+
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+
+  @javascript
+  Scenario: View tasks
+    Given the following tasks exist:
+      | Title                                | user                     |
+      | Purchase the backbone on rails ebook | email: email@example.com |
+      | Master backbone                      | email: email@example.com |
+    And I am on the home page
+    Then I should see "Master backbone" within the tasks list
+    And I should see "Purchase the backbone on rails ebook" within the tasks list</pre><p>Running this, we see a failure:</p><pre class="programlisting">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
   (eval):2:in `find'
   ./features/step_definitions/web_steps.rb:29:in `with_scope'
@@ -190,6 +208,10 @@ Backbone app on <code class="literal">tasks#index</code>.</p><pre class="program
 
   <b class="hl-keyword">def</b> index
     respond_with(@tasks = current_user.tasks)
+  <b class="hl-keyword">end</b>
+
+  <b class="hl-keyword">def</b> show
+    @task = current_user.tasks.find(params[:id])
   <b class="hl-keyword">end</b>
 
   <b class="hl-keyword">def</b> create
@@ -226,7 +248,7 @@ view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Bac
     $(this.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
-});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3138"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
+});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3265"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The <code class="literal">"#tasks
 table"</code> element is present on the page, but doesn’t contain the content we want.</p><pre class="programlisting">@javascript
 Scenario: View tasks                                          # features/view_tasks.feature:7
@@ -263,6 +285,15 @@ TypeError: undefined is not a function
 TypeError: undefined is not a function
     at [object Object].&lt;anonymous&gt; (http://localhost:3000/assets/views/tasks_index_spec.js?body=1:4:27)</pre><p>It’s failing because we haven’t defined <code class="literal">ExampleApp.Collections.Tasks</code> yet.  We
 need to define a Task model and Tasks collection.  We’ll define the model:</p><pre class="programlisting">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
+    <b class="hl-keyword">this</b>.parseAttachments();
+  },
+
+  parseAttachments: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.attachments = <b class="hl-keyword">new</b> ExampleApp.Collections.Attachments(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>));
+  },
+
   schema: {
     title: { type: <b class="hl-string"><i style="color:red">"Text"</i></b> }
   },

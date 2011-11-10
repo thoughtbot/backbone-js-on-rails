@@ -418,10 +418,10 @@ method. This will appear as follows.</p>
     ExampleApp.init();
   &lt;% end %&gt;
 &lt;% end -%&gt;</pre>
-<p>For performance reasons, you will almost always "prime the pump" and give
+<p>For performance reasons, you will almost always "bootstrap" and give
 Backbone.js its initial data within the HTML view for this page. In our
 example, the tasks have already been provided to the view in a @tasks instance
-variable, and that can be used to prime the pump, as shown below.</p>
+variable, and that can be used to bootstrap, as shown below.</p>
 <pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
   &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);

@@ -722,10 +722,10 @@ method. This will appear as follows.</simpara>
     ExampleApp.init();
   &lt;% end %&gt;
 &lt;% end -%&gt;</programlisting>
-<simpara>For performance reasons, you will almost always "prime the pump" and give
+<simpara>For performance reasons, you will almost always "bootstrap" and give
 Backbone.js its initial data within the HTML view for this page. In our
 example, the tasks have already been provided to the view in a @tasks instance
-variable, and that can be used to prime the pump, as shown below.</simpara>
+variable, and that can be used to bootstrap, as shown below.</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">&lt;%= content_for :javascript do -%&gt;
   &lt;%= javascript_tag do %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
@@ -2513,6 +2513,7 @@ top is concerned with the User JSON representation.  It should at least delegate
 to User#as_json. Going further, the JSON presentation for consumption by
 Backbone.js should be completely extracted into the JSON API endpoint controller
 action, or even a separate presenter class.</simpara>
+<simpara>TODO: Some of this is repeated in the model_relationships section, unify.</simpara>
 </section>
 </section>
 <section id="_filters_and_sorting">
@@ -3067,6 +3068,8 @@ the JSON representation of an individual task, and deliver this data from the
 "/tasks/:id" endpoint:</simpara>
 <programlisting language="bash" linenumbering="unnumbered">$ curl http://tasksapp.local:3000/tasks/78.json | ppjson
 {
+  /* some attributes left out for clarity */
+
   "id": 78,
   "user_id": 1,
   "title": "Clean up landing page",
@@ -3081,22 +3084,21 @@ the JSON representation of an individual task, and deliver this data from the
       "user_id": 1,
       "body": "Looks great!  I'll implement that."
     }
-  ]
+  ],
   "attachments": [
     {
       "id": "32",
-      "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+      "upload_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
     }
-  ],
-  /* some attributes left out for clarity */
+  ]
 }</programlisting>
 <simpara>This approach involves additional code in both producing the JSON on the server
 side and parsing the JSON on the client side.  We&#8217;ll take this approach for the
 example application, both because it requires fewer HTTP requests and because
-it&#8217;s a more interesting example and illustrates the technique of parsing child
+it&#8217;s a more interesting example and illustrates the technique of parsing nested
 models in Backbone.js.</simpara>
 <simpara>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
-Associations, we know that our HTTP JSON API should support at least the
+Attachments, we know that our HTTP JSON API should support at least the
 following Rails routes:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">resources :lists, :only =&gt; [:create, :update, :delete]
 resources :tasks, :only =&gt; [:show, :create, :update, :delete]</programlisting>
@@ -3111,7 +3113,7 @@ an API version namespace as well.</simpara></tip>
 <simpara>Outline: For building the JSON presentation, we have a few options.  The easiest
 thing is to override Task#as_json, although this isn&#8217;t really where this
 presentation concern belongs.  Better options to construct the JSON include: in
-the controller, in a builder-like view, in a separate presentation object.
+the controller, in a builder-like view, or in a separate presentation object.
 Mention <ulink url="https://github.com/nesquena/rabl">https://github.com/nesquena/rabl</ulink></simpara>
 </section>
 <section id="_parsing_the_json_and_instantiating_client_side_models">
@@ -3121,6 +3123,15 @@ Mention <ulink url="https://github.com/nesquena/rabl">https://github.com/nesquen
 parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
 (parse not invoked during reset, only fetch/set etc)
 Discuss <ulink url="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</ulink></simpara>
+<simpara>TODO: If a Backbone Task doesn&#8217;t always have its associations filled (e.g. when
+rendering the TasksIndex Backbone view, whose JSON is built by bootstrapping, in
+<literal>Tasks#index</literal>), when you move from TasksIndex to TasksShow, you need to invoke
+task.fetch() to pull all the task attributes from <literal>GET /tasks/:id</literal> and populate
+the associations.  Whose concern is that?  Presumably the TaskShow view.  You
+could discuss lazily populating this by making the task associations functions
+instead of properties (compare task.attachments.each to task.attachments().each;
+in the latter, you could lazily fetch and populate, but then you run into the
+issue that fetch is async.)</simpara>
 </section>
 </section>
 <section id="_duplicating_business_logic_across_the_client_and_server">
@@ -3693,18 +3704,186 @@ corresponding <literal>FayeSubscriber</literal>.  Say, in your application boots
 <note><simpara>Read up on idempotent messages.  Check out this solid, readable article <ulink url="http://devhawk.net/2007/11/09/the-importance-of-idempotence/">The Importance of Idempotence</ulink>.</simpara></note>
 </section>
 </section>
-<section id="_uploading_attachments_chapter_unstarted">
-<title>Uploading attachments (Chapter unstarted)</title>
-<simpara>Notes:</simpara>
+<section id="_uploading_attachments">
+<title>Uploading attachments</title>
+<simpara>While Ruby gems such as paperclip make the API for attaching files to models
+very similar to the standard ActiveModel attribute persistence API, attaching
+files to Backbone models is not quite as straightforward.  In this section,
+we&#8217;ll take a look at the general approach for attaching files, and then examine
+the specific implementation used in the example application.</simpara>
+<section id="_how_to_attach_files_to_backbone_models">
+<title>How to attach files to Backbone models</title>
 <simpara>If you upload to a backbone model, you can&#8217;t do it in a typical async request.
-As in, someBackboneModel.save() can&#8217;t just send a file to the server like other
-attributes. We save the attachment in a separate request, and then just swap in
-an attachment id on the model. This does mean that you can have "unclaimed"
-attachments if somebody bails before saving the parent model, but that&#8217;s not
-really an issue.</simpara>
-<simpara>Assumes XHR2 (at least FormData) so no IE, but simple impl:
-* <ulink url="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</ulink>
-* <ulink url="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</ulink></simpara>
+Meaning, <literal>model.save()</literal> can&#8217;t just send a file to the server like other
+attributes.  Instead, we save the attachment in a separate request, and then
+just swap in an attachment id on the model. This does mean that you can have
+unclaimed attachments if the end user leaves the page before saving the parent
+model, but those can be periodically cleaned out if the disk usage is an issue.</simpara>
+<simpara>When modeling this from the Rails side, you can choose to persist the file
+upload identifier (e.g. the local path or S3 URL) on one of your models
+directly, or you can break the attachment out into its own ActiveRecord model.
+It&#8217;s generally more straightforward to break the attachment out into its own
+model, because this can greatly simplify grabbing a reference to</simpara>
+<simpara>There are quite a few approaches to uploading files asynchronously, and browser
+support varies.  There are features like multiple file upload and drag-and-drop
+to consider, too.</simpara>
+<simpara>We&#8217;ll use the HTML5 File API because it&#8217;s a straightforward approach that is
+supported by modern browsers.  The API is small and the wrapper code that we
+start with:</simpara>
+<simpara><ulink url="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</ulink></simpara>
+<simpara>is easy to read.  This approach requires XHR2 and FormData:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+<ulink url="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</ulink>
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>If you would like to provide fallback support for older
+browsers, using Flash or iframes, you can do so with plugins like (TODO:
+recommend plugins).</simpara>
+</section>
+<section id="_example_attaching_images_to_tasks">
+<title>Example: Attaching images to Tasks</title>
+<simpara>In our example task management app, we&#8217;d like for the owner of a task to attach
+several images to each task.  We want uploads to happen in the task detail view,
+and for the uploads to appear in-page as soon as they are uploaded.  We don&#8217;t
+need to display uploads on the index view.</simpara>
+<simpara>First, let&#8217;s write an acceptance test to drive the functionality:</simpara>
+<programlisting language="text" linenumbering="unnumbered">@javascript
+Feature: Attach a file to a task
+
+  As a user
+  I want to attach files to a task
+  So that I can include reference materials
+
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+    And I go to the tasks page
+    And I create a task "Buy"
+    And I create a task "Eat"
+
+  Scenario: Attach a file to a task
+    When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
+    Then I should see "blueberries.jpg" attached to the "Buy" task
+    And I should see no attachments on the "Eat" task
+
+  Scenario: Attach multiple files to a task
+    When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
+    And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
+    Then I should see "blueberries.jpg" attached to the "Buy" task
+    And I should see "strawberries.jpg" attached to the "Buy" task</programlisting>
+<simpara>The first failures we get are from the lack of upload UI.  We&#8217;ll drop down to
+unit tests to drive this out:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">include::../../example_app/spec/javascripts/views/task_show_spec.js</programlisting>
+<simpara>Then, we&#8217;ll add the upload form to the TaskShow view to the <literal>tasks/show.jst.ejs</literal>
+template, so the UI elements are in place:</simpara>
+<programlisting language="html" linenumbering="unnumbered">include::../../example_app/app/assets/templates/tasks/show.jst.ejs</programlisting>
+<simpara>Once our units pass, we run the acceptance tests again. The next failure we see
+is that nothing happens upon upload.  We&#8217;ll drop down to Jasmine here to write
+unit tests for the uploading:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">include::../../example_app/spec/javascripts/views/task_show_uploading_spec.js</programlisting>
+<simpara>TODO: Finish outline:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+NB: You can&#8217;t overwrite input.files (a FileList instance), so you&#8217;ll have to
+provide a point of fake injection; in our case, TaskShow#uploadInput().
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Make it pass by adding uploader.js and adding uploader logic to TaskShow view
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Now we are uploading, but the server isn&#8217;t accepting/persisting
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Test-drive persistence on server side:
+</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Add paperclip gem
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Create Attachment model, route, controller.  Test-drive the units.
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+NB on integration point: XHR requests from BB to Rails needs CSRF tokens, so inject
+   as uploader.prefilter, analagous to $.ajaxPrefilter <ulink url="http://api.jquery.com/extending-ajax/">http://api.jquery.com/extending-ajax/</ulink>
+</simpara>
+</listitem>
+</itemizedlist>
+</listitem>
+<listitem>
+<simpara>
+Next, display existing attachments to the user.
+</simpara>
+</listitem>
+</itemizedlist>
+<simpara>For structuring the attachments in Backbone, we want to be able to do something
+like the following:</simpara>
+<programlisting language="html" linenumbering="unnumbered">&lt;% this.task.attachments.each(function(attachment) { %&gt;
+  Attached: &lt;img src="&lt;%= attachment.get('upload_url')" /&gt; %&gt;
+&lt;% }); %&gt;</programlisting>
+<simpara>So, the Task model will have attachments property that is instantiates with an
+AttachmentsCollection instance.</simpara>
+<note><simpara>This is written assuming that the model_relationships.asc chapter came
+first and discusses how to structure the JSON, which is bundling the comments
+and attachments associations under the Task&#8217;s JSON representation.  It should
+introduce and discuss using Rabl, too. Depending on how in-depth that section
+is, we may need to write more here to contextualize.</simpara></note>
+<simpara>We&#8217;re providing a JSON represenatation using Rabl, rooted at the Task:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">include::../../example_app/app/views/tasks/show.json.rabl</programlisting>
+<simpara>Note that you have to have to tell Rabl to suppress the root JSON node, just
+like we suppress the root JSON node in ActiveRecord with
+<literal>ActiveRecord::Base.include_root_in_json = false</literal>:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered"># config/initializers/rabl_init.rb
+Rabl.configure do |config|
+  config.include_json_root = false
+end</programlisting>
+<simpara>We can test drive the attachment display from Jasmine, see task_show_spec.js:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">include::../../example_app/spec/javascripts/views/task_show_with_attachments_spec.js</programlisting>
+<simpara>This depends on parsing the JSON from the client side, so test drive that for
+the ExampleApp.Models.Tasks Jasmine spec:</simpara>
+<itemizedlist>
+<listitem>
+<simpara>
+Include spec/javascripts/models/task_spec.js
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Implement in task.js
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+TDD Attachments collection and Attachment model
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Implement Attachments collection and Attachment model
+</simpara>
+</listitem>
+<listitem>
+<simpara>
+Green?
+</simpara>
+</listitem>
+</itemizedlist>
+</section>
 </section>
 </section>
 <section id="_testing">
@@ -3924,6 +4103,7 @@ gem 'ejs'
 gem "flutie", "~&gt; 1.3.2"
 gem "clearance", "~&gt; 0.13.0"
 gem 'paperclip'
+gem 'rabl'
 
 group :assets do
   gem 'sass-rails', "  ~&gt; 3.1.0"
@@ -3940,8 +4120,8 @@ end
 
 group :test do
   gem 'turn', :require =&gt; false
-  gem "capybara", "~&gt; 1.0.1"
-  gem "selenium-webdriver", "~&gt; 2.5.0"
+  gem "capybara", "~&gt; 1.1.1"
+  gem "selenium-webdriver", "~&gt; 2.10.0"
   gem 'cucumber-rails', "~&gt; 1.0.2"
   gem "factory_girl_rails"
   gem "bourne"
@@ -3957,7 +4137,24 @@ parts: a list of existing tasks, and an interface for adding new items to
 the list.  We&#8217;ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
 steps](<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</ulink>):</simpara>
-<programlisting language="text" linenumbering="unnumbered"></programlisting>
+<programlisting language="text" linenumbering="unnumbered">Feature: Viewing Tasks
+  As a user
+  So that I can see what I have to do
+  I want to be able to see all my tasks
+
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+
+  @javascript
+  Scenario: View tasks
+    Given the following tasks exist:
+      | Title                                | user                     |
+      | Purchase the backbone on rails ebook | email: email@example.com |
+      | Master backbone                      | email: email@example.com |
+    And I am on the home page
+    Then I should see "Master backbone" within the tasks list
+    And I should see "Purchase the backbone on rails ebook" within the tasks list</programlisting>
 <simpara>Running this, we see a failure:</simpara>
 <programlisting language="text" linenumbering="unnumbered">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
@@ -3995,6 +4192,10 @@ end</programlisting>
 
   def index
     respond_with(@tasks = current_user.tasks)
+  end
+
+  def show
+    @task = current_user.tasks.find(params[:id])
   end
 
   def create
@@ -4093,6 +4294,15 @@ TypeError: undefined is not a function
 <simpara>It&#8217;s failing because we haven&#8217;t defined <literal>ExampleApp.Collections.Tasks</literal> yet.  We
 need to define a Task model and Tasks collection.  We&#8217;ll define the model:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: function() {
+    this.bind("change:attachments", this.parseAttachments);
+    this.parseAttachments();
+  },
+
+  parseAttachments: function() {
+    this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
+  },
+
   schema: {
     title: { type: "Text" }
   },
