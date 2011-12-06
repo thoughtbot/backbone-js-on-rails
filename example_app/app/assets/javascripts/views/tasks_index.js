@@ -1,4 +1,4 @@
-ExampleApp.Views.TasksIndex = Backbone.View.extend({
+ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: function() {
     _.bindAll(this, "render");
     this.collection.bind("add", this.render);
@@ -18,7 +18,8 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     var self = this;
     this.collection.each(function(task) {
       var row = new ExampleApp.Views.TaskItem({ model: task });
-      self.$('tbody').append(row.render().el);
+      self.renderChild(row);
+      self.$('tbody').append(row.el);
     });
   }
 });
