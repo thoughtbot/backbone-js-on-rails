@@ -3,8 +3,8 @@ var ExampleApp = {
   Collections: {},
   Views: {},
   Routers: {},
-  init: function(tasks) {
-    this.tasks = new ExampleApp.Collections.Tasks(tasks);
+  init: function(data) {
+    this.tasks = new ExampleApp.Collections.Tasks(data.tasks);
 
     new ExampleApp.Routers.Tasks({ collection: this.tasks });
     if (!Backbone.history.started) {

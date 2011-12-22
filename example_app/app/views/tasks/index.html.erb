@@ -3,10 +3,17 @@
 <div id="tasks">
 </div>
 
+<script type="text/json" id="bootstrap">
+  { "tasks": <%= @tasks.to_json %> }
+</script>
+
 <%= content_for :javascript do -%>
-  <%= javascript_tag do %>
-    $(function() {
-      ExampleApp.init(<%== @tasks.to_json %>);
+  <script type="text/javascript">
+    $(function () {
+      var json_div       = document.createElement('div');
+      json_div.innerHTML = $('#bootstrap').text();
+      var data           = JSON.parse(json_div.innerHTML);
+      ExampleApp.init(data);
     });
-  <% end %>
-<% end -%>
+  </script>
+<% end %>
