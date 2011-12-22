@@ -1,7 +1,7 @@
 ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
-  initialize: function() {
+  initialize: function(options) {
     this.el = $('#tasks');
-    this.collection = ExampleApp.tasks; // TODO eventually pass in
+    this.collection = options.collection;
   },
 
   routes: {
