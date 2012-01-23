@@ -31,7 +31,6 @@ Now install the git-scribe dependencies:
 
 ==== Installing git-scribe dependencies on OSX
 
-  [source]
   brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
   brew install asciidoc fop source-highlight docbook
 
@@ -41,7 +40,7 @@ Make sure you register docbook after installation:
 
 ==== Installing git-scribe dependencies on Ubuntu
 
-    sudo aptitude install asciidoc fop source-highlight docbook
+   sudo aptitude install asciidoc fop source-highlight docbook
 
 Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
 
@@ -60,7 +59,6 @@ Check to see that everything is working together:
 Run +guard+ to watch the +book/+ directory and automatically rebuild the SITE
 target when anything changes:
 
-  [source]
   $ bundle exec guard
   Guard is now watching at '/Users/jason/dev/backbone-js-on-rails'
   git-scribe is waiting for book changes...
