@@ -37,8 +37,8 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_backbone_js_and_mvc"></a>Backbone.js and MVC</h3></div></div></div>
-<p>Model–View–Controller (MVC) is an architectural pattern used in many
-applications to isolate "domain logic" (the application logic for the user)
+<p>Model–View–Controller (MVC) is a software architectural pattern used in many
+applications to isolate domain or business logic (the application logic for the user)
 from the user interface (input and presentation).</p>
 <div class="figure">
 <a id="d0e125"></a><p class="title"><b>Figure 1. Model-view-controller concept</b></p>
@@ -63,13 +63,14 @@ Backbone.js acknowledged this when they renamed Controllers to Routers in
 version 0.5.0.</p>
 <p>What is Backbone.js then, if not MVC? Technically speaking, it’s just the
 Models and the Views with a Router to handle flow between them. In Backbone.js
-the views will handle many of the aspects that controllers would typically
-handle, such as actually figuring out what to do next and what to render.</p>
-<p>While you could do it, the benefit of actually introducing a Controller in your
-application would be limited, and the more pragmatic approach is to realize the
-great organization that Backbone.js gives you is much better than what you had
-before. The fact that it doesn’t have a nice name, or strict adherence to a
-pattern, isn’t worth worrying about.</p>
+the views and routers could handle many of the aspects that controllers would
+typically handle, such as actually figuring out what to do next and what to render.</p>
+<p>On the other hand, it is possible to implement a Controller on top of the
+components provided by Backbone in order to listen to and handle events the
+same way traditional MVC frameworks work. One pragmatic approach is to realize
+the great organization that Backbone.js gives you is useful in and on itself,
+but keep in mind that complex applications may benefit from the clearer
+separation provided by a controller.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -143,7 +144,7 @@ The <span class="strong"><strong>Backbone.js router</strong></span> determines w
   display based on the URL
 </li>
 <li>
-The <span class="strong"><strong>Backbone.js router</strong></span> method calls that method, some initial processing
+The <span class="strong"><strong>Backbone.js router</strong></span> calls that method, some initial processing
   may be performed, and one or more <span class="strong"><strong>Backbone.js views</strong></span> are rendered
 </li>
 <li>
@@ -183,7 +184,7 @@ avoid potential collisions in naming. For example, it’s possible that a
 Javascript library you want to use might also create a Task variable. If you
 didn’t namespace your Task model then this would conflict.</p>
 <p>This variable includes a place to hold Models, Collections, Views, and Routes,
-and an init method which will be called to initialize the application. It’s
+and an init function which will be called to initialize the application. It’s
 very common to create a new Router in the init function, and
 Backbone.history.start() must be called in order to route the initial URL.
 This app variable will look like the following.</p>
@@ -208,20 +209,20 @@ This app variable will look like the following.</p>
 <p>Here, we create a mixin named <code class="literal">Observer</code> that contains behavior for binding to events in a fashion that can be cleaned up later:</p>
 <pre class="programlisting"><b class="hl-keyword">var</b> Observer = {
   bindTo: <b class="hl-keyword">function</b>(source, event, callback) {
-    source.bind(event, callback, <b class="hl-keyword">this</b>);
+    source.on(event, callback, <b class="hl-keyword">this</b>);
     <b class="hl-keyword">this</b>.bindings = <b class="hl-keyword">this</b>.bindings || [];
     <b class="hl-keyword">this</b>.bindings.push({ source: source, event: event, callback: callback });
   },
 
   unbindFromAll: <b class="hl-keyword">function</b>() {
     _.each(<b class="hl-keyword">this</b>.bindings, <b class="hl-keyword">function</b>(binding) {
-      binding.source.unbind(binding.event, binding.callback);
+      binding.source.off(binding.event, binding.callback);
     });
     <b class="hl-keyword">this</b>.bindings = [];
   }
 };</pre>
 <p>We can mix <code class="literal">Observer</code> into a class by using Underscore’s <code class="literal">_.extend</code> on the prototype of that class:</p>
-<pre class="programlisting">SomeCollectionView = Backbone.Collection.extend({
+<pre class="programlisting">SomeCollectionView = Backbone.View.extend({
   initialize: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.bindTo(<b class="hl-keyword">this</b>.collection, <b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
   },

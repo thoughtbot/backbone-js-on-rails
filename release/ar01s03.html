@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Organization</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s02.html" title="Getting up to speed"/><link rel="next" href="ar01s04.html" title="Rails Integration"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Organization</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s02.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s04.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_organization"/>Organization</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_backbone_js_and_mvc"/>Backbone.js and MVC</h3></div></div></div><p>Model–View–Controller (MVC) is an architectural pattern used in many
-applications to isolate "domain logic" (the application logic for the user)
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Organization</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s02.html" title="Getting up to speed"/><link rel="next" href="ar01s04.html" title="Rails Integration"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Organization</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s02.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s04.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_organization"/>Organization</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_backbone_js_and_mvc"/>Backbone.js and MVC</h3></div></div></div><p>Model–View–Controller (MVC) is a software architectural pattern used in many
+applications to isolate domain or business logic (the application logic for the user)
 from the user interface (input and presentation).</p><div class="figure"><a id="d0e125"/><p class="title"><b>Figure 1. Model-view-controller concept</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="image/MVCDiagram.png" align="middle" width="100%" alt="image/MVCDiagram.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>In the above diagram a solid line represents a direct association and a dashed
 line represents an indirect association (for example, via an observer).</p><p>As a user of Rails, you’re likely already familiar with the concept of MVC and
 the benefits that the separation of concerns can give you. However, Rails itself
@@ -18,12 +18,13 @@ working with a traditional MVC architecture.</p><p>That said, technically speaki
 Backbone.js acknowledged this when they renamed Controllers to Routers in
 version 0.5.0.</p><p>What is Backbone.js then, if not MVC? Technically speaking, it’s just the
 Models and the Views with a Router to handle flow between them. In Backbone.js
-the views will handle many of the aspects that controllers would typically
-handle, such as actually figuring out what to do next and what to render.</p><p>While you could do it, the benefit of actually introducing a Controller in your
-application would be limited, and the more pragmatic approach is to realize the
-great organization that Backbone.js gives you is much better than what you had
-before. The fact that it doesn’t have a nice name, or strict adherence to a
-pattern, isn’t worth worrying about.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_what_goes_where"/>What Goes Where</h3></div></div></div><p>Part of the initial learning curve of Backbone.js can be figuring out what goes
+the views and routers could handle many of the aspects that controllers would
+typically handle, such as actually figuring out what to do next and what to render.</p><p>On the other hand, it is possible to implement a Controller on top of the
+components provided by Backbone in order to listen to and handle events the
+same way traditional MVC frameworks work. One pragmatic approach is to realize
+the great organization that Backbone.js gives you is useful in and on itself,
+but keep in mind that complex applications may benefit from the clearer
+separation provided by a controller.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_what_goes_where"/>What Goes Where</h3></div></div></div><p>Part of the initial learning curve of Backbone.js can be figuring out what goes
 where, and mapping it to your expectations set by working with Rails. In Rails
 we have Models, Views, Controllers, and Routers. In Backbone.js, we have
 Models, Collections, Views, Templates, and Routers.</p><p>The models in Backbone.js and Rails are analogous. Backbone.js collections are
@@ -65,7 +66,7 @@ The <span class="strong"><strong>Rails view template</strong></span> will includ
 The <span class="strong"><strong>Backbone.js router</strong></span> determines which of its methods should handle the
   display based on the URL
 </li><li>
-The <span class="strong"><strong>Backbone.js router</strong></span> method calls that method, some initial processing
+The <span class="strong"><strong>Backbone.js router</strong></span> calls that method, some initial processing
   may be performed, and one or more <span class="strong"><strong>Backbone.js views</strong></span> are rendered
 </li><li>
 The <span class="strong"><strong>Backbone.js view</strong></span> reads <span class="strong"><strong>templates</strong></span> and uses <span class="strong"><strong>Backbone.js</strong></span> models to
@@ -89,7 +90,7 @@ Backbone.js application. Namespacing all of the Javascript is desirable to
 avoid potential collisions in naming. For example, it’s possible that a
 Javascript library you want to use might also create a Task variable. If you
 didn’t namespace your Task model then this would conflict.</p><p>This variable includes a place to hold Models, Collections, Views, and Routes,
-and an init method which will be called to initialize the application. It’s
+and an init function which will be called to initialize the application. It’s
 very common to create a new Router in the init function, and
 Backbone.history.start() must be called in order to route the initial URL.
 This app variable will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
@@ -104,18 +105,18 @@ This app variable will look like the following.</p><pre class="programlisting"><
 };</pre><p>You can find this file in the example app in
 <code class="literal">app/assets/javascripts/example_app.js</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_mixins"/>Mixins</h3></div></div></div><p>Backbone provides a basic mechanism for inheritance.  Often you’ll want to build a collection of related, reusable behavior and include that in several classes that already inherit from a Backbone base class.  In these cases, you’ll want to use a <a class="ulink" href="http://en.wikipedia.org/wiki/Mixin" target="_top">mixin</a>.</p><p>Backbone includes <a class="ulink" href="http://documentcloud.github.com/backbone/#Events" target="_top">Backbone.Events</a> as an example of a mixin.</p><p>Here, we create a mixin named <code class="literal">Observer</code> that contains behavior for binding to events in a fashion that can be cleaned up later:</p><pre class="programlisting"><b class="hl-keyword">var</b> Observer = {
   bindTo: <b class="hl-keyword">function</b>(source, event, callback) {
-    source.bind(event, callback, <b class="hl-keyword">this</b>);
+    source.on(event, callback, <b class="hl-keyword">this</b>);
     <b class="hl-keyword">this</b>.bindings = <b class="hl-keyword">this</b>.bindings || [];
     <b class="hl-keyword">this</b>.bindings.push({ source: source, event: event, callback: callback });
   },
 
   unbindFromAll: <b class="hl-keyword">function</b>() {
     _.each(<b class="hl-keyword">this</b>.bindings, <b class="hl-keyword">function</b>(binding) {
-      binding.source.unbind(binding.event, binding.callback);
+      binding.source.off(binding.event, binding.callback);
     });
     <b class="hl-keyword">this</b>.bindings = [];
   }
-};</pre><p>We can mix <code class="literal">Observer</code> into a class by using Underscore’s <code class="literal">_.extend</code> on the prototype of that class:</p><pre class="programlisting">SomeCollectionView = Backbone.Collection.extend({
+};</pre><p>We can mix <code class="literal">Observer</code> into a class by using Underscore’s <code class="literal">_.extend</code> on the prototype of that class:</p><pre class="programlisting">SomeCollectionView = Backbone.View.extend({
   initialize: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.bindTo(<b class="hl-keyword">this</b>.collection, <b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.render);
   },

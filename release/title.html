@@ -41,20 +41,20 @@
 <a id="_introduction"></a>Introduction</h2></div></div></div>
 <p>Modern web applications are increasingly rich, shifting their complexity onto
 the client side.  While there are very well-understood approaches embodied in
-mature frameworks to organize server-side code, framworks for organizing your
+mature frameworks to organize server-side code, frameworks for organizing your
 client-side code are newer and generally still emerging.  Backbone is one such
 library that provides a set of structures to help you organize your JavaScript
 code.</p>
-<p>Libraries like jQuery have done a great deal to help abstract across browser
-inconsistencies and provide a high-level API for making AJAX request and
-performing DOM manipulation, but larger rich client-side applications that lack
-decoupled and modular organizational structures often fall to the same few kinds
-of technical debt.</p>
+<p>Libraries like jQuery have done a great deal to help abstract inconsistencies
+across browsers and provide a high-level API for making AJAX requests and
+performing DOM manipulation, but larger and richer client-side applications that
+lack decoupled and modular organizational structures often fall to the same few
+kinds of technical debt.</p>
 <p>These apps are often highly asynchronous and the path of least resistance
 implementation is often to have deeply nested callbacks to describe asynchronous
-concerns, with nested <code class="literal">$.ajax</code> calls and success/failure conditional concerns
+behavior, with nested <code class="literal">$.ajax</code> calls and success/failure conditional concerns
 going several layers deep.</p>
-<p>Seoncd, rich client-side applications also often involve a layer of state and
+<p>Second, rich client-side applications also often involve a layer of state and
 logic on the client side.  One tempting way to implement this is to store domain
 objects or business logic state in the DOM.  However, relying on the DOM as a
 persistence layer - stashing your application’s data in hidden <code class="literal">&lt;div&gt;</code> elements
@@ -63,7 +63,7 @@ to lengthy sets of HTML <code class="literal">data-*</code> attributes - can qui
 repetitive, and confusing.</p>
 <p>A third common feature in rich client-side apps is presenting multiple views on
 a single domain object.  Consider a web conferencing application with multiple
-views on the memberes of your contact list - each contact is rendered in brief
+views on the members of your contact list - each contact is rendered in brief
 inside a list view, and in more specificity in a detail view.  Additionally,
 your conference call history includes information about the people who
 participated.  Each time an individual contact’s information changes, this
@@ -82,7 +82,7 @@ providing a decoupled, event-driven way to cascade changes through a system of
 observers, each module of code is more well-encapsulated and expresses a
 cohesive set of responsibilities without being coupled to outside concerns.
 Your application code becomes easier to test, modify, and extend, and your
-application can manage itself complexity while its feature set grows.</p>
+application can manage its complexity while its feature set grows.</p>
 <p>It’s important to note that Backbone is a library, not a framework.  Though the
 distinction may seem subtle, it’s largely one of intent and purpose.  If you’re
 coming from a Rails background, you understand that a large part of Rails' value
@@ -95,13 +95,13 @@ building your own framework with its own set of conventions.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_why_use_backbone_js"></a>Why use Backbone.js</h3></div></div></div>
-<p>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying the on DOM for app state aren’t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</p>
+<p>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying on the DOM for app state aren’t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</p>
 <p>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</p>
 <p>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</p>
 <p>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</p>
 <p>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</p>
-<p>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respoects Spine is very similar to Backbone.</p>
-<p>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feels very much like just JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</p>
+<p>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respects Spine is very similar to Backbone.</p>
+<p>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feeling very much like JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">

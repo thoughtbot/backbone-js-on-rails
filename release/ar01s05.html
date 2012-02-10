@@ -3,7 +3,7 @@
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>Routers, Views, and Templates</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s04.html" title="Rails Integration"/><link rel="next" href="ar01s06.html" title="Models and collections"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Routers, Views, and Templates</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s04.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s06.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_routers_views_and_templates"/>Routers, Views, and Templates</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_view_explanation"/>View explanation</h3></div></div></div><p>A Backbone.js view is a class that is responsible for rendering the display of
 a logical element on the page. A view can also bind to events which may cause
-it to be re-rendered.</p><p>Its important to note that a Rails view is not directly analogous to a
+it to be re-rendered.</p><p>It’s important to note that a Rails view is not directly analogous to a
 Backbone.js view. A Rails view is more like a Backbone.js template, and
 Backbone.js views are often more like Rails controllers, in that they are
 responsible for logic about what should be rendered and how and rendering the
@@ -18,34 +18,36 @@ with Backbone.js.</p><p>A basic Backbone.js view appears as follows.</p><pre cla
   },
 
   render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'example/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'example/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   },
 
   save: <b class="hl-keyword">function</b>() {
     <i class="hl-comment" style="color: silver">// do something</i>
   }
-};</pre><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initialization"/>Initialization</h4></div></div></div><p>The Backbone.js view above has an initialize function which will be called
-when the view is instantiated.</p><p>You only need to specify the initialize function if you wish to do something
-custom. For example, the above view’s initialize function calls the render
-function of the view. It’s not necessary to immediately render upon
-initialization, but it’s relatively common to do so.</p><p>You create a new view by instantiating it with <code class="literal">new</code>. For example <code class="literal">new
+};</pre><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_initialization"/>Initialization</h4></div></div></div><p>Backbone.js views could also include an <code class="literal">initialize</code> function which will
+be called when the view is instantiated.</p><p>You only need to specify the initialize function if you wish to do something
+custom. For example, some views call the <code class="literal">render()</code> function upon
+instantiation. It’s not necessary to immediately render that way,
+but it’s relatively common to do so.</p><p>You create a new view by instantiating it with <code class="literal">new</code>. For example <code class="literal">new
 ExampleView()</code>. It is possible to pass in a hash of options with <code class="literal">new
 ExampleView(options)</code>. Any options you pass into the constructor will be
-available inside of the view in <code class="literal">this.options</code>.</p><p>There are a few special options that, when passed, will be assigned to other
-members in the view directly. These are <code class="literal">model</code>, <code class="literal">collection</code>, <code class="literal">el</code>, <code class="literal">id</code>,
+available inside of the view in <code class="literal">this.options</code>.</p><p>There are a few special options that, when passed, will be assigned to as
+properties of view. These are <code class="literal">model</code>, <code class="literal">collection</code>, <code class="literal">el</code>, <code class="literal">id</code>,
 <code class="literal">className</code>, and <code class="literal">tagName</code>. For example, if you create a new view and give it
 a model option with <code class="literal">new ExampleView({ model: Task })</code> then inside of the view
-the model you passed in as an option will be available in <code class="literal">this.model</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_view_8217_s_element"/>The View’s Element</h4></div></div></div><p>Each Backbone.js view has an element which is stores in <code class="literal">this.el</code>. This element
+the model you passed in as an option will be available in <code class="literal">this.model</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_the_view_8217_s_element"/>The View’s Element</h4></div></div></div><p>Each Backbone.js view has an element which it stores in <code class="literal">this.el</code>. This element
 can be populated with content, but isn’t on the page until placed there by
 you. Using this strategy it is then possible to render views outside of the
 current DOM at any time, inserting the new elements all at once. In this way,
 high performance rendering of views can be achieved with as few reflows and
-repaints as possible.</p><p>It is possible to create a view that references an element already in the DOM,
+repaints as possible.</p><p>A jQuery or Zepto object of the view’s element is available in <code class="literal">this.$el</code>.
+This is useful so you don’t need to repeatedly call <code class="literal">$(this.el)</code>. This jQuery
+or Zepto call is also cached, so it should be a performance improvement over
+repeatedly calling <code class="literal">$(this.el)</code>.</p><p>It is possible to create a view that references an element already in the DOM,
 instead of a new element. To do this, pass in the existing element as an
-option to the view constructor with <code class="literal">new ExampleView({ el: existingElement })</code>.</p><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
-created for the view. If no customization is done, the element is an empty
-<code class="literal">div</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_customizing_the_view_8217_s_element"/>Customizing the View’s Element</h4></div></div></div><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
+option to the view constructor with <code class="literal">new ExampleView({ el: existingElement })</code>.</p><p>You can also set this after the fact with the <code class="literal">setElement()</code> function.</p><pre class="programlisting"><b class="hl-keyword">var</b> view = <b class="hl-keyword">new</b> ExampleView();
+view.setElement(existingElement);</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_customizing_the_view_8217_s_element"/>Customizing the View’s Element</h4></div></div></div><p>You can use <code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> to customize the new element
 created for the view. If no customization is done, the element is an empty
 <code class="literal">div</code>.</p><p><code class="literal">tagName</code>, <code class="literal">className</code>, and <code class="literal">id</code> can either be specified directly on the view
 or passed in as options at instantiation time. Since <code class="literal">id</code> is likely to be
@@ -69,19 +71,84 @@ events. In the example above the <code class="literal">click</code> event is bei
 element(s) that match the selector <code class="literal">a.save</code> within the view’s element. When
 that event fires, the <code class="literal">save</code> function will be called on the view.</p><p>Events bound automatically with the <code class="literal">events</code> hash, the DOM events are bound
 with the <code class="literal">$.delegate()</code> function. Backbone.js also takes care of binding the
-event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p><p>Event binding is covered in great detail in the "Event binding" chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy_stub"/>Templating strategy (stub)</h3></div></div></div><p>There’s no shortage of templating options for JavaScript.</p><p>TODO: Link and/or describe one or more?
-<a class="ulink" href="http://ajaxpatterns.org/Browser-Side_Templating" target="_top">http://ajaxpatterns.org/Browser-Side_Templating</a>
-<a class="ulink" href="http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery" target="_top">http://stackoverflow.com/questions/449780/recommended-javascript-html-template-library-for-jquery</a>
-<a class="ulink" href="http://code.google.com/closure/templates/docs/helloworld_js.html" target="_top">http://code.google.com/closure/templates/docs/helloworld_js.html</a></p><p>A whole bunch of "micro" templating libraries:
-<a class="ulink" href="http://microjs.com/#templating" target="_top">http://microjs.com/#templating</a></p><p>They generally fall into three categories:</p><div class="itemizedlist"><ul type="disc"><li>
-HTML with JavaScript expressions interpolated.  Examples: <code class="literal">_.template</code>, EJS.
+event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.on()</code>.</p><p>Event binding is covered in great detail in the "Event binding" chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_templating_strategy"/>Templating strategy</h3></div></div></div><p>There’s no shortage of templating options for JavaScript.</p><p>They generally fall into three categories:</p><div class="itemizedlist"><ul type="disc"><li>
+HTML with JavaScript expressions interpolated. Examples: <code class="literal">_.template</code>, EJS.
 </li><li>
-HTML with other expressions interpolated, often logic-free.  Examples: mustache, handlebars, <code class="literal">jQuery.tmpl</code>
+HTML with other expressions interpolated, often logic-free. Examples: mustache, handlebars, <code class="literal">jQuery.tmpl</code>
 </li><li>
-Selector-based content declarations.  Examples: PURE, just using jQuery from view classes.
-</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_choosing_a_strategy"/>Choosing a strategy</h3></div></div></div><p>Like any technology choice, there are tradeoffs to evaluate and external forces
-to consider when choosing a templating approach.</p><p>The scenarios we’ve encountered usually involve weighing these questions: do I already have server-side templates written that I’d like to "Backbone-ify," or am I writing new Backbone functionality from scratch?</p><p>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_adding_backbone_to_existing_rails_views"/>When you are adding Backbone to existing Rails views</h4></div></div></div><p>If you are replacing existing Rails app pages with Backbone, you are already using a templating engine, and it’s likely ERb.  When making the switch to Backbone, change as few things as possible at a time, and stick with your existing templating approach.</p><p>If you’re using ERb, give <code class="literal">_.template</code> a shot.  It defaults to the same delimiters as ERb for interpolation and evaluation, <code class="literal">&lt;%= %&gt;</code> and <code class="literal">&lt;% %&gt;</code>, which can be a boon or can be confusing.  If you’d like to change them, you can update <code class="literal">.templateSettings</code> - check the underscore docs.</p><p>If you’re using Haml, check out the <code class="literal">jquery-haml</code> and <code class="literal">haml-js</code> projects.</p><p>If you’re using Mustache.rb or Handlebars.rb, you’re likely aware that JavaScript implementations of these both exist, and that your existing templates can be moved over much like the ERb case.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_writing_new_backbone_functionality_from_scratch"/>When you are writing new Backbone functionality from scratch</h4></div></div></div><p>If you’re not migrating from (or re-using) existing server-side view templates,
-you have more freedom of choice.  Strongly consider the option of no templating
+Selector-based content declarations. Examples: PURE, just using jQuery from view classes.
+</li></ul></div><p>To quickly compare the different approaches, we will work with creating a
+template that renders the following HTML:</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;ul</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"tasks"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;li&gt;</b><b class="hl-tag" style="color: #000096">&lt;span</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b>Buy milk<b class="hl-tag" style="color: #000096">&lt;/span&gt;</b> Get the good kind <b class="hl-tag" style="color: #000096">&lt;/li&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;li&gt;</b><b class="hl-tag" style="color: #000096">&lt;span</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b>Buy cheese<b class="hl-tag" style="color: #000096">&lt;/span&gt;</b> Charp chedar <b class="hl-tag" style="color: #000096">&lt;/li&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;li&gt;</b><b class="hl-tag" style="color: #000096">&lt;span</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b>Eat cheeseburger<b class="hl-tag" style="color: #000096">&lt;/span&gt;</b> Make with above cheese <b class="hl-tag" style="color: #000096">&lt;/li&gt;</b>
+<b class="hl-tag" style="color: #000096">&lt;/ul&gt;</b></pre><p>Assuming we have a TasksCollection instance containing the three elements
+displayed in the above HTML snippet, let’s look at how different templating
+libraries accomplish the same goal of rendering the above.</p><p>Since you’re already familiar with underscore templates, let’s start there.</p><p>An underscore template may look like so:</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;ul</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"tasks"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  <b class="hl-tag" style="color: #000096">&lt;%</b> <span class="hl-attribute" style="color: #F5844C">tasks.each(function(task)</span> <span class="hl-attribute" style="color: #F5844C">{</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;li&gt;&lt;span</span> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b> <b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">task.escape("title")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/span&gt;</span>
+        <span class="hl-attribute" style="color: #F5844C">&lt;%</span>= <span class="hl-value" style="color: #993300">task.escape("body")</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+    <span class="hl-attribute" style="color: #F5844C">&lt;/li&gt;</span>
+  <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">})</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
+<span class="hl-attribute" style="color: #F5844C">&lt;/ul&gt;</span></pre><p>Here we interpolate a bit of javascript logic in order to iterate
+through the collection and render the desired markup. Also note
+that we must fetch escaped values from the task objects, as underscore
+templates do not perform any escaping on their own.</p><p>This is probably the path of least resistance on a Rails Backbone app.
+Since Backbone depends on underscore.js, it is already available in
+your app. As has already been shown on earlier chapters, it’s usage
+is very similar to ERB. It has the same <code class="literal">&lt;%=</code> and <code class="literal">%&gt;</code> syntax as ERB,
+and you can pass it an options object that is made available to the
+template when it’s rendered.</p><p>While we’ve found underscore’s templating to be useful and sufficient to
+build large backbone applications, there are other templating libraries
+that are worth mentioning here because they either provide richer
+functionality or take a different approach to templating.</p><p>Handlebars is one such example. One major difference with underscore is
+that it allows you to define and register helpers that can be used when
+rendering a template, providing a framework for writing helpers similar
+to those found in ActionView::Helpers, like <code class="literal">domID</code> or other generic
+rendering logic. It also alows you to write what they call Block helpers,
+which are functions that are executed on a different, supplied context during
+rendering. Handlebars itself exploits this functionality by providing
+a few helpers out of the box. These helpers are <code class="literal">with</code>, <code class="literal">each</code>, <code class="literal">if</code>
+and <code class="literal">unless</code>, and simply provide control structures for rendering logic.</p><p>The above template would look like so in Handlebars:</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;ul</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b>
+  {{#each tasks}}
+    <b class="hl-tag" style="color: #000096">&lt;li&gt;</b><b class="hl-tag" style="color: #000096">&lt;span</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"title"</span><b class="hl-tag" style="color: #000096">&gt;</b> {{ this.get("title") }}<b class="hl-tag" style="color: #000096">&lt;/span&gt;</b>
+        {{ this.get("body") }} %&gt;
+    <b class="hl-tag" style="color: #000096">&lt;/li&gt;</b>
+  {{/each}}
+<b class="hl-tag" style="color: #000096">&lt;ul&gt;</b></pre><p>Of note:</p><div class="itemizedlist"><ul type="disc"><li>
+Use of <code class="literal">{{#each}}</code>, which iterates over the collection
+</li><li>
+Within the <code class="literal">{{#each}}</code> block, the javascript context is
+  the task itself, so you access it’s properties via <code class="literal">this</code>.
+</li><li>
+There’s no need to escape HTML output, as handlebars escapes
+  by default.
+</li></ul></div><p>A similar library is Mustache.js. Mustache is a templating system
+that has been ported to a number of languages including javascript. The
+promise of Mustache is "Logic-less templates". Instead of writing logic in
+pure javascript using for example <code class="literal">if</code>, Mustache provides a set of tags that
+take on different meanings. They can render values or not render anything at
+all.</p><p>Both handlebars and mustache HTML escape rendered values by default.</p><p>You can learn more about handlebars at the
+<a class="ulink" href="http://www.handlebarsjs.com/" target="_top">project’s home on the web</a>,
+and mustache at
+<a class="ulink" href="http://mustache.github.com/mustache.5.html" target="_top">the project’s man page</a>
+and <a class="ulink" href="https://github.com/janl/mustache.js:" target="_top">javascript implementation</a></p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_choosing_a_strategy"/>Choosing a strategy</h3></div></div></div><p>Like any technology choice, there are tradeoffs to evaluate and external forces
+to consider when choosing a templating approach.</p><p>The scenarios we’ve encountered usually involve weighing these questions: do I
+already have server-side templates written that I’d like to "Backbone-ify," or
+am I writing new Backbone functionality from scratch?</p><p>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_adding_backbone_to_existing_rails_views"/>When you are adding Backbone to existing Rails views</h4></div></div></div><p>If you are replacing existing Rails app pages with Backbone, you are already
+using a templating engine, and it’s likely ERb. When making the switch to
+Backbone, change as few things as possible at a time, and stick with your
+existing templating approach.</p><p>If you’re using ERb, give <code class="literal">_.template</code> a shot. It defaults to the same
+delimiters as ERb for interpolation and evaluation, <code class="literal">&lt;%= %&gt;</code> and <code class="literal">&lt;% %&gt;</code>,
+which can be a boon or can be confusing. If you’d like to change them,
+you can update <code class="literal">.templateSettings</code> - check the underscore docs.</p><p>If you’re using Haml, check out the <code class="literal">jquery-haml</code> and <code class="literal">haml-js</code> projects.</p><p>If you’re using Mustache.rb or Handlebars.rb, you’re likely aware that
+JavaScript implementations of these both exist, and that your existing
+templates can be moved over much like the ERb case.</p><p>Ultimately, you should chose the templating language that your entire
+team is most comfortable with. Try to keep the cost of rewriting
+templates as low as possible, if that’s the case. Also make sure that
+the entire team is comfortable with the chosen approach, including
+designers who will be working in that area of the app as well.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_when_you_are_writing_new_backbone_functionality_from_scratch"/>When you are writing new Backbone functionality from scratch</h4></div></div></div><p>If you’re not migrating from existing server-side view templates,
+you have more freedom of choice. Strongly consider the option of no templating
 at all, but rather using plain HTML templates, and then decorating the DOM from
 your view class.</p><p>You can build static HTML mockups of the application first, and pull these
 mockups directly in as templates, without modifying them.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- snip --&gt;</i>
@@ -104,7 +171,7 @@ mockups directly in as templates, without modifying them.</p><pre class="program
   },
 
   renderTemplate: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'songs/index'</i></b>]();
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'songs/index'</i></b>]();
   },
 
   fillTemplate: <b class="hl-keyword">function</b>() {
@@ -121,20 +188,24 @@ mockups directly in as templates, without modifying them.</p><pre class="program
     });
   }
 });</pre><p>You can see an example of this in the example application’s <code class="literal">TaskItem</code> view
-class, at <code class="literal">app/assets/javascripts/views/task_item.js</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_routers"/>Routers</h3></div></div></div><p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
+class, at <code class="literal">app/assets/javascripts/views/task_item.js</code>.</p><p>The only disadvantage of this is that your view’s <code class="literal">render()</code> functions become
+more coupled to the structure of the HTML. In turn, a major change in the
+markup may break the rendering because the selector’s used to replace parts
+of the DOM may no longer find the same elements, or may not find any elements
+at all.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_routers"/>Routers</h3></div></div></div><p>Routers are an important part of the Backbone.js infrastructure. Backbone.js
 routers provide methods for routing application flow based on client-side URL
-fragments (#fragment).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
+fragments (<code class="literal">yourapp.com/tasks#fragment</code>).</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Backbone.js now includes support for pushState, which can use real, full URLs
 instead of url fragments for routing.</p><p>However, pushState support in Backbone.js is fully opt-in due to lack of
 browser support and that additional server-side work is required to support it.</p><p>pushState support is current limited to the latest versions of Firefox,
 Chrome, and Safari and Mobile Safari. For a full listing of support and more
 information about the History API, of which pushState is a part, visit
-<a class="ulink" href="http://diveintohtml5.org/history.html#how" target="_top">http://diveintohtml5.org/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
+<a class="ulink" href="http://diveintohtml5.info/history.html#how" target="_top">http://diveintohtml5.info/history.html#how</a></p><p>Thankfully, if you opt-in to pushState in Backbone.js, browsers that don’t
 support pushState will continue to use hash-based URL fragments, and if a hash
 URL is visited by a pushState-capable browser, it will be transparently
 upgraded to the true URL.</p><p>In addition to browser support, another hurdle to seamless use of pushState is
-that because the URL used are real URLs, your server must now how to render
+that because the URL used are real URLs, your server must know how to render
 each of the URLs. For example, if your Backbone.js application has a route of
-/tasks/1, your server-side application must be able to respond to that page if
+<code class="literal">/tasks/1</code>, your server-side application must be able to respond to that page if
 the browser visits that URL directly.</p><p>For most applications, you can handle this by just rendering the content you
 would have for the root URL and letting Backbone.js handle the rest of the
 routing to the proper location. But for full search-engine crawlability, your
@@ -159,7 +230,7 @@ called.</p><p>Like Rails routes, Backbone.js routes can contain parameter parts,
 the <code class="literal">show</code> route in the example above. In this route, the part of the fragment
 after <code class="literal">show/</code> will then be based as an argument to the <code class="literal">show</code> method.</p><p>Multiple parameters are possible, as well. For example, a route of
 <code class="literal">search/:query/p:page</code> will match a fragment of <code class="literal">search/completed/p2</code> passing
-passing <code class="literal">completed</code> and <code class="literal">2</code> to the action.</p><p>In the routes, <code class="literal">/</code> is the natural separator. For example, a route of
+<code class="literal">completed</code> and <code class="literal">2</code> to the action.</p><p>In the routes, <code class="literal">/</code> is the natural separator. For example, a route of
 <code class="literal">show/:id</code> will not match a fragment of <code class="literal">show/1/2</code>. To match through route,
 Backbone.js provides the concept of splat parts, identified by <code class="literal">*</code> instead of
 <code class="literal">:</code>. For example, a route of <code class="literal">show/*id</code> would match the previous fragment, and
@@ -176,10 +247,30 @@ constructor will be passed to this <code class="literal">initialize</code> funct
 constructor like <code class="literal">new ExampleRouter({ routes: { "" : "index" }}</code>. But note
 that this will override any routes defined in the routes hash on the router
 itself.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_event_binding"/>Event binding</h3></div></div></div><p>A big part of writing snappy rich client applications is building models and
-views that update in real-time with respect to one another.  With Backbone.js
-you accomplish this with events.</p><p>TODO: This is probably the first time we dive into events, unless we touch on
-them earlier in the models/collections sections.  Might want to introduce the
-topic with a basic example that uses <code class="literal">Backbone.Events</code> without views &amp; models.</p><p>There are three primary kinds of events that your views will bind to:</p><div class="itemizedlist"><ul type="disc"><li>
+views that update in real-time with respect to one another. With Backbone.js
+you accomplish this with events.</p><p>Client-side applications are asynchronous by nature. At the heart of a backbone
+application lie events binding and triggering. Your application is written
+using event-driven programming where components emit and handle events,
+achieving non-blocking UIs.</p><p>With Backbone.js, it’s very easy to write such applications. Backbone provides
+the <code class="literal">Backbone.Events</code> mixin, which can be included in any other class:</p><p>Here’s a quick example of a very simple game engine, where things happen in the
+system, they notify the game, which in turn invokes any event handlers that
+are bound to that event.</p><pre class="programlisting"><b class="hl-keyword">var</b> gameEngine = {};
+_.extend(gameEngine, Backbone.Events);
+
+gameEngine.bind(<b class="hl-string"><i style="color:red">"user_registered"</i></b>, <b class="hl-keyword">function</b>(user) {
+  user.points += <span class="hl-number">10</span>
+});
+
+gameEngine.trigger(<b class="hl-string"><i style="color:red">"user_registered"</i></b>, User.<b class="hl-keyword">new</b>({ points: <span class="hl-number">0</span> }));</pre><p><code class="literal">Backbone.Events</code> is included on <code class="literal">Backbone.Views</code>, <code class="literal">Backbone.Model</code> and
+<code class="literal">Backbone.Collection</code>. Backbone itself will trigger events for you at
+certain points. The flow of a user interface  will usually react to
+certain well known events, and therefore they are so common that it
+just makes sense for it to do so. For example, when a model’s attributes are
+changed, Backbone models conveniently trigger the <code class="literal">change</code> event. It is
+up to you to bind a handler on those events. More on that later.</p><p>As you can see from the example though, it is possible to bind and trigger
+arbitrary events on any object that extendes <code class="literal">Backbone.Events</code>. Additionally,
+if an event handler should always trigger regardless of which event got fired,
+you can bind to the special <code class="literal">all</code> event.</p><p>There are three primary kinds of events that your views will bind to:</p><div class="itemizedlist"><ul type="disc"><li>
 DOM events within the view’s <code class="literal">this.el</code> element
 </li><li>
 Backbone events triggered by the view’s model or collection
@@ -192,7 +283,7 @@ the view, regardless of where those events are triggered (models, collections,
 or other views, or other arbitrary objects).  Events that your view publishes
 need to be handled in a different way.</p><p>TODO: Consider promoting events and binding/unbinding to its own top-level
 section; this isn’t view-specific, although the view layer is where you’ll be
-doing most of your binding.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_dom_events_within_the_view_element"/>Binding to DOM events within the view element</h4></div></div></div><p>The primary function of a view class is to provide behavior for its markup’s DOM elements.  You can attach event listeners by hand if you like:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- templates/soundboard.jst --&gt;</i>
+doing most of your binding.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_dom_events_within_the_view_element"/>Binding to DOM events within the view element</h4></div></div></div><p>The primary function of a view class is to provide behavior for its markup’s DOM elements. You can attach event listeners by hand if you like:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">&lt;!-- templates/soundboard.jst --&gt;</i>
 <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Honk<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b>
 <b class="hl-tag" style="color: #000096">&lt;a</b> <span class="hl-attribute" style="color: #F5844C">class</span>=<span class="hl-value" style="color: #993300">"sound"</span><b class="hl-tag" style="color: #000096">&gt;</b>Beep<b class="hl-tag" style="color: #000096">&lt;/a&gt;</b></pre><pre class="programlisting"><b class="hl-keyword">var</b> SoundBoard = Backbone.View.extend({
   render: <b class="hl-keyword">function</b>() {
@@ -209,7 +300,7 @@ doing most of your binding.</p><div class="section" lang="en"><div class="titlep
   },
 
   render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'soundboard'</i></b>]());
   },
 
   playSound: <b class="hl-keyword">function</b>() {
@@ -220,9 +311,10 @@ doing most of your binding.</p><div class="section" lang="en"><div class="titlep
 function.  It binds DOM events with <code class="literal">$.delegate()</code>, whether you’re using the
 <a class="ulink" href="http://api.jquery.com/delegate/" target="_top">jQuery</a> or
 <a class="ulink" href="https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108" target="_top">Zepto</a>
-<code class="literal">.delegate()</code> function.</p><p>It also takes care of binding the event handlers' <code class="literal">this</code> to the view instance using <code class="literal">_.bind()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_events_triggered_by_literal_this_model_literal_or_literal_this_collection_literal"/>Binding to events triggered by <code class="literal">this.model</code> or <code class="literal">this.collection</code></h4></div></div></div><p>In almost every view you write, the view will be bound to a <code class="literal">Backbone.Model</code> or
-<code class="literal">Backbone.Collection</code>, most often with the convenience properties <code class="literal">this.model</code>
-or <code class="literal">this.collection</code>.</p><p>TODO: Make sure we discussed the convenience properties previously?</p><p>Consider a view that displays a collection of <code class="literal">Task</code> models.  It will re-render
+<code class="literal">.delegate()</code> function.</p><p>It also takes care of binding the event handlers' <code class="literal">this</code> to the view instance
+using <code class="literal">_.on()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_events_triggered_by_literal_this_model_literal_or_literal_this_collection_literal"/>Binding to events triggered by <code class="literal">this.model</code> or <code class="literal">this.collection</code></h4></div></div></div><p>In almost every view you write, the view will be bound to a <code class="literal">Backbone.Model</code> or
+a <code class="literal">Backbone.Collection</code>, most often with the convenience properties <code class="literal">this.model</code>
+or <code class="literal">this.collection</code>.</p><p>Consider a view that displays a collection of <code class="literal">Task</code> models. It will re-render
 itself when any model in the collection is changed or removed, or when a new
 model is added:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
   template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
@@ -239,11 +331,16 @@ model is added:</p><pre class="programlisting"><b class="hl-keyword">var</b> Tas
   render: <b class="hl-keyword">function</b>() {
     $(<b class="hl-keyword">this</b>.el).html(<b class="hl-keyword">this</b>.template({tasks: <b class="hl-keyword">this</b>.collection}));
   }
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_custom_events"/>Binding to custom events</h4></div></div></div><p>With sufficiently complex views, you may encounter a situation where you want
-one view to change in response to another.</p><p>TODO: Expound on this situation, discuss that it’s unlikely, and you should
-consider whether you should be binding to models instead.  However, sometimes
-it’s useful.</p><p>Consider a simple example with a table of users and a toggle control that
+});</pre><p>Note how we bind to the collection’s <code class="literal">change</code>, <code class="literal">add</code> and <code class="literal">remove</code> events.
+The <code class="literal">add</code> and <code class="literal">remove</code> events are triggered when you either <code class="literal">add()</code> or <code class="literal">remove()</code>
+a model from that collection as expected. The <code class="literal">change</code> event requires special
+mention; it will trigger when any of the underlying models' <code class="literal">change</code> event triggers.
+Backbone just bubbles up that event to the containing collection for convenience.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_binding_to_custom_events"/>Binding to custom events</h4></div></div></div><p>With sufficiently complex views, you may encounter a situation where you want
+one view to change in response to another.</p><p>Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:</p><pre class="programlisting">GenderFilter = Backbone.View.extend({
+  render: {
+    <i class="hl-comment" style="color: silver">// render template</i>
+  },
   events: {
     <b class="hl-string"><i style="color:red">"click .show-male"</i></b>:   <b class="hl-string"><i style="color:red">"showMale"</i></b>,
     <b class="hl-string"><i style="color:red">"click .show-female"</i></b>: <b class="hl-string"><i style="color:red">"showFemale"</i></b>,
@@ -257,20 +354,35 @@ filters the users to a particular gender:</p><pre class="programlisting">GenderF
 
 UsersTable = Backbone.View.extend({
   initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.filterView = <b class="hl-keyword">new</b> UserFilter();
-    <b class="hl-keyword">this</b>.filterView.bind(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-keyword">this</b>.filterByGender);
+    <b class="hl-keyword">this</b>.genderView = <b class="hl-keyword">new</b> GenderFilter();
+    <b class="hl-keyword">this</b>.genderView.bind(<b class="hl-string"><i style="color:red">"changed"</i></b>, <b class="hl-keyword">this</b>.filterByGender);
+    <b class="hl-keyword">this</b>.filteredCollection = <b class="hl-keyword">this</b>.collection;
+    <b class="hl-keyword">this</b>.render();
   },
+
+  render: {
+    <b class="hl-keyword">this</b>.genderView.render();
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'users'</i></b>]({ users: <b class="hl-keyword">this</b>.filteredCollection }));
+  }
 
   filterByGender: <b class="hl-keyword">function</b>(gender) {
     <b class="hl-keyword">this</b>.filteredCollection = <b class="hl-keyword">this</b>.collection.byGender(gender);
+    <b class="hl-keyword">this</b>.render();
   }
-});</pre><p><code class="literal">GenderFilter</code> is responsible for the filter control, and triggers an event
-with <code class="literal">Backbone.Events.prototype.trigger()</code> when it changes.  <code class="literal">UsersTable</code>
-observes this event, and filters its own collection in response.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_unbinding"/>Cleaning Up: Unbinding</h3></div></div></div><p>In the last section, we discussed three different kinds of event binding in
+});</pre><p>In the above snippet, the <code class="literal">GenderFilter</code> view is responsible for the filter
+control. When a the appropriate elements are clicked, a custom <code class="literal">changed</code> event
+is triggered on itself. Note how it is also possible to pass arbitrary
+parameters to the <code class="literal">trigger()</code> function.</p><p>On the other hand, we have a <code class="literal">UserTable</code> view which renders is responsible for
+rendering a collection of users. It also observes this event via the call to
+<code class="literal">on()</code>, where it invokes the <code class="literal">filterByGender</code> function.</p><p>While your views will generally bind to events on models and collections, a
+situation like the above may arise where it is handy to trigger and bind to
+custom events at the view layer. However, it’s always a good idea to step
+back and think through whether you should instead be binding to events on the
+underlying components.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_cleaning_up_unbinding"/>Cleaning Up: Unbinding</h3></div></div></div><p>In the last section, we discussed three different kinds of event binding in
 your <code class="literal">Backbone.Views</code> classes: DOM events, model/collection events, and custom
 view events.  Next we’ll discuss unbinding these events: why it’s a good idea,
 and how to do it.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_why_do_i_have_to_unbind_events"/>Why do I have to unbind events?</h4></div></div></div><p>Consider two views in a Todo app: an index view which contains all the tasks
-that need to be done:</p><div class="figure"><a id="d0e1425"/><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="d0e1436"/><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
+that need to be done:</p><div class="figure"><a id="d0e1602"/><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="d0e1613"/><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
   template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
   tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
   id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
@@ -327,14 +439,14 @@ itself.</p><p>Let’s take a look at how to unbind various kinds of events.</p><
 by invoking <code class="literal">$(this.el).remove()</code>.  This means that jQuery takes care of
 cleaning up any events bound on DOM elements within your view, regardless of
 whether you bound them with the Backbone <code class="literal">events</code> hash or by hand; for
-example, with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, or <code class="literal">$.live()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_model_and_collection_events"/>Unbinding model and collection events</h4></div></div></div><p>If your view binds to events on a model or collection, you are responsible for
+example, with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, <code class="literal">live()</code> or <code class="literal">$.on()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_model_and_collection_events"/>Unbinding model and collection events</h4></div></div></div><p>If your view binds to events on a model or collection, you are responsible for
 unbinding these events.  You do this with a simple call to
-<code class="literal">this.model.unbind()</code> or <code class="literal">this.collection.unbind()</code>; the
-<a class="ulink" href="http://documentcloud.github.com/backbone/#Events-unbind" target="_top"><code class="literal">Backbone.Events.unbind()</code>
+<code class="literal">this.model.off()</code> or <code class="literal">this.collection.off()</code>; the
+<a class="ulink" href="http://documentcloud.github.com/backbone/#Events-off" target="_top"><code class="literal">Backbone.Events.off()</code>
 function</a> removes all callbacks on that object.</p><p>When should we unbind these handlers?  Whenever the view is going away.  This
 means that any pieces of code that create new instances of this view become
-responsible for cleaning up after it.  That doesn’t sound like a very cohesive
-approach, so let’s include the cleanup responsibility on this view.</p><p>TODO: Consider just overriding <code class="literal">Backbone.View.prototype.remove()</code> instead of
+responsible for cleaning up after it’s gone. That doesn’t sound like a very
+cohesive approach, so let’s include the cleanup responsibility on this view.</p><p>TODO: Consider just overriding <code class="literal">Backbone.View.prototype.remove()</code> instead of
 making a new function, since <code class="literal">remove()</code> is very simple.  What are the pros/cons?</p><p>Let’s write a <code class="literal">leave()</code> function on our view that wraps <code class="literal">remove()</code> and handles
 any additional event unbinding we need to do.  As a convention, when we use
 this view elsewhere, we’ll call <code class="literal">leave()</code> instead of <code class="literal">remove()</code> when we’re
@@ -351,7 +463,7 @@ done:</p><pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectio
   }
 
   <i class="hl-comment" style="color: silver">// snip...</i>
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_keep_track_of_literal_bind_literal_calls_to_unbind_more_easily"/>Keep track of <code class="literal">bind()</code> calls to unbind more easily</h4></div></div></div><p>In the example above, unbinding the collection change event isn’t too much
+});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_keep_track_of_literal_on_literal_calls_to_unbind_more_easily"/>Keep track of <code class="literal">on()</code> calls to unbind more easily</h4></div></div></div><p>In the example above, unbinding the collection change event isn’t too much
 hassle; since we’re only observing one thing, we only have to unbind one
 thing.  But even the addition of one line to <code class="literal">leave()</code> is easy to forget, and
 if you bind to multiple events then it only gets more verbose.</p><p>Let’s add a step of indirection in event binding so that we can automatically
@@ -369,19 +481,19 @@ single call to <code class="literal">unbindFromAll()</code> to unbind them:</p><
   },
 
   bindTo: <b class="hl-keyword">function</b>(source, event, callback) {
-    source.bind(event, callback, <b class="hl-keyword">this</b>);
+    source.on(event, callback, <b class="hl-keyword">this</b>);
     <b class="hl-keyword">this</b>.bindings.push({ source: source, event: event, callback: callback });
   },
 
   unbindFromAll: <b class="hl-keyword">function</b>() {
     _.each(<b class="hl-keyword">this</b>.bindings, <b class="hl-keyword">function</b>(binding) {
-      binding.source.unbind(binding.event, binding.callback);
+      binding.source.off(binding.event, binding.callback);
     });
     <b class="hl-keyword">this</b>.bindings = [];
   }
 });</pre><p>These functions, <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code>, can be extracted into a
 reusable mixin or superclass.  Then, we just have to use <code class="literal">bindTo()</code> instead of
-<code class="literal">model.bind()</code> and be assured that the handlers will be cleaned up during
+<code class="literal">model.on()</code> and be assured that the handlers will be cleaned up during
 <code class="literal">leave()</code>.</p><p>TODO: Is it viable to use Function.caller inside Backbone.Events so this
 functionality is provided by Backbone.Events?
 <a class="ulink" href="https://gist.github.com/158a4172aea28876d0fc" target="_top">https://gist.github.com/158a4172aea28876d0fc</a></p><p>TODO: Wrap <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code> into <code class="literal">Observer</code> which gets mixed
@@ -392,7 +504,7 @@ handler when the view is being removed.</p><p>But other times, our view classes 
 In this case, other objects are the observer, and are responsible for cleaning
 up the event binding when they are disposed.</p><p>However, additionally, when the view itself is disposed of with <code class="literal">leave()</code>, it
 should clean up any event handlers bound on <span class="strong"><strong>itself</strong></span> for events that it
-triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Events.unbind()</code>:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilteringView = Backbone.View.extend({
+triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Events.off()</code>:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilteringView = Backbone.View.extend({
   <i class="hl-comment" style="color: silver">// snip...</i>
 
   events: {
@@ -406,7 +518,7 @@ triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Event
   },
 
   leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbind(); <i class="hl-comment" style="color: silver">// Clean up any event handlers bound on this view</i>
+    <b class="hl-keyword">this</b>.off(); <i class="hl-comment" style="color: silver">// Clean up any event handlers bound on this view</i>
     <b class="hl-keyword">this</b>.remove();
   }
 
@@ -415,25 +527,25 @@ triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Event
 forgetting to unbind can cause bugs and memory leaks. The solution is to make
 sure you unbind events and remove views when you leave them. Our approach to
 this is two-fold: write a set of reusable functions that manage cleaning up a
-view’s bindings, and use these functions where ever views are instantiated: in
+view’s bindings, and use these functions whereever views are instantiated: in
 <code class="literal">Router</code> instances, and in composite views.  We’ll take a look at these
 concrete, reusable approaches in the next two sections about <code class="literal">SwappingRouter</code>
-and <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router"/>Swapping router</h3></div></div></div><p>TODO: Build out an example in the example_app with swapping router, probably
-task list vs task detail.</p><p>When switching from one view to another, we should clean up the previous view.
+and <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_swapping_router"/>Swapping router</h3></div></div></div><p>When switching from one view to another, we should clean up the previous view.
 We discussed previously a convention of writing a <code class="literal">view.leave()</code>
 Let’s augment our view to include the ability to clean itself up by "leaving"
 the DOM:</p><pre class="programlisting"><b class="hl-keyword">var</b> MyView = Backbone.View.extend({
   <i class="hl-comment" style="color: silver">// ...</i>
 
   leave: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.unbind();
+    <b class="hl-keyword">this</b>.off();
     <b class="hl-keyword">this</b>.remove();
   },
 
   <i class="hl-comment" style="color: silver">// ...</i>
-});</pre><p>The <code class="literal">unbind()</code> and <code class="literal">remove()</code> functions are provided by <code class="literal">Backbone.Events</code> and
-<code class="literal">Backbone.Events.unbind()</code> will remove all callbacks registered on the view,
-and <code class="literal">remove()</code> will remove the view’s element from the DOM.</p><p>In simple cases, we replace one full page view with another full page (less any
+});</pre><p>The <code class="literal">off()</code> and <code class="literal">remove()</code> functions are provided by <code class="literal">Backbone.View</code> and
+<code class="literal">Backbone.Events</code> respectively. <code class="literal">Backbone.Events.off()</code> will remove all
+callbacks registered on the view, and <code class="literal">remove()</code> will remove the view’s
+element from the DOM, equivalent to calling <code class="literal">this.$el.remove()</code>.</p><p>In simple cases, we replace one full page view with another full page (less any
 shared layout). We introduce a convention that all actions underneath one
 <code class="literal">Router</code> share the same root element, and define it as <code class="literal">el</code> on the router.</p><p>Now, a <code class="literal">SwappingRouter</code> can take advantage of the <code class="literal">leave()</code> function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
@@ -455,7 +567,7 @@ _.extend(Support.SwappingRouter.<b class="hl-keyword">prototype</b>, Backbone.Ro
 
 Support.SwappingRouter.extend = Backbone.Router.extend;</pre><p>Now all you need to do in a route function is call <code class="literal">swap()</code>, passing in the
 new view that should be rendered. The <code class="literal">swap()</code> function’s job is to call
-<code class="literal">leave()</code> on the current view, render the new view and append it to the
+<code class="literal">leave()</code> on the current view, render the new view appending it to the
 router’s <code class="literal">el</code>, and finally store who the current view is, so that next time
 <code class="literal">swap()</code> is invoked, it can be properly cleaned up as well.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="swapping-internals"/>SwappingRouter and Backbone internals</h4></div></div></div><p>If the code for <code class="literal">SwappingRouter</code> seems a little confusing, don’t fret: it is,
 thanks to JavaScript’s object model! Sadly, it’s not as simple to just drop in
@@ -463,7 +575,7 @@ the <code class="literal">swap</code> method into <code class="literal">Backbone
 mixin the function we need.</p><p>Our goal here is essentially to create a subclass of <code class="literal">Backbone.Router</code>, and to
 extend it without modifying the original class. This gives us a few benefits:
 first, <code class="literal">SwappingRouter</code> should work with Backbone upgrades. Second, it should be
-<span class="strong"><strong>obvious</strong></span>  and <span class="strong"><strong>intention-revealing</strong></span> when a controller needs to swap views. If
+<span class="strong"><strong>obvious</strong></span> and <span class="strong"><strong>intention-revealing</strong></span> when a controller needs to swap views. If
 we chose to just mix in a <code class="literal">swap</code> method, and called it from a direct descendant
 of <code class="literal">Backbone.Router</code>, an unaware (and unlucky) programmer now needs to go on a
 deep source dive in an attempt to figure out where that’s coming from. At least
@@ -493,9 +605,12 @@ use. Let’s take a quick look at this function, as of Backbone 0.5.3:</p><pre c
 reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
 utility functions to allow more class-style inheritance.</p><p>The end result here is that whenever you make a custom controller, internally
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
-<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1788"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
+<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1972"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
 taught you that although it’s more code, it’s hopefully going to save time down
-the road for those maintaining your code.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"/>Composite views</h3></div></div></div><p>TODO: Build out an example in the example_app with composite views.</p><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
+the road for those maintaining your code.</p><p>You can find an example of a <code class="literal">SwappingRouter</code> on the example app under
+<code class="literal">app/assets/javascripts/routers/tasks.js</code>. Note how each of the actions
+in that Router use <code class="literal">SwappingRouter.swap()</code> to invoke rendering of views,
+freeing itself from the complexities of cleaning them up.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_composite_views"/>Composite views</h3></div></div></div><p>The <code class="literal">SwappingRouter</code> above calls <code class="literal">leave()</code> on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
 over the Composite View pattern, the <code class="literal">CompositeView</code> class itself, and some
@@ -636,7 +751,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
 
   initialize: <b class="hl-keyword">function</b>() {
     _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderDetails"</i></b>);
-    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.renderDetails);
+    <b class="hl-keyword">this</b>.model.on(<b class="hl-string"><i style="color:red">"change"</i></b>, <b class="hl-keyword">this</b>.renderDetails);
   },
 
   render: <b class="hl-keyword">function</b>() {
@@ -646,7 +761,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
   },
 
   renderLayout: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]());
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]());
   },
 
   renderDetails: <b class="hl-keyword">function</b>() {
@@ -663,7 +778,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
   tagName: <b class="hl-string"><i style="color:red">'ul'</i></b>,
 
   initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.model.comments.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.renderComments);
+    <b class="hl-keyword">this</b>.model.comments.on(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.renderComments);
   },
 
   render: <b class="hl-keyword">function</b>() {
@@ -673,7 +788,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
   },
 
   renderLayout: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/list'</i></b>]());
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'comments/list'</i></b>]());
   },
 
   renderComments: <b class="hl-keyword">function</b>() {
@@ -701,7 +816,7 @@ maintain a back-reference at <code class="literal">this.parent</code>. This is u
   },
 
   render: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'comments/new'</i></b>]);
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'comments/new'</i></b>]);
   },
 
   createComment: <b class="hl-keyword">function</b>() {
@@ -737,7 +852,30 @@ The comments view code, extracted and decoupled from the task view code, can
 The task view performs better, since adding new comments or updating the task
   details will only re-render the pertinent section, instead of re-rendering the
   entire task + comments composite.
-</li></ul></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_cleaning_up_views_properly"/>Cleaning up views properly</h4></div></div></div><p>We now have a full set of tools to clean up views properly.</p><p>TODO: Wrap up and re-state the "cleaning up, swappingrouter, compositeview" sections.  Mix <code class="literal">Observer</code> into <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_forms"/>Forms</h3></div></div></div><p>Who likes writing form code by hand?  Rails' form builder API greatly helps
+</li></ul></div><p>In the example app, we make use of a composite view on TasksIndex located at
+<code class="literal">app/assets/javascripts/views/tasks_index.js</code>. The situation is similar to
+what has been discussed here. The view responsible for rendering the list of
+childs will actually render them as children. Note how the <code class="literal">renderTasks</code>
+function iterates over the  collection of tasks, instantiates a <code class="literal">TaskItem</code>
+view for each, renders it as a child with <code class="literal">renderChild</code>, and finally appends
+it to table’s body. Now when the router cleans up the <code class="literal">TasksIndex</code> with <code class="literal">leave</code>,
+it will also clean up all of its children.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_cleaning_up_views_properly"/>Cleaning up views properly</h4></div></div></div><p>You’ve learned how leaving lingering events bound on views that are no longer
+on the page can cause both UI bugs, or what’s probably worse, memory leaks.
+A slight flickering of the interface is annoying at best, but prolonged usage
+of your app could in fact make the user’s browser to start consuming massive
+amounts of memory, potentially causing browser crashes, data loss and unhappy
+users and angry developers.</p><p>We now have a full set of tools to clean up views properly. To summarize, the
+big picture tools are:</p><div class="itemizedlist"><ul type="disc"><li>
+A <span class="strong"><strong>Swapping Router</strong></span> that knows keeps track of the current view so that when
+we swap it with anther view, it can do the work of cleaning the old one up.
+</li><li>
+A <span class="strong"><strong>Composite View</strong></span> that knows how to keep track of any child views it has
+rendered, so that when it is asked to clean up, it knows to clean up its own
+children.
+</li></ul></div><p>The piece that ties both of them together is the <code class="literal">leave()</code> function on the
+<code class="literal">CompositeView</code>. It takes on the task of completely cleaning up itself by
+removing itself from the DOM via jQuery’s <code class="literal">remove()</code> function, as well as
+removing all events via a call to <code class="literal">Backbone.Events.off()</code>.</p><p>TODO: Mix <code class="literal">Observer</code> into <code class="literal">CompositeView</code>.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_forms"/>Forms</h3></div></div></div><p>Who likes writing form code by hand?  Rails' form builder API greatly helps
 reduce application code.  We aim to maintain a similar level of abstraction in
 our Backbone application code.  Let’s take a look at what we need from form
 building code to achieve this.</p><p>We have a few requirements when it comes to handling forms.  We need to:</p><div class="itemizedlist"><ul type="disc"><li>

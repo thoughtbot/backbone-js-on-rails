@@ -107,12 +107,12 @@ looks something like:</p>
 JST[<b class="hl-string"><i style="color:red">'show'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'index'</i></b>]</pre>
 <p>Now, you add another directory under app/templates, say app/templates/user.
-Now, all JST references are prefixed with their parent directory name so they
-are unambiguous:</p>
-<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'tasks/form'</i></b>]
+Now, templates with coliding names in JST references are prefixed with their
+ parent directory name so they are unambiguous:</p>
+<pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'form'</i></b>] <i class="hl-comment" style="color: silver">// in tasks/form.jst</i>
 JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]
-JST[<b class="hl-string"><i style="color:red">'users/new'</i></b>]
+JST[<b class="hl-string"><i style="color:red">'new'</i></b>]  <i class="hl-comment" style="color: silver">// in users/new.jst</i>
 JST[<b class="hl-string"><i style="color:red">'users/show'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'users/index'</i></b>]</pre>
 <p>This breaks existing JST references. You can work around this issue by applying
@@ -133,11 +133,11 @@ packaging.  We have an open issue and workaround:</p>
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_rails_3_1"></a>Rails 3.1</h3></div></div></div>
 <p>Rails 3.1 introduces the asset pipeline:</p>
-<p><a class="ulink" href="http://edgeguides.rubyonrails.org/asset_pipeline.html" target="_top">http://edgeguides.rubyonrails.org/asset_pipeline.html</a></p>
+<p><a class="ulink" href="http://guides.rubyonrails.org/asset_pipeline.html" target="_top">http://guides.rubyonrails.org/asset_pipeline.html</a></p>
 <p>which uses the Sprockets library for preprocessing and packaging assets:</p>
 <p><a class="ulink" href="http://getsprockets.org/" target="_top">http://getsprockets.org/</a></p>
 <p>To take advantage of the built-in asset pipeline, organize your Backbone.js
-templates and classes in paths available to the asset pipeline.  Classes go in
+templates and classes in paths available to it: classes go in
 <code class="literal">app/assets/javascripts/</code>, and templates go alongside, in
 <code class="literal">app/assets/templates/</code>:</p>
 <pre class="screen">app/
@@ -185,13 +185,14 @@ the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
 models) and then your routers and views must be loaded.</p>
 <p>Fortunately, sprockets can handle this load order for us. When all is said and
-done your application.js Sprockets manifest will be as shown below.</p>
+done your application.js Sprockets manifest will look as shown below.</p>
 <pre class="programlisting"><i class="hl-comment" style="color: silver">//= require jquery</i>
 <i class="hl-comment" style="color: silver">//= require jquery_ujs</i>
 <i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">//= require underscore</i>
 <i class="hl-comment" style="color: silver">//= require backbone</i>
 <i class="hl-comment" style="color: silver">//= require backbone.authtokenadapter</i>
+<i class="hl-comment" style="color: silver">//= require backbone-support</i>
 <i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">//= require backbone-forms.js</i>
 <i class="hl-comment" style="color: silver">//= require jquery-ui-editors.js</i>
@@ -206,15 +207,15 @@ done your application.js Sprockets manifest will be as shown below.</p>
 <i class="hl-comment" style="color: silver">//= require_tree ../templates</i>
 <i class="hl-comment" style="color: silver">//= require_tree .</i></pre>
 <p>The above is taken from the example application included with this book. You
-can view it at example_app/app/assets/javascripts/application.js.</p>
+can view it at <code class="literal">example_app/app/assets/javascripts/application.js</code>.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"></a>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div>
-<p>By default Backbone.js communicates with your Rails application via JSON gets
-and posts. If you’ve ever made a JSON API for your Rails app, then for the most
-part this will be very similar.</p>
-<p>If you’ve never made a JSON API for your Rails application before, lucky
+<p>By default Backbone.js communicates with your Rails application via JSON GET
+, POST and PUT requests. If you’ve ever made a JSON API for your Rails app,
+then for the most part this will be very similar.</p>
+<p>If you’ve never made a JSON API for your Rails application before, luckily
 you, it’s pretty straightforward.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
@@ -255,7 +256,7 @@ representation of this model would be as shown below.</p>
   urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });</pre>
 <p>The urlRoot property above indicates to Backbone.js that the server url for
-instances of this model will be found at /tasks/:id.</p>
+instances of this model will be found at <code class="literal">/tasks/:id</code>.</p>
 <p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
 query all tasks) through the same Task model. However, in Backbone.js models
 only represent the singular representation of a Task. Backbone.js splits out the
@@ -298,10 +299,10 @@ Backbone.js model.</p>
 <p>Fortunately for us, Backbone.js models will communicate in the normal RESTful
 way that Rails controllers understand, using the proper verbs to support the
 standard RESTful Rails controller actions: index, show, create, update, and
-destroy. Backbone.js does not make any use the new action.</p>
+destroy. Backbone.js does not make any use of the new action.</p>
 <p>Therefore, it’s just up to us to write a <span class="emphasis"><em>normal</em></span> restful controller.</p>
 <p>There are a few different ways you can write your controllers for interacting
-with you Backbone.js models and collections. However, the newest and cleanest
+with your Backbone.js models and collections. However, the newest and cleanest
 way is to use the respond_with method introduced in Rails 3.0.</p>
 <p>When using respond_with, in your controller you specify what formats are
 supported with the method respond_to. In your individual actions, you then
@@ -344,7 +345,9 @@ can be as simple as a string, or a more complex object that describes the error
 in all its gory detail.</p>
 <p>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
-would often require duplicating a lot of server-side business logic.</p>
+would often require duplicating a lot of server-side business logic.
+Furthermore, you always want the server to be the definitive arbitrer for valid
+data, as this API can be abused outside of the backbone.js interface.</p>
 <p>TODO: Is it possible to smoothly integrate Backbone.js and the
 client_side_validations gem?</p>
 <p>Instead, your Backbone.js applications will likely rely on server-side
@@ -371,11 +374,22 @@ response code if validations fail.</p>
     <b class="hl-keyword">end</b>
   <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre>
+<p>Thankfully, the default Rails responders will respond with an unprocessable
+entity (422) status code when there are validation errors, so the above
+controller action can be rewritten more succintly like so:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
+  respond_to :json
+  <b class="hl-keyword">def</b> create
+    @task = Task.new(params[:task])
+    @task.save
+    respond_with @task
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
 <p>Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
-application. For more information about handling and displaying errors, see
-the Form helpers section of the Views and Templates chapter.</p>
+application. For more information about handling and displaying errors on the
+client side, see the Form helpers section of the Views and Templates chapter.</p>
 </div>
 </div>
 <div class="section" lang="en">
@@ -420,8 +434,8 @@ method. This will appear as follows.</p>
 &lt;% end -%&gt;</pre>
 <p>For performance reasons, you will almost always "bootstrap" and give
 Backbone.js its initial data within the HTML view for this page. In our
-example, the tasks have already been provided to the view in a @tasks instance
-variable, and that can be used to bootstrap, as shown below.</p>
+example, the tasks have already been provided to the view in a <code class="literal">@tasks</code>
+instance variable, and that can be used to bootstrap, as shown below.</p>
 <pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
   &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
@@ -462,7 +476,7 @@ client-side URL fragments (#fragment).</p>
     <i class="hl-comment" style="color: silver">// into the DOM.</i>
   }
 });</pre>
-<p>A basic router consists of a routes hash which is a mapping between url
+<p>A basic router consists of a routes hash which is a mapping between URL
 fragments and methods on the router. If the current URL fragment, or one that
 is being visited matches one of the routes in the hash, its method will be
 called.</p>
@@ -626,7 +640,7 @@ would be like the one shown below.</p>
   },
 
   render: <b class="hl-keyword">function</b> () {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 };</pre>
@@ -634,7 +648,7 @@ would be like the one shown below.</p>
 the view is instantiated.</p>
 <p>The render method above then renders the <span class="emphasis"><em>tasks/index</em></span> template, passing
 the collection of tasks into the template.</p>
-<p>Each Backbone.js view has an element which is stories in this.el. This element
+<p>Each Backbone.js view has an element which it stores in <code class="literal">this.el</code>. This element
 can be populated with content, but isn’t on the page until placed there by
 you.</p>
 <p>Finally, the Router must be changed to instantiate this view, passing in the
@@ -737,7 +751,7 @@ TasksIndex and TaskView view, which is shown below.</p>
   },
 
   render: <b class="hl-keyword">function</b> () {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 });</pre>
@@ -750,7 +764,7 @@ parent view object:</p>
   },
 
   render: <b class="hl-keyword">function</b> () {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
 
     <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
     <b class="hl-keyword">this</b>.collection.each(<b class="hl-keyword">function</b>(task) {
@@ -809,7 +823,7 @@ shown below.</p>
   },
 
   render: <b class="hl-keyword">function</b> () {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
 };</pre>
@@ -917,9 +931,8 @@ to include the Rails XSS token in any requests it makes.</p>
 };
 
 BackboneRailsAuthTokenAdapter.fixSync(Backbone);</pre>
-<p>The above patch depends on jQuery, and should be included in your after jQuery
-and Backbone.js are loaded. Using Jammit, you’d list it below the backbone.js
-file.</p>
+<p>The above patch depends on jQuery, and should be included after jQuery and
+Backbone.js are loaded. Using Jammit, you’d list it below the backbone.js file.</p>
 <p>In Rails 3.1, you’ll place this file in lib/assets/javascripts. In the example
 app, you can find this this in
 example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p>

@@ -238,13 +238,14 @@ See other examples on James Newbery’s blog: [testing Backbone with Jasmine](<a
 gem <b class="hl-string"><i style="color:red">'rails'</i></b>, <b class="hl-string"><i style="color:red">'3.1.0'</i></b>
 gem <b class="hl-string"><i style="color:red">'sqlite3'</i></b>
 
-gem <b class="hl-string"><i style="color:red">'rails-backbone'</i></b>
+gem <b class="hl-string"><i style="color:red">'rails-backbone'</i></b>, <b class="hl-string"><i style="color:red">'~&gt; 0.7.0'</i></b>
 gem <b class="hl-string"><i style="color:red">'jquery-rails'</i></b>
 gem <b class="hl-string"><i style="color:red">'ejs'</i></b>
 gem <b class="hl-string"><i style="color:red">"flutie"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.3.2"</i></b>
 gem <b class="hl-string"><i style="color:red">"clearance"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.13.0"</i></b>
 gem <b class="hl-string"><i style="color:red">'paperclip'</i></b>
 gem <b class="hl-string"><i style="color:red">'rabl'</i></b>
+gem <b class="hl-string"><i style="color:red">'backbone-support'</i></b>
 
 group :assets <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'sass-rails'</i></b>, <b class="hl-string"><i style="color:red">"  ~&gt; 3.1.0"</i></b>
@@ -262,7 +263,7 @@ group :development, :test <b class="hl-keyword">do</b>
 group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'turn'</i></b>, :require =&gt; <b class="hl-keyword">false</b>
   gem <b class="hl-string"><i style="color:red">"capybara"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.1.1"</i></b>
-  gem <b class="hl-string"><i style="color:red">"selenium-webdriver"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 2.10.0"</i></b>
+  gem <b class="hl-string"><i style="color:red">'selenium-webdriver'</i></b>, <b class="hl-string"><i style="color:red">'~&gt; 2.18.0'</i></b>
   gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>
   gem <b class="hl-string"><i style="color:red">"factory_girl_rails"</i></b>
   gem <b class="hl-string"><i style="color:red">"bourne"</i></b>
@@ -305,7 +306,7 @@ steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2
   features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</pre>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Note</h3>
-<p>A common gotchya when testing Backbone.js Rails apps is seeing false
+<p>A common gotcha when testing Backbone.js Rails apps is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
 <code class="literal">Then I should see "Master backbone"</code> instead of scoping it with <code class="literal">within the
 tasks list</code>, then some test drivers would count the JSON that is used to
@@ -362,10 +363,8 @@ write this class, we’ll motivate it with a Jasmine isolation spec:</p>
     <b class="hl-keyword">var</b> view = <b class="hl-keyword">new</b> ExampleApp.Views.TasksIndex();
     view.render();
 
-    <b class="hl-keyword">var</b> $el = $(view.el);
-
-    expect($el).toBe(<b class="hl-string"><i style="color:red">"#tasks"</i></b>);
-    expect($el).toContain(<b class="hl-string"><i style="color:red">"table"</i></b>);
+    expect(view.$el).toBe(<b class="hl-string"><i style="color:red">"#tasks"</i></b>);
+    expect(view.$el).toContain(<b class="hl-string"><i style="color:red">"table"</i></b>);
   });
 });</pre>
 <p>We use the [jasmine-jquery](<a class="ulink" href="https://github.com/velesin/jasmine-jquery" target="_top">https://github.com/velesin/jasmine-jquery</a>) library
@@ -382,7 +381,7 @@ view render it:</p>
   },
 
   render: function () {
-    $(this.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
+    this.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
 });</pre>
@@ -390,7 +389,7 @@ view render it:</p>
 <pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre>
 <p>Now our Jasmine specs pass:</p>
 <div class="figure">
-<a id="d0e3265"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
+<a id="d0e3696"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"></div></div>
 </div>
 <br class="figure-break"><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
@@ -478,7 +477,7 @@ accepting a collection of tasks, and now we have to render it:</p>
 <p>The simplest thing we can do to get the spec passing is to pass the <code class="literal">tasks</code>
 collection into the template, and iterate over it there:</p>
 <p>app/assets/javascripts/views/tasks_index.js:</p>
-<pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
+<pre class="programlisting">ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: <b class="hl-keyword">function</b>() {
     _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
     <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
@@ -491,14 +490,17 @@ collection into the template, and iterate over it there:</p>
   },
 
   renderTemplate: <b class="hl-keyword">function</b>() {
-    $(<b class="hl-keyword">this</b>.el).html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
+    console.log(<b class="hl-keyword">this</b>.el);
+    console.log(<b class="hl-keyword">this</b>.$el);
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
   },
 
   renderTasks: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
     <b class="hl-keyword">this</b>.collection.each(<b class="hl-keyword">function</b>(task) {
       <b class="hl-keyword">var</b> row = <b class="hl-keyword">new</b> ExampleApp.Views.TaskItem({ model: task });
-      self.$(<b class="hl-string"><i style="color:red">'tbody'</i></b>).append(row.render().el);
+      self.renderChild(row);
+      self.$(<b class="hl-string"><i style="color:red">'tbody'</i></b>).append(row.el);
     });
   }
 });</pre>
@@ -546,7 +548,7 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 
   describe(<b class="hl-string"><i style="color:red">"init()"</i></b>, <b class="hl-keyword">function</b>() {
     it(<b class="hl-string"><i style="color:red">"accepts task JSON and instantiates a collection from it"</i></b>, <b class="hl-keyword">function</b>() {
-      <b class="hl-keyword">var</b> tasksJSON = [{<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"thing to do"</i></b>}, {<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"another thing"</i></b>}];
+      <b class="hl-keyword">var</b> tasksJSON = {<b class="hl-string"><i style="color:red">"tasks"</i></b>: [{<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"thing to do"</i></b>}, {<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"another thing"</i></b>}]};
       ExampleApp.init(tasksJSON);
 
       expect(ExampleApp.tasks).not.toEqual(<b class="hl-keyword">undefined</b>);
@@ -557,13 +559,13 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 
     it(<b class="hl-string"><i style="color:red">"instantiates a Tasks router"</i></b>, <b class="hl-keyword">function</b>() {
       ExampleApp.Routers.Tasks = sinon.spy();
-      ExampleApp.init();
+      ExampleApp.init({});
       expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
     });
 
     it(<b class="hl-string"><i style="color:red">"starts Backbone.history"</i></b>, <b class="hl-keyword">function</b>() {
       Backbone.history = { start: sinon.spy() };
-      ExampleApp.init();
+      ExampleApp.init({});
       expect(Backbone.history.start).toHaveBeenCalled();
     });
   });
@@ -574,10 +576,10 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
   Collections: {},
   Views: {},
   Routers: {},
-  init: <b class="hl-keyword">function</b>(tasks) {
-    <b class="hl-keyword">this</b>.tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(tasks);
+  init: <b class="hl-keyword">function</b>(data) {
+    <b class="hl-keyword">this</b>.tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(data.tasks);
 
-    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks();
+    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks({ collection: <b class="hl-keyword">this</b>.tasks });
     <b class="hl-keyword">if</b> (!Backbone.history.started) {
       Backbone.history.start();
       Backbone.history.started = true;
@@ -590,13 +592,20 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 &lt;div id="tasks"&gt;
 &lt;/div&gt;
 
+&lt;script type="text/json" id="bootstrap"&gt;
+  { "tasks": &lt;%= @tasks.to_json %&gt; }
+&lt;/script&gt;
+
 &lt;%= content_for :javascript do -%&gt;
-  &lt;%= javascript_tag do %&gt;
-    $(function() {
-      ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
+  &lt;script type="text/javascript"&gt;
+    $(function () {
+      var json_div       = document.createElement('div');
+      json_div.innerHTML = $('#bootstrap').text();
+      var data           = JSON.parse(json_div.innerHTML);
+      ExampleApp.init(data);
     });
-  &lt;% end %&gt;
-&lt;% end -%&gt;</pre>
+  &lt;/script&gt;
+&lt;% end %&gt;</pre>
 <p>And the integration test passes!</p>
 <pre class="programlisting">Feature: Viewing Tasks
   As a user
