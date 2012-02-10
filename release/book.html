@@ -5450,7 +5450,7 @@ Green?
 <h2 id="_testing">Testing</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_full_stack_integration_testing_1_todo">Full-stack integration testing (1 todo)</h3>
+<h3 id="_full_stack_integration_testing">Full-stack integration testing</h3>
 <div class="paragraph"><p>Your application is built from a collection of loosely coupled modules,
 spreading across several layers of the development stack.  To ensure the
 application works correctly from the perspective of the end-user, full-stack
@@ -5458,12 +5458,24 @@ integration testing drives your application and verifies correct functionality
 from the user interface level.  This is also referred to as acceptance testing.</p></div>
 <div class="sect3">
 <h4 id="_introduction_2">Introduction</h4>
-<div class="paragraph"><p>TODO: No real special Backbone concerns, just integration test with a @js driver
-like normal.</p></div>
+<div class="paragraph"><p>Writing a full-stack integration test for a Javascript-driven web application
+will always involve some kind of browser, and although writing an application
+with Backbone can make a world of difference to you, the tools involved are all
+the same as far as your browser is concerned. Because your browser can run
+Backbone applications just like any Javascript application, you can write
+integration tests for them just like you would for any Javascript application.
+Also, because of tools like Capybara that support various drivers, you can
+generally test a Javascript-based application just like you&#8217;d test a web
+application where all the logic lives on the server. This means that having a
+powerful, rich-client user interface won&#8217;t make your application any harder to
+test. If you&#8217;re familiar with tools like Capybara, Cucumber, and RSpec, you can
+dive right in and start testing your Backbone application. If not, the
+following sections should give you a taste of the available tools for
+full-stack integration tests written in Ruby.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_capybara">Capybara</h4>
-<div class="paragraph"><p>Thought there is a host of tools available to you for writing automated
+<div class="paragraph"><p>Though there is a host of tools available to you for writing automated
 integration tests, we recommend
 [capybara](<a href="https://github.com/jnicklas/capybara">https://github.com/jnicklas/capybara</a>).  In a hybrid Rails
 application, where some portions are regular request/response and other portions
@@ -5542,32 +5554,34 @@ Then <span style="color: #FF6600">/^I should see "(.*)"$/</span> <span style="fo
 </div>
 <div class="sect3">
 <h4 id="_drivers">Drivers</h4>
-<div class="ulist"><ul>
-<li>
-<p>
-Integration test with:
-</p>
-</li>
-<li>
-<p>
-[capybara-webkit](<a href="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</a>) for fast, headless, accurate WebKit testing
-</p>
-</li>
-<li>
-<p>
-Selenium for other browsers, or if capybara-webkit has issues.
-</p>
-</li>
-</ul></div>
+<div class="paragraph"><p>Capybara supports multiple drivers through a common API, each with benefits and
+drawbacks. We prefer to use either
+[capybara-webkit](<a href="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</a>) or Selenium.</p></div>
+<div class="paragraph"><p>When possible, we use capybara-webkit. It&#8217;s a fast, headless fake browser
+written using the WebKit browser engine. It&#8217;s generally faster than Selenium
+and it&#8217;s dependent on your system settings once compiled. This means that
+upgrading the browser you use every day won&#8217;t ever affect your tests.</p></div>
+<div class="paragraph"><p>However, capybara-webkit is still young, and sometimes there&#8217;s no substitute
+for having a real browser to run your tests through. In these situations, we
+fall back to using Selenium. Selenium will always support anything you can do
+in your actual browser, and supports multiple browsers, including Firefox,
+Chrome, Safari, and even Internet Explorer.</p></div>
+<div class="paragraph"><p>Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>Capybara<span style="color: #990000">.</span>javascript_driver <span style="color: #990000">=</span> <span style="color: #990000">:</span>webkit</tt></pre></div></div>
+<div class="paragraph"><p>And then tag a Cucumber scenario as @javascript. If you need to fall back to using Selenium, tag that scenario with @selenium.</p></div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_isolated_unit_testing_some_stubs_some_wip">Isolated unit testing (some stubs, some wip)</h3>
+<h3 id="_isolated_unit_testing">Isolated unit testing</h3>
 <div class="paragraph"><p>Integration testing your application is great for ensuring that the product
 functions as intended, and works to mitigate against risk of regressions.
 There are additional benefits, though, to writing tests for individual units
-of your application in isolation.  Two of them are focused failures and
-decoupled code.</p></div>
+of your application in isolation, such as focused failures and decoupled code.</p></div>
 <div class="paragraph"><p>When an integration test fails, it can be difficult to pin down the exact reason
 why; particularly when a regression is introduced in a part of the application
 seemingly far away from where you&#8217;re working.  With the finer granularity of a
@@ -5582,6 +5596,19 @@ about these concerns earlier helps you design modules which are more loosely
 coupled, have smaller interfaces, and are easier to set up.  If code is hard to
 test, it will be hard to use.  Writing the test first, you have a clear and
 concrete opportunity to make your implementation easier to use.</p></div>
+<div class="paragraph"><p>Finally, there are some behaviors that are difficult or impossible to test
+using a full-stack integration test. Here&#8217;s a common example: you want to
+display a spinner graphic or disable a UI element while waiting for the server
+to respond to a request. You can&#8217;t test this with an integration test because
+the time the server takes to respond is variable; by the time your test checks
+to look for the spinner graphic, the response will probably be finished. Even if
+it passes once, it may fail on the next run, or on the run after that. And if
+you decide to do an almost-full-stack test and fake out a slow response on the
+server, this will slow down your tests and introduce unnecessary indirection
+to an otherwise simple component. During isolation tests, it&#8217;s easy to use
+techniques like dependency injection, stubbing, and mocking to test erratic
+behaviors and side effects that are difficult to observe during integration
+tests.</p></div>
 <div class="paragraph"><p>If you&#8217;d like to read more on test-driven development, check out Kent Beck&#8217;s
 <em>Test Driven Development: By Example</em> and Gerard Meszaros' <em>xUnit Test Patterns:
 Refactoring Test Code</em>.</p></div>
@@ -5600,36 +5627,79 @@ specs:</p></div>
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
-<pre><tt><span style="font-weight: bold"><span style="color: #000000">describe</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"App.Models.User"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
-  <span style="font-weight: bold"><span style="color: #000000">it</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"knows its full name, given a first and last name"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
-    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> user <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> App<span style="color: #990000">.</span>Models<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">User</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span>
-      first_name<span style="color: #990000">:</span> <span style="color: #FF0000">'Alice'</span><span style="color: #990000">,</span>
-      last_name<span style="color: #990000">:</span>  <span style="color: #FF0000">'Appleton'</span>
-    <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+<pre><tt><span style="font-weight: bold"><span style="color: #000000">describe</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"ExampleApp.Models.Tasks"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+  <span style="font-weight: bold"><span style="color: #000000">it</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"knows if it is complete"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> completeTask <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Models<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">Task</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span> <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #000000">expect</span></span><span style="color: #990000">(</span>completeTask<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isComplete</span></span><span style="color: #990000">()).</span><span style="font-weight: bold"><span style="color: #000000">toBe</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">);</span>
+  <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
 
-    <span style="font-weight: bold"><span style="color: #000000">expect</span></span><span style="color: #990000">(</span>user<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">fullName</span></span><span style="color: #990000">()).</span><span style="font-weight: bold"><span style="color: #000000">toEqual</span></span><span style="color: #990000">(</span><span style="color: #FF0000">'Alice Appleton'</span><span style="color: #990000">);</span>
+  <span style="font-weight: bold"><span style="color: #000000">it</span></span><span style="color: #990000">(</span><span style="color: #FF0000">"knows if it is not complete"</span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">function</span></span><span style="color: #990000">()</span> <span style="color: #FF0000">{</span>
+    <span style="font-weight: bold"><span style="color: #0000FF">var</span></span> incompleteTask <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #0000FF">new</span></span> ExampleApp<span style="color: #990000">.</span>Models<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">Task</span></span><span style="color: #990000">(</span><span style="color: #FF0000">{</span> complete<span style="color: #990000">:</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span> <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
+    <span style="font-weight: bold"><span style="color: #000000">expect</span></span><span style="color: #990000">(</span>incompleteTask<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">isComplete</span></span><span style="color: #990000">()).</span><span style="font-weight: bold"><span style="color: #000000">toBe</span></span><span style="color: #990000">(</span><span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">);</span>
   <span style="color: #FF0000">}</span><span style="color: #990000">);</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">);</span></tt></pre></div></div>
 </div>
 <div class="sect3">
 <h4 id="_what_to_test">What to test?</h4>
-<div class="paragraph"><p>TODO: Discuss cost/benefit tradeoffs of isolation testing.  Discuss code
-coverage, and relative value w.r.t. overlap with integration testing.  In our
-experience so far, most value is in testing Backbone views and models; guided by
-a general principle of valuing test coverage over complex or high-churn code
-areas (which models and views generally qualify for)&#8201;&#8212;&#8201;routers <strong>should</strong> be very
-low on logic and just delegate to models and views (think Rails skinny
-controllers).  Since isolation tests for them generally involves a fair amount
-of stubbing/spying/mocking, they tend to be more brittle and less valuable.</p></div>
-</div>
-<div class="sect3">
-<h4 id="_stubbing_mocking_spying">Stubbing, mocking, spying</h4>
-<div class="paragraph"><p>TODO: Discuss sinon.js and syntax for stubs, spies, mocks.</p></div>
+<div class="paragraph"><p>We frequently found it difficult to test Javascript components in isolation
+before we started using Backbone. Although jQuery really takes the pain out of
+working with the DOM and communicating with the server, it&#8217;s not
+object-oriented and provides nothing to help split up your application.
+Because most of our HTML was in ERB-based templates, it was generally
+difficult to test the Javascript that relied on that HTML without also loading
+the web application. This meant that almost all of our early Javascript tests
+were full-stack integration tests.</p></div>
+<div class="paragraph"><p>Using Backbone, it&#8217;s much easier to test components in isolation. View code is
+restricted to views, and templates contain only HTML or interpolation code
+that can be interpreted by the Javascript view layer, such as jst or mustache
+templates. Models and collections can be given data in their constructor, and
+simple dependency injection allows unit tests to fake out the remote server.
+We don&#8217;t test routers in isolation as often because they&#8217;re very light on
+logic, but those are also easy to test by calling action methods directly or
+triggering events.</p></div>
+<div class="paragraph"><p>Since Backbone components are just as easy to test in isolation as they are to
+test full-stack, we generally use the same guidelines as we do for all Rails
+applications to decide what to test where.</p></div>
+<div class="paragraph"><p>Start with a top-down, full-stack Cucumber or RSpec scenario to describe the
+feature you&#8217;re writing from a high level perspective, and begin implementing
+behavior from the top as necessary. If you find that the feedback loop between
+a test failure and the code to pass it starts to feel too long, start writing
+isolated unit tests for the individual components you need to write to get
+closer to passing a higher-level assertion. As an example, an assertion from
+Capybara that fails because of a missing selector may need new models,
+controllers, views, and routes both on the server and in Backbone. Rather than
+writing several new componenets without seeing the failure message change,
+write a unit test for each piece as you progress down. If it&#8217;s clear what
+component you need to add from the integration test failure, add that
+component without writing an isolated unit test. For example, a failure from a
+missing route or view file reveals an obvious next step, but missing text on a
+page because a model method doesn&#8217;t actually do anything may motivate a unit
+test.</p></div>
+<div class="paragraph"><p>Many features will have edge cases or several logical branches. Anything that
+can&#8217;t be described from a high-level, business value perspective should be
+tested from an isolated unit test. For example, when testing a form, it makes
+sense to write a scenario for the success path, where a user enters valid
+data that gets accepted and rendered by the application, and one extra
+scenario for the failure path, where a user enters invalid data that the
+system can&#8217;t accept. However, when adding future validations or other reasons
+that a user&#8217;s data can&#8217;t be accepted, it makes sense to just write an extra
+isolated unit test, rather than adding a new scenario that largely duplicates
+the original failure scenario.</p></div>
+<div class="paragraph"><p>When writing isolation tests, the developer needs to decide exactly how much
+isolation to enforce. For example, when writing a unit test for a model,
+you&#8217;ll likely decide not to involve an actual web server to provide data.
+However, when testing a view that composes other subviews, you&#8217;ll likely allow
+the actual subview code to run. There are many cases when it will make
+sense to just write a unit test that involves a few components working
+together, rather than writing a full-stack scenario.</p></div>
+<div class="paragraph"><p>The overall goals when deciding how much to test via integration vs isolation
+are to keep high-level business logic described in top-down tests, to keep
+details and edge cases described in unit tests, and to write tests that
+exercise the fewest number of components possible while remaining robust and
+descriptive without becoming brittle.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_helpful_tools">Helpful Tools</h4>
-<div class="paragraph"><p>TODO: Some of these (e.g. sinon, maybe rosie) will be introduced earlier.  Those
-that remain should be explained in more detail.</p></div>
 <div class="ulist"><ul>
 <li>
 <p>
@@ -5661,10 +5731,11 @@ See other examples on James Newbery&#8217;s blog: [testing Backbone with Jasmine
 </div>
 <div class="sect2">
 <h3 id="_example_test_driving_a_task_application">Example: Test-driving a Task application</h3>
-<div class="paragraph"><p>TODO: This writing is terse.  Come back and improve flow.</p></div>
-<div class="paragraph"><p>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</p></div>
-<div class="paragraph"><p>TODO: Discuss setting up tools: jasminerice, cucumber, capybara-webkit/selenium</p></div>
-<div class="paragraph"><p>We have a basic application set up for testing, with the following Gemfile:</p></div>
+<div class="sect3">
+<h4 id="_setup">Setup</h4>
+<div class="paragraph"><p>In this example, we&#8217;ll be using Cucumber, Capybara, RSpec, and Jasmine to test-drive a todo list.</p></div>
+<div class="paragraph"><p>The Selenium driver comes configured with Capybara and is the fastest driver to get running. By default it runs your tests in a remote controlled Firefox session, so you&#8217;ll want to install Firefox if you don&#8217;t have it already.</p></div>
+<div class="paragraph"><p>The other dependencies you can install by adding them to your Gemfile. The gems you&#8217;ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails, and capybara. You&#8217;ll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</p></div>
 <div class="listingblock">
 <div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
@@ -5695,6 +5766,7 @@ group <span style="color: #990000">:</span>development<span style="color: #99000
   gem <span style="color: #FF0000">"ruby-debug19"</span>
   gem <span style="color: #FF0000">'jasmine'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"= 1.1.0.rc4"</span>
   gem <span style="color: #FF0000">'jasminerice'</span>
+  gem <span style="color: #FF0000">'cucumber-rails'</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 1.0.2"</span>
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span>
 
 group <span style="color: #990000">:</span>test <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
@@ -5711,6 +5783,37 @@ group <span style="color: #990000">:</span>test <span style="font-weight: bold">
   gem <span style="color: #FF0000">"guard-spork"</span>
   gem <span style="color: #FF0000">"spork"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"~&gt; 0.9.0.rc"</span>
 <span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>If you haven&#8217;t already, you can bootstrap your application for Cucumber and Capybara:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+<div class="paragraph"><p>Next, bootstrap the application for Jasmine:</p></div>
+<div class="listingblock">
+<div class="content"></div></div>
+<div class="paragraph"><p>You&#8217;ll want to set up Jasminerice to load all your helpers and specs:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt>include<span style="color: #990000">::..</span><span style="color: #FF6600">/../</span>example_app<span style="color: #990000">/</span></tt></pre></div></div>
+<div class="paragraph"><p>Finally, you need to mount the Jasminerice engine so that you can run your
+Jasmine specs. Add the following routes to config/routes.rb:</p></div>
+<div class="listingblock">
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
+by Lorenzo Bettini
+http://www.lorenzobettini.it
+http://www.gnu.org/software/src-highlite -->
+<pre><tt><span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="color: #990000">[</span><span style="color: #FF0000">"development"</span><span style="color: #990000">,</span> <span style="color: #FF0000">"test"</span><span style="color: #990000">].</span><span style="font-weight: bold"><span style="color: #0000FF">include</span></span><span style="color: #990000">?</span> Rails<span style="color: #990000">.</span>env
+  mount Jasminerice<span style="color: #990000">::</span>Engine <span style="color: #990000">=&gt;</span> <span style="color: #FF0000">"/jasmine"</span>
+<span style="font-weight: bold"><span style="color: #0000FF">end</span></span></tt></pre></div></div>
+<div class="paragraph"><p>With this configuration, you can run cucumber scenarios with the cucumber
+command and you can run Jasmine tests by accessing
+<a href="http://localhost:3000/jasmine">http://localhost:3000/jasmine</a> in your browser.</p></div>
+</div>
+<div class="sect3">
+<h4 id="_step_by_step">Step by step</h4>
+<div class="paragraph"><p>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</p></div>
+<div class="paragraph"><p>TODO: This writing is terse.  Come back and improve flow.</p></div>
 <div class="paragraph"><p>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We&#8217;ll start with the list of items, and create fixture data with
@@ -6087,6 +6190,7 @@ CompositeView to avoid leaking refs.</p></div>
 </div>
 </div>
 </div>
+</div>
 <div class="sect1">
 <h2 id="_security_stub">Security (stub)</h2>
 <div class="sectionbody">
@@ -6138,7 +6242,7 @@ that can be parsed and passed along to your app&#8217;s init function.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2012-02-10 11:37:31 EST
+Last updated 2012-02-10 11:50:32 EST
 </div>
 </div>
 </body>

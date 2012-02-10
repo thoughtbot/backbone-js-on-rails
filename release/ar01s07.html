@@ -1,12 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Testing</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s06.html" title="Models and collections"/><link rel="next" href="ar01s08.html" title="Security (stub)"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Testing</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_testing"/>Testing</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_full_stack_integration_testing_1_todo"/>Full-stack integration testing (1 todo)</h3></div></div></div><p>Your application is built from a collection of loosely coupled modules,
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Testing</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s06.html" title="Models and collections"/><link rel="next" href="ar01s08.html" title="Security (stub)"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Testing</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_testing"/>Testing</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_full_stack_integration_testing"/>Full-stack integration testing</h3></div></div></div><p>Your application is built from a collection of loosely coupled modules,
 spreading across several layers of the development stack.  To ensure the
 application works correctly from the perspective of the end-user, full-stack
 integration testing drives your application and verifies correct functionality
-from the user interface level.  This is also referred to as acceptance testing.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_introduction_2"/>Introduction</h4></div></div></div><p>TODO: No real special Backbone concerns, just integration test with a @js driver
-like normal.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_capybara"/>Capybara</h4></div></div></div><p>Thought there is a host of tools available to you for writing automated
+from the user interface level.  This is also referred to as acceptance testing.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_introduction_2"/>Introduction</h4></div></div></div><p>Writing a full-stack integration test for a Javascript-driven web application
+will always involve some kind of browser, and although writing an application
+with Backbone can make a world of difference to you, the tools involved are all
+the same as far as your browser is concerned. Because your browser can run
+Backbone applications just like any Javascript application, you can write
+integration tests for them just like you would for any Javascript application.
+Also, because of tools like Capybara that support various drivers, you can
+generally test a Javascript-based application just like you’d test a web
+application where all the logic lives on the server. This means that having a
+powerful, rich-client user interface won’t make your application any harder to
+test. If you’re familiar with tools like Capybara, Cucumber, and RSpec, you can
+dive right in and start testing your Backbone application. If not, the
+following sections should give you a taste of the available tools for
+full-stack integration tests written in Ruby.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_capybara"/>Capybara</h4></div></div></div><p>Though there is a host of tools available to you for writing automated
 integration tests, we recommend
 [capybara](<a class="ulink" href="https://github.com/jnicklas/capybara" target="_top">https://github.com/jnicklas/capybara</a>).  In a hybrid Rails
 application, where some portions are regular request/response and other portions
@@ -61,17 +73,19 @@ When <b class="hl-string"><i style="color:red">"I click the login button"</i></b
 
 Then /^I should see <b class="hl-string"><i style="color:red">"(.*)"</i></b>$/ <b class="hl-keyword">do</b> |text|
   page.should have_content(text)
-<b class="hl-keyword">end</b></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_drivers"/>Drivers</h4></div></div></div><div class="itemizedlist"><ul type="disc"><li>
-Integration test with:
-</li><li>
-[capybara-webkit](<a class="ulink" href="https://github.com/thoughtbot/capybara-webkit" target="_top">https://github.com/thoughtbot/capybara-webkit</a>) for fast, headless, accurate WebKit testing
-</li><li>
-Selenium for other browsers, or if capybara-webkit has issues.
-</li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_isolated_unit_testing_some_stubs_some_wip"/>Isolated unit testing (some stubs, some wip)</h3></div></div></div><p>Integration testing your application is great for ensuring that the product
+<b class="hl-keyword">end</b></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_drivers"/>Drivers</h4></div></div></div><p>Capybara supports multiple drivers through a common API, each with benefits and
+drawbacks. We prefer to use either
+[capybara-webkit](<a class="ulink" href="https://github.com/thoughtbot/capybara-webkit" target="_top">https://github.com/thoughtbot/capybara-webkit</a>) or Selenium.</p><p>When possible, we use capybara-webkit. It’s a fast, headless fake browser
+written using the WebKit browser engine. It’s generally faster than Selenium
+and it’s dependent on your system settings once compiled. This means that
+upgrading the browser you use every day won’t ever affect your tests.</p><p>However, capybara-webkit is still young, and sometimes there’s no substitute
+for having a real browser to run your tests through. In these situations, we
+fall back to using Selenium. Selenium will always support anything you can do
+in your actual browser, and supports multiple browsers, including Firefox,
+Chrome, Safari, and even Internet Explorer.</p><p>Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:</p><pre class="programlisting">Capybara.javascript_driver = :webkit</pre><p>And then tag a Cucumber scenario as @javascript. If you need to fall back to using Selenium, tag that scenario with @selenium.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_isolated_unit_testing"/>Isolated unit testing</h3></div></div></div><p>Integration testing your application is great for ensuring that the product
 functions as intended, and works to mitigate against risk of regressions.
 There are additional benefits, though, to writing tests for individual units
-of your application in isolation.  Two of them are focused failures and
-decoupled code.</p><p>When an integration test fails, it can be difficult to pin down the exact reason
+of your application in isolation, such as focused failures and decoupled code.</p><p>When an integration test fails, it can be difficult to pin down the exact reason
 why; particularly when a regression is introduced in a part of the application
 seemingly far away from where you’re working.  With the finer granularity of a
 unit test suite, failures are more targeted and help you get to the root of the
@@ -83,31 +97,85 @@ rather than much later during development when modules are integrated. Thinking
 about these concerns earlier helps you design modules which are more loosely
 coupled, have smaller interfaces, and are easier to set up.  If code is hard to
 test, it will be hard to use.  Writing the test first, you have a clear and
-concrete opportunity to make your implementation easier to use.</p><p>If you’d like to read more on test-driven development, check out Kent Beck’s
+concrete opportunity to make your implementation easier to use.</p><p>Finally, there are some behaviors that are difficult or impossible to test
+using a full-stack integration test. Here’s a common example: you want to
+display a spinner graphic or disable a UI element while waiting for the server
+to respond to a request. You can’t test this with an integration test because
+the time the server takes to respond is variable; by the time your test checks
+to look for the spinner graphic, the response will probably be finished. Even if
+it passes once, it may fail on the next run, or on the run after that. And if
+you decide to do an almost-full-stack test and fake out a slow response on the
+server, this will slow down your tests and introduce unnecessary indirection
+to an otherwise simple component. During isolation tests, it’s easy to use
+techniques like dependency injection, stubbing, and mocking to test erratic
+behaviors and side effects that are difficult to observe during integration
+tests.</p><p>If you’d like to read more on test-driven development, check out Kent Beck’s
 <span class="emphasis"><em>Test Driven Development: By Example</em></span> and Gerard Meszaros' <span class="emphasis"><em>xUnit Test Patterns:
 Refactoring Test Code</em></span>.</p><p>As there is plentiful content available for testing tools and strategies in
 Rails, we’ll focus on isolation testing your Backbone code.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_isolation_testing_in_javascript"/>Isolation testing in JavaScript</h4></div></div></div><p>There are many JavaScript testing frameworks available.  Some run in-browser and
 provide facility for setting up DOM fixtures.  Others are designed for
 standalone JavaScript code and can run on browserless JavaScript runtimes.</p><p>We’ll use the Jasmine framework for writing our isolation specs.  It integrates
 easily into a Rails application, and provides an RSpec-like syntax for writing
-specs:</p><pre class="programlisting">describe(<b class="hl-string"><i style="color:red">"App.Models.User"</i></b>, <b class="hl-keyword">function</b>() {
-  it(<b class="hl-string"><i style="color:red">"knows its full name, given a first and last name"</i></b>, <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">var</b> user = <b class="hl-keyword">new</b> App.Models.User({
-      first_name: <b class="hl-string"><i style="color:red">'Alice'</i></b>,
-      last_name:  <b class="hl-string"><i style="color:red">'Appleton'</i></b>
-    });
-
-    expect(user.fullName()).toEqual(<b class="hl-string"><i style="color:red">'Alice Appleton'</i></b>);
+specs:</p><pre class="programlisting">describe(<b class="hl-string"><i style="color:red">"ExampleApp.Models.Tasks"</i></b>, <b class="hl-keyword">function</b>() {
+  it(<b class="hl-string"><i style="color:red">"knows if it is complete"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> completeTask = <b class="hl-keyword">new</b> ExampleApp.Models.Task({ complete: true });
+    expect(completeTask.isComplete()).toBe(true);
   });
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_what_to_test"/>What to test?</h4></div></div></div><p>TODO: Discuss cost/benefit tradeoffs of isolation testing.  Discuss code
-coverage, and relative value w.r.t. overlap with integration testing.  In our
-experience so far, most value is in testing Backbone views and models; guided by
-a general principle of valuing test coverage over complex or high-churn code
-areas (which models and views generally qualify for) — routers <span class="strong"><strong>should</strong></span> be very
-low on logic and just delegate to models and views (think Rails skinny
-controllers).  Since isolation tests for them generally involves a fair amount
-of stubbing/spying/mocking, they tend to be more brittle and less valuable.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_stubbing_mocking_spying"/>Stubbing, mocking, spying</h4></div></div></div><p>TODO: Discuss sinon.js and syntax for stubs, spies, mocks.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_helpful_tools"/>Helpful Tools</h4></div></div></div><p>TODO: Some of these (e.g. sinon, maybe rosie) will be introduced earlier.  Those
-that remain should be explained in more detail.</p><div class="itemizedlist"><ul type="disc"><li>
+
+  it(<b class="hl-string"><i style="color:red">"knows if it is not complete"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> incompleteTask = <b class="hl-keyword">new</b> ExampleApp.Models.Task({ complete: false });
+    expect(incompleteTask.isComplete()).toBe(false);
+  });
+});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_what_to_test"/>What to test?</h4></div></div></div><p>We frequently found it difficult to test Javascript components in isolation
+before we started using Backbone. Although jQuery really takes the pain out of
+working with the DOM and communicating with the server, it’s not
+object-oriented and provides nothing to help split up your application.
+Because most of our HTML was in ERB-based templates, it was generally
+difficult to test the Javascript that relied on that HTML without also loading
+the web application. This meant that almost all of our early Javascript tests
+were full-stack integration tests.</p><p>Using Backbone, it’s much easier to test components in isolation. View code is
+restricted to views, and templates contain only HTML or interpolation code
+that can be interpreted by the Javascript view layer, such as jst or mustache
+templates. Models and collections can be given data in their constructor, and
+simple dependency injection allows unit tests to fake out the remote server.
+We don’t test routers in isolation as often because they’re very light on
+logic, but those are also easy to test by calling action methods directly or
+triggering events.</p><p>Since Backbone components are just as easy to test in isolation as they are to
+test full-stack, we generally use the same guidelines as we do for all Rails
+applications to decide what to test where.</p><p>Start with a top-down, full-stack Cucumber or RSpec scenario to describe the
+feature you’re writing from a high level perspective, and begin implementing
+behavior from the top as necessary. If you find that the feedback loop between
+a test failure and the code to pass it starts to feel too long, start writing
+isolated unit tests for the individual components you need to write to get
+closer to passing a higher-level assertion. As an example, an assertion from
+Capybara that fails because of a missing selector may need new models,
+controllers, views, and routes both on the server and in Backbone. Rather than
+writing several new componenets without seeing the failure message change,
+write a unit test for each piece as you progress down. If it’s clear what
+component you need to add from the integration test failure, add that
+component without writing an isolated unit test. For example, a failure from a
+missing route or view file reveals an obvious next step, but missing text on a
+page because a model method doesn’t actually do anything may motivate a unit
+test.</p><p>Many features will have edge cases or several logical branches. Anything that
+can’t be described from a high-level, business value perspective should be
+tested from an isolated unit test. For example, when testing a form, it makes
+sense to write a scenario for the success path, where a user enters valid
+data that gets accepted and rendered by the application, and one extra
+scenario for the failure path, where a user enters invalid data that the
+system can’t accept. However, when adding future validations or other reasons
+that a user’s data can’t be accepted, it makes sense to just write an extra
+isolated unit test, rather than adding a new scenario that largely duplicates
+the original failure scenario.</p><p>When writing isolation tests, the developer needs to decide exactly how much
+isolation to enforce. For example, when writing a unit test for a model,
+you’ll likely decide not to involve an actual web server to provide data.
+However, when testing a view that composes other subviews, you’ll likely allow
+the actual subview code to run. There are many cases when it will make
+sense to just write a unit test that involves a few components working
+together, rather than writing a full-stack scenario.</p><p>The overall goals when deciding how much to test via integration vs isolation
+are to keep high-level business logic described in top-down tests, to keep
+details and edge cases described in unit tests, and to write tests that
+exercise the fewest number of components possible while remaining robust and
+descriptive without becoming brittle.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_helpful_tools"/>Helpful Tools</h4></div></div></div><div class="itemizedlist"><ul type="disc"><li>
 Spy/stub/mock, even your HTTP, with [sinon.js](<a class="ulink" href="http://sinonjs.org/" target="_top">http://sinonjs.org/</a>)
 </li><li>
 If you’re looking for factory_girl.js, it’s called [Rosie](<a class="ulink" href="https://github.com/bkeepers/rosie" target="_top">https://github.com/bkeepers/rosie</a>)
@@ -117,7 +185,7 @@ If you’re looking for factory_girl.js, it’s called [Rosie](<a class="ulink" 
 Write in CoffeeScript and use the 3.1 asset pipeline with [jasminerice](<a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">https://github.com/bradphelan/jasminerice</a>)
 </li><li>
 See other examples on James Newbery’s blog: [testing Backbone with Jasmine](<a class="ulink" href="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html" target="_top">http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html</a>) and check out his [examples on GitHub](<a class="ulink" href="https://github.com/froots/backbone-jasmine-examples" target="_top">https://github.com/froots/backbone-jasmine-examples</a>)
-</li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_example_test_driving_a_task_application"/>Example: Test-driving a Task application</h3></div></div></div><p>TODO: This writing is terse.  Come back and improve flow.</p><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><p>TODO: Discuss setting up tools: jasminerice, cucumber, capybara-webkit/selenium</p><p>We have a basic application set up for testing, with the following Gemfile:</p><pre class="programlisting">source <b class="hl-string"><i style="color:red">'http://rubygems.org'</i></b>
+</li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_example_test_driving_a_task_application"/>Example: Test-driving a Task application</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setup"/>Setup</h4></div></div></div><p>In this example, we’ll be using Cucumber, Capybara, RSpec, and Jasmine to test-drive a todo list.</p><p>The Selenium driver comes configured with Capybara and is the fastest driver to get running. By default it runs your tests in a remote controlled Firefox session, so you’ll want to install Firefox if you don’t have it already.</p><p>The other dependencies you can install by adding them to your Gemfile. The gems you’ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails, and capybara. You’ll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</p><pre class="programlisting">source <b class="hl-string"><i style="color:red">'http://rubygems.org'</i></b>
 
 gem <b class="hl-string"><i style="color:red">'rails'</i></b>, <b class="hl-string"><i style="color:red">'3.1.0'</i></b>
 gem <b class="hl-string"><i style="color:red">'sqlite3'</i></b>
@@ -142,6 +210,7 @@ group :development, :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"ruby-debug19"</i></b>
   gem <b class="hl-string"><i style="color:red">'jasmine'</i></b>, <b class="hl-string"><i style="color:red">"= 1.1.0.rc4"</i></b>
   gem <b class="hl-string"><i style="color:red">'jasminerice'</i></b>
+  gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>
 <b class="hl-keyword">end</b>
 
 group :test <b class="hl-keyword">do</b>
@@ -157,7 +226,12 @@ group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"launchy"</i></b>
   gem <b class="hl-string"><i style="color:red">"guard-spork"</i></b>
   gem <b class="hl-string"><i style="color:red">"spork"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.9.0.rc"</i></b>
-<b class="hl-keyword">end</b></pre><p>We’d like to be able to add items to a Todo list.  We know this will involve two
+<b class="hl-keyword">end</b></pre><p>If you haven’t already, you can bootstrap your application for Cucumber and Capybara:</p><pre class="programlisting">rails generate cucumber:install</pre><p>Next, bootstrap the application for Jasmine:</p><pre class="programlisting">rails generate jasmine:install</pre><p>You’ll want to set up Jasminerice to load all your helpers and specs:</p><pre class="programlisting">include::../../example_app/</pre><p>Finally, you need to mount the Jasminerice engine so that you can run your
+Jasmine specs. Add the following routes to config/routes.rb:</p><pre class="programlisting"><b class="hl-keyword">if</b> [<b class="hl-string"><i style="color:red">"development"</i></b>, <b class="hl-string"><i style="color:red">"test"</i></b>].include? Rails.env
+  mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
+<b class="hl-keyword">end</b></pre><p>With this configuration, you can run cucumber scenarios with the cucumber
+command and you can run Jasmine tests by accessing
+<a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your browser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_step_by_step"/>Step by step</h4></div></div></div><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><p>TODO: This writing is terse.  Come back and improve flow.</p><p>We’d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We’ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
@@ -247,7 +321,7 @@ view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Bac
     this.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
-});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3696"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
+});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3731"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The <code class="literal">"#tasks
 table"</code> element is present on the page, but doesn’t contain the content we want.</p><pre class="programlisting">@javascript
 Scenario: View tasks                                          # features/view_tasks.feature:7
@@ -451,4 +525,4 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 1 scenario (1 passed)
 5 steps (5 passed)</pre><p>TODO: Refactoring step.  Extract a TaskView class and loop &amp; iterate.  Note
 specs passing, cukes passing.</p><p>TODO: Possible, bind events on the child views to motivate making TasksIndex a
-CompositeView to avoid leaking refs.</p><p>TODO: Optionally TDD through the new/create cycle, too.</p></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Models and collections </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Security (stub)</td></tr></table></div></body></html>
+CompositeView to avoid leaking refs.</p><p>TODO: Optionally TDD through the new/create cycle, too.</p></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Models and collections </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Security (stub)</td></tr></table></div></body></html>

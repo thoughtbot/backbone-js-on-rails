@@ -4371,8 +4371,8 @@ Green?
 </section>
 <section id="_testing">
 <title>Testing</title>
-<section id="_full_stack_integration_testing_1_todo">
-<title>Full-stack integration testing (1 todo)</title>
+<section id="_full_stack_integration_testing">
+<title>Full-stack integration testing</title>
 <simpara>Your application is built from a collection of loosely coupled modules,
 spreading across several layers of the development stack.  To ensure the
 application works correctly from the perspective of the end-user, full-stack
@@ -4380,12 +4380,24 @@ integration testing drives your application and verifies correct functionality
 from the user interface level.  This is also referred to as acceptance testing.</simpara>
 <section id="_introduction_2">
 <title>Introduction</title>
-<simpara>TODO: No real special Backbone concerns, just integration test with a @js driver
-like normal.</simpara>
+<simpara>Writing a full-stack integration test for a Javascript-driven web application
+will always involve some kind of browser, and although writing an application
+with Backbone can make a world of difference to you, the tools involved are all
+the same as far as your browser is concerned. Because your browser can run
+Backbone applications just like any Javascript application, you can write
+integration tests for them just like you would for any Javascript application.
+Also, because of tools like Capybara that support various drivers, you can
+generally test a Javascript-based application just like you&#8217;d test a web
+application where all the logic lives on the server. This means that having a
+powerful, rich-client user interface won&#8217;t make your application any harder to
+test. If you&#8217;re familiar with tools like Capybara, Cucumber, and RSpec, you can
+dive right in and start testing your Backbone application. If not, the
+following sections should give you a taste of the available tools for
+full-stack integration tests written in Ruby.</simpara>
 </section>
 <section id="_capybara">
 <title>Capybara</title>
-<simpara>Thought there is a host of tools available to you for writing automated
+<simpara>Though there is a host of tools available to you for writing automated
 integration tests, we recommend
 [capybara](<ulink url="https://github.com/jnicklas/capybara">https://github.com/jnicklas/capybara</ulink>).  In a hybrid Rails
 application, where some portions are regular request/response and other portions
@@ -4457,32 +4469,29 @@ end</programlisting>
 </section>
 <section id="_drivers">
 <title>Drivers</title>
-<itemizedlist>
-<listitem>
-<simpara>
-Integration test with:
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-[capybara-webkit](<ulink url="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</ulink>) for fast, headless, accurate WebKit testing
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Selenium for other browsers, or if capybara-webkit has issues.
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara>Capybara supports multiple drivers through a common API, each with benefits and
+drawbacks. We prefer to use either
+[capybara-webkit](<ulink url="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</ulink>) or Selenium.</simpara>
+<simpara>When possible, we use capybara-webkit. It&#8217;s a fast, headless fake browser
+written using the WebKit browser engine. It&#8217;s generally faster than Selenium
+and it&#8217;s dependent on your system settings once compiled. This means that
+upgrading the browser you use every day won&#8217;t ever affect your tests.</simpara>
+<simpara>However, capybara-webkit is still young, and sometimes there&#8217;s no substitute
+for having a real browser to run your tests through. In these situations, we
+fall back to using Selenium. Selenium will always support anything you can do
+in your actual browser, and supports multiple browsers, including Firefox,
+Chrome, Safari, and even Internet Explorer.</simpara>
+<simpara>Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">Capybara.javascript_driver = :webkit</programlisting>
+<simpara>And then tag a Cucumber scenario as @javascript. If you need to fall back to using Selenium, tag that scenario with @selenium.</simpara>
 </section>
 </section>
-<section id="_isolated_unit_testing_some_stubs_some_wip">
-<title>Isolated unit testing (some stubs, some wip)</title>
+<section id="_isolated_unit_testing">
+<title>Isolated unit testing</title>
 <simpara>Integration testing your application is great for ensuring that the product
 functions as intended, and works to mitigate against risk of regressions.
 There are additional benefits, though, to writing tests for individual units
-of your application in isolation.  Two of them are focused failures and
-decoupled code.</simpara>
+of your application in isolation, such as focused failures and decoupled code.</simpara>
 <simpara>When an integration test fails, it can be difficult to pin down the exact reason
 why; particularly when a regression is introduced in a part of the application
 seemingly far away from where you&#8217;re working.  With the finer granularity of a
@@ -4497,6 +4506,19 @@ about these concerns earlier helps you design modules which are more loosely
 coupled, have smaller interfaces, and are easier to set up.  If code is hard to
 test, it will be hard to use.  Writing the test first, you have a clear and
 concrete opportunity to make your implementation easier to use.</simpara>
+<simpara>Finally, there are some behaviors that are difficult or impossible to test
+using a full-stack integration test. Here&#8217;s a common example: you want to
+display a spinner graphic or disable a UI element while waiting for the server
+to respond to a request. You can&#8217;t test this with an integration test because
+the time the server takes to respond is variable; by the time your test checks
+to look for the spinner graphic, the response will probably be finished. Even if
+it passes once, it may fail on the next run, or on the run after that. And if
+you decide to do an almost-full-stack test and fake out a slow response on the
+server, this will slow down your tests and introduce unnecessary indirection
+to an otherwise simple component. During isolation tests, it&#8217;s easy to use
+techniques like dependency injection, stubbing, and mocking to test erratic
+behaviors and side effects that are difficult to observe during integration
+tests.</simpara>
 <simpara>If you&#8217;d like to read more on test-driven development, check out Kent Beck&#8217;s
 <emphasis>Test Driven Development: By Example</emphasis> and Gerard Meszaros' <emphasis>xUnit Test Patterns:
 Refactoring Test Code</emphasis>.</simpara>
@@ -4510,36 +4532,79 @@ standalone JavaScript code and can run on browserless JavaScript runtimes.</simp
 <simpara>We&#8217;ll use the Jasmine framework for writing our isolation specs.  It integrates
 easily into a Rails application, and provides an RSpec-like syntax for writing
 specs:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">describe("App.Models.User", function() {
-  it("knows its full name, given a first and last name", function() {
-    var user = new App.Models.User({
-      first_name: 'Alice',
-      last_name:  'Appleton'
-    });
+<programlisting language="javascript" linenumbering="unnumbered">describe("ExampleApp.Models.Tasks", function() {
+  it("knows if it is complete", function() {
+    var completeTask = new ExampleApp.Models.Task({ complete: true });
+    expect(completeTask.isComplete()).toBe(true);
+  });
 
-    expect(user.fullName()).toEqual('Alice Appleton');
+  it("knows if it is not complete", function() {
+    var incompleteTask = new ExampleApp.Models.Task({ complete: false });
+    expect(incompleteTask.isComplete()).toBe(false);
   });
 });</programlisting>
 </section>
 <section id="_what_to_test">
 <title>What to test?</title>
-<simpara>TODO: Discuss cost/benefit tradeoffs of isolation testing.  Discuss code
-coverage, and relative value w.r.t. overlap with integration testing.  In our
-experience so far, most value is in testing Backbone views and models; guided by
-a general principle of valuing test coverage over complex or high-churn code
-areas (which models and views generally qualify for)&#8201;&#8212;&#8201;routers <emphasis role="strong">should</emphasis> be very
-low on logic and just delegate to models and views (think Rails skinny
-controllers).  Since isolation tests for them generally involves a fair amount
-of stubbing/spying/mocking, they tend to be more brittle and less valuable.</simpara>
-</section>
-<section id="_stubbing_mocking_spying">
-<title>Stubbing, mocking, spying</title>
-<simpara>TODO: Discuss sinon.js and syntax for stubs, spies, mocks.</simpara>
+<simpara>We frequently found it difficult to test Javascript components in isolation
+before we started using Backbone. Although jQuery really takes the pain out of
+working with the DOM and communicating with the server, it&#8217;s not
+object-oriented and provides nothing to help split up your application.
+Because most of our HTML was in ERB-based templates, it was generally
+difficult to test the Javascript that relied on that HTML without also loading
+the web application. This meant that almost all of our early Javascript tests
+were full-stack integration tests.</simpara>
+<simpara>Using Backbone, it&#8217;s much easier to test components in isolation. View code is
+restricted to views, and templates contain only HTML or interpolation code
+that can be interpreted by the Javascript view layer, such as jst or mustache
+templates. Models and collections can be given data in their constructor, and
+simple dependency injection allows unit tests to fake out the remote server.
+We don&#8217;t test routers in isolation as often because they&#8217;re very light on
+logic, but those are also easy to test by calling action methods directly or
+triggering events.</simpara>
+<simpara>Since Backbone components are just as easy to test in isolation as they are to
+test full-stack, we generally use the same guidelines as we do for all Rails
+applications to decide what to test where.</simpara>
+<simpara>Start with a top-down, full-stack Cucumber or RSpec scenario to describe the
+feature you&#8217;re writing from a high level perspective, and begin implementing
+behavior from the top as necessary. If you find that the feedback loop between
+a test failure and the code to pass it starts to feel too long, start writing
+isolated unit tests for the individual components you need to write to get
+closer to passing a higher-level assertion. As an example, an assertion from
+Capybara that fails because of a missing selector may need new models,
+controllers, views, and routes both on the server and in Backbone. Rather than
+writing several new componenets without seeing the failure message change,
+write a unit test for each piece as you progress down. If it&#8217;s clear what
+component you need to add from the integration test failure, add that
+component without writing an isolated unit test. For example, a failure from a
+missing route or view file reveals an obvious next step, but missing text on a
+page because a model method doesn&#8217;t actually do anything may motivate a unit
+test.</simpara>
+<simpara>Many features will have edge cases or several logical branches. Anything that
+can&#8217;t be described from a high-level, business value perspective should be
+tested from an isolated unit test. For example, when testing a form, it makes
+sense to write a scenario for the success path, where a user enters valid
+data that gets accepted and rendered by the application, and one extra
+scenario for the failure path, where a user enters invalid data that the
+system can&#8217;t accept. However, when adding future validations or other reasons
+that a user&#8217;s data can&#8217;t be accepted, it makes sense to just write an extra
+isolated unit test, rather than adding a new scenario that largely duplicates
+the original failure scenario.</simpara>
+<simpara>When writing isolation tests, the developer needs to decide exactly how much
+isolation to enforce. For example, when writing a unit test for a model,
+you&#8217;ll likely decide not to involve an actual web server to provide data.
+However, when testing a view that composes other subviews, you&#8217;ll likely allow
+the actual subview code to run. There are many cases when it will make
+sense to just write a unit test that involves a few components working
+together, rather than writing a full-stack scenario.</simpara>
+<simpara>The overall goals when deciding how much to test via integration vs isolation
+are to keep high-level business logic described in top-down tests, to keep
+details and edge cases described in unit tests, and to write tests that
+exercise the fewest number of components possible while remaining robust and
+descriptive without becoming brittle.</simpara>
 </section>
 <section id="_helpful_tools">
 <title>Helpful Tools</title>
-<simpara>TODO: Some of these (e.g. sinon, maybe rosie) will be introduced earlier.  Those
-that remain should be explained in more detail.</simpara>
 <itemizedlist>
 <listitem>
 <simpara>
@@ -4571,10 +4636,11 @@ See other examples on James Newbery&#8217;s blog: [testing Backbone with Jasmine
 </section>
 <section id="_example_test_driving_a_task_application">
 <title>Example: Test-driving a Task application</title>
-<simpara>TODO: This writing is terse.  Come back and improve flow.</simpara>
-<simpara>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</simpara>
-<simpara>TODO: Discuss setting up tools: jasminerice, cucumber, capybara-webkit/selenium</simpara>
-<simpara>We have a basic application set up for testing, with the following Gemfile:</simpara>
+<section id="_setup">
+<title>Setup</title>
+<simpara>In this example, we&#8217;ll be using Cucumber, Capybara, RSpec, and Jasmine to test-drive a todo list.</simpara>
+<simpara>The Selenium driver comes configured with Capybara and is the fastest driver to get running. By default it runs your tests in a remote controlled Firefox session, so you&#8217;ll want to install Firefox if you don&#8217;t have it already.</simpara>
+<simpara>The other dependencies you can install by adding them to your Gemfile. The gems you&#8217;ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails, and capybara. You&#8217;ll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">source 'http://rubygems.org'
 
 gem 'rails', '3.1.0'
@@ -4600,6 +4666,7 @@ group :development, :test do
   gem "ruby-debug19"
   gem 'jasmine', "= 1.1.0.rc4"
   gem 'jasminerice'
+  gem 'cucumber-rails', "~&gt; 1.0.2"
 end
 
 group :test do
@@ -4616,6 +4683,25 @@ group :test do
   gem "guard-spork"
   gem "spork", "~&gt; 0.9.0.rc"
 end</programlisting>
+<simpara>If you haven&#8217;t already, you can bootstrap your application for Cucumber and Capybara:</simpara>
+<programlisting language="text" linenumbering="unnumbered">rails generate cucumber:install</programlisting>
+<simpara>Next, bootstrap the application for Jasmine:</simpara>
+<programlisting language="text" linenumbering="unnumbered">rails generate jasmine:install</programlisting>
+<simpara>You&#8217;ll want to set up Jasminerice to load all your helpers and specs:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">include::../../example_app/</programlisting>
+<simpara>Finally, you need to mount the Jasminerice engine so that you can run your
+Jasmine specs. Add the following routes to config/routes.rb:</simpara>
+<programlisting language="ruby" linenumbering="unnumbered">if ["development", "test"].include? Rails.env
+  mount Jasminerice::Engine =&gt; "/jasmine"
+end</programlisting>
+<simpara>With this configuration, you can run cucumber scenarios with the cucumber
+command and you can run Jasmine tests by accessing
+<ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink> in your browser.</simpara>
+</section>
+<section id="_step_by_step">
+<title>Step by step</title>
+<simpara>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</simpara>
+<simpara>TODO: This writing is terse.  Come back and improve flow.</simpara>
 <simpara>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We&#8217;ll start with the list of items, and create fixture data with
@@ -4969,6 +5055,7 @@ specs passing, cukes passing.</simpara>
 <simpara>TODO: Possible, bind events on the child views to motivate making TasksIndex a
 CompositeView to avoid leaking refs.</simpara>
 <simpara>TODO: Optionally TDD through the new/create cycle, too.</simpara>
+</section>
 </section>
 </section>
 <section id="_security_stub">
