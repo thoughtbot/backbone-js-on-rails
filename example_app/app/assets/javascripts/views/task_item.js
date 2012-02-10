@@ -10,7 +10,7 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   },
 
   render: function () {
-    $(this.el).html(JST['tasks/item']({ task: this.model }));
+    this.$el.html(JST['tasks/item']({ task: this.model }));
     this.renderFormContents();
     return this;
   },

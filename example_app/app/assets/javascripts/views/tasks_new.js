@@ -18,13 +18,13 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
   },
 
   render: function () {
-    $(this.el).html(this.form.render().el);
+    this.$el.html(this.form.render().el);
     this.$('ul').append(JST['tasks/form_buttons']());
     return this;
   },
 
   renderFlash: function(flashText) {
-    $(this.el).prepend(JST['tasks/flash']({ flashText: flashText, type: 'success' }));
+    this.$el.prepend(JST['tasks/flash']({ flashText: flashText, type: 'success' }));
   },
 
   save: function(event) {

@@ -17,7 +17,7 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
   },
 
   renderTemplate: function() {
-    $(this.el).html(JST['tasks/show']());
+    this.$el.html(JST['tasks/show']());
   },
 
   renderTask: function() {

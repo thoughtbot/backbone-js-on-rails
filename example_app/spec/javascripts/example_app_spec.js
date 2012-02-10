@@ -17,7 +17,7 @@ describe("ExampleApp", function(){
 
   describe("init()", function() {
     it("accepts task JSON and instantiates a collection from it", function() {
-      var tasksJSON = [{"title":"thing to do"}, {"title":"another thing"}];
+      var tasksJSON = {"tasks": [{"title":"thing to do"}, {"title":"another thing"}]};
       ExampleApp.init(tasksJSON);
 
       expect(ExampleApp.tasks).not.toEqual(undefined);
@@ -28,13 +28,13 @@ describe("ExampleApp", function(){
 
     it("instantiates a Tasks router", function() {
       ExampleApp.Routers.Tasks = sinon.spy();
-      ExampleApp.init();
+      ExampleApp.init({});
       expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
     });
 
     it("starts Backbone.history", function() {
       Backbone.history = { start: sinon.spy() };
-      ExampleApp.init();
+      ExampleApp.init({});
       expect(Backbone.history.start).toHaveBeenCalled();
     });
   });

@@ -26,10 +26,10 @@ for Rails components, and Jasmine isolation specs for Backbone components.
 
 Run them all at once:
 
-    bundle rake
+    bundle exec rake
 
 Or one at a time
 
-    bundle rake cucumber
-    bundle rake spec
-    bundle rake jasmine
+    bundle exec rake cucumber
+    bundle exec rake spec
+    bundle exec rake jasmine
