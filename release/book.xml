@@ -5058,8 +5058,8 @@ CompositeView to avoid leaking refs.</simpara>
 </section>
 </section>
 </section>
-<section id="_security_stub">
-<title>Security (stub)</title>
+<section id="_security">
+<title>Security</title>
 <section id="_encoding_data_when_bootstrapping_json_data">
 <title>Encoding data when bootstrapping JSON data</title>
 <simpara>As it turns out, bootstrapping JSON data in your erb templates introduces a

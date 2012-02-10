@@ -46,7 +46,7 @@
 <content src="book.html#_testing"/>
 </navPoint>
 <navPoint class="chapter" id="chapter_8" playOrder="9">
-<navLabel><text>Security (stub)</text></navLabel>
-<content src="book.html#_security_stub"/>
+<navLabel><text>Security</text></navLabel>
+<content src="book.html#_security"/>
 </navPoint>
 </navMap></ncx>
