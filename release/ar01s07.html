@@ -231,7 +231,7 @@ Jasmine specs. Add the following routes to config/routes.rb:</p><pre class="prog
   mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
 <b class="hl-keyword">end</b></pre><p>With this configuration, you can run cucumber scenarios with the cucumber
 command and you can run Jasmine tests by accessing
-<a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your browser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_step_by_step"/>Step by step</h4></div></div></div><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><p>TODO: This writing is terse.  Come back and improve flow.</p><p>We’d like to be able to add items to a Todo list.  We know this will involve two
+<a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your browser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_step_by_step"/>Step by step</h4></div></div></div><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><p>We’d like to be able to add items to a Todo list.  We know this will involve two
 parts: a list of existing tasks, and an interface for adding new items to
 the list.  We’ll start with the list of items, and create fixture data with
 [Factory Girl Cucumber
@@ -321,7 +321,7 @@ view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Bac
     this.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
-});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3731"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
+});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3719"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The <code class="literal">"#tasks
 table"</code> element is present on the page, but doesn’t contain the content we want.</p><pre class="programlisting">@javascript
 Scenario: View tasks                                          # features/view_tasks.feature:7

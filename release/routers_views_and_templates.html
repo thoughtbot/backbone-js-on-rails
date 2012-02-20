@@ -248,12 +248,12 @@ and <a class="ulink" href="https://github.com/janl/mustache.js:" target="_top">j
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
 <a id="_choosing_a_strategy"></a>Choosing a strategy</h3></div></div></div>
-<p>Like any technology choice, there are tradeoffs to evaluate and external forces
+<p>Like any technology choice, there are trade-offs to evaluate and external forces
 to consider when choosing a templating approach.</p>
 <p>The scenarios we’ve encountered usually involve weighing these questions: do I
 already have server-side templates written that I’d like to "Backbone-ify," or
-am I writing new Backbone functionality from scratch?</p>
-<p>TODO: flesh this out a bit, or cut the "Choosing a strategy" section entirely</p>
+am I writing new Backbone functionality from scratch? Each of these scenarios
+is described in more detail in the following sections.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_when_you_are_adding_backbone_to_existing_rails_views"></a>When you are adding Backbone to existing Rails views</h4></div></div></div>
@@ -449,7 +449,7 @@ just makes sense for it to do so. For example, when a model’s attributes are
 changed, Backbone models conveniently trigger the <code class="literal">change</code> event. It is
 up to you to bind a handler on those events. More on that later.</p>
 <p>As you can see from the example though, it is possible to bind and trigger
-arbitrary events on any object that extendes <code class="literal">Backbone.Events</code>. Additionally,
+arbitrary events on any object that extends <code class="literal">Backbone.Events</code>. Additionally,
 if an event handler should always trigger regardless of which event got fired,
 you can bind to the special <code class="literal">all</code> event.</p>
 <p>There are three primary kinds of events that your views will bind to:</p>
@@ -458,21 +458,17 @@ you can bind to the special <code class="literal">all</code> event.</p>
 DOM events within the view’s <code class="literal">this.el</code> element
 </li>
 <li>
-Backbone events triggered by the view’s model or collection
+Events your view observes, such as Backbone events triggered by the view’s
+model or collection
 </li>
 <li>
-Custom view events
+Events your view publishes
 </li>
 </ul></div>
-<p>TODO: This three-point breakdown is the wrong way to slice this.  Instead of
-"DOM, model/collection, custom" it should be "DOM, events I observe, events I
-publish".  Events that your view observes need to be cleaned up upon disposing
-the view, regardless of where those events are triggered (models, collections,
-or other views, or other arbitrary objects).  Events that your view publishes
-need to be handled in a different way.</p>
-<p>TODO: Consider promoting events and binding/unbinding to its own top-level
-section; this isn’t view-specific, although the view layer is where you’ll be
-doing most of your binding.</p>
+<p>Events that your view observes will need to be cleaned up upon the disposing
+of your view. Events that your view publishes will need to be handled a
+different way. Each of these three categories of events are discussed in more
+detail below.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_binding_to_dom_events_within_the_view_element"></a>Binding to DOM events within the view element</h4></div></div></div>
@@ -515,8 +511,7 @@ using <code class="literal">_.on()</code>.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a id="_binding_to_events_triggered_by_literal_this_model_literal_or_literal_this_collection_literal"></a>Binding to events triggered by <code class="literal">this.model</code> or <code class="literal">this.collection</code>
-</h4></div></div></div>
+<a id="_events_observed_by_your_view"></a>Events Observed by Your View</h4></div></div></div>
 <p>In almost every view you write, the view will be bound to a <code class="literal">Backbone.Model</code> or
 a <code class="literal">Backbone.Collection</code>, most often with the convenience properties <code class="literal">this.model</code>
 or <code class="literal">this.collection</code>.</p>
@@ -544,12 +539,18 @@ The <code class="literal">add</code> and <code class="literal">remove</code> eve
 a model from that collection as expected. The <code class="literal">change</code> event requires special
 mention; it will trigger when any of the underlying models' <code class="literal">change</code> event triggers.
 Backbone just bubbles up that event to the containing collection for convenience.</p>
+<p>While your view binding to Model and Collection events will be the most common
+events that your view will observe, your view can bind to any events to which
+it wants to listen. The life-cycle for the binding and unbinding, and the
+handling of these events will be the same as those for Model and Collections.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
-<a id="_binding_to_custom_events"></a>Binding to custom events</h4></div></div></div>
+<a id="_events_your_view_publishes"></a>Events Your View Publishes</h4></div></div></div>
 <p>With sufficiently complex views, you may encounter a situation where you want
 one view to change in response to another.</p>
+<p>This can be accomplished with events. Your view can trigger an event to which
+the other view observes.</p>
 <p>Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:</p>
 <pre class="programlisting">GenderFilter = Backbone.View.extend({
@@ -612,12 +613,12 @@ and how to do it.</p>
 <p>Consider two views in a Todo app: an index view which contains all the tasks
 that need to be done:</p>
 <div class="figure">
-<a id="d0e1602"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
+<a id="d0e1597"></a><p class="title"><b>Figure 2. Tasks index view</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"></td></tr></table></div></div>
 </div>
 <br class="figure-break"><p>and a detail view that shows detail on one task:</p>
 <div class="figure">
-<a id="d0e1613"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
+<a id="d0e1608"></a><p class="title"><b>Figure 3. Tasks detail view</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"></td></tr></table></div></div>
 </div>
 <br class="figure-break"><p>The interface switches between the two views.</p>
@@ -704,8 +705,6 @@ function</a> removes all callbacks on that object.</p>
 means that any pieces of code that create new instances of this view become
 responsible for cleaning up after it’s gone. That doesn’t sound like a very
 cohesive approach, so let’s include the cleanup responsibility on this view.</p>
-<p>TODO: Consider just overriding <code class="literal">Backbone.View.prototype.remove()</code> instead of
-making a new function, since <code class="literal">remove()</code> is very simple.  What are the pros/cons?</p>
 <p>Let’s write a <code class="literal">leave()</code> function on our view that wraps <code class="literal">remove()</code> and handles
 any additional event unbinding we need to do.  As a convention, when we use
 this view elsewhere, we’ll call <code class="literal">leave()</code> instead of <code class="literal">remove()</code> when we’re
@@ -913,7 +912,7 @@ utility functions to allow more class-style inheritance.</p>
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
 <code class="literal">TasksRouter</code> would then look like:</p>
 <div class="figure">
-<a id="d0e1972"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
+<a id="d0e1959"></a><p class="title"><b>Figure 4. Router class inheritance</b></p>
 <div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"></div></div>
 </div>
 <br class="figure-break"><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
@@ -1241,7 +1240,6 @@ children.
 <code class="literal">CompositeView</code>. It takes on the task of completely cleaning up itself by
 removing itself from the DOM via jQuery’s <code class="literal">remove()</code> function, as well as
 removing all events via a call to <code class="literal">Backbone.Events.off()</code>.</p>
-<p>TODO: Mix <code class="literal">Observer</code> into <code class="literal">CompositeView</code>.</p>
 </div>
 </div>
 <div class="section" lang="en">

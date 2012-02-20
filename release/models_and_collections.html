@@ -830,7 +830,7 @@ issue that fetch is async.)</p>
 <a id="_duplicating_business_logic_across_the_client_and_server"></a>Duplicating business logic across the client and server</h3></div></div></div>
 <p>When you’re building a multi-tier application where business logic is spread
 across tiers, one big challenge you face is to avoid duplicating that logic
-across tiers.  There is a tradeoff here, between duplication and performance.
+across tiers.  There is a trade-off here, between duplication and performance.
 It’s desirable to have one and only one implementation of a particular concern
 in your domain, but it’s also desirable for your application to perform
 responsively.</p>
@@ -866,11 +866,13 @@ in one tier, and other tiers access the logic by remote invocation.  Your Rails
   },
 
   error: <b class="hl-keyword">function</b>(model, errorResponse) {
-    <b class="hl-keyword">new</b> ErrorView(errorResponse, <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form'</i></b>)).render();
+    <b class="hl-keyword">var</b> errors = <b class="hl-keyword">new</b> ErrorList(errorResponse)
+    <b class="hl-keyword">new</b> ErrorView({ el: self.el, errors: errors }).render();
   }
 });</pre>
 <p>This uses the <code class="literal">ErrorView</code> class which is able to parse the error hash returned
-from Rails, which was discussed on the Validations section.</p>
+from Rails, which was discussed on the Validations section of the Models and
+Collections chapter.</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Note</h3>
 <p>This is also the first time you probably see <code class="literal">_.bindAll()</code>, so let’s diverge
@@ -887,8 +889,8 @@ within a function’s body.</p>
 this validation.  An user fills out a form for a creating a new Member in your
 application, submits the form, and, if they forgot to include an email address,
 a validation message is displayed.  The application delegates the entire
-validation concern to the server, as we saw in the validations section.  TODO:
-Link up that reference.</p>
+validation concern to the server, as we saw in the Validations section of the
+Models and Collections chapter.</p>
 <p>However, round-tripping validation to the server can be too slow in some cases,
 and we’d like to provide feedback to the end-user more quickly.  To do this, we
 have to implement the validation concern on the client side as well.  Backbone
@@ -907,13 +909,11 @@ write:</p>
 mirror the structure of the Rails error JSON we saw returned above.  Now, we
 could augment the <code class="literal">ErrorView</code> class’s constructor function to handle either
 client-side or server-side errors:</p>
-<pre class="programlisting"><b class="hl-keyword">var</b> ErrorView = <b class="hl-keyword">function</b>(responseOrErrors, form) {
-  <b class="hl-keyword">this</b>.form = $(form);
-
+<pre class="programlisting"><b class="hl-keyword">var</b> ErrorList = <b class="hl-keyword">function</b>(responseOrErrors) {
   <b class="hl-keyword">if</b> (responseOrErrors &amp;&amp; responseOrErrors.responseText) {
-    <b class="hl-keyword">this</b>.errors = JSON.parse(responseOrErrors.responseText);
+    <b class="hl-keyword">this</b>.attributesWithErrors = JSON.parse(response.responseText);
   } <b class="hl-keyword">else</b> {
-    <b class="hl-keyword">this</b>.errors = responseOrErrors;
+    <b class="hl-keyword">this</b>.attributesWithErrors = responseOrErrors;
   }
 };</pre>
 <p>Now, with Backbone, the <code class="literal">validate()</code> function is called for each invocation of
@@ -921,8 +921,8 @@ client-side or server-side errors:</p>
 validated.  For the user experience with the quickest response, we could observe
 changes on the email form field, updating the model’s <code class="literal">email</code> attribute whenever
 it changes, and displaying the inline error message immediately.</p>
-<p>With ErrorView able to handle either client-side or server-side error messages,
-we have a server-side guarantee of data correctness, <sup>[<a id="d0e2886" href="#ftn.d0e2886" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
+<p>With ErrorList able to handle either client-side or server-side error messages,
+we have a server-side guarantee of data correctness, <sup>[<a id="d0e2865" href="#ftn.d0e2865" class="footnote">1</a>]</sup> and a responsive UI that can validate the Member email presence
 without round-tripping to the server.</p>
 <p>The tradeoff we’ve made is that of duplication; the concern of "what constituted
 a valid Member" is written twice — in two different languages, no less.  In
@@ -972,58 +972,75 @@ distributed across client and server to provide a responsive experience.</p>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_validations_2"></a>Validations</h4></div></div></div>
-<p>Validations are probably the lowest-hanging fruit.  Since the API for declaring
-validations is largely declarative and well-bounded, we can imagine providing an
-interface that introspects Rails models and builds a client-side implementation
-automatically.  Certainly there are cases which aren’t automatable, such as
-custom Ruby validation code or validations which depend on a very large dataset
-that would be impractical to deliver to the client (say, a zipcode database).
+<p>Validations are probably the lowest-hanging fruit.  Since the API for
+declaring validations is largely declarative and well-bounded, we can imagine
+providing an interface that introspects Rails models and builds a client-side
+implementation automatically.</p>
+<p>Certainly there are cases which aren’t possible to automate, such as custom
+Ruby validation code or validations which depend on a very large dataset that
+would be impractical to deliver to the client (say, a zipcode database).
 These cases would need to fall back to either an XHR call to the server-side
 implementation, or a custom-written client-side implementation - a duplicate
 implementation.</p>
-<p>TODO: This is actually what the
+<p>This is actually what the
 <a class="ulink" href="https://github.com/bcardarella/client_side_validations" target="_top">client_side_validations gem</a>
-does…</p>
-<p>TODO: The csv model branch is a wip for Backbone compliance, pretty neat:
+does, only it is not for Backbone.js yet. However, it is on the roadmap, and
+the "model" branch  is a work in progress of this functionality. We will be
+keeping an eye on this branch
 <a class="ulink" href="https://github.com/bcardarella/client_side_validations/tree/model" target="_top">https://github.com/bcardarella/client_side_validations/tree/model</a></p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_querying"></a>Querying</h4></div></div></div>
-<p>TODO: Expand on outline.</p>
-<p>Outline: I think it’s possible to establish conventions here, similar to
-validations, so that server-side scopes can be converted to client-side
-collection filtering.  However, is this valuable?  Do you actually often
-duplicate the same querying (sorting/filter) concerns across client and server?</p>
-<p>Also, since this whole discussion is about perf, consider tradeoff of paginating
-anyways, that’s interesting, so can you reduce duplication and generate code
-with that too?</p>
+<p>Like validations, Rails the syntax and outcome of many common Rails query
+methods are relatively declarative. It may be possible to convert server-side
+scopes into client-side collection filtering. However, that is of questionable
+value in most Backbone.js application to which we’ve had exposure.</p>
+<p>In most Backbone.js apps there ends up being little duplication between client
+and server sorting and filtering. Either the logic happens on the client and
+is therefore not needed on the server, or the search logic happens on the
+server and is not needed on the client.</p>
+<p>If you find that your application has duplication here, consider whether there
+may be a better way to separate responsibilities.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_callbacks"></a>Callbacks</h4></div></div></div>
-<p>TODO: Expand on outline.</p>
-<p>Outline: These often depend on server-side persistence, so would you even want
-them on the client side?  Perhaps, e.g. same lifecycle events for the analagous
-client-side models, but it’s actually likely that your client-side models will
-differ sufficiently (since they’re in the presentation tier) from server-side
-models that these concerns won’t be duplicates, so it’s less of a worry.</p>
+<p>We’ve found that model callbacks are rarely duplicated between the client and
+server side. It’s actually more likely that your client-side models will
+differ sufficiently from the server-side models since they are in the
+presentation tier and the concerns are different.</p>
+<p>As you continue to push more logic client-side, as we’ve found is the
+common trend when using Backbone.js, you may find that some life-cycle events
+may move or be duplicated from the server to the client. The implementation and
+concern of these often varies significantly from what they were on the server.
+For example, a callback translated to Backbone.js will likely be implemented
+as an event being fired and listened to by another object.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
 <a id="_algorithms"></a>Algorithms</h4></div></div></div>
-<p>TODO: Expand on outline.</p>
-<p>Outline: General algorithms are often the trickiest. It’s possibly to write the
-logic in JS and then make that available to Ruby, if you have a REALLY large
-piece of logic, but weigh the cost of that overhead against the cost of
-duplicating the logic.  At some point it probably makes sense, though.  Also
-consider JS server-side and wrapping that as a webservice for Rails access…
-would that be easier?  Need specific examples to motivate this well.</p>
+<p>General algorithms are often the trickiest things to resolve duplication
+between client and server for. It’s also common that important algorithms are,
+in fact, needed on both client and server.</p>
+<p>The more complicated the algorithm, the more troubling this will become. Bugs
+may be introduced, and the client and server side algorithms might not
+actually produce the same results.</p>
+<p>It may be possible to implement the actual logic of the algorithm in
+javascript and then make that available to Ruby by using something like ExecJS
+<a class="ulink" href="https://github.com/sstephenson/execjs" target="_top">https://github.com/sstephenson/execjs</a> to run the Javascript code from Ruby.</p>
+<p>But you must weigh the cost of that additional complexity and overhead against
+the code of duplicating logic.</p>
+<p>Also, you could consider Javascript on the server side in something like
+Node.js, exposed via a webservice that the Rails can access. However, it is
+debatable that that is actually easier.</p>
+<p>Finally, it may be possible to reduce duplication by splitting responsibility
+for the algorithm in pieces: half on the client and half on the server, and
+then use coordinated communication and caching to accomplish the algorithm
+and improve the performance, respectively.</p>
+<p>More information about this technique can be found here</p>
 <p><a class="ulink" href="http://c2.com/cgi/wiki?HalfObjectPlusProtocol" target="_top">http://c2.com/cgi/wiki?HalfObjectPlusProtocol</a>
 <a class="ulink" href="http://c2.com/cgi/wiki?HoppPatternLanguage" target="_top">http://c2.com/cgi/wiki?HoppPatternLanguage</a></p>
-<p>TODO: The ErrorList/ErrorView implementation here isn’t quite consistent with
-those in the prior validations chapter.  Refactor for consistency or, if that’s
-inappropriate, do a better job explaining the changes.</p>
 </div>
 </div>
 <div class="section" lang="en">
@@ -1719,7 +1736,7 @@ Green?
 </div>
 <div class="footnotes">
 <br><hr width="100" align="left">
-<div class="footnote"><p><sup>[<a id="ftn.d0e2886" href="#d0e2886" class="simpara">1</a>] </sup>At least, we
+<div class="footnote"><p><sup>[<a id="ftn.d0e2865" href="#d0e2865" class="simpara">1</a>] </sup>At least, we
 have a guarantee at the application level - database integrity and the
 possibility of skew between Rails models and DB content is another discussion
 entirely.</p></div>

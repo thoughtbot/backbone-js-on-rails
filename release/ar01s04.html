@@ -208,9 +208,8 @@ can be as simple as a string, or a more complex object that describes the error
 in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
 would often require duplicating a lot of server-side business logic.
-Furthermore, you always want the server to be the definitive arbitrer for valid
-data, as this API can be abused outside of the backbone.js interface.</p><p>TODO: Is it possible to smoothly integrate Backbone.js and the
-client_side_validations gem?</p><p>Instead, your Backbone.js applications will likely rely on server-side
+Furthermore, you always want the server to be the definitive arbiter for valid
+data, as this API can be abused outside of the backbone.js interface.</p><p>Instead, your Backbone.js applications will likely rely on server-side
 validation logic. How to handle a failure scenario is passed in to Backbone.js
 model save call as a callback, as shown below.</p><pre class="programlisting">task.save({title: <b class="hl-string"><i style="color:red">"New Task title"</i></b>}, {
   error: <b class="hl-keyword">function</b>(){
@@ -241,7 +240,12 @@ controller action can be rewritten more succintly like so:</p><pre class="progra
 <b class="hl-keyword">end</b></pre><p>Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
-application. For more information about handling and displaying errors on the
+application.</p><p>Different aspects of validations are covered in a few different section so
+this book. For more information about validations, see the Validation section
+of the Models and Collections chapter. For more information about reducing
+redundancy between client and server validations, see the Duplicating business
+logic across the client and server section of the Models and Collections
+chapter. For more information about handling and displaying errors on the
 client side, see the Form helpers section of the Views and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"/>Setting Up Views</h4></div></div></div><p>Most Backbone.js applications will be a "single-page app". This means that
 your Rails application will render a single-page which properly sets up
 Backbone.js and the data it will use. From there, ongoing interaction with
