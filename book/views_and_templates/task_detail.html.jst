@@ -1,13 +1,15 @@
 <section class="task-details">
   <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
-  <h2><%= task.get("title") %></h2>
+  <h2><%= task.escape("title") %></h2>
 </section>
 
 <section class="comments">
   <ul>
     <% task.comments.each(function(comment) { %>
-      <h4><%= comment.user.escape('name') %></h4>
-      <p><%= comment.escape('text') %></p>
+      <li>
+        <h4><%= comment.user.escape('name') %></h4>
+        <p><%= comment.escape('text') %></p>
+      </li>
     <% } %>
   </ul>
 
