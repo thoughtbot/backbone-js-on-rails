@@ -51,7 +51,7 @@ ExampleApp.Views.TaskShow = Backbone.View.extend({
     this.uploader.prefilter = function() {
       var token = $('meta[name="csrf-token"]').attr('content');
       if (token) this.xhr.setRequestHeader('X-CSRF-Token', token);
-    }
+    };
   },
 
   uploadInput: function() {
