@@ -1,7 +1,7 @@
 ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: function() {
     _.bindAll(this, "render");
-    this.collection.bind("add", this.render);
+    this.collection.on("add", this.render);
   },
 
   render: function () {

@@ -1,7 +1,7 @@
 ExampleApp.Views.TaskShow = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "render", "uploadSuccess");
-    this.model.bind("change", this.render);
+    this.model.on("change", this.render);
   },
 
   events: {

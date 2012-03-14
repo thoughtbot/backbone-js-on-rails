@@ -1,6 +1,6 @@
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
-    this.bind("change:attachments", this.parseAttachments);
+    this.on("change:attachments", this.parseAttachments);
     this.parseAttachments();
   },
 
