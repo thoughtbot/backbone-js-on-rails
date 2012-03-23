@@ -1,4 +1,4 @@
-var ExampleApp = {
+window.ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},

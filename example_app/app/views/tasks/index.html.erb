@@ -12,7 +12,7 @@
     $(function () {
       var json_div       = document.createElement('div');
       json_div.innerHTML = $('#bootstrap').text();
-      var data           = JSON.parse(json_div.innerHTML);
+      var data           = JSON.parse(json_div.innerText);
       ExampleApp.init(data);
     });
   </script>

@@ -17,7 +17,7 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
 
   renderFormContents: function() {
     this.$('label').attr("for", "task_completed_" + this.model.get('id'));
-    this.$('label').text(this.model.escape('title'));
+    this.$('label').html(this.model.escape('title'));
 
     this.$('input').attr("id", "task_completed_" + this.model.get('id'));
     this.$('input').prop("checked", this.model.isComplete());
