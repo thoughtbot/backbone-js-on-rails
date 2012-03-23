@@ -2,6 +2,7 @@
 //= require jquery_ujs
 //
 //= require underscore
+//= require json2
 //= require backbone
 //= require backbone.authtokenadapter
 //= require backbone-support
