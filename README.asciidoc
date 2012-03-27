@@ -42,6 +42,10 @@ Make sure you register docbook after installation:
 
   sudo docbook-register
 
+And add the following to your ~/.bashrc or equivalent (as per `brew info docbook`):
+
+  export XML_CATALOG_FILES="/usr/local/etc/xml/catalog"
+
 ==== Installing git-scribe dependencies on Ubuntu
 
    sudo aptitude install asciidoc fop source-highlight docbook
