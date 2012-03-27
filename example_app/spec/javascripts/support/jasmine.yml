@@ -11,14 +11,8 @@
 #   - dist/**/*.js
 #
 src_files:
-  # uses jasminerice instead
-  # - public/javascripts/prototype.js
-  # - public/javascripts/effects.js
-  # - public/javascripts/controls.js
-  # - public/javascripts/dragdrop.js
-  # - public/javascripts/application.js
-  # - public/javascripts/**/*.js
-  # - app/assets/javascripts/**/*.js
+  - spec/javascripts/support/*.js
+  - assets/application.js
 
 # stylesheets
 #

@@ -4,8 +4,4 @@ ExampleApp::Application.routes.draw do
   end
 
   root :to => 'tasks#index'
-
-  if ["development", "test"].include? Rails.env
-    mount Jasminerice::Engine => "/jasmine"
-  end
 end
