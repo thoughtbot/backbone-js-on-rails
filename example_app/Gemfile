@@ -23,14 +23,13 @@ group :development, :test do
   gem "ruby-debug19"
   gem 'jasmine', "= 1.1.0.rc4"
   gem 'jasminerice'
-  gem 'cucumber-rails', "~> 1.0.2"
+  gem 'cucumber-rails', "~> 1.0.2", :require => false
 end
 
 group :test do
   gem 'turn', :require => false
   gem "capybara", "~> 1.1.1"
   gem 'selenium-webdriver', '~> 2.18.0'
-  gem 'cucumber-rails', "~> 1.0.2"
   gem "factory_girl_rails"
   gem "bourne"
   gem "database_cleaner"
