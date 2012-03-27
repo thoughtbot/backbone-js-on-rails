@@ -11,8 +11,6 @@ ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   },
 
   renderTemplate: function() {
-    console.log(this.el);
-    console.log(this.$el);
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
   },
 
