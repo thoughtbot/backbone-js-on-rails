@@ -19,11 +19,10 @@ test. If you’re familiar with tools like Capybara, Cucumber, and RSpec, you ca
 dive right in and start testing your Backbone application. If not, the
 following sections should give you a taste of the available tools for
 full-stack integration tests written in Ruby.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_capybara"/>Capybara</h4></div></div></div><p>Though there is a host of tools available to you for writing automated
-integration tests, we recommend
-[capybara](<a class="ulink" href="https://github.com/jnicklas/capybara" target="_top">https://github.com/jnicklas/capybara</a>).  In a hybrid Rails
-application, where some portions are regular request/response and other portions
-are JavaScript, it’s valuable to have a testing framework that abstracts the
-difference as much as possible.</p><p>Capybara is a high-level library that allows you to write tests from a user’s
+integration tests, we recommend <a class="ulink" href="https://github.com/jnicklas/capybara" target="_top">capybara</a>.
+In a hybrid Rails application, where some portions are regular request/response
+and other portions are JavaScript, it’s valuable to have a testing framework
+that abstracts the difference as much as possible.</p><p>Capybara is a high-level library that allows you to write tests from a user’s
 perspective.  Consider this example, which uses RSpec:</p><pre class="programlisting">describe <b class="hl-string"><i style="color:red">"the login process"</i></b>, :type =&gt; :request <b class="hl-keyword">do</b>
   it <b class="hl-string"><i style="color:red">"accepts an email and password"</i></b> <b class="hl-keyword">do</b>
     User.create(:email =&gt; <b class="hl-string"><i style="color:red">'alice@example.com'</i></b>, :password =&gt; <b class="hl-string"><i style="color:red">'password'</i></b>)
@@ -75,7 +74,7 @@ Then /^I should see <b class="hl-string"><i style="color:red">"(.*)"</i></b>$/ <
   page.should have_content(text)
 <b class="hl-keyword">end</b></pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_drivers"/>Drivers</h4></div></div></div><p>Capybara supports multiple drivers through a common API, each with benefits and
 drawbacks. We prefer to use either
-[capybara-webkit](<a class="ulink" href="https://github.com/thoughtbot/capybara-webkit" target="_top">https://github.com/thoughtbot/capybara-webkit</a>) or Selenium.</p><p>When possible, we use capybara-webkit. It’s a fast, headless fake browser
+<a class="ulink" href="https://github.com/thoughtbot/capybara-webkit" target="_top">capybara-webkit</a> or Selenium.</p><p>When possible, we use capybara-webkit. It’s a fast, headless fake browser
 written using the WebKit browser engine. It’s generally faster than Selenium
 and it’s dependent on your system settings once compiled. This means that
 upgrading the browser you use every day won’t ever affect your tests.</p><p>However, capybara-webkit is still young, and sometimes there’s no substitute
@@ -126,7 +125,10 @@ specs:</p><pre class="programlisting">describe(<b class="hl-string"><i style="co
     <b class="hl-keyword">var</b> incompleteTask = <b class="hl-keyword">new</b> ExampleApp.Models.Task({ complete: false });
     expect(incompleteTask.isComplete()).toBe(false);
   });
-});</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_what_to_test"/>What to test?</h4></div></div></div><p>We frequently found it difficult to test Javascript components in isolation
+});</pre><p>To ease the use of Jasmine and the Rails 3.1 asset pipeline, we use
+<a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">Jasminerice</a>.  To run the
+Jasmine tests in the example application, simply start up the development
+server and visit <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_what_to_test"/>What to test?</h4></div></div></div><p>We frequently found it difficult to test Javascript components in isolation
 before we started using Backbone. Although jQuery really takes the pain out of
 working with the DOM and communicating with the server, it’s not
 object-oriented and provides nothing to help split up your application.
@@ -176,16 +178,23 @@ are to keep high-level business logic described in top-down tests, to keep
 details and edge cases described in unit tests, and to write tests that
 exercise the fewest number of components possible while remaining robust and
 descriptive without becoming brittle.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_helpful_tools"/>Helpful Tools</h4></div></div></div><div class="itemizedlist"><ul type="disc"><li>
-Spy/stub/mock, even your HTTP, with [sinon.js](<a class="ulink" href="http://sinonjs.org/" target="_top">http://sinonjs.org/</a>)
+Spy/stub/mock, even your HTTP, with <a class="ulink" href="http://sinonjs.org/" target="_top">sinon.js</a>.
 </li><li>
-If you’re looking for factory_girl.js, it’s called [Rosie](<a class="ulink" href="https://github.com/bkeepers/rosie" target="_top">https://github.com/bkeepers/rosie</a>)
+If you’re looking for factory_girl.js, it’s called <a class="ulink" href="https://github.com/bkeepers/rosie" target="_top">Rosie</a>.
 </li><li>
-[guard-jasmine](<a class="ulink" href="https://github.com/netzpirat/guard-jasmine" target="_top">https://github.com/netzpirat/guard-jasmine</a>) autotest your Jasmine with headless webkit ([phantomjs](<a class="ulink" href="http://www.phantomjs.org/" target="_top">http://www.phantomjs.org/</a>))
+Use the Rails 3.1 asset pipeline with <a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">jasminerice</a>.
 </li><li>
-Write in CoffeeScript and use the 3.1 asset pipeline with [jasminerice](<a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">https://github.com/bradphelan/jasminerice</a>)
-</li><li>
-See other examples on James Newbery’s blog: [testing Backbone with Jasmine](<a class="ulink" href="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html" target="_top">http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html</a>) and check out his [examples on GitHub](<a class="ulink" href="https://github.com/froots/backbone-jasmine-examples" target="_top">https://github.com/froots/backbone-jasmine-examples</a>)
-</li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_example_test_driving_a_task_application"/>Example: Test-driving a Task application</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setup"/>Setup</h4></div></div></div><p>In this example, we’ll be using Cucumber, Capybara, RSpec, and Jasmine to test-drive a todo list.</p><p>The Selenium driver comes configured with Capybara and is the fastest driver to get running. By default it runs your tests in a remote controlled Firefox session, so you’ll want to install Firefox if you don’t have it already.</p><p>The other dependencies you can install by adding them to your Gemfile. The gems you’ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails, and capybara. You’ll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</p><pre class="programlisting">source <b class="hl-string"><i style="color:red">'http://rubygems.org'</i></b>
+See other examples on James Newbery’s blog: <a class="ulink" href="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html" target="_top">testing Backbone with Jasmine</a> and check out his <a class="ulink" href="https://github.com/froots/backbone-jasmine-examples" target="_top">examples on GitHub</a>.
+</li></ul></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_example_test_driving_a_task_application"/>Example: Test-driving a Task application</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setup"/>Setup</h4></div></div></div><p>In this example, we’ll be using Cucumber, Capybara, RSpec, and Jasmine to
+test-drive a todo list.</p><p>The Selenium driver comes configured with Capybara and is the quickest driver to
+get running. By default it runs your tests in a remote controlled Firefox
+session, so you’ll want to install Firefox if you don’t have it already.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>If you’d like to test on a WebKit-based browser, you can set up the
+<a class="ulink" href="http://code.google.com/p/selenium/wiki/ChromeDriver" target="_top">Selenium ChromeDriver</a> to
+run integration tests against Chrome.</p></div><p>The other dependencies you can install by adding them to your Gemfile. The gems
+you’ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails,
+and capybara. You’ll want to add RSpec, Cucumber, and Jasmine to both the test
+and development groups so that you can run generators. With all our testing
+dependencies in place, the Gemfile in our sample application looks like this:</p><pre class="programlisting">source <b class="hl-string"><i style="color:red">'http://rubygems.org'</i></b>
 
 gem <b class="hl-string"><i style="color:red">'rails'</i></b>, <b class="hl-string"><i style="color:red">'3.1.0'</i></b>
 gem <b class="hl-string"><i style="color:red">'sqlite3'</i></b>
@@ -210,14 +219,13 @@ group :development, :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"ruby-debug19"</i></b>
   gem <b class="hl-string"><i style="color:red">'jasmine'</i></b>, <b class="hl-string"><i style="color:red">"= 1.1.0.rc4"</i></b>
   gem <b class="hl-string"><i style="color:red">'jasminerice'</i></b>
-  gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>
+  gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>, :require =&gt; <b class="hl-keyword">false</b>
 <b class="hl-keyword">end</b>
 
 group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">'turn'</i></b>, :require =&gt; <b class="hl-keyword">false</b>
   gem <b class="hl-string"><i style="color:red">"capybara"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.1.1"</i></b>
   gem <b class="hl-string"><i style="color:red">'selenium-webdriver'</i></b>, <b class="hl-string"><i style="color:red">'~&gt; 2.18.0'</i></b>
-  gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>
   gem <b class="hl-string"><i style="color:red">"factory_girl_rails"</i></b>
   gem <b class="hl-string"><i style="color:red">"bourne"</i></b>
   gem <b class="hl-string"><i style="color:red">"database_cleaner"</i></b>
@@ -226,16 +234,17 @@ group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"launchy"</i></b>
   gem <b class="hl-string"><i style="color:red">"guard-spork"</i></b>
   gem <b class="hl-string"><i style="color:red">"spork"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.9.0.rc"</i></b>
-<b class="hl-keyword">end</b></pre><p>If you haven’t already, you can bootstrap your application for Cucumber and Capybara:</p><pre class="programlisting">rails generate cucumber:install</pre><p>Next, bootstrap the application for Jasmine:</p><pre class="programlisting">rails generate jasmine:install</pre><p>You’ll want to set up Jasminerice to load all your helpers and specs:</p><pre class="programlisting">include::../../example_app/</pre><p>Finally, you need to mount the Jasminerice engine so that you can run your
+<b class="hl-keyword">end</b></pre><p>If you haven’t already, bootstrap your application for Cucumber and Capybara:</p><pre class="programlisting">rails generate cucumber:install</pre><p>Next, bootstrap the application for Jasmine:</p><pre class="programlisting">rails generate jasmine:install</pre><p>You’ll want to set up Jasminerice to load all your helpers and specs:</p><pre class="programlisting">include::../../example_app/</pre><p>Finally, you need to mount the Jasminerice engine so that you can run your
 Jasmine specs. Add the following routes to config/routes.rb:</p><pre class="programlisting"><b class="hl-keyword">if</b> [<b class="hl-string"><i style="color:red">"development"</i></b>, <b class="hl-string"><i style="color:red">"test"</i></b>].include? Rails.env
   mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
 <b class="hl-keyword">end</b></pre><p>With this configuration, you can run cucumber scenarios with the cucumber
-command and you can run Jasmine tests by accessing
-<a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your browser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_step_by_step"/>Step by step</h4></div></div></div><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><p>We’d like to be able to add items to a Todo list.  We know this will involve two
-parts: a list of existing tasks, and an interface for adding new items to
+command and you can run Jasmine tests by running the development server with
+<code class="literal">bundle exec rails server</code> and accessing <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your
+browser.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_step_by_step"/>Step by step</h4></div></div></div><p>We’ll go outside in: cucumber first, then rspec or jasmine as needed.</p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3><p>For an in-depth explanation of outside-in test-driven development, see
+<a class="ulink" href="http://pragprog.com/book/achbd/the-rspec-book" target="_top">The RSpec Book</a>.</p></div><p>We’d like to be able to add items to a Todo list.  We know this will involve
+two parts: a list of existing tasks, and an interface for adding new items to
 the list.  We’ll start with the list of items, and create fixture data with
-[Factory Girl Cucumber
-steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md" target="_top">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</a>):</p><pre class="programlisting">Feature: Viewing Tasks
+<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md" target="_top">Factory Girl Cucumber steps</a>:</p><pre class="programlisting">Feature: Viewing Tasks
   As a user
   So that I can see what I have to do
   I want to be able to see all my tasks
@@ -257,12 +266,12 @@ steps](<a class="ulink" href="https://github.com/thoughtbot/factory_girl/blob/v2
   (eval):2:in `find'
   ./features/step_definitions/web_steps.rb:29:in `with_scope'
   ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
-  features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>A common gotcha when testing Backbone.js Rails apps is seeing false
+  features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</pre><p>A common gotcha when testing Backbone.js Rails apps is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
 <code class="literal">Then I should see "Master backbone"</code> instead of scoping it with <code class="literal">within the
 tasks list</code>, then some test drivers would count the JSON that is used to
 bootstrap Backbone collections as visible text on the page, and the test would
-pass without us actually rendering the text to the page.</p></div><p>Since this we are doing outside-in development and testing for user interface,
+pass without us actually rendering the text to the page.</p><p>Since this we are doing outside-in development and testing for user interface,
 we will need outline the UI first.  To do this, first we’ll need a page to host
 our code.  Let’s create and route a Rails <code class="literal">TasksController</code>. We’ll bootstrap the
 Backbone app on <code class="literal">tasks#index</code>.</p><pre class="programlisting">ExampleApp::Application.routes.draw <b class="hl-keyword">do</b>
@@ -276,7 +285,7 @@ Backbone app on <code class="literal">tasks#index</code>.</p><pre class="program
     mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
   <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>You can also see the route for the
-[jasminerice gem](<a class="ulink" href="http://rubygems.org/gems/jasminerice" target="_top">http://rubygems.org/gems/jasminerice</a>), which makes the Rails
+<a class="ulink" href="http://rubygems.org/gems/jasminerice" target="_top">jasminerice gem</a>, which makes the Rails
 3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</p></div><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
   before_filter :authorize
   respond_to :html, :json
@@ -307,7 +316,7 @@ write this class, we’ll motivate it with a Jasmine isolation spec:</p><pre cla
     expect(view.$el).toBe(<b class="hl-string"><i style="color:red">"#tasks"</i></b>);
     expect(view.$el).toContain(<b class="hl-string"><i style="color:red">"table"</i></b>);
   });
-});</pre><p>We use the [jasmine-jquery](<a class="ulink" href="https://github.com/velesin/jasmine-jquery" target="_top">https://github.com/velesin/jasmine-jquery</a>) library
+});</pre><p>We use the <a class="ulink" href="https://github.com/velesin/jasmine-jquery" target="_top">jasmine-jquery</a> library
 (provided by jasminerice) to provide DOM matchers for Jasmine like
 <code class="literal">toContain()</code>.</p><p>To run the Jasmine spec, run the Rails server and visit <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a></p><p>To make this test pass, we’ll add a small template and make the <code class="literal">TasksIndex</code>
 view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
@@ -321,7 +330,7 @@ view render it:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Bac
     this.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({}));
     <b class="hl-keyword">return</b> this;
   }
-});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3719"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
+});</pre><p>The <code class="literal">app/assets/templates/tasks/index.jst.ejs</code> template:</p><pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre><p>Now our Jasmine specs pass:</p><div class="figure"><a id="d0e3839"/><p class="title"><b>Figure 5. Passing Jasmine spec</b></p><div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"/></div></div></div><br class="figure-break"/><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The <code class="literal">"#tasks
 table"</code> element is present on the page, but doesn’t contain the content we want.</p><pre class="programlisting">@javascript
 Scenario: View tasks                                          # features/view_tasks.feature:7
@@ -359,7 +368,7 @@ TypeError: undefined is not a function
     at [object Object].&lt;anonymous&gt; (http://localhost:3000/assets/views/tasks_index_spec.js?body=1:4:27)</pre><p>It’s failing because we haven’t defined <code class="literal">ExampleApp.Collections.Tasks</code> yet.  We
 need to define a Task model and Tasks collection.  We’ll define the model:</p><pre class="programlisting">ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
     <b class="hl-keyword">this</b>.parseAttachments();
   },
 
@@ -376,7 +385,7 @@ need to define a Task model and Tasks collection.  We’ll define the model:</p>
   isComplete: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'complete'</i></b>);
   }
-});</pre><p>and test-drive the collection:</p><pre class="programlisting">describe(<b class="hl-string"><i style="color:red">"ExampleApp.Collections.Tasks"</i></b>, <b class="hl-keyword">function</b>() {
+});</pre><p>write a test to motivate the collection:</p><pre class="programlisting">describe(<b class="hl-string"><i style="color:red">"ExampleApp.Collections.Tasks"</i></b>, <b class="hl-keyword">function</b>() {
   it(<b class="hl-string"><i style="color:red">"contains instances of ExampleApp.Models.Task"</i></b>, <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">var</b> collection = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks();
     expect(collection.model).toEqual(ExampleApp.Models.Task);
@@ -386,15 +395,16 @@ need to define a Task model and Tasks collection.  We’ll define the model:</p>
     <b class="hl-keyword">var</b> collection = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks();
     expect(collection.url).toEqual(<b class="hl-string"><i style="color:red">"/tasks"</i></b>);
   });
-});</pre><pre class="programlisting">ExampleApp.Collections.Tasks = Backbone.Collection.extend({
+});</pre><p>and pass the test by implementing the collection:</p><pre class="programlisting">ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: ExampleApp.Models.Task,
   url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });</pre><p>Running the Jasmine specs again, we’re making progress.  The TasksIndex view is
 accepting a collection of tasks, and now we have to render it:</p><pre class="programlisting">Expected '&lt;div id="tasks"&gt;&lt;table&gt; &lt;tbody&gt;&lt;tr&gt; &lt;th&gt;Title&lt;/th&gt; &lt;th&gt;Completed&lt;/th&gt; &lt;/tr&gt; &lt;/tbody&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/table&gt; &lt;/div&gt;' to have text 'Wake up'.</pre><p>The simplest thing we can do to get the spec passing is to pass the <code class="literal">tasks</code>
-collection into the template, and iterate over it there:</p><p>app/assets/javascripts/views/tasks_index.js:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
+collection into the template, and iterate over it there:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">// app/assets/javascripts/views/tasks_index.js:</i>
+ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: <b class="hl-keyword">function</b>() {
     _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"render"</i></b>);
-    <b class="hl-keyword">this</b>.collection.bind(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
+    <b class="hl-keyword">this</b>.collection.on(<b class="hl-string"><i style="color:red">"add"</i></b>, <b class="hl-keyword">this</b>.render);
   },
 
   render: <b class="hl-keyword">function</b> () {
@@ -404,8 +414,6 @@ collection into the template, and iterate over it there:</p><p>app/assets/javasc
   },
 
   renderTemplate: <b class="hl-keyword">function</b>() {
-    console.log(<b class="hl-keyword">this</b>.el);
-    console.log(<b class="hl-keyword">this</b>.$el);
     <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
   },
 
@@ -417,7 +425,8 @@ collection into the template, and iterate over it there:</p><p>app/assets/javasc
       self.$(<b class="hl-string"><i style="color:red">'tbody'</i></b>).append(row.el);
     });
   }
-});</pre><p>app/assets/javascripts/templates/tasks/index.jst.ejs:</p><pre class="programlisting">&lt;table id="tasks-list"&gt;
+});</pre><pre class="programlisting">// app/assets/javascripts/templates/tasks/index.jst.ejs:
+&lt;table id="tasks-list"&gt;
   &lt;thead&gt;
     &lt;tr&gt;
       &lt;th&gt;Title&lt;/th&gt;
@@ -428,13 +437,12 @@ collection into the template, and iterate over it there:</p><p>app/assets/javasc
   &lt;/tbody&gt;
 &lt;/table&gt;
 
-&lt;a class="create" href="#new"&gt;Add task&lt;/a&gt;</pre><p>Now, Jasmine passes.  But the Cucumber story is still failing: this is because
-the Jasmine spec is an isolation spec, and verifies that the TasksIndex view
-works in isolation.</p><pre class="programlisting">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
-Unable to find css "#tasks table" (Capybara::ElementNotFound)</pre><p>However, there is additional code we need to write to integrate the data present
-in the Rails test database with the Backbone view.  Adding this code to
-bootstrap the Backbone application should wrap up our exercise and get the tests
-passing.</p><p>We’ll motivate writing a top-level Backbone application object with a spec.
+&lt;a class="create" href="#new"&gt;Add task&lt;/a&gt;</pre><p>Now, Jasmine passes, but the Cucumber story is still failing.</p><pre class="programlisting">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
+Unable to find css "#tasks table" (Capybara::ElementNotFound)</pre><p>This is because the Jasmine spec is an isolation spec, and verifies that the
+TasksIndex view works in isolation.  There is additional code we need to write
+to hook up the data in the Rails test database to the Backbone view.  Adding
+this code to bootstrap the Backbone application should wrap up our exercise and
+get the tests passing.</p><p>We’ll motivate writing a top-level Backbone application object with a spec.
 Note the use of a <code class="literal">sinon.spy</code> for verifying the router instantiation:</p><p>spec/javascripts/example_app_spec.js</p><pre class="programlisting">describe(<b class="hl-string"><i style="color:red">"ExampleApp"</i></b>, <b class="hl-keyword">function</b>(){
   it(<b class="hl-string"><i style="color:red">"has a namespace for Models"</i></b>, <b class="hl-keyword">function</b>() {
     expect(ExampleApp.Models).toBeTruthy();
@@ -475,7 +483,7 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
       expect(Backbone.history.start).toHaveBeenCalled();
     });
   });
-});</pre><p>Get it to green:</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
+});</pre><p>Get it to green:</p><pre class="programlisting">window.ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
@@ -501,9 +509,10 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 &lt;%= content_for :javascript do -%&gt;
   &lt;script type="text/javascript"&gt;
     $(function () {
-      var json_div       = document.createElement('div');
-      json_div.innerHTML = $('#bootstrap').text();
-      var data           = JSON.parse(json_div.innerHTML);
+      var div = $('&lt;div&gt;&lt;/div&gt;');
+      div.html($('#bootstrap').text());
+      var data = JSON.parse(div.text());
+
       ExampleApp.init(data);
     });
   &lt;/script&gt;
@@ -523,6 +532,4 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
     And I should see "Purchase the backbone on rails ebook" within the tasks list
 
 1 scenario (1 passed)
-5 steps (5 passed)</pre><p>TODO: Refactoring step.  Extract a TaskView class and loop &amp; iterate.  Note
-specs passing, cukes passing.</p><p>TODO: Possible, bind events on the child views to motivate making TasksIndex a
-CompositeView to avoid leaking refs.</p><p>TODO: Optionally TDD through the new/create cycle, too.</p></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Models and collections </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Security</td></tr></table></div></body></html>
+5 steps (5 passed)</pre></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s06.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Models and collections </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Security</td></tr></table></div></body></html>

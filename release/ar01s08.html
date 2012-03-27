@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Security</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s07.html" title="Testing"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Security</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> </td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_security"/>Security</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_encoding_data_when_bootstrapping_json_data"/>Encoding data when bootstrapping JSON data</h3></div></div></div><p>As it turns out, bootstrapping JSON data in your erb templates introduces a
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Security</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s07.html" title="Testing"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Security</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> </td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_security"/>Security</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_encoding_data_when_bootstrapping_json_data"/>Encoding data when bootstrapping JSON data</h3></div></div></div><p>As it turns out, bootstrapping JSON data in your erb templates can introduce a
 security vulnerability. Consider the case when a user enters a malicious
-<code class="literal">&lt;script&gt;</code> as the title of a task. When the tasks#index page is reloaded,
-and we naively bootstrap task data on the page, the browser will interpret
-and execute the script. Since it’s possible for this script to run on another
-user’s session, it can be quite damaging if it goes on to, for exmple, edit
-or destroy the user’s data.</p><p>To protect against this, we make use of the fact that on HTML5 documents,
+<code class="literal">&lt;script&gt;</code> as the title of a task. When the tasks#index page is reloaded, and
+we naively bootstrap task data on the page, the browser will interpret and
+execute the script. Since it’s possible for this script to run on another
+user’s session, it can be quite damaging if it goes on to, for exmple, edit or
+destroy the user’s data.</p><p>To protect against this, we make use of the fact that on HTML5 documents,
 script tags that do not have a type of <code class="literal">text/javascript</code> won’t be automatically
 evaluated by the browser. Therefore we can create an element with the
 HTML-encoded bootstraped data enclosed in a script of type <code class="literal">text/json</code>, fetch
@@ -17,15 +17,23 @@ it using a simple jquery selector, and parse it ourselves.</p><p>Here’s an exa
 
 &lt;script type=<b class="hl-string"><i style="color:red">"text/javascript"</i></b>&gt;
   $(<b class="hl-keyword">function</b> () {
-    <b class="hl-keyword">var</b> json_div       = document.createElement(<b class="hl-string"><i style="color:red">'div'</i></b>);
-    json_div.innerHTML = $(<b class="hl-string"><i style="color:red">'#bootstrap'</i></b>).text();
-    <b class="hl-keyword">var</b> data           = JSON.parse(json_div.innerHTML);
+    <b class="hl-keyword">var</b> div, data;
+
+    div = $(<b class="hl-string"><i style="color:red">'&lt;div&gt;&lt;/div&gt;'</i></b>);
+    div.html($(<b class="hl-string"><i style="color:red">'#bootstrap'</i></b>).text());
+
+    data = JSON.parse(div.text());
+
     ExampleApp.init(data);
   });
-&lt;/script&gt;</pre><p>A reliable way to unencode the HTML-encoded JSON string is to use the
-browser’s native functionality, by retreiving a element’s <code class="literal">innerHTML</code>.
-So in the above script, we create a <code class="literal">json_div</code> element, assign its
-<code class="literal">innerHTML</code> to the bootstrap script’s text, and retreive back out,
-unencoded. The final result is the <code class="literal">data</code> variable containing proper JSON
-that can be parsed and passed along to your app’s init function.</p><p>This approach can be seen on the example app on the
-<code class="literal">app/views/tasks/index.html.erb</code> template</p><p>TODO: Discuss using <code class="literal">json2.js</code>:</p></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> </td></tr><tr><td width="40%" align="left" valign="top">Testing </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> </td></tr></table></div></body></html>
+&lt;/script&gt;</pre><p>A reliable way to unencode the HTML-encoded JSON string is to use the browser’s
+native functionality, by settings an element’s <code class="literal">innerHTML</code>.  So in the above
+script, we create a <code class="literal">json_div</code> var, assign its <code class="literal">innerHTML</code> to the bootstrap
+script’s text, and retrieve the innerText back out, unencoded. The final result
+is the <code class="literal">data</code> variable containing proper JSON with no HTML escaping that can be
+parsed and passed along to your app’s init function.</p><p>This approach can be seen on the example app on the
+<code class="literal">app/views/tasks/index.html.erb</code> template.</p><p>Now, the application’s models, populated by the bootstrap data structure,
+contains raw data that is not HTML-escaped.  When you render this data into the
+DOM, make sure you escape the HTML at that point in time:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">// From app/assets/javascripts/views/task_item.js:</i>
+
+<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'label'</i></b>).html(<b class="hl-keyword">this</b>.model.escape(<b class="hl-string"><i style="color:red">'title'</i></b>)); <i class="hl-comment" style="color: silver">// not model.get</i></pre></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s07.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> </td></tr><tr><td width="40%" align="left" valign="top">Testing </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> </td></tr></table></div></body></html>

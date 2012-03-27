@@ -41,28 +41,21 @@ information needs to cascade to all the view representations.</simpara>
 <simpara>Often this leads to a tight coupling of persistence and presentation: invoking
 <literal>$.ajax</literal> to save a user&#8217;s update and then updating several specific DOM elements
 upon success.</simpara>
-<simpara>Perhaps you&#8217;ve seen code like this:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">TODO: Contact app example, $.ajax nested a few layers deep, updating hidden DOM
-elements or a global object e.g. "window.contactsJSON" as persistence, then
-cascading update to several views</programlisting>
-<simpara>What if it could look like this instead:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">TODO: Backbone refactoring of above example.</programlisting>
 <simpara>By separating business logic, persistence, and presentation concerns, and
 providing a decoupled, event-driven way to cascade changes through a system of
 observers, each module of code is more well-encapsulated and expresses a
 cohesive set of responsibilities without being coupled to outside concerns.
-Your application code becomes easier to test, modify, and extend, and your
-application can manage its complexity while its feature set grows.</simpara>
-<simpara>It&#8217;s important to note that Backbone is a library, not a framework.  Though the
-distinction may seem subtle, it&#8217;s largely one of intent and purpose.  If you&#8217;re
-coming from a Rails background, you understand that a large part of Rails' value
-is expressing and implementing highly-opinionated conventions that guide
-development decisions.  Backbone doesn&#8217;t do this - conventions for rich
-client-side applications aren&#8217;t as well set-down and individual use cases vary
-more widely.  Instead of trying to serve as "the one way" or an opinionated
-framework like Rails, Backbone provides a set of structures that help you
-organize your application by building your own framework with its own set of
-conventions.</simpara>
+Your application code becomes easier to test, modify, and extend, and you
+can better manage its complexity while its feature set grows.</simpara>
+<simpara>It&#8217;s important to note that Backbone is a library, not a framework.  If you&#8217;re
+coming from a Rails background, you understand that a large part of Rails'
+value is expressing and implementing highly-opinionated conventions that guide
+development decisions.  Backbone doesn&#8217;t do this.  Instead of trying to serve
+as "the one way" or an opinionated framework like Rails, Backbone provides a
+set of structures that help you organize your application by building your own
+framework with its own set of conventions.</simpara>
+<simpara>Next, we&#8217;ll take a look at a handful of alternatives to Backbone, and then get
+down to business.</simpara>
 <section id="_why_use_backbone_js">
 <title>Why use Backbone.js</title>
 <simpara>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying on the DOM for app state aren&#8217;t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</simpara>
@@ -75,14 +68,20 @@ conventions.</simpara>
 </section>
 <section id="_the_example_application">
 <title>The Example Application</title>
-<simpara>Rails 3.1.0.rc5</simpara>
-<simpara>Ruby 1.9.2</simpara>
+<simpara>The example application is a classic todo item manager.  While this is a
+popular example, it is so for a reason: the concepts and domain are familiar,
+while leaving room for exploring interesting implementations like deferred
+loading and file attachment.</simpara>
+<simpara>The application uses Rails 3.1.0 and Ruby 1.9.3.  We provide an .rvmrc.</simpara>
 <simpara>Backbone.js and Underscore.js are the non-minified versions. This is for
 informational purposes, but also because the Rails 3.1 asset pipeline will
 compress and minify them.</simpara>
 <simpara>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
-example code normal Javascript as we believe that will be the most understandable to
-the current readers.</simpara>
+example code normal Javascript as we believe that will be the most
+understandable to the current readers.</simpara>
+<simpara>The example application comes with a full test suite.  The README in the
+<literal>example_app</literal> root directory has instructions for bootstrapping the app and
+running all the tests.</simpara>
 </section>
 </section>
 <section id="_getting_up_to_speed">
@@ -485,7 +484,7 @@ them in your application.js Sprockets manifest:</simpara>
 <screen>//  other application requires
 //= require_tree ../templates
 //= require_tree .</screen>
-<simpara>Additionally, load order for Backbone.js and your Backbone.js app is very
+<simpara>Load order for Backbone.js and your Backbone.js app is very
 important. jQuery and Underscore.js must be loaded before Backbone.js, then
 the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
@@ -496,6 +495,7 @@ done your application.js Sprockets manifest will look as shown below.</simpara>
 //= require jquery_ujs
 //
 //= require underscore
+//= require json2
 //= require backbone
 //= require backbone.authtokenadapter
 //= require backbone-support
@@ -517,60 +517,30 @@ can view it at <literal>example_app/app/assets/javascripts/application.js</liter
 </section>
 <section id="_an_overview_of_the_stack_connecting_rails_and_backbone_js">
 <title>An Overview of the Stack: Connecting Rails and Backbone.js</title>
-<simpara>By default Backbone.js communicates with your Rails application via JSON GET
-, POST and PUT requests. If you&#8217;ve ever made a JSON API for your Rails app,
-then for the most part this will be very similar.</simpara>
-<simpara>If you&#8217;ve never made a JSON API for your Rails application before, luckily
-you, it&#8217;s pretty straightforward.</simpara>
-<section id="_setting_up_rails_models">
-<title>Setting Up Rails Models</title>
-<simpara>One important aspect to keep in mind as you plan out how your Backbone.js
-interface will behave, and how it will use your Rails back-end, is that there is
-no need to have a one-to-one mapping between your Rails models and your
-Backbone.js models.</simpara>
-<simpara>The smaller an application is, the more likely that there will be a one-to-one
-mapping between both Backbone.js and Rails models and controllers.</simpara>
-<simpara>However, if you have a sufficiently complex application, it&#8217;s more likely that
-you <emphasis>won&#8217;t</emphasis> have a one-to-one mapping due to the differences in the tools
-Backbone.js gives you and the fact that you&#8217;re building a user-interface, not a
-back-end. Some of the reasons why you won&#8217;t have a one to one mapping include:</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-Because you&#8217;re building a user interface, not a back-end, it&#8217;s likely that
-some of your backbone models will aggregate information from multiple Rails
-models into one Backbone.js model.
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-This Backbone.js model may or may not be named the same as one of your Rails
-models.
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Backbone.js gives you a new type of object not present in Rails:
-Collections.
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Backbone.js doesn&#8217;t have the concept of relationships out of the box.
-</simpara>
-</listitem>
-</itemizedlist>
-<simpara>With that said, lets take the simple case first and look at how you might make a
-Backbone.js version of a Rails model.</simpara>
-<simpara>In our example application, we have a Task model. The simplest Backbone.js
-representation of this model would be as shown below.</simpara>
+<simpara>By default Backbone.js communicates with your Rails application via JSON GET ,
+POST and PUT requests. If you&#8217;ve ever made a JSON API for your Rails app, then
+for the most part this will be very similar.  If you&#8217;ve never made a JSON API
+for your Rails application before, lucky you, it&#8217;s pretty straightforward.</simpara>
+<simpara>This section will briefly touch on each of the major parts of an application
+using both Rails and Backbone.  We&#8217;ll go into more detail in later chapters,
+but this should give you the big picture of how the pieces fit together.</simpara>
+<section id="_setting_up_models">
+<title>Setting Up Models</title>
+<simpara>In our example application, we have a Task model, exposed via a JSON API at
+<literal>/tasks</literal>. The simplest Backbone.js representation of this model would be as
+shown below.</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });</programlisting>
 <simpara>The urlRoot property above indicates to Backbone.js that the server url for
 instances of this model will be found at <literal>/tasks/:id</literal>.</simpara>
+<note><simpara>There is no need to have a one-to-one mapping between Rails models and
+Backbone.js models.  Backbone models usually correspond with RESTful resources.
+Since your Backbone code is in the presentation tier, it&#8217;s likely that some of
+your Backbone models will aggregate information from multiple Rails models and
+contain concerns closer to the presentation tier.</simpara></note>
 <simpara>In Rails, it&#8217;s possible to access individual Tasks, as well as all Tasks (and
-query all tasks) through the same Task model. However, in Backbone.js models
+query all tasks) through the same Task model. In Backbone, models
 only represent the singular representation of a Task. Backbone.js splits out the
 plural representation of Tasks into what it calls Collections.</simpara>
 <simpara>The simplest Backbone.js collection to represent our Tasks would be the
@@ -590,34 +560,35 @@ change, then our collection and models will be as follows.</simpara>
 var Task = Backbone.Model.extend({});</programlisting>
 <simpara>Notice in the above model definitions that there is no specification of the
 attributes on the model. Like ActiveRecord, Backbone.js models get their
-attributes from the schema and data given to them. In the case of Backbone.js,
-this schema and data are the JSON from the server.</simpara>
-<simpara>The default JSON representation of an ActiveRecord model is a Hash that includes
+attributes from the data used to populate them at runtime. In this case,
+this schema and data are JSON responses from the Rails server.</simpara>
+<simpara>The default JSON representation of an ActiveRecord model is an object that includes
 all the model&#8217;s attributes. It does not include the data for any related models
 or any methods on the model, but it does include the ids of any related models
 as those are stored in a <literal>relation_name_id</literal> attribute on the model.</simpara>
-<simpara>The JSON representation of your ActiveRecord models will be retrieved by calling
-<literal>to_json</literal> on them. You customize the output of <literal>to_json</literal> by overriding the
-<literal>as_json</literal> method in your model.  We&#8217;ll touch on this more later in the
-section "Customizing your Rails-generated JSON."</simpara>
+<simpara>The JSON representation of your ActiveRecord models will be retrieved by
+calling <literal>to_json</literal> on them, which returns a string of JSON. Customize the output
+of <literal>to_json</literal> by overriding the <literal>as_json</literal> method in your model, which returns a
+Ruby data structure like a Hash or Array which will be serialized into the JSON
+string.  We&#8217;ll touch on this more later in the section "Customizing your
+Rails-generated JSON."</simpara>
 </section>
 <section id="_setting_up_rails_controllers">
 <title>Setting Up Rails Controllers</title>
-<simpara>The Backbone models and collections will talk to your Rails controllers. While
-your models may not have a one-to-one mapping with their Rails counterparts, it
-is likely that you&#8217;ll have at least one controller corresponding to every
-Backbone.js model.</simpara>
-<simpara>Fortunately for us, Backbone.js models will communicate in the normal RESTful
-way that Rails controllers understand, using the proper verbs to support the
-standard RESTful Rails controller actions: index, show, create, update, and
-destroy. Backbone.js does not make any use of the new action.</simpara>
-<simpara>Therefore, it&#8217;s just up to us to write a <emphasis>normal</emphasis> restful controller.</simpara>
+<simpara>The Backbone models and collections will talk to your Rails controllers. The
+most basic (and a typical) pattern is one Rails controller providing one family
+of RESTful resource to one Backbone.js model.</simpara>
+<simpara>By default, Backbone.js models communicate in the normal RESTful way that Rails
+controllers understand, using the proper verbs to support the standard RESTful
+Rails controller actions: index, show, create, update, and destroy. Backbone.js
+does not make any use of the new action.</simpara>
+<simpara>Therefore, it&#8217;s just up to us to write a <emphasis>normal</emphasis> RESTful controller.</simpara>
 <simpara>There are a few different ways you can write your controllers for interacting
 with your Backbone.js models and collections. However, the newest and cleanest
-way is to use the respond_with method introduced in Rails 3.0.</simpara>
-<simpara>When using respond_with, in your controller you specify what formats are
-supported with the method respond_to. In your individual actions, you then
-specify the resource or resources to be delivered using respond_with, as shown
+way is to use the <literal>respond_with</literal> method introduced in Rails 3.0.</simpara>
+<simpara>When using <literal>respond_with</literal>, in your controller you specify what formats are
+supported with the method <literal>respond_to</literal>. In your individual actions, you then
+specify the resource or resources to be delivered using <literal>respond_with</literal>, as shown
 in the example Tasks controller and index action below.</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController::Base
   respond_to :html, :json
@@ -626,12 +597,12 @@ in the example Tasks controller and index action below.</simpara>
     respond_with(@tasks = Task.all)
   end
 end</programlisting>
-<simpara>In the above example Tasks controller, the respond_to line declares that this
+<simpara>In the above example Tasks controller, the <literal>respond_to</literal> line declares that this
 controller should respond to both the HTML and JSON formats. Then, in the
-index action, the respond_with call will perform the appropriate action for
+index action, the <literal>respond_with</literal> call will perform the appropriate action for
 the requested format.</simpara>
 <simpara>The above controller is equivalent to the following one, using the older
-respond_to method.</simpara>
+<literal>respond_to</literal> method.</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController::Base
   def index
     @tasks = Task.all
@@ -641,33 +612,33 @@ respond_to method.</simpara>
     end
   end
 end</programlisting>
-<simpara>Using respond_with you can create succinct controllers that respond with a
+<simpara>Using <literal>respond_with</literal> you can create succinct controllers that respond with a
 normal web page, but also expose a JSON API that Backbone.js will use.</simpara>
 <section id="_validations_and_your_http_api">
 <title>Validations and your HTTP API</title>
-<simpara>If a Backbone.js model has a <literal>validate</literal> method defined, it will be validated
-before its attributes are set. If validation fails, no changes to the model will
-occur, and the "error" event will be fired. Your <literal>validate</literal> method will be passed
-the attributes that are about to be updated. You can signal that validation
-passed by returning nothing from your <literal>validate</literal> method. You can signify that
-validation has failed by returning something from the method. What you return
-can be as simple as a string, or a more complex object that describes the error
-in all its gory detail.</simpara>
+<simpara>If a Backbone.js model has a <literal>validate</literal> method defined, it will be validated on
+the client side, before its attributes are set. If validation fails, no changes
+to the model will occur, and the "error" event will be fired. Your <literal>validate</literal>
+method will be passed the attributes that are about to be updated. You can
+signal that validation passed by returning nothing from your <literal>validate</literal> method.
+You signify that validation has failed by returning something from the method.
+What you return can be as simple as a string, or a more complex object that
+describes the error in all its gory detail.</simpara>
 <simpara>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
 would often require duplicating a lot of server-side business logic.
-Furthermore, you always want the server to be the definitive arbiter for valid
-data, as this API can be abused outside of the backbone.js interface.</simpara>
-<simpara>Instead, your Backbone.js applications will likely rely on server-side
-validation logic. How to handle a failure scenario is passed in to Backbone.js
-model save call as a callback, as shown below.</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">task.save({title: "New Task title"}, {
-  error: function(){
+Furthermore, you almost certainly want the server to have the last word on
+valid data, as this API can be used outside of the Backbone.js interface.</simpara>
+<simpara>So, your Backbone.js applications will likely rely on server-side
+validation logic.  Invalid requests return non-2xx HTTP responses, which
+are handled by error callbacks in Backbone:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">task.save({ title: "New Task title" }, {
+  error: function() {
     // handle error from server
   }
 });</programlisting>
-<simpara>The error callback will be triggered if your server returns a non-200
-response. Therefore, you&#8217;ll want your controller to return a non-200 HTTP
+<simpara>The error callback will be triggered if your server returns a non-2xx
+response. Therefore, you&#8217;ll want your controller to return a non-2xx HTTP
 response code if validations fail.</simpara>
 <simpara>A controller that does this would be as shown in the following example.</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController::Base
@@ -682,9 +653,9 @@ response code if validations fail.</simpara>
     end
   end
 end</programlisting>
-<simpara>Thankfully, the default Rails responders will respond with an unprocessable
-entity (422) status code when there are validation errors, so the above
-controller action can be rewritten more succintly like so:</simpara>
+<simpara>The default Rails responders will respond with an unprocessable entity (422)
+status code when there are validation errors, so the action above can be
+refactored:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController::Base
   respond_to :json
   def create
@@ -697,29 +668,31 @@ end</programlisting>
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
 application.</simpara>
-<simpara>Different aspects of validations are covered in a few different section so
-this book. For more information about validations, see the Validation section
-of the Models and Collections chapter. For more information about reducing
-redundancy between client and server validations, see the Duplicating business
-logic across the client and server section of the Models and Collections
-chapter. For more information about handling and displaying errors on the
-client side, see the Form helpers section of the Views and Templates chapter.</simpara>
+<simpara>A few different aspects of validations that we saw here are covered in a few
+different sections of this book. For more information about validations, see
+the Validation section of the Models and Collections chapter. For more
+information about reducing redundancy between client and server validations,
+see the "Duplicating business logic across the client and server" section of
+the Models and Collections chapter. For more information about handling and
+displaying errors on the client side, see the "Form helpers" section of the
+Views and Templates chapter.</simpara>
 </section>
 </section>
 <section id="_setting_up_views">
 <title>Setting Up Views</title>
-<simpara>Most Backbone.js applications will be a "single-page app". This means that
-your Rails application will render a single-page which properly sets up
-Backbone.js and the data it will use. From there, ongoing interaction with
-your Rails application occurs via the JSON APIs.</simpara>
+<simpara>Most Backbone.js applications will be a single-page app (sometimes referred to
+as an SPA). This means that your Rails application will render a single page
+which properly sets up Backbone.js and the data it will use. From there,
+ongoing interaction with your Rails application occurs via the JSON APIs.</simpara>
 <simpara>The most common page for this single-page application will be the index action
-of a controller, as in our example application and the tasks controller.</simpara>
+of a controller.  For our Todos example application, this page will be hosted
+at <literal>Tasks#index</literal>.</simpara>
 <simpara>You will want to create an object in Javascript for your Backbone.js application
 to reside. For more information on this namespacing see the "Namespacing your
 application" section of the Organization chapter.</simpara>
 <simpara>This namespace variable holds your Backbone.js application&#8217;s Models,
-Collections, Views, and Routes, and has an init method which will be called to
-initialize the application.</simpara>
+Collections, Views, and Routes, and has an <literal>init()</literal> method which will be called
+to initialize the application.</simpara>
 <simpara>This namespace variable will look like the following.</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">var ExampleApp = {
   Models: {},
@@ -734,24 +707,23 @@ initialize the application.</simpara>
 <simpara>You can find this file in the example app in
 <literal>app/assets/javascripts/example_app.js</literal>.</simpara>
 <important><simpara>You must instantiate a Backbone.js router before calling
-Backbone.history.start() otherwise Backbone.history will be undefined.</simpara></important>
-<simpara>Then, inside app/views/tasks/index.html.erb you will call the initialize
+Backbone.history.start() otherwise Backbone.history will be <literal>undefined</literal>.</simpara></important>
+<simpara>Then, inside <literal>app/views/tasks/index.html.erb</literal> you will call the <literal>init</literal>
 method. This will appear as follows.</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">&lt;%= content_for :javascript do -%&gt;
   &lt;%= javascript_tag do %&gt;
     ExampleApp.init();
   &lt;% end %&gt;
 &lt;% end -%&gt;</programlisting>
-<simpara>For performance reasons, you will almost always "bootstrap" and give
-Backbone.js its initial data within the HTML view for this page. In our
-example, the tasks have already been provided to the view in a <literal>@tasks</literal>
-instance variable, and that can be used to bootstrap, as shown below.</simpara>
+<simpara>You will often "bootstrap" and give Backbone.js its initial data within the
+HTML view for this page. In our example, the tasks have already been provided
+to the view in a <literal>@tasks</literal> instance variable, used to bootstrap as shown below.</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">&lt;%= content_for :javascript do -%&gt;
   &lt;%= javascript_tag do %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
   &lt;% end %&gt;
 &lt;% end -%&gt;</programlisting>
-<simpara>The above example uses Erb to pass the JSON for the tasks to the init method.</simpara>
+<simpara>The above example uses ERb to pass the JSON for the tasks to the <literal>init</literal> method.</simpara>
 <simpara>Once you make this change, the ExampleApp.init method then becomes:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">var ExampleApp = {
   Models: {},
@@ -765,10 +737,7 @@ instance variable, and that can be used to bootstrap, as shown below.</simpara>
   }
 };</programlisting>
 <simpara>Finally, you must have a Router in place which knows what to do. We&#8217;ll cover
-routers in more detail in the Routers, Views and Templates chapter. For a more in-depth
-presentation on writing and using routers please go there. However, routers are
-an important part of the infrastructure you need to start using Backbone.js
-and we can&#8217;t make our example here work without them.</simpara>
+routers in more detail in the Routers, Views and Templates chapter.</simpara>
 <simpara>Backbone.js routers provide methods for routing application flow based on
 client-side URL fragments (#fragment).</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Routers.Tasks = Backbone.Router.extend({
@@ -800,16 +769,16 @@ Backbone.js models, collections, routers, and views.</simpara>
 <title>Customizing your Rails-generated JSON</title>
 <simpara>There are a few common things you&#8217;ll do in your Rails app when working with
 Backbone.js.</simpara>
-<simpara>First, it&#8217;s likely that you&#8217;ll want to switch from including all attributes (the
-default) to delivering some subset.</simpara>
+<simpara>First, it&#8217;s likely that you&#8217;ll want to switch from including all attributes,
+which is the default, to delivering some subset.</simpara>
 <simpara>This can be done by specifying explicitly only the attributes that are to be
 included (whitelisting), or specifying the attributes that should <emphasis>not</emphasis> be
 included (blacklisting). Which one you choose will depend on how many attributes
 your model has and how paranoid you are about something important appearing in
 the JSON when it shouldn&#8217;t be there.</simpara>
 <simpara>If you&#8217;re concerned about sensitive data unintentionally being included in the
-JSON when it shouldn&#8217;t be then you&#8217;ll want to whitelist, to switch to everything
-being explicitly included in the JSON with the <literal>:only</literal> option:</simpara>
+JSON when it shouldn&#8217;t be, then you&#8217;ll want to whitelist attributes into the
+JSON with the <literal>:only</literal> option:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">def as_json(options = {})
   super(options.merge(:only =&gt; [ :id, :title ]))
 end</programlisting>
@@ -1527,7 +1496,7 @@ mockups directly in as templates, without modifying them.</simpara>
 
   fillTemplate: function() {
     this.$('nav a.profile').text(App.currentUser().fullName());
-    this.$('h2').text(this.model.escape('title'));
+    this.$('h2').html(this.model.escape('title'));
 
     var audio = this.$('audio');
     audio.empty();
@@ -1902,28 +1871,31 @@ collections.</simpara>
 <simpara>These can be extremely tricky to track down on a production application,
 especially if you are nesting child views. Sadly, there&#8217;s no "garbage
 collection" for views in Backbone, so your application needs to manage this
-itself.</simpara>
-<simpara>Let&#8217;s take a look at how to unbind various kinds of events.</simpara>
+itself.  Luckily, it&#8217;s not too hard to keep track of and correctly maintain our
+bindings.</simpara>
+<simpara>Let&#8217;s take a look at how to unbind three kinds of events: DOM events, model
+and collection events, and events you trigger in your views.</simpara>
 </section>
 <section id="_unbinding_dom_events">
 <title>Unbinding DOM events</title>
-<simpara>When you call <literal>this.remove()</literal> in your view, it delegates to <literal>jQuery.remove()</literal>
+<simpara>DOM events are the simple case - they more or less get cleaned up for you.
+When you call <literal>this.remove()</literal> in your view, it delegates to <literal>jQuery.remove()</literal>
 by invoking <literal>$(this.el).remove()</literal>.  This means that jQuery takes care of
 cleaning up any events bound on DOM elements within your view, regardless of
-whether you bound them with the Backbone <literal>events</literal> hash or by hand; for
-example, with <literal>$.bind()</literal>, <literal>$.delegate()</literal>, <literal>live()</literal> or <literal>$.on()</literal>.</simpara>
+whether you bound them with the Backbone <literal>events</literal> hash or by hand; for example,
+with <literal>$.bind()</literal>, <literal>$.delegate()</literal>, <literal>live()</literal> or <literal>$.on()</literal>.</simpara>
 </section>
 <section id="_unbinding_model_and_collection_events">
 <title>Unbinding model and collection events</title>
-<simpara>If your view binds to events on a model or collection, you are responsible for
-unbinding these events.  You do this with a simple call to
+<simpara>If your view binds to events on a model or collection with <literal>on()</literal>, you are
+responsible for unbinding these events.  You do this with a simple call to
 <literal>this.model.off()</literal> or <literal>this.collection.off()</literal>; the
 <ulink url="http://documentcloud.github.com/backbone/#Events-off"><literal>Backbone.Events.off()</literal>
 function</ulink> removes all callbacks on that object.</simpara>
 <simpara>When should we unbind these handlers?  Whenever the view is going away.  This
 means that any pieces of code that create new instances of this view become
-responsible for cleaning up after it&#8217;s gone. That doesn&#8217;t sound like a very
-cohesive approach, so let&#8217;s include the cleanup responsibility on this view.</simpara>
+responsible for cleaning up after it&#8217;s gone. That isn&#8217;t a very cohesive
+approach, so let&#8217;s include the cleanup responsibility on the view itself.</simpara>
 <simpara>Let&#8217;s write a <literal>leave()</literal> function on our view that wraps <literal>remove()</literal> and handles
 any additional event unbinding we need to do.  As a convention, when we use
 this view elsewhere, we&#8217;ll call <literal>leave()</literal> instead of <literal>remove()</literal> when we&#8217;re
@@ -1980,21 +1952,17 @@ single call to <literal>unbindFromAll()</literal> to unbind them:</simpara>
 reusable mixin or superclass.  Then, we just have to use <literal>bindTo()</literal> instead of
 <literal>model.on()</literal> and be assured that the handlers will be cleaned up during
 <literal>leave()</literal>.</simpara>
-<simpara>TODO: Is it viable to use Function.caller inside Backbone.Events so this
-functionality is provided by Backbone.Events?
-<ulink url="https://gist.github.com/158a4172aea28876d0fc">https://gist.github.com/158a4172aea28876d0fc</ulink></simpara>
-<simpara>TODO: Wrap <literal>bindTo()</literal> and <literal>unbindFromAll()</literal> into <literal>Observer</literal> which gets mixed
-into <literal>CompositeView</literal>.</simpara>
 </section>
-<section id="_unbinding_custom_events">
-<title>Unbinding custom events</title>
+<section id="_unbinding_view_triggered_events">
+<title>Unbinding view-triggered events</title>
 <simpara>With the first two kinds of event binding that we discussed, DOM and
 model/collection, the view is the observer.  The responsibility to clean up is
 on the observer, and here the responsibility consists of unbinding the event
 handler when the view is being removed.</simpara>
-<simpara>But other times, our view classes will trigger (emit) events of their own.
-In this case, other objects are the observer, and are responsible for cleaning
-up the event binding when they are disposed.</simpara>
+<simpara>But other times, our view classes will trigger (emit) events of their own.  In
+this case, other objects are the observer, and are responsible for cleaning up
+the event binding when they are disposed.  See "Events Your View Publishes" in
+the earlier "Event Binding" section for more details.</simpara>
 <simpara>However, additionally, when the view itself is disposed of with <literal>leave()</literal>, it
 should clean up any event handlers bound on <emphasis role="strong">itself</emphasis> for events that it
 triggers.</simpara>
@@ -2286,10 +2254,9 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
 });
 
 Support.CompositeView.extend = Backbone.View.extend;</programlisting>
-<simpara>TODO: Re-link to swapping-internals anchor once <ulink url="https://github.com/schacon/git-scribe/issues/33">https://github.com/schacon/git-scribe/issues/33</ulink> is fixed</simpara>
 <simpara>Similar to the <literal>SwappingRouter</literal>, the <literal>CompositeView</literal> base class solves common
-housekeeping problems by establishing a convention. See the Swapping Router and
-Backbone internals section for an in-depth analysis of how this subclassing
+housekeeping problems by establishing a convention. See the "SwappingRouter and
+Backbone internals" section for an in-depth analysis of how this subclassing
 pattern works.</simpara>
 <simpara>Now our <literal>CompositeView</literal> maintains an array of its immediate children as
 <literal>this.children</literal>.  With this reference in place, a parent view&#8217;s <literal>leave()</literal> method
@@ -2571,7 +2538,7 @@ JavaScript form builder.  Since the model data is being read and written by
 Backbone views and models, it&#8217;s ideal to have markup construction and form
 serialization implemented on the client-side.</simpara>
 <simpara>One implementation in progress is
-[<literal>backbone-forms</literal> by Charles Davison](<ulink url="https://github.com/powmedia/backbone-forms">https://github.com/powmedia/backbone-forms</ulink>).
+<ulink url="https://github.com/powmedia/backbone-forms"><literal>backbone-forms</literal> by Charles Davison</ulink>.
 It provides markup construction and serialization, as well as a method for
 declaring your schema (data types) to support both of those facilities.</simpara>
 </section>
@@ -2619,104 +2586,6 @@ information.</simpara>
 </section>
 <section id="_models_and_collections">
 <title>Models and collections</title>
-<section id="_model_associations">
-<title>Model associations</title>
-<simpara>Backbone.js doesn&#8217;t prescribe a way to define associations between models, so
-we need to get creative and use the power of JavaScript to set up associations
-in such a way that its usage is natural.</simpara>
-<section id="_belongs_to_associations">
-<title>Belongs to associations</title>
-<simpara>Setting up a <literal>belongs_to</literal> association in Backbone is a two step process. Let&#8217;s
-discuss setting up the association that may occur between a task and a user.
-The end result of the approach is a <literal>Task</literal> instance having a property called
-<literal>user</literal> where we store the associated <literal>User</literal> object.</simpara>
-<simpara>To set this up, let&#8217;s start by telling Rails to augment the task&#8217;s JSON
-representation to also send over the associated user attributes:</simpara>
-<programlisting language="ruby" linenumbering="unnumbered">class Task &lt; ActiveRecord::Base
-  belongs_to :user
-
-  def as_json(options = nil)
-    super((options || {}).merge(include: { user: { only: [:name, :email] } }))
-  end
-end</programlisting>
-<simpara>This means that when Backbone calls <literal>fetch()</literal> for a <literal>Task</literal> model, it will
-include the name and email of the associated user nested within the task JSON
-representation. Something like this:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">{
-  "title": "Buy more Cheeseburgers",
-  "due_date": "2011-03-04",
-  "user": {
-    "name": "Robert McGraffalon",
-    "email": "bobby@themcgraffalons.com"
-  }
-}</programlisting>
-<simpara>Now that we receive user data with the task&#8217;s JSON representation, let&#8217;s tell
-our Backbone User model to store the User object. We do that on the task&#8217;s
-initializer. Here&#8217;s a first cut at that:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
-  initialize: function() {
-    this.user = new User(this.get('user'));
-  }
-});</programlisting>
-<simpara>We can make a couple of improvements to the above. First, you&#8217;ll soon realize
-that you might be setting the user outside of the initialize as well. Second,
-the initializer should check whether there is user data in the first place. To
-address the first concern, let&#8217;s create a setter for the object. Backbone
-provides a handy function called <literal>has</literal> that returns true or false depending on
-whether the provided attribute is set for the object:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">var Task = Backbone.Model.extend({
-  initialize: function() {
-    if (this.has('user')) {
-      this.setUser(new User(this.get('user')));
-    }
-  },
-
-  setUser: function(user) {
-    this.user = user;
-  }
-});</programlisting>
-<simpara>The final setup allows for a nice clean interface to a task&#8217;s user, by
-accessing the task property of the user instance.</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">var task = Task.fetch(1);
-console.log(task.get('title') + ' is being worked on by ' + task.user.get('name'));</programlisting>
-</section>
-<section id="_has_many_associations">
-<title>Has many associations</title>
-<simpara>You can take a similar approach to set up a <literal>has_many</literal> association on the
-client side models. This time, however, the object&#8217;s property will be a
-Backbone collection.</simpara>
-<simpara>Following the example, say we need access to a user&#8217;s tasks. Let&#8217;s set up the
-JSON representation on the Rails side first:</simpara>
-<programlisting language="ruby" linenumbering="unnumbered">class User &lt; ActiveRecord::Base
-  has_many :tasks
-
-  def as_json(options = nil)
-    super((options || {}).merge(include: { tasks: { only: [:body, :due_date] } }))
-  end
-end</programlisting>
-<simpara>Now, on the Backbone <literal>User</literal> model&#8217;s initializer, let&#8217;s call the <literal>setTasks</literal>
-function:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">var User = Backbone.Model.extend({
-  initialize: function() {
-    var tasks = new Tasks.reset(this.get('tasks'));
-    this.setTasks(tasks);
-  },
-
-  setTasks: function(tasks) {
-    this.tasks = tasks;
-  }
-});</programlisting>
-<simpara>Note that we are setting the relation to an instance of the <literal>Tasks</literal> collection.</simpara>
-<simpara>TODO: Let&#8217;s exapnd upon this, as it isn&#8217;t the most flexible solution.  (It is
-a good start.) We are setting the JSON representation of the Rails models to
-suit the Backbone.js concerns.  Additionally, the <literal>Task#as_json</literal> method at the
-top is concerned with the User JSON representation.  It should at least delegate
-to User#as_json. Going further, the JSON presentation for consumption by
-Backbone.js should be completely extracted into the JSON API endpoint controller
-action, or even a separate presenter class.</simpara>
-<simpara>TODO: Some of this is repeated in the model_relationships section, unify.</simpara>
-</section>
-</section>
 <section id="_filters_and_sorting">
 <title>Filters and sorting</title>
 <simpara>When using our Backbone models and collections, it&#8217;s often handy to filter the
@@ -3025,7 +2894,7 @@ therefore easier to extend and reuse.</simpara>
 _.extend(FormAttributes.prototype, {
   attributes: function() {
     var attributes = {};
-    _.each($('input, select', form), function(element) {
+    _.each($('input, select', this.form), function(element) {
       var element = $(element);
       if(element.attr('name') != "commit") {
         attributes[element.attr('name')] = element.val();
@@ -3194,8 +3063,21 @@ focused on the inherent coupling of model relationships and data&#8201;&#8212;&#
 relationships, when to eagerly pre-fetch associations and when to lazily defer
 loading, and whether to employ a supporting library to help define your model
 relationships.</simpara>
+<section id="_backbone_relational_plugin">
+<title>Backbone-relational plugin</title>
+<simpara>If your use cases are supported by it, Paul Uithol&#8217;s
+<ulink url="https://github.com/PaulUithol/Backbone-relational">Backbone-relational</ulink> is
+arguably the most popular and actively maintained library for this.  It lets
+you declare one-to-one, one-to-many, and many-to-one relations on your Backbone
+models by extending a new base class, <literal>Backbone.RelationalModel</literal>.  It&#8217;s good to
+understand how this works under the hood, so we&#8217;ll cover one way to implement a
+relational object model in Backbone below, but we encourage you to check out
+the <literal>Backbone-relational</literal> plugin as a way to work at a higher level of
+abstraction.</simpara>
+</section>
 <section id="_relations_in_the_task_app">
 <title>Relations in the Task App</title>
+<simpara>TODO: Add Lists to example app or cut it from this chapter.</simpara>
 <simpara>In the example application, there are Users which have many Tasks through
 Lists. Each Task has many Comments and Attachments.</simpara>
 <informalfigure>
@@ -3209,7 +3091,7 @@ Lists. Each Task has many Comments and Attachments.</simpara>
 </section>
 <section id="_deciding_how_to_deliver_data_to_the_client">
 <title>Deciding how to deliver data to the client</title>
-<simpara>Before you decide how to model your JSON API or how to declare, your client-side model
+<simpara>Before you decide how to model your JSON API or how to declare your client-side model
 relationships, step back and consider the user experience of your application.
 For TaskApp, we decided to have interactions as follows:</simpara>
 <itemizedlist>
@@ -3261,7 +3143,7 @@ Don&#8217;t preload any information, and deliver only static assets (HTML, CSS, 
 <simpara>
 Preload all the information, including Comments and Attachments.  This would
   work well if we expected users to frequently access the comments and
-  attachments of many tasks.
+  attachments of many tasks, but incurs a longer initial page load.
 </simpara>
 </listitem>
 <listitem>
@@ -3277,10 +3159,10 @@ Use localStorage as the primary storage engine, and sync to the Rails server
 <section id="_designing_the_http_json_api">
 <title>Designing the HTTP JSON API</title>
 <simpara>Now that we know we&#8217;ll bootstrap the Lists and Tasks and defer the Comments and
-Associations, we should decide how to deliver the deferred content.  We have two
-options here.  Our goal is to fetch to comments and attachments for an
-individual task.</simpara>
-<simpara>One way we could approach this is the issue separate API calls for each
+Associations, we should decide how to deliver the deferred content, Comments
+and Associations.  Our goal is to fetch to comments and attachments for an
+individual task.  Let&#8217;s discuss two options.</simpara>
+<simpara>One way we could approach this is to issue separate API calls for each
 nested resource:</simpara>
 <programlisting language="bash" linenumbering="unnumbered">$ curl http://tasksapp.local:3000/tasks/78/comments.json | ppjson
 [
@@ -3350,30 +3232,29 @@ Attachments, we know that our HTTP JSON API should support at least the
 following Rails routes:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">resources :lists, :only =&gt; [:create, :update, :delete]
 resources :tasks, :only =&gt; [:show, :create, :update, :delete]</programlisting>
-<tip><simpara>In some applications, you choose to expose a user-facing API.  It&#8217;s often
-valuable to dogfood this endpoint by making use of it from your own Backbone
+<tip><simpara>In some applications, you choose to expose a user-facing API.  It&#8217;s
+valuable to "dogfood" this endpoint by making use of it from your own Backbone
 code.  Often these APIs will be scoped under an "/api" namespace, possibly with
-an API version namespace as well.</simpara></tip>
+an API version namespace as well like "/api/v1".</simpara></tip>
 </section>
 <section id="_implementing_the_api_presenting_the_json">
 <title>Implementing the API: presenting the JSON</title>
 <simpara>For building the JSON presentation, we have a few options. Rails already comes
 with support for overriding the <literal>Task#as_json</literal> method, which is probably
 the easiest thing to do. However, logic regarding the JSON representation of
-a model is not necessarily the model&#8217;s concern. Furthermore, the <literal>as_json</literal> API
-starts to fall appart when representing complex hierarchies. Other approaches
+a model is not necessarily the model&#8217;s concern. Furthermore, the <literal>as_json</literal> approach
+can become cumbersome when representing complex hierarchies. Other approaches
 such as creating a separate presenter object, or writing a builder-like view are
 all better approaches because additionally we don&#8217;t pollute our models with
 presentational logic.</simpara>
 <simpara>The <ulink url="https://github.com/nesquena/rabl">RABL rubygem</ulink> is a good generalization
 of the problem and can help with this particular aspect of your API implementation.</simpara>
 <simpara>RABL allows you to create templates where you can easily specify the JSON
-representation of your models. If you&#8217;ve worked with the great <literal>builder</literal>
-library to generate arbitrary XML, such as an RSS feed, you&#8217;ll feel right at
-home.</simpara>
+representation of your models. If you&#8217;ve worked with the <literal>builder</literal>
+library to generate XML such as an RSS feed, you&#8217;ll feel right at home.</simpara>
 <simpara>To use it, first include the <literal>rabl</literal> and <literal>yajl-ruby</literal> gems in your Gemfile. Then
 you can create a view ending with <literal>.json.rabl</literal> to handle any particular request.
- For example, a tasks#show action and views may look like this:</simpara>
+For example, a tasks#show action may look like this:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController
   respond_to :json
   def show
@@ -3387,7 +3268,10 @@ it will invoke <literal>to_json</literal> on the <literal>@task</literal> model,
 one in <literal>app/views/tasks/show.json.rabl</literal>, so it will render that instead:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">object @task
 attributes(:id, :title, :complete)
-child(:user) { attributes(:id, :email) }</programlisting>
+child(:user) { attributes(:id, :email) }
+child(:attachments) { attributes(:id, :email) }</programlisting>
+<simpara>We&#8217;ll illustrate the child associations with <literal>attachments</literal>, and leave <literal>comments</literal>
+as an exercise for the reader.</simpara>
 <simpara>Now it is much easier to extend and tweak the JSON generated on the server,
 while still keeping the model free of presentational behavior. Do look at
 the <ulink url="https://github.com/nesquena/rabl#readme">project&#8217;s readme</ulink> for all the
@@ -3395,20 +3279,89 @@ bells and whistles.</simpara>
 </section>
 <section id="_parsing_the_json_and_instantiating_client_side_models">
 <title>Parsing the JSON and instantiating client-side models</title>
-<simpara>TODO: Expand outline</simpara>
-<simpara>Outline:  Discuss overriding Backbone Model parse() function.  Talk about how
-parsing fits into the fetch/new object lifecycle.  Point out inconsistencies
-(parse not invoked during reset, only fetch/set etc)
-Discuss <ulink url="https://github.com/PaulUithol/Backbone-relational">https://github.com/PaulUithol/Backbone-relational</ulink></simpara>
-<simpara>TODO: If a Backbone Task doesn&#8217;t always have its associations filled (e.g. when
-rendering the TasksIndex Backbone view, whose JSON is built by bootstrapping, in
-<literal>Tasks#index</literal>), when you move from TasksIndex to TasksShow, you need to invoke
-task.fetch() to pull all the task attributes from <literal>GET /tasks/:id</literal> and populate
-the associations.  Whose concern is that?  Presumably the TaskShow view.  You
-could discuss lazily populating this by making the task associations functions
-instead of properties (compare task.attachments.each to task.attachments().each;
-in the latter, you could lazily fetch and populate, but then you run into the
-issue that fetch is async.)</simpara>
+<simpara>Now that we are delivering the <literal>task</literal> JSON to the client and including its
+nested associations, we need to correctly handle this nested data in the
+client-side model.  Instead of a nested hash of attributes on the parent
+<literal>task</literal> object, we want to instantiate a Backbone collection for the
+attachments that contains a set of Backbone <literal>Attachment</literal> models.</simpara>
+<simpara>It&#8217;s important to point out that the JSON for the attachments is initially
+set on the Backbone <literal>Task</literal> model as a Backbone attribute which can be
+accessed with <literal>get()</literal> and <literal>set()</literal>, and that we are replacing it with an
+instance of a Backbone <literal>Attachments</literal> collection and placing that as an
+object property:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">taskBeforeParsing.get('attachments')
+// =&gt; [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]
+taskBeforeParsing.attachments
+// =&gt; undefined
+
+/* parse attributes... */
+
+taskAfterParsing.get('attachments')
+// =&gt; undefined
+taskAfterParsing.attachments
+// =&gt; ExampleApp.Collection.Attachments(...)</programlisting>
+<simpara>One way to do this is to override the <literal>parse</literal> function on the <literal>Task</literal> model.</simpara>
+<simpara>There are two <literal>parse</literal> functions in Backbone: one on <literal>Collection</literal> and another on
+<literal>Model</literal>.  Backbone will invoke them whenever a model or collection is populated
+with data from the server; that is, during <literal>Model#fetch</literal>, <literal>Model#save</literal> (which
+updates model attributes based on the server&#8217;s response to the HTTP PUT/POST
+request), and <literal>Collection#fetch</literal>.  It&#8217;s also invoked when a new Model is
+initialized and <literal>options.parse</literal> is set to <literal>true</literal>.</simpara>
+<simpara>It&#8217;s important to note that <literal>parse</literal> is not called by <literal>Collection#reset</literal>,
+which should be called with an array of models as its first argument.  Backbone
+does support calling <literal>Collection#reset</literal> with just an array of bare attribute
+hashes, but these will not be routed through <literal>Model#parse</literal>, the source of some
+confusion.</simpara>
+<simpara>Another way to intercept nested attributes and produce a full object graph
+is to bind to the <literal>change</literal> event for the association attribute - in this case,
+<literal>task.attachments</literal>:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: function() {
+    this.on("change:attachments", this.parseAttachments);
+    this.parseAttachments();
+  },
+
+  parseAttachments: function() {
+    this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
+    delete this.attachments;
+  },
+
+  // ...</programlisting>
+<simpara>This ensures that our custom parsing gets invoked any time the <literal>attachments</literal>
+attribute is changed, and when new model instances are created.</simpara>
+</section>
+<section id="_when_to_fetch_deferred_data">
+<title>When to fetch deferred data</title>
+<simpara>Since a Backbone Task doesn&#8217;t always have its associations filled, when you
+move from TasksIndex to TasksShow, you need to invokep task.fetch() to pull all
+the task attributes from <literal>GET /tasks/:id</literal> and populate the associations.  Whose
+concern is that?</simpara>
+<simpara>You could lazily populate this association by making the <literal>task.attachments</literal>
+association a function instead of a property. Compare task.attachments.each to
+task.attachments().each; in the latter, the accessing function encapsulates the
+concern of lazily fetching and populating, but then you run into the issue that
+fetch is asynchronous.  Passing a callback into <literal>attachments()</literal> is kludgy; it
+exposes the deferred nature of the association everywhere you need to access it.</simpara>
+<simpara>We&#8217;ll instead prefer to treat the deferred nature explicitly in the
+<literal>Routers.Tasks#show</literal> route, a natural application seam to the <literal>TaskShow</literal> view.
+This frees <literal>TaskShow</literal> from having to know about the persistence details of
+the model.</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
+  // ...
+
+  show: function(taskId) {
+    var task = this.collection.get(taskId);
+    var tasksRouter = this;
+    task.fetch({
+      success: function() {
+        var view = new ExampleApp.Views.TaskShow({ model: task });
+        tasksRouter.swap(view);
+      }
+    });
+  }
+});</programlisting>
+<simpara>Now, we have successfully deferred the <literal>Task#attachments</literal> association and
+kept the concern clear of the view.</simpara>
 </section>
 </section>
 <section id="_duplicating_business_logic_across_the_client_and_server">
@@ -3450,7 +3403,7 @@ end</programlisting>
   },
 
   error: function(model, errorResponse) {
-    var errors = new ErrorList(errorResponse)
+    var errors = new ErrorList(errorResponse);
     new ErrorView({ el: self.el, errors: errors }).render();
   }
 });</programlisting>
@@ -3463,7 +3416,7 @@ briefly to introduce what it is doing.</simpara>
 <simpara>When an event is triggered, the code invoking the callback is able to set the
 javascript context. By calling <literal>_.bindAll(this, "error")</literal>, we are instead
 overriding whatever context it may have been, and setting it to <literal>this</literal>. This is
-necessary so that when we call <literal>this.$(<emphasis>form</emphasis>)</literal> in the <literal>error()</literal> callback,
+necessary so that when we call <literal>this.$('form\')</literal> in the <literal>error()</literal> callback,
 we get the right object back.</simpara>
 <simpara>Always use <literal>_.bindAll</literal> when you need to force the javascript context (<literal>this</literal>)
 within a function&#8217;s body.</simpara>
@@ -3685,13 +3638,12 @@ Use the server as the canonical event source so that clients do not have to trus
 </listitem>
 <listitem>
 <simpara>
-Use <ulink url="http://faye.jcoglan.com">Faye</ulink> as the messaging backend, which has Ruby and JavaScript implementations for clients and server.  Faye implements the <ulink url="http://svn.cometd.com/trunk/bayeux/bayeux.html">Bayeux protocol</ulink>, prefers WebSocket for transport (thought it gracefully degrades to long polling, CORS, or JSON-P), and supports a bunch of other goodies like clustering and extensions (inbound- and outbound- message filtering, like Rack middleware).
+Use <ulink url="http://faye.jcoglan.com">Faye</ulink> as the messaging backend, which has Ruby and JavaScript implementations for clients and server.  Faye implements the <ulink url="http://svn.cometd.com/trunk/bayeux/bayeux.html">Bayeux protocol</ulink>, prefers WebSocket for transport (though it gracefully degrades to long polling, CORS, or JSON-P), and supports a bunch of other goodies like clustering and extensions (inbound- and outbound- message filtering, like Rack middleware).
 </simpara>
 </listitem>
 </orderedlist>
 <simpara>In our application, there are several connected clients viewing the same todo list, and one user Alice makes a change to an item on the list.</simpara>
 <simpara>Let&#8217;s take a look at the lifecycle of one change event.</simpara>
-<simpara>TODO: System-partitioned sequence diagram</simpara>
 <simpara>Setup:</simpara>
 <orderedlist numeration="arabic">
 <listitem>
@@ -4096,40 +4048,58 @@ very similar to the standard ActiveModel attribute persistence API, attaching
 files to Backbone models is not quite as straightforward.  In this section,
 we&#8217;ll take a look at the general approach for attaching files, and then examine
 the specific implementation used in the example application.</simpara>
-<section id="_how_to_attach_files_to_backbone_models">
-<title>How to attach files to Backbone models</title>
-<simpara>If you upload to a backbone model, you can&#8217;t do it in a typical async request.
-Meaning, <literal>model.save()</literal> can&#8217;t just send a file to the server like other
-attributes.  Instead, we save the attachment in a separate request, and then
-just swap in an attachment id on the model. This does mean that you can have
-unclaimed attachments if the end user leaves the page before saving the parent
-model, but those can be periodically cleaned out if the disk usage is an issue.</simpara>
+<section id="_saving_files_along_with_attributes">
+<title>Saving files along with attributes</title>
+<simpara>When you save a Backbone model, its attributes are sent to the server via
+Backbone.sync.  It would be ideal to treat file uploads in the same fashion,
+storing the files as attributes on the client-side Backbone model and uploading
+them, along with all the other attributes, when then model is saved.</simpara>
+<simpara><literal>Backbone.Model#save</literal> delegates to <literal>Backbone.sync</literal> which, by default, transmits
+data using <literal>$.ajax</literal> with a <literal>dataType</literal> of <literal>json</literal>.</simpara>
+<simpara>We <emphasis>could</emphasis> send files along here, too, using the HTML5 File API to read the
+file data and send it serialized inside the JSON payload.  This would require
+us to make server-side changes to parse the file from JSON, and there is no IE
+support for the File API as of IE9.  (<ulink url="http://caniuse.com/fileapi">http://caniuse.com/fileapi</ulink>)</simpara>
+<simpara>A slightly more sophisticated approach could use the FormData API and
+XMLHttpRequest Level 2 to serialize attributes instead, transmitting them to
+the server as multipart/form-data, which already has a defined serialization
+for files.  This would allow you to work without modifying your server, but
+still leaves IE completely unsupported.</simpara>
+<simpara>To support the broadest set of browsers, but still deliver file uploads in the
+same request as attributes, you use a hidden iframe technique.  Probably the
+most transparent approach is to take advantage of jQuery&#8217;s
+<ulink url="http://api.jquery.com/extending-ajax/#Transports">AJAX Transport</ulink>
+functionality with the
+<ulink url="http://cmlenz.github.com/jquery-iframe-transport/">jquery.iframe-transport.js</ulink>
+plugin.  There is a caveat with this approach too, however, as we cannot get at
+the response headers, breaking automatic content type detection and, more
+importantly, breaking the use of HTTP response codes to indicate server-side
+errors.  This approach would deliver the smoothest user experience, at the cost
+of more integration code.</simpara>
+<simpara>The <ulink url="https://github.com/leppert/remotipart">Remotipart gem</ulink> provides some such
+conventions for delivering response information back to the client-side,
+although the use-case is slightly different and the library uses the
+<literal>jquery.form.js</literal> <literal>ajaxSubmit()</literal> function to perform an iframe upload, instead
+of the smaller <literal>jquery.iframe-transport.js</literal> plugin.</simpara>
+</section>
+<section id="_separating_file_upload_and_model_persistence">
+<title>Separating file upload and model persistence</title>
+<simpara>The general approach we&#8217;ll take is to separate the file upload request from the
+model persistence requests.  The server will respond to the upload with an
+identifier, which we can use on the client side to populate an attribute on a
+Backbone model, whether it is a new model or an existing one.</simpara>
+<simpara>This does mean that you can have unclaimed attachments if the end user leaves
+the page before saving the parent model, and these should be periodically swept
+if disk usage is an issue.</simpara>
 <simpara>When modeling this from the Rails side, you can choose to persist the file
 upload identifier (e.g. the local path or S3 URL) on one of your models
-directly, or you can break the attachment out into its own ActiveRecord model.
-It&#8217;s generally more straightforward to break the attachment out into its own
-model, because this can greatly simplify grabbing the attachment reference.</simpara>
-<simpara>There are quite a few approaches to uploading files asynchronously, and browser
-support varies.  There are features like multiple file upload and drag-and-drop
-to consider, too.</simpara>
-<simpara>We&#8217;ll use the HTML5 File API because it&#8217;s a straightforward approach that is
-supported by modern browsers.  The API is small and the wrapper code that we
-start with:</simpara>
-<simpara><ulink url="https://github.com/mockenoff/HTML5-AJAX-File-Uploader">https://github.com/mockenoff/HTML5-AJAX-File-Uploader</ulink></simpara>
-<simpara>is easy to read.  This approach requires XHR2 and FormData:</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-<ulink url="https://developer.mozilla.org/en/XMLHttpRequest/FormData">https://developer.mozilla.org/en/XMLHttpRequest/FormData</ulink>
-</simpara>
-</listitem>
-</itemizedlist>
-<simpara>If you would like to provide fallback support for older
-browsers, using Flash or iframes, you can do so with plugins like (TODO:
-recommend plugins).</simpara>
+directly, or you can break the attachment out into its own ActiveRecord model
+and store a foreign key relation on your primary model.  For our example
+we&#8217;ll do the latter, adding an <literal>Attachment</literal> model and resource to the app.</simpara>
+<simpara>We&#8217;ll use the HTML5 File API because it&#8217;s a straightforward approach to illustrate.</simpara>
 </section>
-<section id="_example_attaching_images_to_tasks">
-<title>Example: Attaching images to Tasks</title>
+<section id="_example_step_1_upload_interface">
+<title>Example, Step 1: Upload Interface</title>
 <simpara>In our example task management app, we&#8217;d like for the owner of a task to attach
 several images to each task.  We want uploads to happen in the task detail view,
 and for the uploads to appear in-page as soon as they are uploaded.  We don&#8217;t
@@ -4206,95 +4176,72 @@ template, so the UI elements are in place:</simpara>
 &lt;/div&gt;</programlisting>
 <simpara>Once our units pass, we run the acceptance tests again. The next failure we see
 is that nothing happens upon upload.  We&#8217;ll drop down to Jasmine here to write
-unit tests for the uploading:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">//= require application
+a spec for uploading that asserts the correct upload request is issued:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">it("uploads the file when the upload method is called", function() {
+  view.upload();
+  expect(this.requests.length).toEqual(1);
+  expect(this.requests[0].requestBody.constructor).toEqual(FormData);
+});
 
-describe("ExampleApp.Views.TaskShow uploading", function() {
-  var task, view, $el;
-
-  beforeEach(function() {
-    this.xhr = sinon.useFakeXMLHttpRequest();
-    var requests = this.requests = []
-
-    this.xhr.onCreate = function(xhr) {
-      requests.push(xhr);
-    };
-
-    this.xhr.prototype.upload = {
-      addEventListener: function() {}
-    };
-
-    task = new ExampleApp.Models.Task({
-      id: 1,
-      title: "Wake up"
-    });
-
-    view = new ExampleApp.Views.TaskShow({ model: task });
-  });
-
-  afterEach(function() {
-    this.xhr.restore();
-  });
-
-  it("uploads the file when the upload button is clicked", function() {
-    view.uploadInput = function() {
-      return { files: ["uploaded file contents"], }
-    };
-
-    $el = $(view.render().el);
-    view.upload();
-
-    expect(this.requests.length).toEqual(1);
-    expect(this.requests[0].url).toEqual("/tasks/1/attachments.json");
-  });
+it("uploads an attachment for the current task", function() {
+  view.upload();
+  expect(this.requests[0].url).toEqual("/tasks/1/attachments.json");
 });</programlisting>
-<simpara>TODO: Finish outline:</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-NB: You can&#8217;t overwrite input.files (a FileList instance), so you&#8217;ll have to
-provide a point of fake injection; in our case, TaskShow#uploadInput().
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Make it pass by adding uploader.js and adding uploader logic to TaskShow view
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Now we are uploading, but the server isn&#8217;t accepting/persisting
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Test-drive persistence on server side:
-</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-Add paperclip gem
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Create Attachment model, route, controller.  Test-drive the units.
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-NB on integration point: XHR requests from BB to Rails needs CSRF tokens, so inject
-   as uploader.prefilter, analagous to $.ajaxPrefilter <ulink url="http://api.jquery.com/extending-ajax/">http://api.jquery.com/extending-ajax/</ulink>
-</simpara>
-</listitem>
-</itemizedlist>
-</listitem>
-<listitem>
-<simpara>
-Next, display existing attachments to the user.
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara>And implement using the <literal>uploader.js</literal> library:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">render: function () {
+  // ...
+  this.attachUploader();
+  return this;
+},
+
+// ...
+
+attachUploader: function() {
+  var uploadUrl = "/tasks/" + this.model.get('id') + '/attachments.json';
+
+  this.uploader = new uploader(this.uploadInput(), {
+    url:      uploadUrl,
+    success:  this.uploadSuccess,
+    prefix:   'upload'
+  });
+},</programlisting>
+<simpara>The acceptance tests still aren&#8217;t passing, and a little digging will reveal
+that we need to manually set the CSRF token on the upload request.  Normally,
+this would be set by <literal>jquery_ujs.js</literal> with a jQuery AJAX prefilter, but the
+upload code we are using manually constructs an <literal>XMLHttpRequest</literal> instead of
+using <literal>$.+ajax, so that it may bind to the +onprogress</literal> event.</simpara>
+<simpara>We write a spec:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">it("sets the CSRF token for the upload request", function() {
+  view.upload();
+  var expectedCsrfToken = $('meta[name="csrf-token"]').attr('content');
+  expect(this.requests[0].requestHeaders['X-CSRF-Token']).toEqual(expectedCsrfToken);
+});</programlisting>
+<simpara>And add the CSRF token implementation at the end of <literal>attachUploader</literal>:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">attachUploader: function() {
+  // ...
+
+  this.uploader.prefilter = function() {
+    var token = $('meta[name="csrf-token"]').attr('content');
+    if (token) this.xhr.setRequestHeader('X-CSRF-Token', token);
+  };
+},</programlisting>
+<simpara>And the spec is green.</simpara>
+</section>
+<section id="_example_step_2_accept_and_persist_uploads_in_rails">
+<title>Example, Step 2: Accept and Persist Uploads in Rails</title>
+<simpara>At this point, we are sending the upload request from the client, but the
+server isn&#8217;t responding, much less persisting the file.  This portion is
+vanilla Rails and Paperclip.  We create an <literal>Attachment</literal> model, route, and
+controller, adding the <ulink url="http://rubygems.org/gems/paperclip">paperclip gem</ulink> and
+configuring it to support uploads.</simpara>
+<simpara>TODO: Add links to "model", "route", "controller" to the example files
+      How to do this?  With local document links? <ulink url="http://www.methods.co.nz/asciidoc/userguide.html#_linking_to_local_documents">http://www.methods.co.nz/asciidoc/userguide.html#_linking_to_local_documents</ulink>
+      Or with full github links like <ulink url="https://github.com/thoughtbot/backbone-js-on-rails/tree/master/app/assets/javascripts/">https://github.com/thoughtbot/backbone-js-on-rails/tree/master/app/assets/javascripts/</ulink> ?</simpara>
+<simpara>Now, the attachments are uploaded to the server.  The final step is to display
+attachments to the user.</simpara>
+</section>
+<section id="_example_step_3_display_uploaded_files">
+<title>Example, Step 3: Display Uploaded Files</title>
 <simpara>For structuring the attachments in Backbone, we want to be able to do something
 like the following:</simpara>
 <programlisting language="html" linenumbering="unnumbered">&lt;% this.task.attachments.each(function(attachment) { %&gt;
@@ -4302,12 +4249,10 @@ like the following:</simpara>
 &lt;% }); %&gt;</programlisting>
 <simpara>So, the Task model will have attachments property that is instantiates with an
 AttachmentsCollection instance.</simpara>
-<note><simpara>This is written assuming that the model_relationships.asc chapter came
-first and discusses how to structure the JSON, which is bundling the comments
-and attachments associations under the Task&#8217;s JSON representation.  It should
-introduce and discuss using Rabl, too. Depending on how in-depth that section
-is, we may need to write more here to contextualize.</simpara></note>
-<simpara>We&#8217;re providing a JSON represenatation using Rabl, rooted at the Task:</simpara>
+<simpara>We&#8217;re providing a JSON represenatation rooted at the Task model using
+<ulink url="https://github.com/nesquena/rabl">Rabl</ulink>, which we discussed previously in
+"Implementing the API: presenting the JSON".</simpara>
+<simpara>TODO: How can I internally link that ^ ?</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">object @task
 
 attributes :id, :created_at, :updated_id, :title, :complete, :user_id
@@ -4315,14 +4260,13 @@ attributes :id, :created_at, :updated_id, :title, :complete, :user_id
 child :attachments do
   attributes :id, :created_at, :updated_id, :upload_file_name, :upload_url
 end</programlisting>
-<simpara>Note that you have to have to tell Rabl to suppress the root JSON node, just
-like we suppress the root JSON node in ActiveRecord with
-<literal>ActiveRecord::Base.include_root_in_json = false</literal>:</simpara>
+<simpara>We also tell Rabl to suppress the root JSON node, much
+like we did with <literal>ActiveRecord::Base.include_root_in_json</literal>:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered"># config/initializers/rabl_init.rb
 Rabl.configure do |config|
   config.include_json_root = false
 end</programlisting>
-<simpara>We can test drive the attachment display from Jasmine, see task_show_spec.js:</simpara>
+<simpara>We can test drive the attachment display from Jasmine, see task_show_with_attachments_spec.js:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">//= require application
 
 describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
@@ -4358,35 +4302,75 @@ describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
     expect($el.find(".attachments p").last()).toHaveText('Attached: strawberries.jpg');
   });
 });</programlisting>
-<simpara>This depends on parsing the JSON from the client side, so test drive that for
-the ExampleApp.Models.Tasks Jasmine spec:</simpara>
-<itemizedlist>
-<listitem>
-<simpara>
-Include spec/javascripts/models/task_spec.js
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Implement in task.js
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-TDD Attachments collection and Attachment model
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Implement Attachments collection and Attachment model
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-Green?
-</simpara>
-</listitem>
-</itemizedlist>
+<simpara>We&#8217;ll represent attachments as an associated collection on Task, so we&#8217;ll need
+a Backbone model and collection for attachments, too.  First, the Task model
+should parse its JSON to populate the associated attachments.  Test drive that
+in the ExampleApp.Models.Tasks Jasmine spec:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">//= require application
+
+describe("ExampleApp.Models.Tasks", function() {
+  it("knows if it is complete", function() {
+    var completeTask = new ExampleApp.Models.Task({ complete: true });
+    expect(completeTask.isComplete()).toBe(true);
+  });
+
+  it("knows if it is not complete", function() {
+    var incompleteTask = new ExampleApp.Models.Task({ complete: false });
+    expect(incompleteTask.isComplete()).toBe(false);
+  });
+});
+
+describe("ExampleApp.Models.Tasks#initialize", function() {
+  var attributes, task;
+
+  beforeEach(function() {
+    attributes = {"id":1,"title":"Sweet Task","attachments":[{"upload_url":"/uploads/1.jpg"},{"upload_url":"/uploads/2.jpg"}]};
+    task = new ExampleApp.Models.Task(attributes);
+  });
+
+  it("creates collections for nested attachments", function() {
+    expect(task.attachments instanceof ExampleApp.Collections.Attachments).toEqual(true);
+    expect(task.attachments.size()).toEqual(2);
+  });
+
+  it("populates the collection with Attachment models", function() {
+    expect(task.attachments.first() instanceof ExampleApp.Models.Attachment).toEqual(true);
+    expect(task.attachments.first().get('upload_url')).toEqual('/uploads/1.jpg');
+
+    expect(task.attachments.last() instanceof ExampleApp.Models.Attachment).toEqual(true);
+    expect(task.attachments.last().get('upload_url')).toEqual('/uploads/2.jpg');
+  });
+});
+
+describe("ExampleApp.Models.Task when the attachments attribute changes", function() {
+  it("re-parses the collection", function() {
+    var task = new ExampleApp.Models.Task({"attachments":[{"upload_url":"1.jpg"},{"upload_url":"2.jpg"}]});
+    expect(task.attachments.size()).toEqual(2);
+
+    task.set({"attachments":[{"upload_url":"1.jpg"}]});
+    expect(task.attachments.size()).toEqual(1);
+  });
+});</programlisting>
+<simpara>The first failures reference the Backbone Attachment model and Attachments
+collection, so we add those, driving the collection out with a spec.</simpara>
+<simpara>TODO: Add links to internal example files for model and collection and
+collection spec, above.</simpara>
+<simpara>Now, we can implement the Task model&#8217;s JSON parsing to populate its associated
+attachments:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: function() {
+    this.bind("change:attachments", this.parseAttachments);
+    this.parseAttachments();
+  },
+
+  parseAttachments: function() {
+    this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
+  },
+
+  // ...
+
+});</programlisting>
+<simpara>At this point, we return back to the acceptance test, and it&#8217;s fully passing.</simpara>
 </section>
 </section>
 </section>
@@ -4419,11 +4403,10 @@ full-stack integration tests written in Ruby.</simpara>
 <section id="_capybara">
 <title>Capybara</title>
 <simpara>Though there is a host of tools available to you for writing automated
-integration tests, we recommend
-[capybara](<ulink url="https://github.com/jnicklas/capybara">https://github.com/jnicklas/capybara</ulink>).  In a hybrid Rails
-application, where some portions are regular request/response and other portions
-are JavaScript, it&#8217;s valuable to have a testing framework that abstracts the
-difference as much as possible.</simpara>
+integration tests, we recommend <ulink url="https://github.com/jnicklas/capybara">capybara</ulink>.
+In a hybrid Rails application, where some portions are regular request/response
+and other portions are JavaScript, it&#8217;s valuable to have a testing framework
+that abstracts the difference as much as possible.</simpara>
 <simpara>Capybara is a high-level library that allows you to write tests from a user&#8217;s
 perspective.  Consider this example, which uses RSpec:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">describe "the login process", :type =&gt; :request do
@@ -4492,7 +4475,7 @@ end</programlisting>
 <title>Drivers</title>
 <simpara>Capybara supports multiple drivers through a common API, each with benefits and
 drawbacks. We prefer to use either
-[capybara-webkit](<ulink url="https://github.com/thoughtbot/capybara-webkit">https://github.com/thoughtbot/capybara-webkit</ulink>) or Selenium.</simpara>
+<ulink url="https://github.com/thoughtbot/capybara-webkit">capybara-webkit</ulink> or Selenium.</simpara>
 <simpara>When possible, we use capybara-webkit. It&#8217;s a fast, headless fake browser
 written using the WebKit browser engine. It&#8217;s generally faster than Selenium
 and it&#8217;s dependent on your system settings once compiled. This means that
@@ -4564,6 +4547,10 @@ specs:</simpara>
     expect(incompleteTask.isComplete()).toBe(false);
   });
 });</programlisting>
+<simpara>To ease the use of Jasmine and the Rails 3.1 asset pipeline, we use
+<ulink url="https://github.com/bradphelan/jasminerice">Jasminerice</ulink>.  To run the
+Jasmine tests in the example application, simply start up the development
+server and visit <ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink>.</simpara>
 </section>
 <section id="_what_to_test">
 <title>What to test?</title>
@@ -4629,27 +4616,22 @@ descriptive without becoming brittle.</simpara>
 <itemizedlist>
 <listitem>
 <simpara>
-Spy/stub/mock, even your HTTP, with [sinon.js](<ulink url="http://sinonjs.org/">http://sinonjs.org/</ulink>)
+Spy/stub/mock, even your HTTP, with <ulink url="http://sinonjs.org/">sinon.js</ulink>.
 </simpara>
 </listitem>
 <listitem>
 <simpara>
-If you&#8217;re looking for factory_girl.js, it&#8217;s called [Rosie](<ulink url="https://github.com/bkeepers/rosie">https://github.com/bkeepers/rosie</ulink>)
+If you&#8217;re looking for factory_girl.js, it&#8217;s called <ulink url="https://github.com/bkeepers/rosie">Rosie</ulink>.
 </simpara>
 </listitem>
 <listitem>
 <simpara>
-[guard-jasmine](<ulink url="https://github.com/netzpirat/guard-jasmine">https://github.com/netzpirat/guard-jasmine</ulink>) autotest your Jasmine with headless webkit ([phantomjs](<ulink url="http://www.phantomjs.org/">http://www.phantomjs.org/</ulink>))
+Use the Rails 3.1 asset pipeline with <ulink url="https://github.com/bradphelan/jasminerice">jasminerice</ulink>.
 </simpara>
 </listitem>
 <listitem>
 <simpara>
-Write in CoffeeScript and use the 3.1 asset pipeline with [jasminerice](<ulink url="https://github.com/bradphelan/jasminerice">https://github.com/bradphelan/jasminerice</ulink>)
-</simpara>
-</listitem>
-<listitem>
-<simpara>
-See other examples on James Newbery&#8217;s blog: [testing Backbone with Jasmine](<ulink url="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html">http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html</ulink>) and check out his [examples on GitHub](<ulink url="https://github.com/froots/backbone-jasmine-examples">https://github.com/froots/backbone-jasmine-examples</ulink>)
+See other examples on James Newbery&#8217;s blog: <ulink url="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html">testing Backbone with Jasmine</ulink> and check out his <ulink url="https://github.com/froots/backbone-jasmine-examples">examples on GitHub</ulink>.
 </simpara>
 </listitem>
 </itemizedlist>
@@ -4659,9 +4641,19 @@ See other examples on James Newbery&#8217;s blog: [testing Backbone with Jasmine
 <title>Example: Test-driving a Task application</title>
 <section id="_setup">
 <title>Setup</title>
-<simpara>In this example, we&#8217;ll be using Cucumber, Capybara, RSpec, and Jasmine to test-drive a todo list.</simpara>
-<simpara>The Selenium driver comes configured with Capybara and is the fastest driver to get running. By default it runs your tests in a remote controlled Firefox session, so you&#8217;ll want to install Firefox if you don&#8217;t have it already.</simpara>
-<simpara>The other dependencies you can install by adding them to your Gemfile. The gems you&#8217;ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails, and capybara. You&#8217;ll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</simpara>
+<simpara>In this example, we&#8217;ll be using Cucumber, Capybara, RSpec, and Jasmine to
+test-drive a todo list.</simpara>
+<simpara>The Selenium driver comes configured with Capybara and is the quickest driver to
+get running. By default it runs your tests in a remote controlled Firefox
+session, so you&#8217;ll want to install Firefox if you don&#8217;t have it already.</simpara>
+<note><simpara>If you&#8217;d like to test on a WebKit-based browser, you can set up the
+<ulink url="http://code.google.com/p/selenium/wiki/ChromeDriver">Selenium ChromeDriver</ulink> to
+run integration tests against Chrome.</simpara></note>
+<simpara>The other dependencies you can install by adding them to your Gemfile. The gems
+you&#8217;ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails,
+and capybara. You&#8217;ll want to add RSpec, Cucumber, and Jasmine to both the test
+and development groups so that you can run generators. With all our testing
+dependencies in place, the Gemfile in our sample application looks like this:</simpara>
 <programlisting language="ruby" linenumbering="unnumbered">source 'http://rubygems.org'
 
 gem 'rails', '3.1.0'
@@ -4687,14 +4679,13 @@ group :development, :test do
   gem "ruby-debug19"
   gem 'jasmine', "= 1.1.0.rc4"
   gem 'jasminerice'
-  gem 'cucumber-rails', "~&gt; 1.0.2"
+  gem 'cucumber-rails', "~&gt; 1.0.2", :require =&gt; false
 end
 
 group :test do
   gem 'turn', :require =&gt; false
   gem "capybara", "~&gt; 1.1.1"
   gem 'selenium-webdriver', '~&gt; 2.18.0'
-  gem 'cucumber-rails', "~&gt; 1.0.2"
   gem "factory_girl_rails"
   gem "bourne"
   gem "database_cleaner"
@@ -4704,7 +4695,7 @@ group :test do
   gem "guard-spork"
   gem "spork", "~&gt; 0.9.0.rc"
 end</programlisting>
-<simpara>If you haven&#8217;t already, you can bootstrap your application for Cucumber and Capybara:</simpara>
+<simpara>If you haven&#8217;t already, bootstrap your application for Cucumber and Capybara:</simpara>
 <programlisting language="text" linenumbering="unnumbered">rails generate cucumber:install</programlisting>
 <simpara>Next, bootstrap the application for Jasmine:</simpara>
 <programlisting language="text" linenumbering="unnumbered">rails generate jasmine:install</programlisting>
@@ -4716,17 +4707,19 @@ Jasmine specs. Add the following routes to config/routes.rb:</simpara>
   mount Jasminerice::Engine =&gt; "/jasmine"
 end</programlisting>
 <simpara>With this configuration, you can run cucumber scenarios with the cucumber
-command and you can run Jasmine tests by accessing
-<ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink> in your browser.</simpara>
+command and you can run Jasmine tests by running the development server with
+<literal>bundle exec rails server</literal> and accessing <ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink> in your
+browser.</simpara>
 </section>
 <section id="_step_by_step">
 <title>Step by step</title>
 <simpara>We&#8217;ll go outside in: cucumber first, then rspec or jasmine as needed.</simpara>
-<simpara>We&#8217;d like to be able to add items to a Todo list.  We know this will involve two
-parts: a list of existing tasks, and an interface for adding new items to
+<tip><simpara>For an in-depth explanation of outside-in test-driven development, see
+<ulink url="http://pragprog.com/book/achbd/the-rspec-book">The RSpec Book</ulink>.</simpara></tip>
+<simpara>We&#8217;d like to be able to add items to a Todo list.  We know this will involve
+two parts: a list of existing tasks, and an interface for adding new items to
 the list.  We&#8217;ll start with the list of items, and create fixture data with
-[Factory Girl Cucumber
-steps](<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md">https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md</ulink>):</simpara>
+<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md">Factory Girl Cucumber steps</ulink>:</simpara>
 <programlisting language="text" linenumbering="unnumbered">Feature: Viewing Tasks
   As a user
   So that I can see what I have to do
@@ -4752,12 +4745,12 @@ steps](<ulink url="https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTIN
   ./features/step_definitions/web_steps.rb:29:in `with_scope'
   ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
   features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</programlisting>
-<note><simpara>A common gotcha when testing Backbone.js Rails apps is seeing false
+<simpara>A common gotcha when testing Backbone.js Rails apps is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
 <literal>Then I should see "Master backbone"</literal> instead of scoping it with <literal>within the
 tasks list</literal>, then some test drivers would count the JSON that is used to
 bootstrap Backbone collections as visible text on the page, and the test would
-pass without us actually rendering the text to the page.</simpara></note>
+pass without us actually rendering the text to the page.</simpara>
 <simpara>Since this we are doing outside-in development and testing for user interface,
 we will need outline the UI first.  To do this, first we&#8217;ll need a page to host
 our code.  Let&#8217;s create and route a Rails <literal>TasksController</literal>. We&#8217;ll bootstrap the
@@ -4774,7 +4767,7 @@ Backbone app on <literal>tasks#index</literal>.</simpara>
   end
 end</programlisting>
 <note><simpara>You can also see the route for the
-[jasminerice gem](<ulink url="http://rubygems.org/gems/jasminerice">http://rubygems.org/gems/jasminerice</ulink>), which makes the Rails
+<ulink url="http://rubygems.org/gems/jasminerice">jasminerice gem</ulink>, which makes the Rails
 3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</simpara></note>
 <programlisting language="ruby" linenumbering="unnumbered">class TasksController &lt; ApplicationController
   before_filter :authorize
@@ -4809,7 +4802,7 @@ write this class, we&#8217;ll motivate it with a Jasmine isolation spec:</simpar
     expect(view.$el).toContain("table");
   });
 });</programlisting>
-<simpara>We use the [jasmine-jquery](<ulink url="https://github.com/velesin/jasmine-jquery">https://github.com/velesin/jasmine-jquery</ulink>) library
+<simpara>We use the <ulink url="https://github.com/velesin/jasmine-jquery">jasmine-jquery</ulink> library
 (provided by jasminerice) to provide DOM matchers for Jasmine like
 <literal>toContain()</literal>.</simpara>
 <simpara>To run the Jasmine spec, run the Rails server and visit <ulink url="http://localhost:3000/jasmine">http://localhost:3000/jasmine</ulink></simpara>
@@ -4883,7 +4876,7 @@ TypeError: undefined is not a function
 need to define a Task model and Tasks collection.  We&#8217;ll define the model:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
-    this.bind("change:attachments", this.parseAttachments);
+    this.on("change:attachments", this.parseAttachments);
     this.parseAttachments();
   },
 
@@ -4901,7 +4894,7 @@ need to define a Task model and Tasks collection.  We&#8217;ll define the model:
     return this.get('complete');
   }
 });</programlisting>
-<simpara>and test-drive the collection:</simpara>
+<simpara>write a test to motivate the collection:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">describe("ExampleApp.Collections.Tasks", function() {
   it("contains instances of ExampleApp.Models.Task", function() {
     var collection = new ExampleApp.Collections.Tasks();
@@ -4913,6 +4906,7 @@ need to define a Task model and Tasks collection.  We&#8217;ll define the model:
     expect(collection.url).toEqual("/tasks");
   });
 });</programlisting>
+<simpara>and pass the test by implementing the collection:</simpara>
 <programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: ExampleApp.Models.Task,
   url: '/tasks'
@@ -4922,11 +4916,11 @@ accepting a collection of tasks, and now we have to render it:</simpara>
 <programlisting language="text" linenumbering="unnumbered">Expected '&lt;div id="tasks"&gt;&lt;table&gt; &lt;tbody&gt;&lt;tr&gt; &lt;th&gt;Title&lt;/th&gt; &lt;th&gt;Completed&lt;/th&gt; &lt;/tr&gt; &lt;/tbody&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/table&gt; &lt;/div&gt;' to have text 'Wake up'.</programlisting>
 <simpara>The simplest thing we can do to get the spec passing is to pass the <literal>tasks</literal>
 collection into the template, and iterate over it there:</simpara>
-<simpara>app/assets/javascripts/views/tasks_index.js:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
+<programlisting language="javascript" linenumbering="unnumbered">// app/assets/javascripts/views/tasks_index.js:
+ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: function() {
     _.bindAll(this, "render");
-    this.collection.bind("add", this.render);
+    this.collection.on("add", this.render);
   },
 
   render: function () {
@@ -4936,8 +4930,6 @@ collection into the template, and iterate over it there:</simpara>
   },
 
   renderTemplate: function() {
-    console.log(this.el);
-    console.log(this.$el);
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
   },
 
@@ -4950,8 +4942,8 @@ collection into the template, and iterate over it there:</simpara>
     });
   }
 });</programlisting>
-<simpara>app/assets/javascripts/templates/tasks/index.jst.ejs:</simpara>
-<programlisting language="text" linenumbering="unnumbered">&lt;table id="tasks-list"&gt;
+<programlisting language="text" linenumbering="unnumbered">// app/assets/javascripts/templates/tasks/index.jst.ejs:
+&lt;table id="tasks-list"&gt;
   &lt;thead&gt;
     &lt;tr&gt;
       &lt;th&gt;Title&lt;/th&gt;
@@ -4963,15 +4955,14 @@ collection into the template, and iterate over it there:</simpara>
 &lt;/table&gt;
 
 &lt;a class="create" href="#new"&gt;Add task&lt;/a&gt;</programlisting>
-<simpara>Now, Jasmine passes.  But the Cucumber story is still failing: this is because
-the Jasmine spec is an isolation spec, and verifies that the TasksIndex view
-works in isolation.</simpara>
+<simpara>Now, Jasmine passes, but the Cucumber story is still failing.</simpara>
 <programlisting language="text" linenumbering="unnumbered">Then I should see "Master backbone" within the tasks list # features/step_definitions/web_steps.rb:35
 Unable to find css "#tasks table" (Capybara::ElementNotFound)</programlisting>
-<simpara>However, there is additional code we need to write to integrate the data present
-in the Rails test database with the Backbone view.  Adding this code to
-bootstrap the Backbone application should wrap up our exercise and get the tests
-passing.</simpara>
+<simpara>This is because the Jasmine spec is an isolation spec, and verifies that the
+TasksIndex view works in isolation.  There is additional code we need to write
+to hook up the data in the Rails test database to the Backbone view.  Adding
+this code to bootstrap the Backbone application should wrap up our exercise and
+get the tests passing.</simpara>
 <simpara>We&#8217;ll motivate writing a top-level Backbone application object with a spec.
 Note the use of a <literal>sinon.spy</literal> for verifying the router instantiation:</simpara>
 <simpara>spec/javascripts/example_app_spec.js</simpara>
@@ -5017,7 +5008,7 @@ Note the use of a <literal>sinon.spy</literal> for verifying the router instanti
   });
 });</programlisting>
 <simpara>Get it to green:</simpara>
-<programlisting language="javascript" linenumbering="unnumbered">var ExampleApp = {
+<programlisting language="javascript" linenumbering="unnumbered">window.ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
@@ -5045,9 +5036,10 @@ Note the use of a <literal>sinon.spy</literal> for verifying the router instanti
 &lt;%= content_for :javascript do -%&gt;
   &lt;script type="text/javascript"&gt;
     $(function () {
-      var json_div       = document.createElement('div');
-      json_div.innerHTML = $('#bootstrap').text();
-      var data           = JSON.parse(json_div.innerHTML);
+      var div = $('&lt;div&gt;&lt;/div&gt;');
+      div.html($('#bootstrap').text());
+      var data = JSON.parse(div.text());
+
       ExampleApp.init(data);
     });
   &lt;/script&gt;
@@ -5070,11 +5062,6 @@ Note the use of a <literal>sinon.spy</literal> for verifying the router instanti
 
 1 scenario (1 passed)
 5 steps (5 passed)</programlisting>
-<simpara>TODO: Refactoring step.  Extract a TaskView class and loop &amp; iterate.  Note
-specs passing, cukes passing.</simpara>
-<simpara>TODO: Possible, bind events on the child views to motivate making TasksIndex a
-CompositeView to avoid leaking refs.</simpara>
-<simpara>TODO: Optionally TDD through the new/create cycle, too.</simpara>
 </section>
 </section>
 </section>
@@ -5082,13 +5069,13 @@ CompositeView to avoid leaking refs.</simpara>
 <title>Security</title>
 <section id="_encoding_data_when_bootstrapping_json_data">
 <title>Encoding data when bootstrapping JSON data</title>
-<simpara>As it turns out, bootstrapping JSON data in your erb templates introduces a
+<simpara>As it turns out, bootstrapping JSON data in your erb templates can introduce a
 security vulnerability. Consider the case when a user enters a malicious
-<literal>&lt;script&gt;</literal> as the title of a task. When the tasks#index page is reloaded,
-and we naively bootstrap task data on the page, the browser will interpret
-and execute the script. Since it&#8217;s possible for this script to run on another
-user&#8217;s session, it can be quite damaging if it goes on to, for exmple, edit
-or destroy the user&#8217;s data.</simpara>
+<literal>&lt;script&gt;</literal> as the title of a task. When the tasks#index page is reloaded, and
+we naively bootstrap task data on the page, the browser will interpret and
+execute the script. Since it&#8217;s possible for this script to run on another
+user&#8217;s session, it can be quite damaging if it goes on to, for exmple, edit or
+destroy the user&#8217;s data.</simpara>
 <simpara>To protect against this, we make use of the fact that on HTML5 documents,
 script tags that do not have a type of <literal>text/javascript</literal> won&#8217;t be automatically
 evaluated by the browser. Therefore we can create an element with the
@@ -5101,21 +5088,30 @@ it using a simple jquery selector, and parse it ourselves.</simpara>
 
 &lt;script type="text/javascript"&gt;
   $(function () {
-    var json_div       = document.createElement('div');
-    json_div.innerHTML = $('#bootstrap').text();
-    var data           = JSON.parse(json_div.innerHTML);
+    var div, data;
+
+    div = $('&lt;div&gt;&lt;/div&gt;');
+    div.html($('#bootstrap').text());
+
+    data = JSON.parse(div.text());
+
     ExampleApp.init(data);
   });
 &lt;/script&gt;</programlisting>
-<simpara>A reliable way to unencode the HTML-encoded JSON string is to use the
-browser&#8217;s native functionality, by retreiving a element&#8217;s <literal>innerHTML</literal>.
-So in the above script, we create a <literal>json_div</literal> element, assign its
-<literal>innerHTML</literal> to the bootstrap script&#8217;s text, and retreive back out,
-unencoded. The final result is the <literal>data</literal> variable containing proper JSON
-that can be parsed and passed along to your app&#8217;s init function.</simpara>
+<simpara>A reliable way to unencode the HTML-encoded JSON string is to use the browser&#8217;s
+native functionality, by settings an element&#8217;s <literal>innerHTML</literal>.  So in the above
+script, we create a <literal>json_div</literal> var, assign its <literal>innerHTML</literal> to the bootstrap
+script&#8217;s text, and retrieve the innerText back out, unencoded. The final result
+is the <literal>data</literal> variable containing proper JSON with no HTML escaping that can be
+parsed and passed along to your app&#8217;s init function.</simpara>
 <simpara>This approach can be seen on the example app on the
-<literal>app/views/tasks/index.html.erb</literal> template</simpara>
-<simpara>TODO: Discuss using <literal>json2.js</literal>:</simpara>
+<literal>app/views/tasks/index.html.erb</literal> template.</simpara>
+<simpara>Now, the application&#8217;s models, populated by the bootstrap data structure,
+contains raw data that is not HTML-escaped.  When you render this data into the
+DOM, make sure you escape the HTML at that point in time:</simpara>
+<programlisting language="javascript" linenumbering="unnumbered">// From app/assets/javascripts/views/task_item.js:
+
+this.$('label').html(this.model.escape('title')); // not model.get</programlisting>
 </section>
 </section>
 </article>

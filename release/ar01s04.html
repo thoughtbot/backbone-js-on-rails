@@ -93,7 +93,7 @@ Gemfile.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><
 <a class="ulink" href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb" target="_top">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a></p></div><p>To make the <code class="literal">*.jst</code> files available and create the <code class="literal">window.JST</code> object, require
 them in your application.js Sprockets manifest:</p><pre class="screen">//  other application requires
 //= require_tree ../templates
-//= require_tree .</pre><p>Additionally, load order for Backbone.js and your Backbone.js app is very
+//= require_tree .</pre><p>Load order for Backbone.js and your Backbone.js app is very
 important. jQuery and Underscore.js must be loaded before Backbone.js, then
 the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
@@ -102,6 +102,7 @@ done your application.js Sprockets manifest will look as shown below.</p><pre cl
 <i class="hl-comment" style="color: silver">//= require jquery_ujs</i>
 <i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">//= require underscore</i>
+<i class="hl-comment" style="color: silver">//= require json2</i>
 <i class="hl-comment" style="color: silver">//= require backbone</i>
 <i class="hl-comment" style="color: silver">//= require backbone.authtokenadapter</i>
 <i class="hl-comment" style="color: silver">//= require backbone-support</i>
@@ -118,35 +119,22 @@ done your application.js Sprockets manifest will look as shown below.</p><pre cl
 <i class="hl-comment" style="color: silver">//= require_tree ./routers</i>
 <i class="hl-comment" style="color: silver">//= require_tree ../templates</i>
 <i class="hl-comment" style="color: silver">//= require_tree .</i></pre><p>The above is taken from the example application included with this book. You
-can view it at <code class="literal">example_app/app/assets/javascripts/application.js</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"/>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON GET
-, POST and PUT requests. If you’ve ever made a JSON API for your Rails app,
-then for the most part this will be very similar.</p><p>If you’ve never made a JSON API for your Rails application before, luckily
-you, it’s pretty straightforward.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_models"/>Setting Up Rails Models</h4></div></div></div><p>One important aspect to keep in mind as you plan out how your Backbone.js
-interface will behave, and how it will use your Rails back-end, is that there is
-no need to have a one-to-one mapping between your Rails models and your
-Backbone.js models.</p><p>The smaller an application is, the more likely that there will be a one-to-one
-mapping between both Backbone.js and Rails models and controllers.</p><p>However, if you have a sufficiently complex application, it’s more likely that
-you <span class="emphasis"><em>won’t</em></span> have a one-to-one mapping due to the differences in the tools
-Backbone.js gives you and the fact that you’re building a user-interface, not a
-back-end. Some of the reasons why you won’t have a one to one mapping include:</p><div class="itemizedlist"><ul type="disc"><li>
-Because you’re building a user interface, not a back-end, it’s likely that
-some of your backbone models will aggregate information from multiple Rails
-models into one Backbone.js model.
-</li><li>
-This Backbone.js model may or may not be named the same as one of your Rails
-models.
-</li><li>
-Backbone.js gives you a new type of object not present in Rails:
-Collections.
-</li><li>
-Backbone.js doesn’t have the concept of relationships out of the box.
-</li></ul></div><p>With that said, lets take the simple case first and look at how you might make a
-Backbone.js version of a Rails model.</p><p>In our example application, we have a Task model. The simplest Backbone.js
-representation of this model would be as shown below.</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+can view it at <code class="literal">example_app/app/assets/javascripts/application.js</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"/>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON GET ,
+POST and PUT requests. If you’ve ever made a JSON API for your Rails app, then
+for the most part this will be very similar.  If you’ve never made a JSON API
+for your Rails application before, lucky you, it’s pretty straightforward.</p><p>This section will briefly touch on each of the major parts of an application
+using both Rails and Backbone.  We’ll go into more detail in later chapters,
+but this should give you the big picture of how the pieces fit together.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_models"/>Setting Up Models</h4></div></div></div><p>In our example application, we have a Task model, exposed via a JSON API at
+<code class="literal">/tasks</code>. The simplest Backbone.js representation of this model would be as
+shown below.</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
   urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });</pre><p>The urlRoot property above indicates to Backbone.js that the server url for
-instances of this model will be found at <code class="literal">/tasks/:id</code>.</p><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
-query all tasks) through the same Task model. However, in Backbone.js models
+instances of this model will be found at <code class="literal">/tasks/:id</code>.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>There is no need to have a one-to-one mapping between Rails models and
+Backbone.js models.  Backbone models usually correspond with RESTful resources.
+Since your Backbone code is in the presentation tier, it’s likely that some of
+your Backbone models will aggregate information from multiple Rails models and
+contain concerns closer to the presentation tier.</p></div><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
+query all tasks) through the same Task model. In Backbone, models
 only represent the singular representation of a Task. Backbone.js splits out the
 plural representation of Tasks into what it calls Collections.</p><p>The simplest Backbone.js collection to represent our Tasks would be the
 following.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
@@ -161,35 +149,36 @@ change, then our collection and models will be as follows.</p><pre class="progra
 
 <b class="hl-keyword">var</b> Task = Backbone.Model.extend({});</pre><p>Notice in the above model definitions that there is no specification of the
 attributes on the model. Like ActiveRecord, Backbone.js models get their
-attributes from the schema and data given to them. In the case of Backbone.js,
-this schema and data are the JSON from the server.</p><p>The default JSON representation of an ActiveRecord model is a Hash that includes
+attributes from the data used to populate them at runtime. In this case,
+this schema and data are JSON responses from the Rails server.</p><p>The default JSON representation of an ActiveRecord model is an object that includes
 all the model’s attributes. It does not include the data for any related models
 or any methods on the model, but it does include the ids of any related models
-as those are stored in a <code class="literal">relation_name_id</code> attribute on the model.</p><p>The JSON representation of your ActiveRecord models will be retrieved by calling
-<code class="literal">to_json</code> on them. You customize the output of <code class="literal">to_json</code> by overriding the
-<code class="literal">as_json</code> method in your model.  We’ll touch on this more later in the
-section "Customizing your Rails-generated JSON."</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_controllers"/>Setting Up Rails Controllers</h4></div></div></div><p>The Backbone models and collections will talk to your Rails controllers. While
-your models may not have a one-to-one mapping with their Rails counterparts, it
-is likely that you’ll have at least one controller corresponding to every
-Backbone.js model.</p><p>Fortunately for us, Backbone.js models will communicate in the normal RESTful
-way that Rails controllers understand, using the proper verbs to support the
-standard RESTful Rails controller actions: index, show, create, update, and
-destroy. Backbone.js does not make any use of the new action.</p><p>Therefore, it’s just up to us to write a <span class="emphasis"><em>normal</em></span> restful controller.</p><p>There are a few different ways you can write your controllers for interacting
+as those are stored in a <code class="literal">relation_name_id</code> attribute on the model.</p><p>The JSON representation of your ActiveRecord models will be retrieved by
+calling <code class="literal">to_json</code> on them, which returns a string of JSON. Customize the output
+of <code class="literal">to_json</code> by overriding the <code class="literal">as_json</code> method in your model, which returns a
+Ruby data structure like a Hash or Array which will be serialized into the JSON
+string.  We’ll touch on this more later in the section "Customizing your
+Rails-generated JSON."</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_controllers"/>Setting Up Rails Controllers</h4></div></div></div><p>The Backbone models and collections will talk to your Rails controllers. The
+most basic (and a typical) pattern is one Rails controller providing one family
+of RESTful resource to one Backbone.js model.</p><p>By default, Backbone.js models communicate in the normal RESTful way that Rails
+controllers understand, using the proper verbs to support the standard RESTful
+Rails controller actions: index, show, create, update, and destroy. Backbone.js
+does not make any use of the new action.</p><p>Therefore, it’s just up to us to write a <span class="emphasis"><em>normal</em></span> RESTful controller.</p><p>There are a few different ways you can write your controllers for interacting
 with your Backbone.js models and collections. However, the newest and cleanest
-way is to use the respond_with method introduced in Rails 3.0.</p><p>When using respond_with, in your controller you specify what formats are
-supported with the method respond_to. In your individual actions, you then
-specify the resource or resources to be delivered using respond_with, as shown
+way is to use the <code class="literal">respond_with</code> method introduced in Rails 3.0.</p><p>When using <code class="literal">respond_with</code>, in your controller you specify what formats are
+supported with the method <code class="literal">respond_to</code>. In your individual actions, you then
+specify the resource or resources to be delivered using <code class="literal">respond_with</code>, as shown
 in the example Tasks controller and index action below.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :html, :json
 
   <b class="hl-keyword">def</b> index
     respond_with(@tasks = Task.all)
   <b class="hl-keyword">end</b>
-<b class="hl-keyword">end</b></pre><p>In the above example Tasks controller, the respond_to line declares that this
+<b class="hl-keyword">end</b></pre><p>In the above example Tasks controller, the <code class="literal">respond_to</code> line declares that this
 controller should respond to both the HTML and JSON formats. Then, in the
-index action, the respond_with call will perform the appropriate action for
+index action, the <code class="literal">respond_with</code> call will perform the appropriate action for
 the requested format.</p><p>The above controller is equivalent to the following one, using the older
-respond_to method.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
+<code class="literal">respond_to</code> method.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   <b class="hl-keyword">def</b> index
     @tasks = Task.all
     respond_to <b class="hl-keyword">do</b> |format|
@@ -197,26 +186,26 @@ respond_to method.</p><pre class="programlisting"><b class="hl-keyword">class</b
       format.json { render :json =&gt; @tasks }
     <b class="hl-keyword">end</b>
   <b class="hl-keyword">end</b>
-<b class="hl-keyword">end</b></pre><p>Using respond_with you can create succinct controllers that respond with a
-normal web page, but also expose a JSON API that Backbone.js will use.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"/>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated
-before its attributes are set. If validation fails, no changes to the model will
-occur, and the "error" event will be fired. Your <code class="literal">validate</code> method will be passed
-the attributes that are about to be updated. You can signal that validation
-passed by returning nothing from your <code class="literal">validate</code> method. You can signify that
-validation has failed by returning something from the method. What you return
-can be as simple as a string, or a more complex object that describes the error
-in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
+<b class="hl-keyword">end</b></pre><p>Using <code class="literal">respond_with</code> you can create succinct controllers that respond with a
+normal web page, but also expose a JSON API that Backbone.js will use.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"/>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated on
+the client side, before its attributes are set. If validation fails, no changes
+to the model will occur, and the "error" event will be fired. Your <code class="literal">validate</code>
+method will be passed the attributes that are about to be updated. You can
+signal that validation passed by returning nothing from your <code class="literal">validate</code> method.
+You signify that validation has failed by returning something from the method.
+What you return can be as simple as a string, or a more complex object that
+describes the error in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
 handled on the server, as fully implementing validations on the client side
 would often require duplicating a lot of server-side business logic.
-Furthermore, you always want the server to be the definitive arbiter for valid
-data, as this API can be abused outside of the backbone.js interface.</p><p>Instead, your Backbone.js applications will likely rely on server-side
-validation logic. How to handle a failure scenario is passed in to Backbone.js
-model save call as a callback, as shown below.</p><pre class="programlisting">task.save({title: <b class="hl-string"><i style="color:red">"New Task title"</i></b>}, {
-  error: <b class="hl-keyword">function</b>(){
+Furthermore, you almost certainly want the server to have the last word on
+valid data, as this API can be used outside of the Backbone.js interface.</p><p>So, your Backbone.js applications will likely rely on server-side
+validation logic.  Invalid requests return non-2xx HTTP responses, which
+are handled by error callbacks in Backbone:</p><pre class="programlisting">task.save({ title: <b class="hl-string"><i style="color:red">"New Task title"</i></b> }, {
+  error: <b class="hl-keyword">function</b>() {
     <i class="hl-comment" style="color: silver">// handle error from server</i>
   }
-});</pre><p>The error callback will be triggered if your server returns a non-200
-response. Therefore, you’ll want your controller to return a non-200 HTTP
+});</pre><p>The error callback will be triggered if your server returns a non-2xx
+response. Therefore, you’ll want your controller to return a non-2xx HTTP
 response code if validations fail.</p><p>A controller that does this would be as shown in the following example.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :json
 
@@ -228,9 +217,9 @@ response code if validations fail.</p><p>A controller that does this would be as
       respond_with(@task, :status =&gt; :unprocessable_entity)
     <b class="hl-keyword">end</b>
   <b class="hl-keyword">end</b>
-<b class="hl-keyword">end</b></pre><p>Thankfully, the default Rails responders will respond with an unprocessable
-entity (422) status code when there are validation errors, so the above
-controller action can be rewritten more succintly like so:</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
+<b class="hl-keyword">end</b></pre><p>The default Rails responders will respond with an unprocessable entity (422)
+status code when there are validation errors, so the action above can be
+refactored:</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :json
   <b class="hl-keyword">def</b> create
     @task = Task.new(params[:task])
@@ -240,21 +229,23 @@ controller action can be rewritten more succintly like so:</p><pre class="progra
 <b class="hl-keyword">end</b></pre><p>Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
-application.</p><p>Different aspects of validations are covered in a few different section so
-this book. For more information about validations, see the Validation section
-of the Models and Collections chapter. For more information about reducing
-redundancy between client and server validations, see the Duplicating business
-logic across the client and server section of the Models and Collections
-chapter. For more information about handling and displaying errors on the
-client side, see the Form helpers section of the Views and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"/>Setting Up Views</h4></div></div></div><p>Most Backbone.js applications will be a "single-page app". This means that
-your Rails application will render a single-page which properly sets up
-Backbone.js and the data it will use. From there, ongoing interaction with
-your Rails application occurs via the JSON APIs.</p><p>The most common page for this single-page application will be the index action
-of a controller, as in our example application and the tasks controller.</p><p>You will want to create an object in Javascript for your Backbone.js application
+application.</p><p>A few different aspects of validations that we saw here are covered in a few
+different sections of this book. For more information about validations, see
+the Validation section of the Models and Collections chapter. For more
+information about reducing redundancy between client and server validations,
+see the "Duplicating business logic across the client and server" section of
+the Models and Collections chapter. For more information about handling and
+displaying errors on the client side, see the "Form helpers" section of the
+Views and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"/>Setting Up Views</h4></div></div></div><p>Most Backbone.js applications will be a single-page app (sometimes referred to
+as an SPA). This means that your Rails application will render a single page
+which properly sets up Backbone.js and the data it will use. From there,
+ongoing interaction with your Rails application occurs via the JSON APIs.</p><p>The most common page for this single-page application will be the index action
+of a controller.  For our Todos example application, this page will be hosted
+at <code class="literal">Tasks#index</code>.</p><p>You will want to create an object in Javascript for your Backbone.js application
 to reside. For more information on this namespacing see the "Namespacing your
 application" section of the Organization chapter.</p><p>This namespace variable holds your Backbone.js application’s Models,
-Collections, Views, and Routes, and has an init method which will be called to
-initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
+Collections, Views, and Routes, and has an <code class="literal">init()</code> method which will be called
+to initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
@@ -265,19 +256,18 @@ initialize the application.</p><p>This namespace variable will look like the fol
   }
 };</pre><p>You can find this file in the example app in
 <code class="literal">app/assets/javascripts/example_app.js</code>.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone.js router before calling
-Backbone.history.start() otherwise Backbone.history will be undefined.</p></div><p>Then, inside app/views/tasks/index.html.erb you will call the initialize
+Backbone.history.start() otherwise Backbone.history will be <code class="literal">undefined</code>.</p></div><p>Then, inside <code class="literal">app/views/tasks/index.html.erb</code> you will call the <code class="literal">init</code>
 method. This will appear as follows.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
   &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init();
   &lt;% end %&gt;
-&lt;% end -%&gt;</pre><p>For performance reasons, you will almost always "bootstrap" and give
-Backbone.js its initial data within the HTML view for this page. In our
-example, the tasks have already been provided to the view in a <code class="literal">@tasks</code>
-instance variable, and that can be used to bootstrap, as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
+&lt;% end -%&gt;</pre><p>You will often "bootstrap" and give Backbone.js its initial data within the
+HTML view for this page. In our example, the tasks have already been provided
+to the view in a <code class="literal">@tasks</code> instance variable, used to bootstrap as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
   &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
     ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
   &lt;% end %&gt;
-&lt;% end -%&gt;</pre><p>The above example uses Erb to pass the JSON for the tasks to the init method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
+&lt;% end -%&gt;</pre><p>The above example uses ERb to pass the JSON for the tasks to the <code class="literal">init</code> method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
@@ -288,10 +278,7 @@ instance variable, and that can be used to bootstrap, as shown below.</p><pre cl
     Backbone.history.start();
   }
 };</pre><p>Finally, you must have a Router in place which knows what to do. We’ll cover
-routers in more detail in the Routers, Views and Templates chapter. For a more in-depth
-presentation on writing and using routers please go there. However, routers are
-an important part of the infrastructure you need to start using Backbone.js
-and we can’t make our example here work without them.</p><p>Backbone.js routers provide methods for routing application flow based on
+routers in more detail in the Routers, Views and Templates chapter.</p><p>Backbone.js routers provide methods for routing application flow based on
 client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     <b class="hl-string"><i style="color:red">""</i></b>: <b class="hl-string"><i style="color:red">"index"</i></b>
@@ -313,14 +300,14 @@ called.</p><p>The example router above is all that is needed to complete our Bac
 infrastructure. When a user visits <code class="literal">/tasks</code> the index.html.erb view will be
 rendered which properly initialized Backbone.js and its dependencies and the
 Backbone.js models, collections, routers, and views.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"/>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
-Backbone.js.</p><p>First, it’s likely that you’ll want to switch from including all attributes (the
-default) to delivering some subset.</p><p>This can be done by specifying explicitly only the attributes that are to be
+Backbone.js.</p><p>First, it’s likely that you’ll want to switch from including all attributes,
+which is the default, to delivering some subset.</p><p>This can be done by specifying explicitly only the attributes that are to be
 included (whitelisting), or specifying the attributes that should <span class="emphasis"><em>not</em></span> be
 included (blacklisting). Which one you choose will depend on how many attributes
 your model has and how paranoid you are about something important appearing in
 the JSON when it shouldn’t be there.</p><p>If you’re concerned about sensitive data unintentionally being included in the
-JSON when it shouldn’t be then you’ll want to whitelist, to switch to everything
-being explicitly included in the JSON with the <code class="literal">:only</code> option:</p><pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
+JSON when it shouldn’t be, then you’ll want to whitelist attributes into the
+JSON with the <code class="literal">:only</code> option:</p><pre class="programlisting"><b class="hl-keyword">def</b> as_json(options = {})
   <b class="hl-keyword">super</b>(options.merge(:only =&gt; [ :id, :title ]))
 <b class="hl-keyword">end</b></pre><p>The above <code class="literal">as_json</code> override will make it so that the JSON will <span class="emphasis"><em>only</em></span> include the
 id and title attributes, even if there are many other attributes on the model.</p><p>If instead you want to include all attributes by default and just exclude a few,

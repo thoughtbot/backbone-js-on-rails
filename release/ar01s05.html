@@ -177,7 +177,7 @@ mockups directly in as templates, without modifying them.</p><pre class="program
 
   fillTemplate: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'nav a.profile'</i></b>).text(App.currentUser().fullName());
-    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'h2'</i></b>).text(<b class="hl-keyword">this</b>.model.escape(<b class="hl-string"><i style="color:red">'title'</i></b>));
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'h2'</i></b>).html(<b class="hl-keyword">this</b>.model.escape(<b class="hl-string"><i style="color:red">'title'</i></b>));
 
     <b class="hl-keyword">var</b> audio = <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'audio'</i></b>);
     audio.empty();
@@ -384,7 +384,7 @@ underlying components.</p></div></div><div class="section" lang="en"><div class=
 your <code class="literal">Backbone.Views</code> classes: DOM events, model/collection events, and custom
 view events.  Next we’ll discuss unbinding these events: why it’s a good idea,
 and how to do it.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_why_do_i_have_to_unbind_events"/>Why do I have to unbind events?</h4></div></div></div><p>Consider two views in a Todo app: an index view which contains all the tasks
-that need to be done:</p><div class="figure"><a id="d0e1597"/><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="d0e1608"/><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
+that need to be done:</p><div class="figure"><a id="d0e1620"/><p class="title"><b>Figure 2. Tasks index view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-index.png" align="middle" width="100%" alt="views_and_templates/tasks-index.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>and a detail view that shows detail on one task:</p><div class="figure"><a id="d0e1631"/><p class="title"><b>Figure 3. Tasks detail view</b></p><div class="figure-contents"><div class="mediaobject" align="center"><table border="0" summary="manufactured viewport for HTML img" cellspacing="0" cellpadding="0" width="65%"><tr><td align="center"><img src="views_and_templates/tasks-detail.png" align="middle" width="100%" alt="views_and_templates/tasks-detail.png"/></td></tr></table></div></div></div><br class="figure-break"/><p>The interface switches between the two views.</p><p>Here’s the source for the aggregate index view:</p><pre class="programlisting"><b class="hl-keyword">var</b> TasksIndex = Backbone.View.extend({
   template: JST[<b class="hl-string"><i style="color:red">'tasks/tasks_index'</i></b>],
   tagName: <b class="hl-string"><i style="color:red">'section'</i></b>,
   id: <b class="hl-string"><i style="color:red">'tasks'</i></b>,
@@ -437,18 +437,21 @@ creating more views and binding more events on the associated models or
 collections.</p><p>These can be extremely tricky to track down on a production application,
 especially if you are nesting child views. Sadly, there’s no "garbage
 collection" for views in Backbone, so your application needs to manage this
-itself.</p><p>Let’s take a look at how to unbind various kinds of events.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_dom_events"/>Unbinding DOM events</h4></div></div></div><p>When you call <code class="literal">this.remove()</code> in your view, it delegates to <code class="literal">jQuery.remove()</code>
+itself.  Luckily, it’s not too hard to keep track of and correctly maintain our
+bindings.</p><p>Let’s take a look at how to unbind three kinds of events: DOM events, model
+and collection events, and events you trigger in your views.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_dom_events"/>Unbinding DOM events</h4></div></div></div><p>DOM events are the simple case - they more or less get cleaned up for you.
+When you call <code class="literal">this.remove()</code> in your view, it delegates to <code class="literal">jQuery.remove()</code>
 by invoking <code class="literal">$(this.el).remove()</code>.  This means that jQuery takes care of
 cleaning up any events bound on DOM elements within your view, regardless of
-whether you bound them with the Backbone <code class="literal">events</code> hash or by hand; for
-example, with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, <code class="literal">live()</code> or <code class="literal">$.on()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_model_and_collection_events"/>Unbinding model and collection events</h4></div></div></div><p>If your view binds to events on a model or collection, you are responsible for
-unbinding these events.  You do this with a simple call to
+whether you bound them with the Backbone <code class="literal">events</code> hash or by hand; for example,
+with <code class="literal">$.bind()</code>, <code class="literal">$.delegate()</code>, <code class="literal">live()</code> or <code class="literal">$.on()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_model_and_collection_events"/>Unbinding model and collection events</h4></div></div></div><p>If your view binds to events on a model or collection with <code class="literal">on()</code>, you are
+responsible for unbinding these events.  You do this with a simple call to
 <code class="literal">this.model.off()</code> or <code class="literal">this.collection.off()</code>; the
 <a class="ulink" href="http://documentcloud.github.com/backbone/#Events-off" target="_top"><code class="literal">Backbone.Events.off()</code>
 function</a> removes all callbacks on that object.</p><p>When should we unbind these handlers?  Whenever the view is going away.  This
 means that any pieces of code that create new instances of this view become
-responsible for cleaning up after it’s gone. That doesn’t sound like a very
-cohesive approach, so let’s include the cleanup responsibility on this view.</p><p>Let’s write a <code class="literal">leave()</code> function on our view that wraps <code class="literal">remove()</code> and handles
+responsible for cleaning up after it’s gone. That isn’t a very cohesive
+approach, so let’s include the cleanup responsibility on the view itself.</p><p>Let’s write a <code class="literal">leave()</code> function on our view that wraps <code class="literal">remove()</code> and handles
 any additional event unbinding we need to do.  As a convention, when we use
 this view elsewhere, we’ll call <code class="literal">leave()</code> instead of <code class="literal">remove()</code> when we’re
 done:</p><pre class="programlisting"><b class="hl-keyword">var</b> SomeCollectionView = Backbone.View.extend({
@@ -495,15 +498,13 @@ single call to <code class="literal">unbindFromAll()</code> to unbind them:</p><
 });</pre><p>These functions, <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code>, can be extracted into a
 reusable mixin or superclass.  Then, we just have to use <code class="literal">bindTo()</code> instead of
 <code class="literal">model.on()</code> and be assured that the handlers will be cleaned up during
-<code class="literal">leave()</code>.</p><p>TODO: Is it viable to use Function.caller inside Backbone.Events so this
-functionality is provided by Backbone.Events?
-<a class="ulink" href="https://gist.github.com/158a4172aea28876d0fc" target="_top">https://gist.github.com/158a4172aea28876d0fc</a></p><p>TODO: Wrap <code class="literal">bindTo()</code> and <code class="literal">unbindFromAll()</code> into <code class="literal">Observer</code> which gets mixed
-into <code class="literal">CompositeView</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_custom_events"/>Unbinding custom events</h4></div></div></div><p>With the first two kinds of event binding that we discussed, DOM and
+<code class="literal">leave()</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_unbinding_view_triggered_events"/>Unbinding view-triggered events</h4></div></div></div><p>With the first two kinds of event binding that we discussed, DOM and
 model/collection, the view is the observer.  The responsibility to clean up is
 on the observer, and here the responsibility consists of unbinding the event
-handler when the view is being removed.</p><p>But other times, our view classes will trigger (emit) events of their own.
-In this case, other objects are the observer, and are responsible for cleaning
-up the event binding when they are disposed.</p><p>However, additionally, when the view itself is disposed of with <code class="literal">leave()</code>, it
+handler when the view is being removed.</p><p>But other times, our view classes will trigger (emit) events of their own.  In
+this case, other objects are the observer, and are responsible for cleaning up
+the event binding when they are disposed.  See "Events Your View Publishes" in
+the earlier "Event Binding" section for more details.</p><p>However, additionally, when the view itself is disposed of with <code class="literal">leave()</code>, it
 should clean up any event handlers bound on <span class="strong"><strong>itself</strong></span> for events that it
 triggers.</p><p>This is handled by invoking <code class="literal">Backbone.Events.off()</code>:</p><pre class="programlisting"><b class="hl-keyword">var</b> FilteringView = Backbone.View.extend({
   <i class="hl-comment" style="color: silver">// snip...</i>
@@ -606,7 +607,7 @@ use. Let’s take a quick look at this function, as of Backbone 0.5.3:</p><pre c
 reference <code class="literal">goog.inherits</code> from Google’s Closure Library, which contains similar
 utility functions to allow more class-style inheritance.</p><p>The end result here is that whenever you make a custom controller, internally
 in Backbone, you’re making <span class="strong"><strong>another</strong></span> subclass. The inheritance chain for
-<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1959"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
+<code class="literal">TasksRouter</code> would then look like:</p><div class="figure"><a id="d0e1967"/><p class="title"><b>Figure 4. Router class inheritance</b></p><div class="figure-contents"><div class="mediaobject" align="center"><img src="views_and_templates/router-diagram.png" align="middle" height="200" alt="views_and_templates/router-diagram.png"/></div></div></div><br class="figure-break"/><p>Phew! Hopefully this adventure into Backbone and JavaScript internals has
 taught you that although it’s more code, it’s hopefully going to save time down
 the road for those maintaining your code.</p><p>You can find an example of a <code class="literal">SwappingRouter</code> on the example app under
 <code class="literal">app/assets/javascripts/routers/tasks.js</code>. Note how each of the actions
@@ -738,9 +739,9 @@ _.extend(Support.CompositeView.<b class="hl-keyword">prototype</b>, Backbone.Vie
   }
 });
 
-Support.CompositeView.extend = Backbone.View.extend;</pre><p>TODO: Re-link to swapping-internals anchor once <a class="ulink" href="https://github.com/schacon/git-scribe/issues/33" target="_top">https://github.com/schacon/git-scribe/issues/33</a> is fixed</p><p>Similar to the <code class="literal">SwappingRouter</code>, the <code class="literal">CompositeView</code> base class solves common
-housekeeping problems by establishing a convention. See the Swapping Router and
-Backbone internals section for an in-depth analysis of how this subclassing
+Support.CompositeView.extend = Backbone.View.extend;</pre><p>Similar to the <code class="literal">SwappingRouter</code>, the <code class="literal">CompositeView</code> base class solves common
+housekeeping problems by establishing a convention. See the "SwappingRouter and
+Backbone internals" section for an in-depth analysis of how this subclassing
 pattern works.</p><p>Now our <code class="literal">CompositeView</code> maintains an array of its immediate children as
 <code class="literal">this.children</code>.  With this reference in place, a parent view’s <code class="literal">leave()</code> method
 can invoke <code class="literal">leave()</code> on its children, ensuring that an entire tree of composed
@@ -935,7 +936,7 @@ hash.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><
 JavaScript form builder.  Since the model data is being read and written by
 Backbone views and models, it’s ideal to have markup construction and form
 serialization implemented on the client-side.</p><p>One implementation in progress is
-[<code class="literal">backbone-forms</code> by Charles Davison](<a class="ulink" href="https://github.com/powmedia/backbone-forms" target="_top">https://github.com/powmedia/backbone-forms</a>).
+<a class="ulink" href="https://github.com/powmedia/backbone-forms" target="_top"><code class="literal">backbone-forms</code> by Charles Davison</a>.
 It provides markup construction and serialization, as well as a method for
 declaring your schema (data types) to support both of those facilities.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_display_error_messages"/>Display error messages</h4></div></div></div><p>We are assuming, with a hybrid Rails/Backbone application, that at least some of
 your business logic resides on the server.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_internationalization"/>Internationalization</h3></div></div></div><p>When you move your application’s view logic onto the client, such as with
