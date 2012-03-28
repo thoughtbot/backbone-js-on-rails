@@ -21,8 +21,9 @@ The first time, create the test database:
 
     bundle exec rake db:test:prepare
 
-There are three sets of tests: Cucumber integration test, RSpec isolation specs
-for Rails components, and Jasmine isolation specs for Backbone components.
+There are three sets of tests: Cucumber integration tests, RSpec isolation
+specs for Rails components, and Jasmine isolation specs for Backbone
+components.
 
 Run them all at once:
 
@@ -32,6 +33,8 @@ Or one at a time
 
     bundle exec rake cucumber
     bundle exec rake spec
+    bundle exec rake jasmine:ci
 
-Browse to http://localhost:3000/jasmine (or your local server/jasmine) to run 
-the Jasmine specs.
+To interactively run the Jasmine specs several times (for example, while
+developing), run `bundle exec rake jasmine` and visit http://localhost:8888 to
+view the suite.
