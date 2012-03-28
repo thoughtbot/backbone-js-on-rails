@@ -1,4 +1,4 @@
-var TaskDetailView = Backbone.View.extend({
+var TaskDetail = Backbone.View.extend({
   template: JST['tasks/task_detail'],
   tagName: 'section',
   id: 'task',
