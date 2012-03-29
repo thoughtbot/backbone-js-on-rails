@@ -1,5 +1,5 @@
 ExampleApp.Views.TasksNew = Backbone.View.extend({
-  tagName: 'form',
+  tagName: 'div',
   id: "new-task",
 
   events: {
@@ -19,7 +19,7 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
 
   render: function () {
     this.$el.html(this.form.render().el);
-    this.$('ul').append(JST['tasks/form_buttons']());
+    this.$('ul').first().append(JST['tasks/form_buttons']());
     return this;
   },
 

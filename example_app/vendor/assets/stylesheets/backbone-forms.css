@@ -1,12 +1,15 @@
 .bbf-form {
     margin: 0;
     padding: 0;
+    border: none;
 }
 
 
 .bbf-field {
     margin: 1em 0;
     list-style-type: none;
+    position: relative;
+    clear: both;
 }
 
     .bbf-field label {
@@ -22,8 +25,14 @@
         .bbf-field input, .bbf-field textarea, .bbf-field select {
             width: 100%;
         }
+    
+    .bbf-field .bbf-help {
+        margin-left: 25%;
+        width: 74%;
+        color: #999;
+    }
 
-    .bbf-field .bbf-error {
+    .bbf-field.bbf-error .bbf-editor {
         outline: 1px solid red;
     }
 
@@ -94,4 +103,30 @@
     .bbf-list-editor {
         width: 98%;
     }
-        
+
+
+.bbf-radio {
+    list-style-type: none;
+}
+
+    .bbf-radio input {
+        width: auto;
+    }
+
+    .bbf-radio label {
+        float: none;
+    }
+
+
+
+.bbf-checkboxes {
+    list-style-type: none;
+}
+
+    .bbf-checkboxes input {
+        width: auto;
+    }
+
+    .bbf-checkboxes label {
+        float: none;
+    }
