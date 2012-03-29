@@ -2,8 +2,11 @@ class TasksController < ApplicationController
   before_filter :authorize
   respond_to :html, :json
 
+  wrap_parameters :task, :include => [:assignments_attributes, :title, :complete]
+
   def index
-    respond_with(@tasks = current_user.tasks)
+    @tasks = tasks_visible_to_current_user
+    @users = user_id_and_email_attributes
   end
 
   def show
@@ -18,5 +21,15 @@ class TasksController < ApplicationController
     task = current_user.tasks.find(params[:id])
     task.update_attributes(params[:task])
     respond_with(task)
+  end
+
+  private
+
+  def user_id_and_email_attributes
+    User.all.map { |user| { :id => user.id, :email => user.email } }
+  end
+
+  def tasks_visible_to_current_user
+    (current_user.tasks + current_user.assigned_tasks).uniq
   end
 end

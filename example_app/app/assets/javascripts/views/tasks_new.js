@@ -4,16 +4,22 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
 
   events: {
     "submit": "save",
-    "click a.leave": "leave"
+    "click a.add-assignee": "addAssignee"
   },
 
-  initialize: function() {
+  initialize: function(options) {
+    this.users = options.users;
     _.bindAll(this, "render", "saved");
     this.newTask();
   },
 
   newTask: function() {
     this.model = new ExampleApp.Models.Task();
+  },
+
+  addAssignee: function() {
+    this.$('ul.assignees').append(JST['tasks/assignee_field']());
+    return false;
   },
 
   render: function () {
@@ -26,15 +32,30 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
     this.$el.prepend(JST['tasks/flash']({ flashText: flashText, type: 'success' }));
   },
 
-  save: function(event) {
-    this.model.save(this.formAttributes(), { success: this.saved });
+  save: function(e) {
+    e.preventDefault();
+
+    this.commitForm();
+    this.model.save({}, { success: this.saved });
     return false;
   },
 
-  formAttributes: function() {
-    return {
-      title: this.$('input[name=title]').val()
-    };
+  commitForm: function() {
+    this.model.set({ title: this.$('input[name=title]').val() });
+    this.model.assignedUsers = new ExampleApp.Collections.Users(this.assignedUsers());
+  },
+
+  assignedUsers: function() {
+    var self = this;
+    return _.compact(_.map(this.assigneeEmails(), function(email) {
+      return self.users.findByEmail(email);
+    }));
+  },
+
+  assigneeEmails: function() {
+    return $('input.new-task-assignee-email').map(function(n, input) {
+      return $(input).val();
+    });
   },
 
   saved: function() {
@@ -44,10 +65,5 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
     this.newTask();
     this.render();
     this.renderFlash(flash);
-  },
-
-  leave: function() {
-    this.unbind();
-    this.remove();
   }
 });

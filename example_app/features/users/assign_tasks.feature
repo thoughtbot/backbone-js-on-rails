@@ -8,6 +8,7 @@ Feature: Assign Tasks
     Given I am signed up as "apple@example.com"
     And I am signed up as "banana@example.com"
     And I am signed up as "cherry@example.com"
+    And I am signed up as "durian@example.com"
 
     When I sign in as "cherry@example.com"
     And I go to the tasks page
@@ -21,10 +22,8 @@ Feature: Assign Tasks
     And I should see "Buy carrot cake mix" is assigned to "banana@example.com"
 
     When I sign in as "apple@example.com"
-    Then I should see that I have an assigned task "Buy carrot cake mix"
+    Then I should see "Buy carrot cake mix" is assigned to "apple@example.com"
+    And I should see "Buy carrot cake mix" is assigned to "banana@example.com"
 
-    When I sign in as "banana@example.com"
-    Then I should see that I have an assigned task "Buy carrot cake mix"
-
-    When I sign in as "cherry@example.com"
-    Then I should see that I have no assigned tasks
+    When I sign in as "durian@example.com"
+    Then I should not see "Buy carrot cake mix"

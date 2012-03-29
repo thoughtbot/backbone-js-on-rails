@@ -10,6 +10,7 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   },
 
   render: function () {
+    this.$el.attr("id", "task_" + this.model.id);
     this.$el.html(JST['tasks/item']({ task: this.model }));
     this.renderFormContents();
     return this;
@@ -21,6 +22,8 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
 
     this.$('input').attr("id", "task_completed_" + this.model.get('id'));
     this.$('input').prop("checked", this.model.isComplete());
+
+    this.$('td.assignees').html(this.model.assignedUsers.pluck('email').join(", "));
 
     this.$('a').attr("href", this.taskUrl());
   },

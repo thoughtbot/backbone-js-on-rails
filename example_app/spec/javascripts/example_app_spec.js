@@ -16,14 +16,19 @@ describe("ExampleApp", function(){
   });
 
   describe("init()", function() {
-    it("accepts task JSON and instantiates a collection from it", function() {
-      var tasksJSON = {"tasks": [{"title":"thing to do"}, {"title":"another thing"}]};
-      ExampleApp.init(tasksJSON);
+    it("accepts data JSON and instantiates a collection from it", function() {
+      var data = {
+        "tasks": [{"title":"thing to do"}, {"title":"another thing"}],
+        "users": [{"id":"1","email":"alice@example.com"}]
+      };
+      ExampleApp.init(data);
 
       expect(ExampleApp.tasks).not.toEqual(undefined);
       expect(ExampleApp.tasks.length).toEqual(2);
       expect(ExampleApp.tasks.models[0].get('title')).toEqual("thing to do");
       expect(ExampleApp.tasks.models[1].get('title')).toEqual("another thing");
+
+      expect(ExampleApp.users.length).toEqual(1);
     });
 
     it("instantiates a Tasks router", function() {

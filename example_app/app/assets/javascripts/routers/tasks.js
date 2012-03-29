@@ -2,6 +2,7 @@ ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   initialize: function(options) {
     this.el = $('#tasks');
     this.collection = options.collection;
+    this.users = options.users;
   },
 
   routes: {
@@ -16,7 +17,7 @@ ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   },
 
   newTask: function() {
-    var view = new ExampleApp.Views.TasksNew({ collection: this.collection });
+    var view = new ExampleApp.Views.TasksNew({ collection: this.collection, users: this.users });
     this.swap(view);
   },
 

@@ -4,9 +4,8 @@ describe("ExampleApp.Collections.Attachments", function() {
     expect(collection.model).toEqual(ExampleApp.Models.Attachment);
   });
 
-  it("is persisted at /tasks", function() {
+  it("is persisted at /attachments", function() {
     var collection = new ExampleApp.Collections.Attachments();
     expect(collection.url).toEqual("/attachments");
   });
 });
-

@@ -4,7 +4,10 @@
 </div>
 
 <script type="text/json" id="bootstrap">
-  { "tasks": <%= @tasks.to_json %> }
+  {
+    "tasks": <%= @tasks.to_json(include: { assigned_users: { only: [:id, :email] } }) %>,
+    "users": <%= @users.to_json %>
+  }
 </script>
 
 <%= content_for :javascript do -%>

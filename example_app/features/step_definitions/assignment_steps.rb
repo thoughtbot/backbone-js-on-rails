@@ -4,9 +4,9 @@ When /^I create a task "([^"]*)" assigned to:$/ do |task_title, table|
   fill_in "Title", :with => task_title
 
   table.hashes.each do |hash|
-    click_link "Add assignee"
+    click_link "Add Assignee"
 
-    last_assignee_input = page.all("input.assignee_email").last
+    last_assignee_input = page.all("input.new-task-assignee-email").last
     last_assignee_input.set(hash['email'])
   end
 
@@ -15,13 +15,9 @@ When /^I create a task "([^"]*)" assigned to:$/ do |task_title, table|
 end
 
 Then /^I should see "([^"]*)" is assigned to "([^"]*)"$/ do |task_title, assignee_email|
-  pending # express the regexp above with the code you wish you had
-end
+  task = Task.find_by_title!(task_title)
 
-Then /^I should see that I have an assigned task "([^"]*)"$/ do |task_title|
-  pending # express the regexp above with the code you wish you had
-end
-
-Then /^I should see that I have no assigned tasks$/ do
-  pending # express the regexp above with the code you wish you had
+  within("tr#task_#{task.id}") do
+    page.should have_content(assignee_email)
+  end
 end
