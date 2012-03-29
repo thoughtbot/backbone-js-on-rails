@@ -1,5 +1,5 @@
 ExampleApp.Views.TasksNew = Backbone.View.extend({
-  tagName: 'div',
+  tagName: 'form',
   id: "new-task",
 
   events: {
@@ -14,12 +14,11 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
 
   newTask: function() {
     this.model = new ExampleApp.Models.Task();
-    this.form = new Backbone.Form({ model: this.model });
   },
 
   render: function () {
-    this.$el.html(this.form.render().el);
-    this.$('ul').first().append(JST['tasks/form_buttons']());
+    this.$el.html(JST['tasks/form_fields']());
+    this.$('input[name=title]').focus();
     return this;
   },
 
@@ -28,9 +27,14 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
   },
 
   save: function(event) {
-    this.form.commit();
-    this.model.save({}, { success: this.saved });
+    this.model.save(this.formAttributes(), { success: this.saved });
     return false;
+  },
+
+  formAttributes: function() {
+    return {
+      title: this.$('input[name=title]').val()
+    };
   },
 
   saved: function() {
