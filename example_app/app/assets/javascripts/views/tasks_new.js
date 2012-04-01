@@ -47,13 +47,13 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
 
   assignedUsers: function() {
     var self = this;
-    return _.compact(_.map(this.assigneeEmails(), function(email) {
+    return _.uniq(_.compact(_.map(this.assigneeEmails(), function(email) {
       return self.users.findByEmail(email);
-    }));
+    })));
   },
 
   assigneeEmails: function() {
-    return $('input.new-task-assignee-email').map(function(n, input) {
+    return this.$('input.new-task-assignee-email').map(function(n, input) {
       return $(input).val();
     });
   },
