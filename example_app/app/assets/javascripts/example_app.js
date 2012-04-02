@@ -3,7 +3,7 @@ window.ExampleApp = {
   Collections: {},
   Views: {},
   Routers: {},
-  init: function(data) {
+  initialize: function(data) {
     this.tasks = new ExampleApp.Collections.Tasks(data.tasks);
     this.users = new ExampleApp.Collections.Users(data.users);
 

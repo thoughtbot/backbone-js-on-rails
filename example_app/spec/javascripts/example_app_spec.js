@@ -15,13 +15,13 @@ describe("ExampleApp", function(){
     expect(ExampleApp.Routers).toBeTruthy();
   });
 
-  describe("init()", function() {
+  describe("initialize()", function() {
     it("accepts data JSON and instantiates a collection from it", function() {
       var data = {
         "tasks": [{"title":"thing to do"}, {"title":"another thing"}],
         "users": [{"id":"1","email":"alice@example.com"}]
       };
-      ExampleApp.init(data);
+      ExampleApp.initialize(data);
 
       expect(ExampleApp.tasks).not.toEqual(undefined);
       expect(ExampleApp.tasks.length).toEqual(2);
@@ -33,13 +33,13 @@ describe("ExampleApp", function(){
 
     it("instantiates a Tasks router", function() {
       ExampleApp.Routers.Tasks = sinon.spy();
-      ExampleApp.init({});
+      ExampleApp.initialize({});
       expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
     });
 
     it("starts Backbone.history", function() {
       Backbone.history = { start: sinon.spy() };
-      ExampleApp.init({});
+      ExampleApp.initialize({});
       expect(Backbone.history.start).toHaveBeenCalled();
     });
   });
