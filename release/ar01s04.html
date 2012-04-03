@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE html
   PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Rails Integration</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s03.html" title="Organization"/><link rel="next" href="ar01s05.html" title="Routers, Views, and Templates"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Rails Integration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_rails_integration"/>Rails Integration</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_organizing_your_backbone_js_code_in_a_rails_app"/>Organizing your Backbone.js code in a Rails app</h3></div></div></div><p>When using Backbone.js in a Rails app, you’ll have two kinds of
-Backbone.js-related assets: classes and templates.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_0_and_prior"/>Rails 3.0 and prior</h3></div></div></div><p>With Rails 3.0 and prior, store your Backbone.js classes in
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>Rails Integration</title><meta name="generator" content="DocBook XSL Stylesheets V1.74.1"/><link rel="home" href="index.html" title="Backbone.js on Rails"/><link rel="up" href="index.html" title="Backbone.js on Rails"/><link rel="prev" href="ar01s03.html" title="Organization"/><link rel="next" href="ar01s05.html" title="Routers, Views, and Templates"/></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Rails Integration</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><th width="60%" align="center"> </th><td width="20%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr></table><hr/></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="_rails_integration"/>Rails Integration</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_organizing_your_backbone_code_in_a_rails_app"/>Organizing your Backbone code in a Rails app</h3></div></div></div><p>When using Backbone in a Rails app, you’ll have two kinds of
+Backbone-related assets: classes and templates.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_0_and_prior"/>Rails 3.0 and prior</h3></div></div></div><p>With Rails 3.0 and prior, store your Backbone classes in
 <code class="literal">public/javascripts</code>:</p><pre class="screen">public/
   javascripts/
     jquery.js
@@ -41,13 +41,13 @@ them separated from the server views:</p><pre class="screen">app/
 precompiling templates:</p><p><a class="ulink" href="http://documentcloud.github.com/jammit/" target="_top">http://documentcloud.github.com/jammit/</a></p><p><a class="ulink" href="http://documentcloud.github.com/jammit/#jst" target="_top">http://documentcloud.github.com/jammit/#jst</a></p><p>Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'todos/index'</i></b>]</pre><p>Variables can be passed to the templates by passing a Hash to the template, as
-shown below.</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'todos/index'</i></b>]({ model: <b class="hl-keyword">this</b>.model })</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>Jammit and a JST naming gotcha</p><p>One issue with Jammit that we’ve encountered and worked around is that the JST
-template path can change when adding new templates.</p><p>When using Jammit, there is a slightly sticky issue as an app grows from one
-template subdirectory to multiple template subdirectories.</p><p>Let’s say you place templates in app/templates. You work for a while on the
-"Tasks" feature, placing templates under app/templates/tasks. So, window.JST
-looks something like:</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'form'</i></b>]
+shown below.</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'todos/index'</i></b>]({ model: <b class="hl-keyword">this</b>.model })</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p><span class="strong"><strong>Jammit and a JST naming gotcha</strong></span></p><p>One issue with Jammit that we’ve encountered and worked around is that the JST
+template path can change when adding new templates.  Let’s say you place
+templates in <code class="literal">app/templates</code>. You work for a while on the "Tasks" feature,
+placing templates under <code class="literal">app/templates/tasks</code>. So, <code class="literal">window.JST</code> looks something
+like:</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'form'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'show'</i></b>]
-JST[<b class="hl-string"><i style="color:red">'index'</i></b>]</pre><p>Now, you add another directory under app/templates, say app/templates/user.
+JST[<b class="hl-string"><i style="color:red">'index'</i></b>]</pre><p>Now, you add another directory under <code class="literal">app/templates</code>, say <code class="literal">app/templates/user</code>.
 Now, templates with coliding names in JST references are prefixed with their
  parent directory name so they are unambiguous:</p><pre class="programlisting">JST[<b class="hl-string"><i style="color:red">'form'</i></b>] <i class="hl-comment" style="color: silver">// in tasks/form.jst</i>
 JST[<b class="hl-string"><i style="color:red">'tasks/show'</i></b>]
@@ -55,14 +55,17 @@ JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'new'</i></b>]  <i class="hl-comment" style="color: silver">// in users/new.jst</i>
 JST[<b class="hl-string"><i style="color:red">'users/show'</i></b>]
 JST[<b class="hl-string"><i style="color:red">'users/index'</i></b>]</pre><p>This breaks existing JST references. You can work around this issue by applying
-the following monkeypatch to Jammit, in config/initializers/jammit.rb</p><pre class="programlisting">Jammit::Compressor.class_eval <b class="hl-keyword">do</b>
+the following monkeypatch to Jammit, in <code class="literal">config/initializers/jammit.rb</code>:</p><pre class="programlisting">Jammit::Compressor.class_eval <b class="hl-keyword">do</b>
   private
   <b class="hl-keyword">def</b> find_base_path(path)
     File.expand_path(Rails.root.join(<b class="hl-string"><i style="color:red">'app'</i></b>,<b class="hl-string"><i style="color:red">'templates'</i></b>))
   <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre><p>As applications are moving to Rails 3.1, they’re also moving to Sprockets for
 the asset packager.  Until then, many apps are using Jammit for asset
-packaging.  We have an open issue and workaround:</p><p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_1"/>Rails 3.1</h3></div></div></div><p>Rails 3.1 introduces the asset pipeline:</p><p><a class="ulink" href="http://guides.rubyonrails.org/asset_pipeline.html" target="_top">http://guides.rubyonrails.org/asset_pipeline.html</a></p><p>which uses the Sprockets library for preprocessing and packaging assets:</p><p><a class="ulink" href="http://getsprockets.org/" target="_top">http://getsprockets.org/</a></p><p>To take advantage of the built-in asset pipeline, organize your Backbone.js
+packaging.  We have an open issue and workaround:</p><p><a class="ulink" href="https://github.com/documentcloud/jammit/issues/192" target="_top">https://github.com/documentcloud/jammit/issues/192</a></p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_rails_3_1"/>Rails 3.1</h3></div></div></div><p>Rails 3.1 introduces the
+<a class="ulink" href="http://guides.rubyonrails.org/asset_pipeline.html" target="_top">asset pipeline</a>, which uses
+the <a class="ulink" href="http://getsprockets.org" target="_top">Sprockets library</a> for preprocessing and packaging
+assets.</p><p>To take advantage of the built-in asset pipeline, organize your Backbone
 templates and classes in paths available to it: classes go in
 <code class="literal">app/assets/javascripts/</code>, and templates go alongside, in
 <code class="literal">app/assets/templates/</code>:</p><pre class="screen">app/
@@ -80,7 +83,7 @@ templates and classes in paths available to it: classes go in
     templates/
       todos/
         index.jst.ejs
-        show.jst.ejs</pre><p>In Rails 3.1, jQuery is provided by the jquery-rails gem, and no longer
+        show.jst.ejs</pre><p>In Rails 3.1, jQuery is provided by the <code class="literal">jquery-rails</code> gem, and no longer
 needs to be included in your directory structure.</p><p>Using Sprockets' preprocessors, we can use templates as before.  Here, we’re
 using the EJS template preprocessor to provide the same functionality as
 Underscore.js' templates.  It compiles the <code class="literal">*.jst</code> files and makes them
@@ -91,20 +94,20 @@ Gemfile.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><
 <a class="ulink" href="http://documentcloud.github.com/underscore/#template" target="_top">http://documentcloud.github.com/underscore/#template</a></p><p>EJS gem:
 <a class="ulink" href="https://github.com/sstephenson/ruby-ejs" target="_top">https://github.com/sstephenson/ruby-ejs</a></p><p>Sprockets support for EJS:
 <a class="ulink" href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb" target="_top">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a></p></div><p>To make the <code class="literal">*.jst</code> files available and create the <code class="literal">window.JST</code> object, require
-them in your application.js Sprockets manifest:</p><pre class="screen">//  other application requires
-//= require_tree ../templates
-//= require_tree .</pre><p>Load order for Backbone.js and your Backbone.js app is very
-important. jQuery and Underscore.js must be loaded before Backbone.js, then
+them in your application.js Sprockets manifest:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//  other application requires</i>
+<i class="hl-comment" style="color: silver">//= require_tree ../templates</i>
+<i class="hl-comment" style="color: silver">//= require_tree .</i></pre><p>Load order for Backbone and your Backbone app is very
+important. jQuery and Underscore must be loaded before Backbone, then
 the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
 models) and then your routers and views must be loaded.</p><p>Fortunately, sprockets can handle this load order for us. When all is said and
 done your application.js Sprockets manifest will look as shown below.</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//= require jquery</i>
 <i class="hl-comment" style="color: silver">//= require jquery_ujs</i>
+<i class="hl-comment" style="color: silver">//= require jquery-ui-1.8.18.custom.min</i>
 <i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">//= require underscore</i>
 <i class="hl-comment" style="color: silver">//= require json2</i>
 <i class="hl-comment" style="color: silver">//= require backbone</i>
-<i class="hl-comment" style="color: silver">//= require backbone.authtokenadapter</i>
 <i class="hl-comment" style="color: silver">//= require backbone-support</i>
 <i class="hl-comment" style="color: silver">//</i>
 <i class="hl-comment" style="color: silver">//= require backbone-forms.js</i>
@@ -119,86 +122,76 @@ done your application.js Sprockets manifest will look as shown below.</p><pre cl
 <i class="hl-comment" style="color: silver">//= require_tree ./routers</i>
 <i class="hl-comment" style="color: silver">//= require_tree ../templates</i>
 <i class="hl-comment" style="color: silver">//= require_tree .</i></pre><p>The above is taken from the example application included with this book. You
-can view it at <code class="literal">example_app/app/assets/javascripts/application.js</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone_js"/>An Overview of the Stack: Connecting Rails and Backbone.js</h3></div></div></div><p>By default Backbone.js communicates with your Rails application via JSON GET ,
-POST and PUT requests. If you’ve ever made a JSON API for your Rails app, then
-for the most part this will be very similar.  If you’ve never made a JSON API
+can view it at <code class="literal">example_app/app/assets/javascripts/application.js</code>.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_an_overview_of_the_stack_connecting_rails_and_backbone"/>An Overview of the Stack: Connecting Rails and Backbone</h3></div></div></div><p>By default, Backbone communicates with your Rails application via JSON HTTP
+requests. If you’ve ever made a JSON API for your Rails app, then
+for the most part this will be very similar.  If you have not made a JSON API
 for your Rails application before, lucky you, it’s pretty straightforward.</p><p>This section will briefly touch on each of the major parts of an application
 using both Rails and Backbone.  We’ll go into more detail in later chapters,
 but this should give you the big picture of how the pieces fit together.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_models"/>Setting Up Models</h4></div></div></div><p>In our example application, we have a Task model, exposed via a JSON API at
-<code class="literal">/tasks</code>. The simplest Backbone.js representation of this model would be as
+<code class="literal">/tasks</code>. The simplest Backbone representation of this model would be as
 shown below.</p><pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
   urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
-});</pre><p>The urlRoot property above indicates to Backbone.js that the server url for
-instances of this model will be found at <code class="literal">/tasks/:id</code>.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>There is no need to have a one-to-one mapping between Rails models and
-Backbone.js models.  Backbone models usually correspond with RESTful resources.
+});</pre><p>The urlRoot property above describes a base for the server-side JSON API that
+houses this resource.  Collection-level requests will occur at that root URL,
+and requests relating to instances of this model will be found at <code class="literal">/tasks/:id</code>.</p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>There is no need to have a one-to-one mapping between Rails models and
+Backbone models.  Backbone models instead correspond with RESTful resources.
 Since your Backbone code is in the presentation tier, it’s likely that some of
-your Backbone models will aggregate information from multiple Rails models and
-contain concerns closer to the presentation tier.</p></div><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
-query all tasks) through the same Task model. In Backbone, models
-only represent the singular representation of a Task. Backbone.js splits out the
-plural representation of Tasks into what it calls Collections.</p><p>The simplest Backbone.js collection to represent our Tasks would be the
+your Backbone models may end up providing only a subset of the information present
+in the Rails models, or they may aggregate information from multiple Rails
+models into a composite resource.</p></div><p>In Rails, it’s possible to access individual Tasks, as well as all Tasks (and
+query all tasks) through the same <code class="literal">Task</code> model. In Backbone, models
+only represent the singular representation of a <code class="literal">Task</code>. Backbone splits out the
+plural representation of <code class="literal">Tasks</code> into <code class="literal">Collections</code>.</p><p>The simplest Backbone collection to represent our <code class="literal">Tasks</code> would be the
 following.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task
-});</pre><p>If we specify the url for Tasks in our collection instead, then models within
+});</pre><p>If we specify the url for <code class="literal">Tasks</code> in our collection instead, then models within
 the collection will use the collection’s url to construct their own URLs, and
 the urlRoot no longer needs to be specified in the model. If we make that
-change, then our collection and models will be as follows.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+change, then our collection and model will be as follows.</p><pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
   model: Task,
   url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
 });
 
 <b class="hl-keyword">var</b> Task = Backbone.Model.extend({});</pre><p>Notice in the above model definitions that there is no specification of the
-attributes on the model. Like ActiveRecord, Backbone.js models get their
+attributes on the model. Like ActiveRecord, Backbone models get their
 attributes from the data used to populate them at runtime. In this case,
 this schema and data are JSON responses from the Rails server.</p><p>The default JSON representation of an ActiveRecord model is an object that includes
 all the model’s attributes. It does not include the data for any related models
-or any methods on the model, but it does include the ids of any related models
+or any methods on the model, but it does include the ids of any <code class="literal">belongs_to</code> relations
 as those are stored in a <code class="literal">relation_name_id</code> attribute on the model.</p><p>The JSON representation of your ActiveRecord models will be retrieved by
 calling <code class="literal">to_json</code> on them, which returns a string of JSON. Customize the output
 of <code class="literal">to_json</code> by overriding the <code class="literal">as_json</code> method in your model, which returns a
 Ruby data structure like a Hash or Array which will be serialized into the JSON
 string.  We’ll touch on this more later in the section "Customizing your
 Rails-generated JSON."</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_rails_controllers"/>Setting Up Rails Controllers</h4></div></div></div><p>The Backbone models and collections will talk to your Rails controllers. The
-most basic (and a typical) pattern is one Rails controller providing one family
-of RESTful resource to one Backbone.js model.</p><p>By default, Backbone.js models communicate in the normal RESTful way that Rails
+most basic pattern is one Rails controller providing one family of RESTful
+resource to one Backbone model.</p><p>By default, Backbone models communicate in the normal RESTful way that Rails
 controllers understand, using the proper verbs to support the standard RESTful
-Rails controller actions: index, show, create, update, and destroy. Backbone.js
-does not make any use of the new action.</p><p>Therefore, it’s just up to us to write a <span class="emphasis"><em>normal</em></span> RESTful controller.</p><p>There are a few different ways you can write your controllers for interacting
-with your Backbone.js models and collections. However, the newest and cleanest
-way is to use the <code class="literal">respond_with</code> method introduced in Rails 3.0.</p><p>When using <code class="literal">respond_with</code>, in your controller you specify what formats are
-supported with the method <code class="literal">respond_to</code>. In your individual actions, you then
-specify the resource or resources to be delivered using <code class="literal">respond_with</code>, as shown
-in the example Tasks controller and index action below.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
+Rails controller actions: index, show, create, update, and destroy. Backbone
+does not make any use of the new action.</p><p>Therefore, it’s just up to us to write a <span class="emphasis"><em>normal</em></span> RESTful controller.  The
+newest and most succinct way to structure these is to use the <code class="literal">respond_with</code>
+method, introduced in Rails 3.0.</p><p>When using <code class="literal">respond_with</code>, declare supported formats with <code class="literal">respond_to</code>. Inside
+individual actions, you then specify the resource or resources to be delivered
+using <code class="literal">respond_with</code>:</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
   respond_to :html, :json
 
   <b class="hl-keyword">def</b> index
     respond_with(@tasks = Task.all)
   <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre><p>In the above example Tasks controller, the <code class="literal">respond_to</code> line declares that this
-controller should respond to both the HTML and JSON formats. Then, in the
-index action, the <code class="literal">respond_with</code> call will perform the appropriate action for
-the requested format.</p><p>The above controller is equivalent to the following one, using the older
-<code class="literal">respond_to</code> method.</p><pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController::Base
-  <b class="hl-keyword">def</b> index
-    @tasks = Task.all
-    respond_to <b class="hl-keyword">do</b> |format|
-      format.html
-      format.json { render :json =&gt; @tasks }
-    <b class="hl-keyword">end</b>
-  <b class="hl-keyword">end</b>
-<b class="hl-keyword">end</b></pre><p>Using <code class="literal">respond_with</code> you can create succinct controllers that respond with a
-normal web page, but also expose a JSON API that Backbone.js will use.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"/>Validations and your HTTP API</h5></div></div></div><p>If a Backbone.js model has a <code class="literal">validate</code> method defined, it will be validated on
+controller should respond to requests for both the HTML and JSON formats. Then,
+in the index action, the <code class="literal">respond_with</code> call will build a response according to
+the requested content type (which may be HTML or JSON in this case) and
+provided resource, <code class="literal">@tasks</code>.</p><div class="section" lang="en"><div class="titlepage"><div><div><h5 class="title"><a id="_validations_and_your_http_api"/>Validations and your HTTP API</h5></div></div></div><p>If a Backbone model has a <code class="literal">validate</code> method defined, it will be validated on
 the client side, before its attributes are set. If validation fails, no changes
 to the model will occur, and the "error" event will be fired. Your <code class="literal">validate</code>
 method will be passed the attributes that are about to be updated. You can
 signal that validation passed by returning nothing from your <code class="literal">validate</code> method.
 You signify that validation has failed by returning something from the method.
 What you return can be as simple as a string, or a more complex object that
-describes the error in all its gory detail.</p><p>In practice, much of the validation logic for your models will continue to be
-handled on the server, as fully implementing validations on the client side
-would often require duplicating a lot of server-side business logic.
-Furthermore, you almost certainly want the server to have the last word on
-valid data, as this API can be used outside of the Backbone.js interface.</p><p>So, your Backbone.js applications will likely rely on server-side
+describes the error in all its gory detail.</p><p>The amount of validation you include on the client side is essentially a
+tradeoff between interface performance and code duplication.  It’s important
+for the server to make the last call on validation.</p><p>So, your Backbone applications will likely rely on at least some server-side
 validation logic.  Invalid requests return non-2xx HTTP responses, which
 are handled by error callbacks in Backbone:</p><pre class="programlisting">task.save({ title: <b class="hl-string"><i style="color:red">"New Task title"</i></b> }, {
   error: <b class="hl-keyword">function</b>() {
@@ -235,51 +228,40 @@ the Validation section of the Models and Collections chapter. For more
 information about reducing redundancy between client and server validations,
 see the "Duplicating business logic across the client and server" section of
 the Models and Collections chapter. For more information about handling and
-displaying errors on the client side, see the "Form helpers" section of the
-Views and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"/>Setting Up Views</h4></div></div></div><p>Most Backbone.js applications will be a single-page app (sometimes referred to
-as an SPA). This means that your Rails application will render a single page
-which properly sets up Backbone.js and the data it will use. From there,
-ongoing interaction with your Rails application occurs via the JSON APIs.</p><p>The most common page for this single-page application will be the index action
-of a controller.  For our Todos example application, this page will be hosted
-at <code class="literal">Tasks#index</code>.</p><p>You will want to create an object in Javascript for your Backbone.js application
-to reside. For more information on this namespacing see the "Namespacing your
-application" section of the Organization chapter.</p><p>This namespace variable holds your Backbone.js application’s Models,
-Collections, Views, and Routes, and has an <code class="literal">init()</code> method which will be called
-to initialize the application.</p><p>This namespace variable will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
+displaying errors on the client side, see the "Forms" section of the
+Views and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_setting_up_views"/>Setting Up Views</h4></div></div></div><p>Most Backbone applications will be a single-page app, or "SPA". This means that
+your Rails application handles two jobs: first, it renders a single page which
+hosts your Backbone application and, optionally, an initial data set for it to
+use. From there, ongoing interaction with your Rails application occurs via
+HTTP JSON APIs.</p><p>For our example application, this host page will be located at <code class="literal">Tasks#index</code>,
+which is also routed to the root route.</p><p>You will want to create an object in JavaScript for your Backbone application.
+Generally, we use this object as a top-level namespace for other Backbone
+classes, as well as a place to hold initialization code.  For more information
+on this namespacing see the "Namespacing your application" section of the
+Organization chapter.</p><p>This application object will look like the following.</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
   Models: {},
   Collections: {},
   Views: {},
   Routers: {},
-  init: <b class="hl-keyword">function</b>() {
-    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks();
+  initialize: <b class="hl-keyword">function</b>(data) {
+    <b class="hl-keyword">var</b> tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(data.tasks);
+    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks({ tasks: tasks });
     Backbone.history.start();
   }
 };</pre><p>You can find this file in the example app in
-<code class="literal">app/assets/javascripts/example_app.js</code>.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone.js router before calling
-Backbone.history.start() otherwise Backbone.history will be <code class="literal">undefined</code>.</p></div><p>Then, inside <code class="literal">app/views/tasks/index.html.erb</code> you will call the <code class="literal">init</code>
-method. This will appear as follows.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
+<code class="literal">app/assets/javascripts/example_app.js</code>.</p><div class="important" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Important</h3><p>You must instantiate a Backbone router before calling
+<code class="literal">Backbone.history.start()</code> otherwise <code class="literal">Backbone.history</code> will be <code class="literal">undefined</code>.</p></div><p>Then, inside <code class="literal">app/views/tasks/index.html.erb</code> you will call the <code class="literal">initialize</code> method.
+You will often bootstrap data into the Backbone application to provide initial
+state.  In our example, the tasks have already been provided to the Rails view
+in a <code class="literal">@tasks</code> instance variable:</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
   &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
-    ExampleApp.init();
+    ExampleApp.initialize({ tasks: &lt;%== @tasks.to_json %&gt; });
   &lt;% end %&gt;
-&lt;% end -%&gt;</pre><p>You will often "bootstrap" and give Backbone.js its initial data within the
-HTML view for this page. In our example, the tasks have already been provided
-to the view in a <code class="literal">@tasks</code> instance variable, used to bootstrap as shown below.</p><pre class="programlisting">&lt;%= content_for :javascript <b class="hl-keyword">do</b> -%&gt;
-  &lt;%= javascript_tag <b class="hl-keyword">do</b> %&gt;
-    ExampleApp.init(&lt;%== @tasks.to_json %&gt;);
-  &lt;% end %&gt;
-&lt;% end -%&gt;</pre><p>The above example uses ERb to pass the JSON for the tasks to the <code class="literal">init</code> method.</p><p>Once you make this change, the ExampleApp.init method then becomes:</p><pre class="programlisting"><b class="hl-keyword">var</b> ExampleApp = {
-  Models: {},
-  Collections: {},
-  Views: {},
-  Routers: {},
-  init: <b class="hl-keyword">function</b>(tasks) {
-    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks();
-    <b class="hl-keyword">this</b>.tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(tasks);
-    Backbone.history.start();
-  }
-};</pre><p>Finally, you must have a Router in place which knows what to do. We’ll cover
-routers in more detail in the Routers, Views and Templates chapter.</p><p>Backbone.js routers provide methods for routing application flow based on
-client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
+&lt;% end -%&gt;</pre><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>The above example uses ERb to pass the JSON for the tasks to the <code class="literal">initialize</code>
+method, but we should be mindful of the XSS risks that dumping user-generated
+content here poses.  See the "Encoding data when bootstrapping JSON data"
+section in the security chapter for a more secure approach.</p></div><p>Finally, you must have a Router in place which knows what to do.  We’ll cover
+routers in more detail in the "Routers, Views and Templates" chapter.</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     <b class="hl-string"><i style="color:red">""</i></b>: <b class="hl-string"><i style="color:red">"index"</i></b>
   },
@@ -287,20 +269,20 @@ client-side URL fragments (#fragment).</p><pre class="programlisting">ExampleApp
   index: <b class="hl-keyword">function</b>() {
     <i class="hl-comment" style="color: silver">// We've reached the end of Rails integration - it's all Backbone from here!</i>
 
-    alert(<b class="hl-string"><i style="color:red">'Hello, world!  This is a Backbone.js router action.'</i></b>);
+    alert(<b class="hl-string"><i style="color:red">'Hello, world!  This is a Backbone router action.'</i></b>);
 
     <i class="hl-comment" style="color: silver">// Normally you would continue down the stack, instantiating a</i>
     <i class="hl-comment" style="color: silver">// Backbone.View class, calling render() on it, and inserting its element</i>
     <i class="hl-comment" style="color: silver">// into the DOM.</i>
+
+    <i class="hl-comment" style="color: silver">// We'll pick back up here in the "Converting Views" section.</i>
   }
-});</pre><p>A basic router consists of a routes hash which is a mapping between URL
-fragments and methods on the router. If the current URL fragment, or one that
-is being visited matches one of the routes in the hash, its method will be
-called.</p><p>The example router above is all that is needed to complete our Backbone.js
-infrastructure. When a user visits <code class="literal">/tasks</code> the index.html.erb view will be
-rendered which properly initialized Backbone.js and its dependencies and the
-Backbone.js models, collections, routers, and views.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"/>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
-Backbone.js.</p><p>First, it’s likely that you’ll want to switch from including all attributes,
+});</pre><p>The example router above is the last piece needed to complete our
+initial Backbone infrastructure. When a user visits <code class="literal">/tasks</code> the
+<code class="literal">index.html.erb</code> Rails view will be rendered which properly initializes
+Backbone and its dependencies and the Backbone models, collections, routers,
+and views.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_customizing_your_rails_generated_json"/>Customizing your Rails-generated JSON</h3></div></div></div><p>There are a few common things you’ll do in your Rails app when working with
+Backbone.</p><p>First, it’s likely that you’ll want to switch from including all attributes,
 which is the default, to delivering some subset.</p><p>This can be done by specifying explicitly only the attributes that are to be
 included (whitelisting), or specifying the attributes that should <span class="emphasis"><em>not</em></span> be
 included (blacklisting). Which one you choose will depend on how many attributes
@@ -323,9 +305,9 @@ comments in the JSON for a Task with the <code class="literal">:include</code> o
   <b class="hl-keyword">super</b>(options.merge(:include =&gt; [ :comments ]))
 <b class="hl-keyword">end</b></pre><p>As you probably suspect, you can then customize the JSON for the comments by
 overriding the <code class="literal">as_json</code> method on the <code class="literal">Comment</code> model.</p><p>While these are the most common <code class="literal">as_json</code> options you’ll use when working with
-Backbone.js, it certainly isn’t all of them. The official, complete,
+Backbone, it certainly isn’t all of them. The official, complete,
 documentation for the <code class="literal">as_json</code> method can be found here:
-<a class="ulink" href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json" target="_top">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_activerecord_base_include_root_in_json"/>ActiveRecord::Base.include_root_in_json</h4></div></div></div><p>Depending on the versions, Backbone.js and Rails may have different expectations
+<a class="ulink" href="http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json" target="_top">http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json</a></p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_activerecord_base_include_root_in_json"/>ActiveRecord::Base.include_root_in_json</h4></div></div></div><p>Depending on the versions, Backbone and Rails may have different expectations
 about the format of JSON structures; specifically, whether or not a root key is
 present.  When generating JSON from Rails, this is controlled by the
 ActiveRecord setting <code class="literal">ActiveRecord::Base.include_root_in_json</code>.</p><pre class="programlisting">  &gt; ActiveRecord::Base.include_root_in_json = <b class="hl-keyword">false</b>
@@ -339,7 +321,7 @@ it defaults to false. This reversal was made to simplify the JSON returned by
 default in Rails application, but it is fairly big change from the default
 behavior of Rails 3.0.</p><p>Practically speaking, this change is a good one, but take particular note if
 you’re upgrading an existing Rails 3.0 application to Rails 3.1 and you already
-have a published API; you may need to expose a new version of your API.</p><p>From the Backbone.js side, the default behavior expects no root node.  This
+have a published API; you may need to expose a new version of your API.</p><p>From the Backbone side, the default behavior expects no root node.  This
 behavior is defined in a few places: <code class="literal">Backbone.Collection.prototype.parse</code>,
 <code class="literal">Backbone.Model.prototype.parse</code>, and <code class="literal">Backbone.Model.prototype.toJSON</code>:</p><pre class="programlisting">_.extend(Backbone.Collection.<b class="hl-keyword">prototype</b>, Backbone.Events, {
   <i class="hl-comment" style="color: silver">// http://documentcloud.github.com/backbone/#Collection-parse</i>
@@ -377,13 +359,10 @@ need to explicitly specify the name of the root key.  We use a convention of a
   modelName: <b class="hl-string"><i style="color:red">"task"</i></b>,
 
   <i class="hl-comment" style="color: silver">// ...</i>
-});</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_converting_an_existing_page_view_area_to_use_backbone_js"/>Converting an existing page/view area to use Backbone.js</h3></div></div></div><p>We’ll cover Backbone.js Views and Templates in more detail in the Routers,
-Views, and Templates chapter, but this section is meant to get you started
-understanding how Backbone.js views work by illustrating the conversion of a
-Rails view to a Backbone.js view.</p><p>Its important to note that a Rails view is not directly analogous to a
-Backbone.js view. A Rails view is more like a Backbone.js template, and
-Backbone.js views are more like Rails controllers. This can cause confusion
-with developers just started with Backbone.js.</p><p>Consider the following Rails view for a tasks index.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
+});</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_converting_an_existing_page_view_area_to_use_backbone"/>Converting an existing page/view area to use Backbone</h3></div></div></div><p>This section is meant to get you started understanding how Backbone views
+work by illustrating the conversion of a Rails view to a Backbone view.</p><p>Its important to note that a Rails view is not directly analogous to a Backbone
+view. In Rails, the term "view" usually refers to an HTML template, where
+Backbone views are classes that contain event handling and presentation logic.</p><p>Consider the following Rails view for a tasks index.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
 <b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
@@ -397,56 +376,44 @@ with developers just started with Backbone.js.</p><p>Consider the following Rail
       <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">task.completed</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
     <span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span>
   <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">end</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>Assuming we have the Backbone.js Task model and collection and the Rails Task
-model and controller discussed above, and we’re priming the pump with
-all the tasks, before we can convert the template we must create a Backbone.js
-view which will render the Backbone.js template.</p><p>A Backbone.js view is a class that is responsible for rendering the display of
-a logical element on the page. A view can also bind to events which may cause
-it to be re-rendered. For more detailed coverage of Backbone.js views, see the
-Routers, Views, and Templates chapter.</p><p>The most rudimentary view we could introduce at this point would be one that
-merely renders the above page markup, looping over each task in the Tasks
-collection. While this would be insufficient for most actual applications, in
-order to illustrate the building blocks of a Backbone.js view, such a view
-would be like the one shown below.</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
-  initialize: <b class="hl-keyword">function</b>() {
-  },
-
+<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>So far, we have the Backbone <code class="literal">Task</code> model and collection and the Rails <code class="literal">Task</code>
+model and controller discussed above, and we’re bootstrapping the Backbone app
+with all the tasks.  Next, we will create a Backbone view which will render a
+corresponding Backbone template.</p><p>A Backbone view is a class that is responsible for rendering the display of a
+logical element on the page. A view alsos bind to DOM events occurring within
+its DOM scope which trigger various behaviors.</p><p>We’ll start with a basic view that achieves the same result as the Rails template
+above, rendering a collection of tasks:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: <b class="hl-keyword">function</b> () {
     <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
-};</pre><p>The Backbone.js view above has an initialize method which will be called when
-the view is instantiated.</p><p>The render method above then renders the <span class="emphasis"><em>tasks/index</em></span> template, passing
-the collection of tasks into the template.</p><p>Each Backbone.js view has an element which it stores in <code class="literal">this.el</code>. This element
-can be populated with content, but isn’t on the page until placed there by
-you.</p><p>Finally, the Router must be changed to instantiate this view, passing in the
-collection for it to render, render the view, and insert its markup into the
-DOM:</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
+};</pre><p>The <code class="literal">render</code> method above renders the <span class="emphasis"><em>tasks/index</em></span> JST template, passing
+the collection of tasks into the template.</p><p>Each Backbone view has an element which it stores in <code class="literal">this.$el</code>.  This element
+can be populated with content, although it’s a good practice for code outside
+the view to actually insert the view into the DOM.</p><p>We’ll update the Backbone route to instantiate this view, passing in the
+collection for it to render. The router then renders the view, and inserts it
+into the DOM:</p><pre class="programlisting">ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     <b class="hl-string"><i style="color:red">""</i></b>: <b class="hl-string"><i style="color:red">"index"</i></b>
   },
 
   index: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">var</b> view = <b class="hl-keyword">new</b> ExampleApp.Views.TasksIndex({ collection: ExampleApp.tasks });
-    $(<b class="hl-string"><i style="color:red">'body'</i></b>).html(view.render().el);
+    $(<b class="hl-string"><i style="color:red">'body'</i></b>).html(view.render().$el);
   }
-});</pre><p>Now that we have the Backbone.js view in place that renders the template, and
-its being called by the router, we can focus on converting the above Rails
-view to a Backbone.js template.</p><p>Backbone.js depends on Underscore.js which provides templating. Fortunately,
-the delimiter and basic concepts used for both Underscore.js and Erb are the
-same, making conversion relatively painless. For this reason, we recommend
-using Underscore.js templates when converting a larger, existing Rails
-application to Backbone.js.</p><p>The tasks index template does two things:</p><div class="itemizedlist"><ul type="disc"><li>
+});</pre><p>Now that we have the Backbone view in place that renders the template, and
+it’s being called by the router, we can focus on converting the above Rails
+view to a Backbone template.</p><p>Backbone depends on Underscore.js which, among many things, provides
+templating.  The delimiter and basic concepts used for both Underscore
+templates and ERb are the same.  When converting an existing Rails application
+to Backbone, this similarity can help ease the transition.</p><p>The <code class="literal">tasks/index</code> JST template does two things:</p><div class="itemizedlist"><ul type="disc"><li>
 Loops over all of the tasks
 </li><li>
 For each task, it outputs the task title and completed attributes
-</li></ul></div><p>Underscore.js provides many iteration functions that will be familiar to Rails
-developers. For example, each, map, and reject. Fortunately, Backbone.js also
-proxies to Underscore.js to provide 26 iteration functions on
-Backbone.Collection. This means that its possible to call the Underscore.js
-methods directly on Backbone.js collections.</p><p>So we’ll use the each method to iterate through the Tasks collection that was
-passed to the view, as shown in the converted Rails template, which is now an
-Underscore.js template, below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
+</li></ul></div><p>Underscore provides many iteration functions that will be familiar to Rails
+developers such as  <code class="literal">_.each</code>, <code class="literal">_.map</code>, and <code class="literal">_.reject</code>. Backbone also proxies to
+Underscore to provide these iteration functions as methods on <code class="literal">Backbone.Collection</code>.</p><p>We’ll use the <code class="literal">each</code> method to iterate through the <code class="literal">Tasks</code> collection that was
+passed to the view, as shown in the converted Underscore template below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
 <b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
@@ -460,23 +427,18 @@ Underscore.js template, below.</p><pre class="programlisting"><b class="hl-tag" 
       <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
     <span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span>
   <span class="hl-attribute" style="color: #F5844C">&lt;%</span> <span class="hl-attribute" style="color: #F5844C">});</span> <span class="hl-attribute" style="color: #F5844C">%&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>As you can see above in the above example, the same delimiter, and the use of
-the each method make the conversion of the Rails view to an Underscore.js
-template straightforward.</p><p>Finally, in Rails 3.0 and above template output is escaped. In order to ensure
-that we have the same XSS protection as we did in our Rails template, we
-access and output the Backbone.js model attributes using the escape method
-instead of the normal get method.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_breaking_out_the_taskview"/>Breaking out the TaskView</h4></div></div></div><p>As mentioned above, this simple conversion of the index which merely loops
-over each of the tasks is not one you’d likely see in a real Backbone.js
-application.</p><p>Backbone.js views should represent the logic pieces of your web page. In the
-above example, we have an index view, which is a logic piece, but then it is
-made up of the display of individual tasks. Each of those individual tasks
-should be represented by a new Backbone.js view, named TaskView.</p><p>The benefit of this logical separation is covered in more detail in the
-Views section, but know that one of the major features of Backbone.js is event
-binding. With each of the Task models represented by an individual task view,
-when that individual model changes the view can be re-rendered automatically
-(by triggering events) and the entire page doesn’t need to be re-rendered.</p><p>Continuing our task index example from above, a TaskView will be responsible
-for rendering just the individual table row for a Task, therefore, its
-template will appear as follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
+<span class="hl-attribute" style="color: #F5844C">&lt;/table&gt;</span></pre><p>In Rails 3.0 and above template output is HTML-escaped by default. In order to
+ensure that we have the same XSS protection as we did in our Rails template, we
+access and output the Backbone model attributes using the <code class="literal">escape</code> method
+instead of the normal <code class="literal">get</code> method.</p><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a id="_breaking_out_the_taskview"/>Breaking out the TaskView</h4></div></div></div><p>In Backbone, views are often bound to an underlying model, re-rendering
+themselves when the model data changes.  Consider what happens when any task
+changes data with our approach above; the entire collection must be
+re-rendered.  It’s useful to break up these composite views into two separate
+classes, each with their own responsibility: a parent view who handles the
+aggregation, and a child view responsible for rendering each node of content.</p><p>With each of the <code class="literal">Task</code> models represented by an individual <code class="literal">TaskView</code>,
+changes to an individual model are broadcast to its corresponding <code class="literal">TaskView</code>,
+which re-renders only the markup for one task.</p><p>Continuing our example from above, a <code class="literal">TaskView</code> will be responsible for
+rendering just the individual table row for a <code class="literal">Task</code>.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;tr&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;td&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">model.escape('title')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
   <span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
 <span class="hl-attribute" style="color: #F5844C">&lt;/tr&gt;</span></pre><p>And the Task index template will be changed to be as shown below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
@@ -487,37 +449,35 @@ template will appear as follows.</p><pre class="programlisting"><b class="hl-tag
     <b class="hl-tag" style="color: #000096">&lt;th&gt;</b>Completed<b class="hl-tag" style="color: #000096">&lt;/th&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
 
-<b class="hl-tag" style="color: #000096">&lt;/table&gt;</b></pre><p>As you can see above in the index template, the individual tasks are no longer
-iterated over and rendered inside the table. This will now happen in the
-TasksIndex and TaskView view, which is shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
-  initialize: <b class="hl-keyword">function</b>() {
-  },
+  <i class="hl-comment" style="color: silver">&lt;!-- child content will be rendered here --&gt;</i>
 
+<b class="hl-tag" style="color: #000096">&lt;/table&gt;</b></pre><p>As you can see above in the index template, the individual tasks are no longer
+iterated over and rendered inside the table, but instead within the
+<code class="literal">TasksIndex</code> and <code class="literal">TaskView</code> views, respectively:</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone.View.extend({
   render: <b class="hl-keyword">function</b> () {
     <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/view'</i></b>]({ model: <b class="hl-keyword">this</b>.model }));
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
-});</pre><p>The TaskView view above is very similar to the one we saw previously for the
-TasksIndex view.  It is only responsible for rendering the contents of its own
+});</pre><p>The <code class="literal">TaskView</code> view above is very similar to the one we saw previously for the
+<code class="literal">TasksIndex</code> view.  It is only responsible for rendering the contents of its own
 element, and the concern of assembling `TaskView`s into a list is left to the
 parent view object:</p><pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
-  initialize: <b class="hl-keyword">function</b>() {
-  },
-
   render: <b class="hl-keyword">function</b> () {
-    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]({ tasks: <b class="hl-keyword">this</b>.collection }));
-
     <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+
+    <b class="hl-keyword">this</b>.$el.html(JST[<b class="hl-string"><i style="color:red">'tasks/index'</i></b>]()); <i class="hl-comment" style="color: silver">// Note that no collection is needed</i>
+                                         <i class="hl-comment" style="color: silver">// to build the container markup.</i>
+
     <b class="hl-keyword">this</b>.collection.each(<b class="hl-keyword">function</b>(task) {
-      <b class="hl-keyword">var</b> taskView = <b class="hl-keyword">new</b> ExampleApp.Views.TaskView({model: task});
+      <b class="hl-keyword">var</b> taskView = <b class="hl-keyword">new</b> ExampleApp.Views.TaskView({ model: task });
       self.$(<b class="hl-string"><i style="color:red">'table'</i></b>).append(taskView.render().el);
     });
 
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
   }
-});</pre><p>In the new TasksIndex view above, the Tasks collection is iterated over. For
-each task, a new TaskView is instantiated, rendered, and then inserted into
-the parent element.</p><p>If you take a look at the output of the TasksIndex, it will appear as follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
+});</pre><p>In the new <code class="literal">TasksIndex</code> view above, the <code class="literal">tasks</code> collection is iterated over. For
+each task, a new <code class="literal">TaskView</code> is instantiated, rendered, and then inserted into
+the <code class="literal">&lt;table&gt;</code> element.</p><p>If you take a look at the output of the <code class="literal">TasksIndex</code>, it will appear as follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
   <b class="hl-tag" style="color: #000096">&lt;table&gt;</b>
@@ -545,7 +505,7 @@ that each view has that is accessed via this.el, and what the view’s content
 is inserted into. By default, this element is a div and therefore every view
 will be wrapped in an extra div. While sometimes this extra div doesn’t really
 matter, as in the outermost div that wraps the entire index, other times this
-produced invalid markup.</p><p>Fortunately, Backbone.js provides us with a clean and simple mechanism for
+produced invalid markup.</p><p>Fortunately, Backbone provides us with a clean and simple mechanism for
 changing the element to something other than a div. In the case of the
 TaskView, we would like this element to be a tr, then the wrapping tr can be
 removed from the task view template.</p><p>The element to use is specified by the tagName member of the TaskView, as
@@ -561,7 +521,7 @@ shown below.</p><pre class="programlisting">ExampleApp.Views.TaskView = Backbone
   }
 };</pre><p>Given the above tagName customization, the task view template will be as
 follows.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;td&gt;</b><b class="hl-tag" style="color: #000096">&lt;%=</b> <span class="hl-attribute" style="color: #F5844C">model.escape('title')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span>
-<span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span></pre><p>And the resulting output of the TasksIndex will be much cleaner, as shown
+<span class="hl-attribute" style="color: #F5844C">&lt;td&gt;&lt;%</span>= <span class="hl-value" style="color: #993300">model.escape('completed')</span> <span class="hl-attribute" style="color: #F5844C">%&gt;&lt;/td&gt;</span></pre><p>And the resulting output of the <code class="literal">TasksIndex</code> will be much cleaner, as shown
 below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;div&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;h1&gt;</b>Tasks<b class="hl-tag" style="color: #000096">&lt;/h1&gt;</b>
 
@@ -580,74 +540,9 @@ below.</p><pre class="programlisting"><b class="hl-tag" style="color: #000096">&
       <b class="hl-tag" style="color: #000096">&lt;td&gt;</b>false<b class="hl-tag" style="color: #000096">&lt;/td&gt;</b>
     <b class="hl-tag" style="color: #000096">&lt;/tr&gt;</b>
   <b class="hl-tag" style="color: #000096">&lt;/table&gt;</b>
-<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre><p>That is the basic building blocks of converting Rails views to Backbone.js and
-getting a functional system. The majority of Backbone.js programming you will
-do will likely be in the Views and Templates and there is a lot more to them:
-event binding, different templating strategies, helpers, event unbinding, and
-more. Those topics are covered in the Routers, Views, and Templates chapter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a id="_automatically_using_the_rails_authentication_token"/>Automatically using the Rails authentication token</h3></div></div></div><p>When using Backbone.js in a Rails app, you will run into a conflict with the
-Rails built in Cross Site Scripting (XSS) protection.</p><p>When Rails XSS is enabled, each POST or PUT request to Rails should include a
-special token which is verified to ensure that the request originated from a
-user which is actually using the Rails app. In recent versions of Rails,
-Backbone.js Ajax requests are no exception.</p><p>To get around this, you have two options. Disable Rails XSS protection (not
-recommended), or make Backbone.js play nicely with Rails XSS.</p><p>To make Backbone.js play nicely with Rails XSS you can monkeypatch Backbone.js
-to include the Rails XSS token in any requests it makes.</p><p>The following is one such script:</p><pre class="programlisting"><i class="hl-comment" style="color: silver">//</i>
-<i class="hl-comment" style="color: silver">// With additions by Maciej Adwent http://github.com/Maciek416</i>
-<i class="hl-comment" style="color: silver">// If token name and value are not supplied, this code Requires jQuery</i>
-<i class="hl-comment" style="color: silver">//</i>
-<i class="hl-comment" style="color: silver">// Adapted from:</i>
-<i class="hl-comment" style="color: silver">// http://www.ngauthier.com/2011/02/backbone-and-rails-forgery-protection.html</i>
-<i class="hl-comment" style="color: silver">// Nick Gauthier @ngauthier</i>
-<i class="hl-comment" style="color: silver">//</i>
-
-<b class="hl-keyword">var</b> BackboneRailsAuthTokenAdapter = {
-
-  <i class="hl-comment" style="color: silver">//</i>
-  <i class="hl-comment" style="color: silver">// Given an instance of Backbone, route its sync() function so that</i>
-  <i class="hl-comment" style="color: silver">// it executes through this one first, which mixes in the CSRF</i>
-  <i class="hl-comment" style="color: silver">// authenticity token that Rails 3 needs to protect requests from</i>
-  <i class="hl-comment" style="color: silver">// forgery. Optionally, the token's name and value can be supplied</i>
-  <i class="hl-comment" style="color: silver">// by the caller.</i>
-  <i class="hl-comment" style="color: silver">//</i>
-  fixSync: <b class="hl-keyword">function</b>(Backbone, paramName <i class="hl-comment" style="color: silver">/*optional*/</i>, paramValue <i class="hl-comment" style="color: silver">/*optional*/</i>){
-
-    <b class="hl-keyword">if</b>(<b class="hl-keyword">typeof</b>(paramName)==<b class="hl-string"><i style="color:red">'string'</i></b> &amp;&amp; <b class="hl-keyword">typeof</b>(paramValue)==<b class="hl-string"><i style="color:red">'string'</i></b>){
-      <i class="hl-comment" style="color: silver">// Use paramName and paramValue as supplied</i>
-    } <b class="hl-keyword">else</b> {
-      <i class="hl-comment" style="color: silver">// Assume we've rendered meta tags with erb</i>
-      paramName = $(<b class="hl-string"><i style="color:red">"meta[name='csrf-param']"</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
-      paramValue = $(<b class="hl-string"><i style="color:red">"meta[name='csrf-token']"</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
-    }
-
-    <i class="hl-comment" style="color: silver">// alias away the sync method</i>
-    Backbone._sync = Backbone.sync;
-
-    <i class="hl-comment" style="color: silver">// define a new sync method</i>
-    Backbone.sync = <b class="hl-keyword">function</b>(method, model, success, error) {
-
-      <i class="hl-comment" style="color: silver">// only need a token for non-get requests</i>
-      <b class="hl-keyword">if</b> (method == <b class="hl-string"><i style="color:red">'create'</i></b> || method == <b class="hl-string"><i style="color:red">'update'</i></b> || method == <b class="hl-string"><i style="color:red">'delete'</i></b>) {
-
-        <i class="hl-comment" style="color: silver">// grab the token from the meta tag rails embeds</i>
-        <b class="hl-keyword">var</b> auth_options = {};
-        auth_options[paramName] = paramValue;
-
-        <i class="hl-comment" style="color: silver">// set it as a model attribute without triggering events</i>
-        model.set(auth_options, {silent: true});
-      }
-
-      <i class="hl-comment" style="color: silver">// proxy the call to the old sync method</i>
-      <b class="hl-keyword">return</b> Backbone._sync(method, model, success, error);
-    };
-  },
-
-
-  <i class="hl-comment" style="color: silver">// change Backbone's sync function back to the original one</i>
-  restoreSync: <b class="hl-keyword">function</b>(Backbone){
-    Backbone.sync = Backbone._sync;
-  }
-};
-
-BackboneRailsAuthTokenAdapter.fixSync(Backbone);</pre><p>The above patch depends on jQuery, and should be included after jQuery and
-Backbone.js are loaded. Using Jammit, you’d list it below the backbone.js file.</p><p>In Rails 3.1, you’ll place this file in lib/assets/javascripts. In the example
-app, you can find this this in
-example_app/lib/assets/javascripts/backbone.authtokenadapter.js.</p></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Organization </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Routers, Views, and Templates</td></tr></table></div></body></html>
+<b class="hl-tag" style="color: #000096">&lt;/div&gt;</b></pre><p>We’ve now covered the basic building blocks of converting Rails views to
+Backbone and getting a functional system. The majority of Backbone programming
+you will do will likely be in the Views and templates and there is a lot more
+to them: event binding, different templating strategies, helpers, event
+unbinding, and more. Those topics are covered in the "Routers, Views, and
+Templates" chapter.</p></div></div></div><div class="navfooter"><hr/><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ar01s03.html">Prev</a> </td><td width="20%" align="center"> </td><td width="40%" align="right"> <a accesskey="n" href="ar01s05.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Organization </td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top"> Routers, Views, and Templates</td></tr></table></div></body></html>

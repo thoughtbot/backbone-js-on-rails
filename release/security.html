@@ -60,7 +60,7 @@ it using a simple jquery selector, and parse it ourselves.</p>
 
     data = JSON.parse(div.text());
 
-    ExampleApp.init(data);
+    ExampleApp.initialize(data);
   });
 &lt;/script&gt;</pre>
 <p>A reliable way to unencode the HTML-encoded JSON string is to use the browser’s
@@ -68,7 +68,7 @@ native functionality, by settings an element’s <code class="literal">innerHTML
 script, we create a <code class="literal">json_div</code> var, assign its <code class="literal">innerHTML</code> to the bootstrap
 script’s text, and retrieve the innerText back out, unencoded. The final result
 is the <code class="literal">data</code> variable containing proper JSON with no HTML escaping that can be
-parsed and passed along to your app’s init function.</p>
+parsed and passed along to your app’s <code class="literal">initialize</code> function.</p>
 <p>This approach can be seen on the example app on the
 <code class="literal">app/views/tasks/index.html.erb</code> template.</p>
 <p>Now, the application’s models, populated by the bootstrap data structure,

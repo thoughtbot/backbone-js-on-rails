@@ -1,5 +1,5 @@
 var TaskDetail = Backbone.View.extend({
-  template: JST['tasks/tasks_detail'],
+  template: JST['tasks/task_detail'],
   tagName: 'section',
   id: 'task',
 
@@ -10,13 +10,13 @@ var TaskDetail = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "render");
 
-    this.model.bind("change", this.render);
-    this.model.comments.bind("change", this.render);
-    this.model.comments.bind("add", this.render);
+    this.model.on("change", this.render);
+    this.model.comments.on("change", this.render);
+    this.model.comments.on("add",    this.render);
   },
 
   render: function() {
-    $(this.el).html(this.template({task: this.model}));
+    this.$el.html(this.template({task: this.model}));
   },
 
   createComment: function() {

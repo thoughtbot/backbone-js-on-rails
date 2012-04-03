@@ -212,10 +212,8 @@ specs:</p>
     expect(incompleteTask.isComplete()).toBe(false);
   });
 });</pre>
-<p>To ease the use of Jasmine and the Rails 3.1 asset pipeline, we use
-<a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">Jasminerice</a>.  To run the
-Jasmine tests in the example application, simply start up the development
-server and visit <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a>.</p>
+<p>To run the Jasmine tests in the example application, simply run <code class="literal">bundle exec
+rake jasmine</code> and visit <a class="ulink" href="http://localhost:8888" target="_top">http://localhost:8888</a>.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
@@ -288,7 +286,7 @@ Spy/stub/mock, even your HTTP, with <a class="ulink" href="http://sinonjs.org/" 
 If you’re looking for factory_girl.js, it’s called <a class="ulink" href="https://github.com/bkeepers/rosie" target="_top">Rosie</a>.
 </li>
 <li>
-Use the Rails 3.1 asset pipeline with <a class="ulink" href="https://github.com/bradphelan/jasminerice" target="_top">jasminerice</a>.
+Use the Rails 3.1 asset pipeline with the latest edge versions of the jasmine gem
 </li>
 <li>
 See other examples on James Newbery’s blog: <a class="ulink" href="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html" target="_top">testing Backbone with Jasmine</a> and check out his <a class="ulink" href="https://github.com/froots/backbone-jasmine-examples" target="_top">examples on GitHub</a>.
@@ -314,10 +312,11 @@ session, so you’ll want to install Firefox if you don’t have it already.</p>
 run integration tests against Chrome.</p>
 </div>
 <p>The other dependencies you can install by adding them to your Gemfile. The gems
-you’ll need for testing are jasminerice, jasmine, cucumber-rails, rspec-rails,
-and capybara. You’ll want to add RSpec, Cucumber, and Jasmine to both the test
-and development groups so that you can run generators. With all our testing
-dependencies in place, the Gemfile in our sample application looks like this:</p>
+you’ll need for testing are jasmine (currently tracking the edge version from
+git), cucumber-rails, rspec-rails, and capybara.  You’ll want to add RSpec,
+Cucumber, and Jasmine to both the test and development groups so that you can
+run generators. With all our testing dependencies in place, the Gemfile in our
+sample application looks like this:</p>
 <pre class="programlisting">source <b class="hl-string"><i style="color:red">'http://rubygems.org'</i></b>
 
 gem <b class="hl-string"><i style="color:red">'rails'</i></b>, <b class="hl-string"><i style="color:red">'3.1.0'</i></b>
@@ -339,10 +338,9 @@ group :assets <b class="hl-keyword">do</b>
 <b class="hl-keyword">end</b>
 
 group :development, :test <b class="hl-keyword">do</b>
-  gem <b class="hl-string"><i style="color:red">"rspec-rails"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 2.6.1"</i></b>
+  gem <b class="hl-string"><i style="color:red">"rspec-rails"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 2.9.0"</i></b>
   gem <b class="hl-string"><i style="color:red">"ruby-debug19"</i></b>
-  gem <b class="hl-string"><i style="color:red">'jasmine'</i></b>, <b class="hl-string"><i style="color:red">"= 1.1.0.rc4"</i></b>
-  gem <b class="hl-string"><i style="color:red">'jasminerice'</i></b>
+  gem <b class="hl-string"><i style="color:red">'jasmine'</i></b>, :git =&gt; <b class="hl-string"><i style="color:red">"git://github.com/pivotal/jasmine-gem.git"</i></b>, :ref =&gt; <b class="hl-string"><i style="color:red">"34c1529c3f7"</i></b>
   gem <b class="hl-string"><i style="color:red">'cucumber-rails'</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 1.0.2"</i></b>, :require =&gt; <b class="hl-keyword">false</b>
 <b class="hl-keyword">end</b>
 
@@ -354,7 +352,7 @@ group :test <b class="hl-keyword">do</b>
   gem <b class="hl-string"><i style="color:red">"bourne"</i></b>
   gem <b class="hl-string"><i style="color:red">"database_cleaner"</i></b>
   gem <b class="hl-string"><i style="color:red">"nokogiri"</i></b>
-  gem <b class="hl-string"><i style="color:red">"shoulda"</i></b>
+  gem <b class="hl-string"><i style="color:red">"shoulda-matchers"</i></b>
   gem <b class="hl-string"><i style="color:red">"launchy"</i></b>
   gem <b class="hl-string"><i style="color:red">"guard-spork"</i></b>
   gem <b class="hl-string"><i style="color:red">"spork"</i></b>, <b class="hl-string"><i style="color:red">"~&gt; 0.9.0.rc"</i></b>
@@ -363,17 +361,16 @@ group :test <b class="hl-keyword">do</b>
 <pre class="programlisting">rails generate cucumber:install</pre>
 <p>Next, bootstrap the application for Jasmine:</p>
 <pre class="programlisting">rails generate jasmine:install</pre>
-<p>You’ll want to set up Jasminerice to load all your helpers and specs:</p>
-<pre class="programlisting">include::../../example_app/</pre>
-<p>Finally, you need to mount the Jasminerice engine so that you can run your
-Jasmine specs. Add the following routes to config/routes.rb:</p>
-<pre class="programlisting"><b class="hl-keyword">if</b> [<b class="hl-string"><i style="color:red">"development"</i></b>, <b class="hl-string"><i style="color:red">"test"</i></b>].include? Rails.env
-  mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
-<b class="hl-keyword">end</b></pre>
 <p>With this configuration, you can run cucumber scenarios with the cucumber
-command and you can run Jasmine tests by running the development server with
-<code class="literal">bundle exec rails server</code> and accessing <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a> in your
-browser.</p>
+command and you can run Jasmine tests by running <code class="literal">bundle exec rake jasmine</code>
+and visiting <a class="ulink" href="http://localhost:8888" target="_top">http://localhost:8888</a>, or by running <code class="literal">bundle exec rake jasmine:ci</code>
+which uses Selenium to verify the Jasmine results.</p>
+<p>One final helpful configuration change is to include the <code class="literal">jasmine:ci</code> task
+in the default rake task.  This way, running <code class="literal">rake</code> will run all your specs,
+including Jasmine specs.</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver"># Rakefile</i>
+<i class="hl-comment" style="color: silver"># ...</i>
+task :default =&gt; [<b class="hl-string"><i style="color:red">'spec'</i></b>, <b class="hl-string"><i style="color:red">'jasmine:ci'</i></b>, <b class="hl-string"><i style="color:red">'cucumber'</i></b>]</pre>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h4 class="title">
@@ -413,7 +410,7 @@ the list.  We’ll start with the list of items, and create fixture data with
   ./features/step_definitions/web_steps.rb:29:in `with_scope'
   ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
   features/view_tasks.feature:13:in `Then I should see "Master backbone" within the tasks list'</pre>
-<p>A common gotcha when testing Backbone.js Rails apps is seeing false
+<p>A common gotcha when testing Rails apps with our structure is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
 <code class="literal">Then I should see "Master backbone"</code> instead of scoping it with <code class="literal">within the
 tasks list</code>, then some test drivers would count the JSON that is used to
@@ -424,28 +421,21 @@ we will need outline the UI first.  To do this, first we’ll need a page to hos
 our code.  Let’s create and route a Rails <code class="literal">TasksController</code>. We’ll bootstrap the
 Backbone app on <code class="literal">tasks#index</code>.</p>
 <pre class="programlisting">ExampleApp::Application.routes.draw <b class="hl-keyword">do</b>
-  resources :tasks <b class="hl-keyword">do</b>
-    resources :attachments, :only =&gt; [:create, :show]
+  resources :tasks, :only =&gt; [:show, :create, :update, :index] <b class="hl-keyword">do</b>
+    resources :attachments, :only =&gt; [:show, :create]
   <b class="hl-keyword">end</b>
 
   root :to =&gt; <b class="hl-string"><i style="color:red">'tasks#index'</i></b>
-
-  <b class="hl-keyword">if</b> [<b class="hl-string"><i style="color:red">"development"</i></b>, <b class="hl-string"><i style="color:red">"test"</i></b>].include? Rails.env
-    mount Jasminerice::Engine =&gt; <b class="hl-string"><i style="color:red">"/jasmine"</i></b>
-  <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre>
-<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Note</h3>
-<p>You can also see the route for the
-<a class="ulink" href="http://rubygems.org/gems/jasminerice" target="_top">jasminerice gem</a>, which makes the Rails
-3.1 asset pipeline (and all of our app assets) available to the Jasmine specs.</p>
-</div>
 <pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
   before_filter :authorize
   respond_to :html, :json
 
+  wrap_parameters :task, :include =&gt; [:assignments_attributes, :title, :complete]
+
   <b class="hl-keyword">def</b> index
-    respond_with(@tasks = current_user.tasks)
+    @tasks = tasks_visible_to_current_user
+    @users = user_id_and_email_attributes
   <b class="hl-keyword">end</b>
 
   <b class="hl-keyword">def</b> show
@@ -461,6 +451,16 @@ Backbone app on <code class="literal">tasks#index</code>.</p>
     task.update_attributes(params[:task])
     respond_with(task)
   <b class="hl-keyword">end</b>
+
+  private
+
+  <b class="hl-keyword">def</b> user_id_and_email_attributes
+    User.all.map { |user| { :id =&gt; user.id, :email =&gt; user.email } }
+  <b class="hl-keyword">end</b>
+
+  <b class="hl-keyword">def</b> tasks_visible_to_current_user
+    (current_user.tasks + current_user.assigned_tasks).uniq
+  <b class="hl-keyword">end</b>
 <b class="hl-keyword">end</b></pre>
 <p>To render our tasks, we’ll want a TasksIndex Backbone view class.  But before we
 write this class, we’ll motivate it with a Jasmine isolation spec:</p>
@@ -473,10 +473,9 @@ write this class, we’ll motivate it with a Jasmine isolation spec:</p>
     expect(view.$el).toContain(<b class="hl-string"><i style="color:red">"table"</i></b>);
   });
 });</pre>
-<p>We use the <a class="ulink" href="https://github.com/velesin/jasmine-jquery" target="_top">jasmine-jquery</a> library
-(provided by jasminerice) to provide DOM matchers for Jasmine like
-<code class="literal">toContain()</code>.</p>
-<p>To run the Jasmine spec, run the Rails server and visit <a class="ulink" href="http://localhost:3000/jasmine" target="_top">http://localhost:3000/jasmine</a></p>
+<p>We use the <a class="ulink" href="https://github.com/velesin/jasmine-jquery" target="_top">jasmine-jquery</a> library to
+provide DOM matchers for Jasmine like <code class="literal">toContain()</code>.</p>
+<p>To run the Jasmine spec, run <code class="literal">bundle exec rake jasmine</code> and visit <a class="ulink" href="http://localhost:8888" target="_top">http://localhost:8888</a></p>
 <p>To make this test pass, we’ll add a small template and make the <code class="literal">TasksIndex</code>
 view render it:</p>
 <pre class="programlisting">ExampleApp.Views.TasksIndex = Backbone.View.extend({
@@ -495,7 +494,7 @@ view render it:</p>
 <pre class="programlisting">&lt;table&gt;&lt;/table&gt;</pre>
 <p>Now our Jasmine specs pass:</p>
 <div class="figure">
-<a id="d0e3839"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
+<a id="d0e4162"></a><p class="title"><b>Figure 5. Passing Jasmine spec</b></p>
 <div class="figure-contents"><div class="mediaobject"><img src="testing/jasmine-passing.png" alt="testing/jasmine-passing.png"></div></div>
 </div>
 <br class="figure-break"><p>Since the Jasmine specs pass, we’ll pop back up a level and run the Cucumber
@@ -533,32 +532,44 @@ describe(<b class="hl-string"><i style="color:red">"ExampleApp.Views.TasksIndex"
   });
 });</pre>
 <p>This spec fails:</p>
-<pre class="programlisting">1 spec, 1 failure in 0.008sFinished at Thu Sep 22 2011 18:10:26 GMT-0400 (EDT)
+<pre class="programlisting">1 spec, 1 failure in 0.008s
+Finished at Thu Sep 22 2011 18:10:26 GMT-0400 (EDT)
 ExampleApp.Views.TasksIndex
 renders a collection of tasks
 TypeError: undefined is not a function
 TypeError: undefined is not a function
-    at [object Object].&lt;anonymous&gt; (http://localhost:3000/assets/views/tasks_index_spec.js?body=1:4:27)</pre>
+    at [object Object].&lt;anonymous&gt; (http://localhost:8888/assets/views/tasks_index_spec.js?body=1:4:27)</pre>
 <p>It’s failing because we haven’t defined <code class="literal">ExampleApp.Collections.Tasks</code> yet.  We
 need to define a Task model and Tasks collection.  We’ll define the model:</p>
 <pre class="programlisting">ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
     <b class="hl-keyword">this</b>.parseAttachments();
+
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"change:assigned_users"</i></b>, <b class="hl-keyword">this</b>.parseAssignedUsers);
+    <b class="hl-keyword">this</b>.parseAssignedUsers();
   },
 
   parseAttachments: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">this</b>.attachments = <b class="hl-keyword">new</b> ExampleApp.Collections.Attachments(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>));
   },
 
-  schema: {
-    title: { type: <b class="hl-string"><i style="color:red">"Text"</i></b> }
+  parseAssignedUsers: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.assignedUsers = <b class="hl-keyword">new</b> ExampleApp.Collections.Users(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'assigned_users'</i></b>));
   },
 
   urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
 
   isComplete: <b class="hl-keyword">function</b>() {
     <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'complete'</i></b>);
+  },
+
+  toJSON: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> json = _.clone(<b class="hl-keyword">this</b>.attributes);
+    json.assignments_attributes = <b class="hl-keyword">this</b>.assignedUsers.map(<b class="hl-keyword">function</b>(user) {
+      <b class="hl-keyword">return</b> { user_id: user.id };
+    });
+    <b class="hl-keyword">return</b> json;
   }
 });</pre>
 <p>write a test to motivate the collection:</p>
@@ -614,6 +625,7 @@ ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   &lt;thead&gt;
     &lt;tr&gt;
       &lt;th&gt;Title&lt;/th&gt;
+      &lt;th&gt;Assignees&lt;/th&gt;
       &lt;th&gt;Completed&lt;/th&gt;
     &lt;/tr&gt;
   &lt;/thead&gt;
@@ -650,26 +662,31 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
     expect(ExampleApp.Routers).toBeTruthy();
   });
 
-  describe(<b class="hl-string"><i style="color:red">"init()"</i></b>, <b class="hl-keyword">function</b>() {
-    it(<b class="hl-string"><i style="color:red">"accepts task JSON and instantiates a collection from it"</i></b>, <b class="hl-keyword">function</b>() {
-      <b class="hl-keyword">var</b> tasksJSON = {<b class="hl-string"><i style="color:red">"tasks"</i></b>: [{<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"thing to do"</i></b>}, {<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"another thing"</i></b>}]};
-      ExampleApp.init(tasksJSON);
+  describe(<b class="hl-string"><i style="color:red">"initialize()"</i></b>, <b class="hl-keyword">function</b>() {
+    it(<b class="hl-string"><i style="color:red">"accepts data JSON and instantiates a collection from it"</i></b>, <b class="hl-keyword">function</b>() {
+      <b class="hl-keyword">var</b> data = {
+        <b class="hl-string"><i style="color:red">"tasks"</i></b>: [{<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"thing to do"</i></b>}, {<b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"another thing"</i></b>}],
+        <b class="hl-string"><i style="color:red">"users"</i></b>: [{<b class="hl-string"><i style="color:red">"id"</i></b>:<b class="hl-string"><i style="color:red">"1"</i></b>,<b class="hl-string"><i style="color:red">"email"</i></b>:<b class="hl-string"><i style="color:red">"alice@example.com"</i></b>}]
+      };
+      ExampleApp.initialize(data);
 
       expect(ExampleApp.tasks).not.toEqual(<b class="hl-keyword">undefined</b>);
       expect(ExampleApp.tasks.length).toEqual(<span class="hl-number">2</span>);
       expect(ExampleApp.tasks.models[<span class="hl-number">0</span>].get(<b class="hl-string"><i style="color:red">'title'</i></b>)).toEqual(<b class="hl-string"><i style="color:red">"thing to do"</i></b>);
       expect(ExampleApp.tasks.models[<span class="hl-number">1</span>].get(<b class="hl-string"><i style="color:red">'title'</i></b>)).toEqual(<b class="hl-string"><i style="color:red">"another thing"</i></b>);
+
+      expect(ExampleApp.users.length).toEqual(<span class="hl-number">1</span>);
     });
 
     it(<b class="hl-string"><i style="color:red">"instantiates a Tasks router"</i></b>, <b class="hl-keyword">function</b>() {
       ExampleApp.Routers.Tasks = sinon.spy();
-      ExampleApp.init({});
+      ExampleApp.initialize({});
       expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
     });
 
     it(<b class="hl-string"><i style="color:red">"starts Backbone.history"</i></b>, <b class="hl-keyword">function</b>() {
       Backbone.history = { start: sinon.spy() };
-      ExampleApp.init({});
+      ExampleApp.initialize({});
       expect(Backbone.history.start).toHaveBeenCalled();
     });
   });
@@ -680,10 +697,11 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
   Collections: {},
   Views: {},
   Routers: {},
-  init: <b class="hl-keyword">function</b>(data) {
+  initialize: <b class="hl-keyword">function</b>(data) {
     <b class="hl-keyword">this</b>.tasks = <b class="hl-keyword">new</b> ExampleApp.Collections.Tasks(data.tasks);
+    <b class="hl-keyword">this</b>.users = <b class="hl-keyword">new</b> ExampleApp.Collections.Users(data.users);
 
-    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks({ collection: <b class="hl-keyword">this</b>.tasks });
+    <b class="hl-keyword">new</b> ExampleApp.Routers.Tasks({ collection: <b class="hl-keyword">this</b>.tasks, users: <b class="hl-keyword">this</b>.users });
     <b class="hl-keyword">if</b> (!Backbone.history.started) {
       Backbone.history.start();
       Backbone.history.started = true;
@@ -697,7 +715,10 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
 &lt;/div&gt;
 
 &lt;script type="text/json" id="bootstrap"&gt;
-  { "tasks": &lt;%= @tasks.to_json %&gt; }
+  {
+    "tasks": &lt;%= @tasks.to_json(include: { assigned_users: { only: [:id, :email] } }) %&gt;,
+    "users": &lt;%= @users.to_json %&gt;
+  }
 &lt;/script&gt;
 
 &lt;%= content_for :javascript do -%&gt;
@@ -707,7 +728,7 @@ Note the use of a <code class="literal">sinon.spy</code> for verifying the route
       div.html($('#bootstrap').text());
       var data = JSON.parse(div.text());
 
-      ExampleApp.init(data);
+      ExampleApp.initialize(data);
     });
   &lt;/script&gt;
 &lt;% end %&gt;</pre>

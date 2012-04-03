@@ -39,6 +39,9 @@
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a id="_introduction"></a>Introduction</h2></div></div></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_the_shift_to_client_side_web_applications"></a>The shift to client-side web applications</h3></div></div></div>
 <p>Modern web applications are increasingly rich, shifting their complexity onto
 the client side.  While there are very well-understood approaches embodied in
 mature frameworks to organize server-side code, frameworks for organizing your
@@ -52,13 +55,13 @@ lack decoupled and modular organizational structures often fall to the same few
 kinds of technical debt.</p>
 <p>These apps are often highly asynchronous and the path of least resistance
 implementation is often to have deeply nested callbacks to describe asynchronous
-behavior, with nested <code class="literal">$.ajax</code> calls and success/failure conditional concerns
+behavior, with nested Ajax calls and success/failure conditional concerns
 going several layers deep.</p>
-<p>Second, rich client-side applications also often involve a layer of state and
-logic on the client side.  One tempting way to implement this is to store domain
-objects or business logic state in the DOM.  However, relying on the DOM as a
-persistence layer - stashing your application’s data in hidden <code class="literal">&lt;div&gt;</code> elements
-that you clone and graft and toggle into and out of view, or reading and writing
+<p>Rich client-side applications almost always involve a layer of state and
+logic on the client side.  One way to implement this is to store domain
+objects or business logic state in the DOM.  However, storing state in the DOM,
+stashing your application’s data in hidden <code class="literal">&lt;div&gt;</code> elements
+that you clone, graft, and toggle into and out of view, or reading and writing
 to lengthy sets of HTML <code class="literal">data-*</code> attributes - can quickly get cumbersome,
 repetitive, and confusing.</p>
 <p>A third common feature in rich client-side apps is presenting multiple views on
@@ -77,25 +80,55 @@ observers, each module of code is more well-encapsulated and expresses a
 cohesive set of responsibilities without being coupled to outside concerns.
 Your application code becomes easier to test, modify, and extend, and you
 can better manage its complexity while its feature set grows.</p>
-<p>It’s important to note that Backbone is a library, not a framework.  If you’re
-coming from a Rails background, you understand that a large part of Rails'
+<p>Granted, you can thoughtfully organize your code in a clean, coherent manner
+without using an external library.  Using a library like Backbone helps you
+get started more quickly, reduces the number of decisions to make, and provides
+a common vocabulary for your team members or open source contributors.</p>
+<p>If you’re coming from a Rails background, you understand that a large part of Rails'
 value is expressing and implementing highly-opinionated conventions that guide
 development decisions.  Backbone doesn’t do this.  Instead of trying to serve
 as "the one way" or an opinionated framework like Rails, Backbone provides a
 set of structures that help you organize your application by building your own
 framework with its own set of conventions.</p>
-<p>Next, we’ll take a look at a handful of alternatives to Backbone, and then get
-down to business.</p>
+</div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
-<a id="_why_use_backbone_js"></a>Why use Backbone.js</h3></div></div></div>
-<p>Web applications are pushing an increasing amount of behavior to the client.  The user experience can be quite a pleasure, but deeply nesting callbacks and relying on the DOM for app state aren’t.  There is a host of new JavaScript client-side frameworks blossoming, and you have no shortage of choice.</p>
-<p>From "least similar to Backbone" to "most similar to Backbone", here are a few of the options:</p>
-<p>Are you building a desktop-like application?  Would you benefit from a rich library of existing UI controls?  Check out Cappuccino or SproutCore.</p>
-<p>Are you very comfortable with the model-view-view model (MVVM) pattern, perhaps from Microsoft WCF or Silverlight?  Take a look at Knockout.js, which has very robust object graph dependency tracking and declarative bindings between markup and view models.</p>
-<p>Do you want a soup-to-nuts client-side framework, with a jQuery feel (and dependency), with generators, dependency management, builds, testing, and more?  JavaScriptMVC provides all of this, with an MVC core that supports observables and data transports like JSON over REST.  You can pick and choose a subset of functionality.</p>
-<p>Server synchronization and data validation play a central role in structuring your application, and an opinion on it is one of the central design choices of Spine.js. Does the client generally take precedence, handling all its own validations, immediately returning to the user, and updating the server asynchronously?  Or do you have significant server-side processing and validation?  Spine.js strongly favors a client-centric approach, with a decoupled server.  There are a few other API differences, but in other respects Spine is very similar to Backbone.</p>
-<p>Backbone favors a pared-down and flexible approach.  There is very little in the way of inheritance or class library, and the code you write ends up feeling very much like JavaScript.  It does not prescribe much in the way of favoring a client over server, or a particular server syncronization approach.  Although this means that you may need to write some of your own conventions, Backbone is built with that in mind: the source is small, very well annotated, and modularly designed so that it is easy to change.  It is small and flexible enough to make it pleasant to introduce into an existing application, but provides enough convention and structure to help you organize your JavaScript.</p>
+<a id="_goals_for_this_book"></a>Goals for this book</h3></div></div></div>
+<p>This book aims to cover topics that are of interest when integrating
+Backbone into a Rails application.  The primary Backbone documentation is
+quite good, and readible in its brevity.  While we’ll touch on introductory
+topics when they are critical to understand the points at hand, this book does
+not aim to provide an introduction to Backbone, and generally assumes you can
+lean on the Backbone documentation to explain the details of some concepts.</p>
+<p>This book also does not aim to provide a comprehensive mapping of all possible
+solutions to problem domains, but rather to describe the best approaches we
+have found for solving problems and organizing applications using both Rails
+and Backbone.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_alternatives_to_backbone"></a>Alternatives to Backbone</h3></div></div></div>
+<p>Web applications are pushing an increasing amount of behavior to the client.
+The user experience can be quite a pleasure, but deeply nesting callbacks and
+relying on the DOM for app state aren’t.  There is a host of new JavaScript
+client-side frameworks blossoming, and you have no shortage of choice.</p>
+<p>Knockout and Angular support declarative view-bindings and the model-view-view
+model (MVVM) pattern.  Cappuccino and SproutCore deliver a rich library of UI
+controls for building desktop-like applications.  JavaScriptMVC provides quite
+a bit of structure, including dependency management and build tools.  Spine is
+perhaps the most similar to Backbone, but takes an opinionated stance to
+emphasize completely asynchronous client-server interactions for a faster user
+experience.  Ember, originally a SproutCore rewrite, provides a host of
+conventions including two-way bindings, computed properties, and auto-updating
+templates.</p>
+<p>Backbone favors a pared-down and flexible approach.  The code you write ends up
+feeling very much like plain JavaScript.  Although you will need to write some
+of your own conventions, Backbone is built to be easy to change: the source is
+small, well annotated, and modularly designed.  It is small and flexible enough
+to make it pleasant to introduce into an existing application, but provides
+enough convention and structure to help you organize your JavaScript.  A
+growing community of users brings with it a rich ecosystem of plugins, blog
+articles, and support.</p>
 </div>
 <div class="section" lang="en">
 <div class="titlepage"><div><div><h3 class="title">
@@ -105,12 +138,12 @@ popular example, it is so for a reason: the concepts and domain are familiar,
 while leaving room for exploring interesting implementations like deferred
 loading and file attachment.</p>
 <p>The application uses Rails 3.1.0 and Ruby 1.9.3.  We provide an .rvmrc.</p>
-<p>Backbone.js and Underscore.js are the non-minified versions. This is for
-informational purposes, but also because the Rails 3.1 asset pipeline will
-compress and minify them.</p>
-<p>While Rails 3.1 defaults to CoffeeScript, we have decided to make all of the
-example code normal Javascript as we believe that will be the most
-understandable to the current readers.</p>
+<p>The included JavaScript libraries are non-minified for readability.  This
+is a general good practice, and the Rails asset pipeline will properly package
+the assets for production.</p>
+<p>While Rails 3.1 provides the ability to write in CoffeeScript, we have decided
+to make all of the example code normal JavaScript so as to reduce the number
+of new things introduced at a time.</p>
 <p>The example application comes with a full test suite.  The README in the
 <code class="literal">example_app</code> root directory has instructions for bootstrapping the app and
 running all the tests.</p>
