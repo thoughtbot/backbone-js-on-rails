@@ -32,15 +32,21 @@ describe("ExampleApp", function(){
     });
 
     it("instantiates a Tasks router", function() {
-      ExampleApp.Routers.Tasks = sinon.spy();
+      sinon.spy(ExampleApp.Routers, 'Tasks');
       ExampleApp.initialize({});
       expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
+      ExampleApp.Routers.Tasks.restore();
     });
 
     it("starts Backbone.history", function() {
-      Backbone.history = { start: sinon.spy() };
+      Backbone.history.started = null;
+      Backbone.history.stop();
+      sinon.spy(Backbone.history, 'start');
       ExampleApp.initialize({});
+
       expect(Backbone.history.start).toHaveBeenCalled();
+
+      Backbone.history.start.restore();
     });
   });
 });
