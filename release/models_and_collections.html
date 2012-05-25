@@ -1,0 +1,1993 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" href="master.css" type="text/css" />
+    <title>Models and collections</title>
+  </head>
+
+  <body>
+    <div class="nav" id="navheader">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="routers_views_and_templates.html">Prev</a><br/>
+         Routers, Views, and Templates
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         <strong>Backbone.js on Rails</strong>
+        
+      </td><td width="33%" align="right">
+        
+          <a href="testing.html">Next</a><br/>
+          Testing
+        
+      </td></tr>
+    </table>
+    </div>
+
+    <hr/>
+
+    <div class="content">
+      <div class="section" lang="en">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a id="_models_and_collections"></a>Models and collections</h2></div></div></div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_filters_and_sorting"></a>Filters and sorting</h3></div></div></div>
+<p>When using our Backbone models and collections, it’s often handy to filter the
+collections by reusable criteria, or sort them by several different criteria.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_filters"></a>Filters</h4></div></div></div>
+<p>To filter a <code class="literal">Backbone.Collection</code>, as with Rails named scopes, first define
+functions on your collections that filter by your criteria, using the <code class="literal">select</code>
+function from Underscore.js; then, return new instances of the collection class. A
+first implementation might look like this:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+    });
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
+  }
+});</pre>
+<p>Let’s refactor this a bit.  Ideally, the filter functions will reuse logic
+already defined in your model class:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+  }
+});
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> filteredTasks = <b class="hl-keyword">this</b>.select(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(filteredTasks);
+  }
+});</pre>
+<p>Going further, notice that there are actually two concerns in this function.
+The first is the notion of filtering the collection, and the second is the
+specific filtering criteria (<code class="literal">task.isComplete()</code>).</p>
+<p>Let’s separate the two concerns here, and extract a <code class="literal">filtered</code> function:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+  }
+});
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
+  },
+
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.select(criteriaFunction));
+  }
+});</pre>
+<p>We can extract this function into a reusable mixin, abstracting the <code class="literal">Tasks</code>
+collection class using <code class="literal">this.constructor</code>:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.select(criteriaFunction));
+  }
+};
+
+<b class="hl-keyword">var</b> Task = Backbone.Model.extend({
+  isComplete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'completed_at'</i></b>) !== null;
+  }
+});
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  complete: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.filtered(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.isComplete();
+    });
+  }
+});
+
+_.extend(Tasks.<b class="hl-keyword">prototype</b>, FilterableCollectionMixin);</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_propagating_collection_changes"></a>Propagating collection changes</h4></div></div></div>
+<p>The <code class="literal">FilterableCollectionMixin</code>, as we’ve written it, will produce a filtered
+collection that does not update when the original collection is changed.  To do
+so, bind to the change, add, and remove events on the source collection,
+reapply the filter function, and repopulate the filtered collection:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> FilterableCollectionMixin = {
+  filtered: <b class="hl-keyword">function</b>(criteriaFunction) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> filteredCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
+
+    <b class="hl-keyword">var</b> applyFilter = <b class="hl-keyword">function</b>() {
+      filteredCollection.reset(sourceCollection.select(criteriaFunction));
+    };
+
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change"</i></b>, applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"add"</i></b>,    applyFilter);
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"remove"</i></b>, applyFilter);
+
+    applyFilter();
+
+    <b class="hl-keyword">return</b> filteredCollection;
+  }
+};</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_sorting"></a>Sorting</h4></div></div></div>
+<p>The simplest way to sort a <code class="literal">Backbone.Collection</code> is to define a <code class="literal">comparator</code>
+function.  This functionality is built in:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  }
+});</pre>
+<p>If you’d like to provide more than one sort order on your collection, you can
+use an approach similar to the <code class="literal">filtered</code> function above, and return a new
+<code class="literal">Backbone.Collection</code> whose <code class="literal">comparator</code> is overridden.  Call <code class="literal">sort</code> to update
+the ordering on the new collection:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = <b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    };
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+});</pre>
+<p>Similarly, you can extract the reusable concern to another function:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    });
+  },
+
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
+    });
+  },
+
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> Tasks(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+});</pre>
+<p>…And then into another reusable mixin:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor(<b class="hl-keyword">this</b>.models);
+    sortedCollection.comparator = comparator;
+    sortedCollection.sort();
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+};
+
+<b class="hl-keyword">var</b> Tasks = Backbone.Collection.extend({
+  model: Task,
+  url: <b class="hl-string"><i style="color:red">'/tasks'</i></b>,
+
+  comparator: <b class="hl-keyword">function</b>(task) {
+    <b class="hl-keyword">return</b> task.dueDate;
+  },
+
+  byCreatedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.createdAt;
+    });
+  },
+
+  byCompletedAt: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.sortedBy(<b class="hl-keyword">function</b>(task) {
+      <b class="hl-keyword">return</b> task.completedAt;
+    });
+  }
+});
+
+_.extend(Tasks.<b class="hl-keyword">prototype</b>, SortableCollectionMixin);</pre>
+<p>Just as with the <code class="literal">FilterableCollectionMixin</code> before, the
+<code class="literal">SortableCollectionMixin</code> should observe its source if updates are to propagate
+from one collection to another:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> SortableCollectionMixin = {
+  sortedBy: <b class="hl-keyword">function</b>(comparator) {
+    <b class="hl-keyword">var</b> sourceCollection = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">var</b> sortedCollection = <b class="hl-keyword">new</b> <b class="hl-keyword">this</b>.constructor;
+    sortedCollection.comparator = comparator;
+
+    <b class="hl-keyword">var</b> applySort = <b class="hl-keyword">function</b>() {
+      sortedCollection.reset(sourceCollection.models);
+      sortedCollection.sort();
+    };
+
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"change"</i></b>, applySort);
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"add"</i></b>,    applySort);
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"remove"</i></b>, applySort);
+
+    applySort();
+
+    <b class="hl-keyword">return</b> sortedCollection;
+  }
+};</pre>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_validations"></a>Validations</h3></div></div></div>
+<p>The server is the authoritative place for verifying whether data being
+stored is valid. Even though Backbone.js
+<a class="ulink" href="http://documentcloud.github.com/backbone/#Model-validate" target="_top">exposes an API</a>
+for performing client-side validations, when it comes to validating user data
+in a Backbone.js application, we want to continue to use the very same
+mechanisms on the server side that we’ve used in Rails all along: the
+ActiveModel validations API.</p>
+<p>The challenge is tying the two together: letting your ActiveRecord objects
+reject invalid user data, and having the errors bubble all the way up to the
+interface for user feedback - and keeping it all seamless to the user and
+easy for the developer.</p>
+<p>Let’s wire this up. To get started, we’ll add a validation on the task’s title
+attribute on the ActiveRecord model, like so:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> Task &lt; ActiveRecord::Base
+  validates :title, presence: <b class="hl-keyword">true</b>
+<b class="hl-keyword">end</b></pre>
+<p>On the Backbone side of the world, we have a Backbone task called
+<code class="literal">YourApp.Models.Task</code>:</p>
+<pre class="programlisting">YourApp.Models.Task = Backbone.Model.extend({
+  urlRoot: <b class="hl-string"><i style="color:red">'/tasks'</i></b>
+});</pre>
+<p>We also have a place where users enter new tasks - just a form on the task
+list:</p>
+<pre class="programlisting">&lt;form&gt;
+  &lt;ul&gt;
+    &lt;li <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"task_title_input"</i></b>&gt;
+      &lt;label <b class="hl-keyword">for</b>=<b class="hl-string"><i style="color:red">"title"</i></b>&gt;Title&lt;/label&gt;
+      &lt;input id=<b class="hl-string"><i style="color:red">"title"</i></b> maxlength=<b class="hl-string"><i style="color:red">"255"</i></b> name=<b class="hl-string"><i style="color:red">"title"</i></b> type=<b class="hl-string"><i style="color:red">"text"</i></b>&gt;
+    &lt;/li&gt;
+    &lt;li&gt;
+      &lt;button <b class="hl-keyword">class</b>=<b class="hl-string"><i style="color:red">"submit"</i></b> id=<b class="hl-string"><i style="color:red">"create-task"</i></b>&gt;Create task&lt;/button&gt;
+    &lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/form&gt;</pre>
+<p>On the <code class="literal">NewTask</code> Backbone view, we bind the button’s click event to a new
+function that we’ll call <code class="literal">createTask</code>:</p>
+<pre class="programlisting">YourApp.Views.NewTask = Backbone.View.extend({
+  events: {
+    <b class="hl-string"><i style="color:red">"click #create-task"</i></b>: <b class="hl-string"><i style="color:red">"createTask"</i></b>
+  },
+
+  createTask: {
+    <i class="hl-comment" style="color: silver">// grab attribute values from the form</i>
+    <i class="hl-comment" style="color: silver">// storing them on the attributes hash</i>
+    <b class="hl-keyword">var</b> attributes = {};
+    _.each(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form input, form select'</i></b>), <b class="hl-keyword">function</b>(element) {
+      <b class="hl-keyword">var</b> element = $(element);
+      <b class="hl-keyword">if</b>(element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>) != <b class="hl-string"><i style="color:red">"commit"</i></b>) {
+        attributes[element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>)] = element.val();
+      }
+    });
+
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <i class="hl-comment" style="color: silver">// create a new task and save it to the server</i>
+    <b class="hl-keyword">new</b> YourApp.Models.Task(attributes).save({
+        success: <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* handle success */</i> }
+        error:   <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* validation error occurred, show user */</i> }
+      });
+    <b class="hl-keyword">return</b> false;
+  }
+})</pre>
+<p>This gets the job done, but let’s introduce a new class to handle extracting
+attributes from the form so that it’s decoupled from this view and is
+therefore easier to extend and reuse.</p>
+<p>We’ll call this the <code class="literal">FormAttributes</code>, and its code is as follows:</p>
+<pre class="programlisting">FormAttributes = <b class="hl-keyword">function</b>(form) {
+  <b class="hl-keyword">this</b>.form = form;
+}
+
+_.extend(FormAttributes.<b class="hl-keyword">prototype</b>, {
+  attributes: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attributes = {};
+    _.each($(<b class="hl-string"><i style="color:red">'input, select'</i></b>, <b class="hl-keyword">this</b>.form), <b class="hl-keyword">function</b>(element) {
+      <b class="hl-keyword">var</b> element = $(element);
+      <b class="hl-keyword">if</b>(element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>) != <b class="hl-string"><i style="color:red">"commit"</i></b>) {
+        attributes[element.attr(<b class="hl-string"><i style="color:red">'name'</i></b>)] = element.val();
+      }
+    });
+    <b class="hl-keyword">return</b> attributes;
+  }
+});</pre>
+<p>With this class in place, we can rewrite our form submit action to:</p>
+<pre class="programlisting">YourApp.Views.NewTask = Backbone.View.extend({
+  events: {
+    <b class="hl-string"><i style="color:red">"click #create-task"</i></b>: <b class="hl-string"><i style="color:red">"createTask"</i></b>
+  },
+
+  createTask: {
+    <b class="hl-keyword">var</b> attributes = <b class="hl-keyword">new</b> FormAttributes(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form'</i></b>)).attributes();
+
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <i class="hl-comment" style="color: silver">// create a new task and save it to the server</i>
+    <b class="hl-keyword">new</b> YourApp.Models.Task(attributes).save({
+        success: <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* handle success */</i> }
+        error:   <b class="hl-keyword">function</b>() { <i class="hl-comment" style="color: silver">/* validation error occurred, show user */</i> }
+      });
+    <b class="hl-keyword">return</b> false;
+  }
+})</pre>
+<p>When you call <code class="literal">save()</code> on a Backbone model, Backbone will delegate to <code class="literal">.sync()</code>
+and create a POST request on the model’s URL, where the payload is the
+attributes that you’ve passed onto the <code class="literal">save()</code> call.</p>
+<p>The easiest way to handle this in Rails is to use <code class="literal">respond_to</code>/<code class="literal">respond_with</code>,
+available in Rails 3 applications:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
+  respond_to :json
+  <b class="hl-keyword">def</b> create
+    task = Task.create(params)
+    respond_with task
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
+<p>When the task is created successfully, Rails will render the show action using
+the object that you’ve passed to the <code class="literal">respond_with</code> call, so make sure the show
+action is defined in your routes:</p>
+<pre class="programlisting">resources :tasks, only: [:create, :show]</pre>
+<p>When the task cannot be created successfully because some validation constraint
+is not met, the Rails responder will render the model’s errors as a JSON
+object, and use an HTTP status code of 422, which will alert Backbone that
+there was an error in the request and it was not processed.</p>
+<p>The response from Rails in that case looks something like this:</p>
+<pre class="programlisting">{ <b class="hl-string"><i style="color:red">"title"</i></b>: [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>] }</pre>
+<p>That two-line action in a Rails controller is all we need to talk to our
+Backbone models and handle error cases.</p>
+<p>Back to the Backbone model’s <code class="literal">save()</code> call: Backbone will invoke one of two
+callbacks when it receives a response from the Rails app, so we simply pass in
+a hash containing a function to run for both the success and the error cases.</p>
+<p>In the success case, we may want to add the new model instance to a global
+collection of tasks. Backbone will trigger the add event on that collection, which is a chance for some other view to bind to that event and re-render
+itself so that the new task appears on the page.</p>
+<p>In the error case, however, we want to display inline errors on the form. When
+Backbone triggers the <code class="literal">error</code> callback, it passes along two parameters: the
+model being saved and the raw response. We have to parse the JSON response and
+iterate through it, rendering an inline error on the form corresponding to each
+of the errors. Let’s introduce a couple of new classes that will help along the
+way.</p>
+<p>First is the <code class="literal">ErrorList</code>. An <code class="literal">ErrorList</code> encapsulates parsing of the raw
+JSON that came in from the server and provides an iterator to easily loop
+through errors:</p>
+<pre class="programlisting">ErrorList = <b class="hl-keyword">function</b> (response) {
+  <b class="hl-keyword">if</b> (response &amp;&amp; response.responseText) {
+    <b class="hl-keyword">this</b>.attributesWithErrors = JSON.parse(response.responseText);
+  }
+};
+
+_.extend(ErrorList.<b class="hl-keyword">prototype</b>, {
+  each: <b class="hl-keyword">function</b> (iterator) {
+    _.each(attributesWithErrors, iterator);
+  },
+
+  size: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> _.size(attributesWithErrors);
+  }
+});</pre>
+<p>Next up is the <code class="literal">ErrorView</code>, which is in charge of taking the <code class="literal">ErrorList</code> and
+appending each inline error in the form, providing feedback to the user that
+their input is invalid:</p>
+<pre class="programlisting">ErrorView = Backbone.View.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"renderError"</i></b>);
+  },
+
+  render: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">".error"</i></b>).removeClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">"p.inline-errors"</i></b>).remove();
+    <b class="hl-keyword">this</b>.options.errors.each(<b class="hl-keyword">this</b>.renderError);
+  },
+
+  renderError: <b class="hl-keyword">function</b>(errors, attribute) {
+    <b class="hl-keyword">var</b> errorString = errors.join(<b class="hl-string"><i style="color:red">", "</i></b>);
+    <b class="hl-keyword">var</b> field = <b class="hl-keyword">this</b>.fieldFor(attribute);
+    <b class="hl-keyword">var</b> errorTag = $(<b class="hl-string"><i style="color:red">'&lt;p&gt;'</i></b>).addClass(<b class="hl-string"><i style="color:red">'inline-errors'</i></b>).text(errorString);
+    field.append(errorTag);
+    field.addClass(<b class="hl-string"><i style="color:red">"error"</i></b>);
+  },
+
+  fieldFor: <b class="hl-keyword">function</b>(attribute) {
+    <b class="hl-keyword">return</b> $(<b class="hl-keyword">this</b>.options.el).find(<b class="hl-string"><i style="color:red">'[id*="_'</i></b> + attribute + <b class="hl-string"><i style="color:red">'_input"]'</i></b>).first();
+  }
+});</pre>
+<p>Note the <code class="literal">fieldFor</code> function. It expects a field with an id containing a
+certain format. Therefore, in order for this to work, the form’s HTML must
+contain a matching element. In our case, it was the list item with an id of
+<code class="literal">task_title_input</code>.</p>
+<p>When a Backbone view’s <code class="literal">el</code> is already on the DOM, we need to pass it into the
+view’s constructor. In the case of the <code class="literal">ErrorView</code> class, we want to operate on
+the view that contains the form that originated the errors.</p>
+<p>To use these classes, we take the response from the server and pass that along
+to the <code class="literal">ErrorList</code> constructor, which we then pass to the <code class="literal">ErrorView</code>, which will do
+its fine job inserting the inline errors when we call <code class="literal">render()</code> on it.
+Putting it all together, our save call’s callbacks now look like this:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+<b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> YourApp.Models.Task(attributes);
+model.save({
+  error: <b class="hl-keyword">function</b>(model, response) {
+    <b class="hl-keyword">var</b> errors = <b class="hl-keyword">new</b> ErrorList(response);
+    <b class="hl-keyword">var</b> view   = <b class="hl-keyword">new</b> ErrorView( { el: self.el, errors: errors } );
+    view.render();
+  }
+});</pre>
+<p>Here, we’ve shown how you can decouple different concerns into their own
+classes, creating a system that is easier to extend, and potentially
+arriving at solutions generic enough even to be shared across applications.
+Our simple <code class="literal">FormAttributes</code> class has a long way to go. It can grow up to handle
+many other cases, such as dates.</p>
+<p>One example of a generic library that handles much of what we’ve done here,
+as well as helpers for rendering the forms, is Backbone.Form. In order to know
+how to render all attributes of a model, it requires you to specify a
+"schema" on the model class - and it will take it from there. The source for
+Backbone.Form can be found
+<a class="ulink" href="https://github.com/powmedia/backbone-forms" target="_top">on github</a>.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_model_relationships"></a>Model relationships</h3></div></div></div>
+<p>In any non-trivial application, you will have relationships in your domain model
+that are valuable to express on the client side.  For example, consider a
+contact management application where each person in your contact list has many
+phone numbers, each of a different kind.</p>
+<p>Or, consider a project planning application where there are Teams, Members, and
+Projects as resources (models and collections).  There are relationships between
+each of these primary resources, and those relationships in turn may be exposed
+as first-class resources: a Membership to link a Team and a Member, or a
+Permission to link a Team with a Project.  These relationships are often exposed
+as first-class models - so they can be created and destroyed the same way as other
+models, and so that additional domain information about the relationship, such
+as a duration, rate, or quantity, can be described.</p>
+<p>These model relationships don’t have to be persisted by a relational database.
+In a chatroom application whose data is persisted in a key-value store, the data
+could still be modeled as a Room which has many Messages, as well as Memberships
+that link the Room to Users.  A content management application that stores its
+data in a document database still has the notion of hierarchy, where a Site
+contains many Pages, each of which constitutes zero or more Sections.</p>
+<p>In a vanilla Rails application, the object model is described on the server side
+with ActiveRecord subclasses, and exposed to the Backbone client through a
+JSON HTTP API.  You have a few choices to make when designing this API, largely
+focused on the inherent coupling of model relationships and data — when you handle a request for one resource, which of its associated resources
+(if any) do you deliver, too?</p>
+<p>Then, on the client side, you have a wide degree of choice in how to model the
+relationships, when to eagerly pre-fetch associations and when to lazily defer
+loading, and whether to employ a supporting library to help define your model
+relationships.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_backbone_relational_plugin"></a>Backbone-relational plugin</h4></div></div></div>
+<p>If your use cases are supported by it, Paul Uithol’s
+<a class="ulink" href="https://github.com/PaulUithol/Backbone-relational" target="_top">Backbone-relational</a> is
+arguably the most popular and actively maintained library for this.  It lets
+you declare one-to-one, one-to-many, and many-to-one relations on your Backbone
+models by extending a new base class, <code class="literal">Backbone.RelationalModel</code>.  It’s good to
+understand how this works under the hood, so we’ll cover one way to implement a
+relational object model in Backbone below, but we encourage you to check out
+the <code class="literal">Backbone-relational</code> plugin as a way to work at a higher level of
+abstraction.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_relations_in_the_task_app"></a>Relations in the task app</h4></div></div></div>
+<p>In the example application, there are users which have many tasks.  Each task
+has many attachments and assignments.  Tasks are assigned to users through
+assignments, so tasks have many assigned users as well.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_deciding_how_to_deliver_data_to_the_client"></a>Deciding how to deliver data to the client</h4></div></div></div>
+<p>Before you decide how to model your JSON API or how to declare your client-side model
+relationships, consider the user experience of your application.
+For <code class="literal">TaskApp</code>, we decided to have interactions as follows:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+A user signs up or logs in
+</li>
+<li>
+The user is directed to their dashboard
+</li>
+<li>
+The dashboard shows all tasks, including assigned users, but without attachments
+</li>
+<li>
+When a user views the details of an individual task, the attachments for that task are displayed
+</li>
+</ul></div>
+<p>This leads us to see that a user’s tasks and their assignees are used
+immediately upon navigating to the dashboard, but the attachment data for a
+task are not needed upon initial page load, and may well never be needed at
+all.</p>
+<p>Let’s say that we are also planning for the user to have continuous network
+access, but not necessarily with a high speed connection.  We should also keep in mind that users tend
+to view their list of tasks frequently, but rarely view the attachments.</p>
+<p>Based on these points, we will bootstrap the collections of tasks and assignees inside the
+dashboard, and defer loading of associated attachments until after
+the user clicks through to a task.</p>
+<p>We could have selected from several other alternatives, including:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+Don’t preload any information, and deliver only static assets (HTML, CSS, JS)
+  on the dashboard request.  Fetch all resources over separate XHR calls.  This
+  can provide for a shorter initial page load time, with the cost of a longer wait for
+  actual interactivity. Although the byte size of the page plus data is roughly
+  the same, the overhead of additional HTTP requests incurs extra load time.
+</li>
+<li>
+Preload all the information, including attachments.  This would
+  work well if we expect users to frequently access the
+  attachments of many tasks, but incurs a longer initial page load.
+</li>
+<li>
+Use <code class="literal">localStorage</code> as the primary storage engine, and sync to the Rails server
+  in the background.  While this would be advantageous if we expected network access
+  to be intermittent, it incurs the additional complexity of server-side conflict resolution if two clients submit conflicting updates.
+</li>
+</ul></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_designing_the_http_json_api"></a>Designing the HTTP JSON API</h4></div></div></div>
+<p>Now that we know we’ll bootstrap the tasks with assignees and defer the
+Associations, we should decide how to deliver the deferred content.  Our goal
+is to fetch attachments for an individual task.  Let’s discuss two options.</p>
+<p>One way we could approach this is to issue an API call for the
+nested collection:</p>
+<pre class="programlisting">$ curl http://localhost:3000/tasks/78/attachments.json | ppjson
+[
+  {
+    "id": "32",
+    "file_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+  },
+  {
+    "id": "33",
+    "file_url": "https://s3.amazonaws.com/tasksapp/uploads/33/users.jpg"
+  }
+]</pre>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>We will authenticate API requests with cookies, just like normal user
+logins, so the actual curl request would need to include a cookie from a logged-in user.</p>
+</div>
+<p>Another way we could approach this is to embed the comment and attachment data in
+the JSON representation of an individual task, and deliver this data from the
+<code class="literal">/tasks/:id</code> endpoint:</p>
+<pre class="programlisting">$ curl http://tasksapp.local:3000/tasks/78.json | ppjson
+{
+  /* some attributes left out for clarity */
+
+  "id": 78,
+  "user_id": 1,
+  "title": "Clean up landing page",
+  "attachments": [
+    {
+      "id": "32",
+      "upload_url": "https://s3.amazonaws.com/tasksapp/uploads/32/mock.png"
+    }
+  ]
+}</pre>
+<p>We’ll take this approach for the example application, because it illustrates
+parsing nested models in Backbone.</p>
+<p>At this point, we know that our HTTP JSON API should support at least the
+following Rails routes:</p>
+<pre class="programlisting">resources :tasks, :only =&gt; [:show, :create] <b class="hl-keyword">do</b>
+  resources :attachments, :only =&gt; [:create]
+<b class="hl-keyword">end</b></pre>
+<p>As an aside: In some applications, you may choose to expose a user-facing API.  It’s
+valuable to dogfood this endpoint by making use of it from your own Backbone
+code.  Often these APIs will be scoped under an "/api" namespace, possibly with
+an API version namespace as well like "/api/v1".</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementing_the_api_presenting_the_json"></a>Implementing the API: presenting the JSON</h4></div></div></div>
+<p>To build the JSON presentation, we have a few options. Rails already comes
+with support for overriding the <code class="literal">Task#as_json</code> method, which is probably the
+easiest thing to do. However, logic regarding the JSON representation of a
+model is not the model’s concern.  An approach that separates presentation
+logic is preferable, such as creating a separate presenter object, or writing a
+builder-like view.</p>
+<p>The <a class="ulink" href="https://github.com/nesquena/rabl" target="_top">RABL gem</a> helps you concisely build
+a view of your models, and keeps this logic in the presentation tier.</p>
+<p>RABL allows you to create templates where you can easily specify the JSON
+representation of your models. If you’ve worked with the <code class="literal">builder</code>
+library to generate XML such as an RSS feed, you’ll feel right at home.</p>
+<p>To use it, first include the <code class="literal">rabl</code> and <code class="literal">yajl-ruby</code> gems in your Gemfile. Then
+you can create a view ending with <code class="literal">.json.rabl</code> to handle any particular request.
+For example, a <code class="literal">tasks#show</code> action may look like this:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TasksController &lt; ApplicationController
+  respond_to :json
+
+  <b class="hl-keyword">def</b> show
+    @task = Task.find(params[:id])
+    respond_with @task
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
+<p>Rails' responder will first look for a template matching the controller/action
+with the format in the file name, in this case <code class="literal">json</code>. If it doesn’t find anything,
+it will invoke <code class="literal">to_json</code> on the <code class="literal">@task</code> model, but in this case we are providing
+one in <code class="literal">app/views/tasks/show.json.rabl</code>, so it will render that instead:</p>
+<pre class="programlisting">object @task
+attributes(:id, :title, :complete)
+child(:user) { attributes(:id, :email) }
+child(:attachments) { attributes(:id, :email) }</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_parsing_the_json_and_instantiating_client_side_models"></a>Parsing the JSON and instantiating client-side models</h4></div></div></div>
+<p>Now that our API delivers the <code class="literal">Task</code> JSON to the client, including its
+nested <code class="literal">Attachments</code>, we need to correctly handle this nested data in the
+client-side model.  Instead of a nested hash of attributes on the
+<code class="literal">Task</code>, we want to instantiate a Backbone collection for the
+attachments that contains a set of Backbone <code class="literal">Attachment</code> models.</p>
+<p>The JSON for the attachments is initially set on the Backbone <code class="literal">Task</code> model as a
+Backbone attribute which can be accessed with <code class="literal">get()</code> and <code class="literal">set()</code>.  We are
+replacing it with an instance of a Backbone <code class="literal">Attachments</code> collection and
+placing that as an object property:</p>
+<pre class="programlisting">taskBeforeParsing.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>)
+<i class="hl-comment" style="color: silver">// =&gt; [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]</i>
+taskBeforeParsing.attachments
+<i class="hl-comment" style="color: silver">// =&gt; undefined</i>
+
+<i class="hl-comment" style="color: silver">/* parse attributes... */</i>
+
+taskAfterParsing.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>)
+<i class="hl-comment" style="color: silver">// =&gt; undefined</i>
+taskAfterParsing.attachments
+<i class="hl-comment" style="color: silver">// =&gt; ExampleApp.Collection.Attachments(...)</i></pre>
+<p>One way to do this is to override the <code class="literal">parse</code> function on the <code class="literal">Task</code> model.</p>
+<p>There are two <code class="literal">parse</code> functions in Backbone: one on <code class="literal">Collection</code> and another on
+<code class="literal">Model</code>.  Backbone will invoke them whenever a model or collection is populated
+with data from the server; that is, during <code class="literal">Model#fetch</code>, <code class="literal">Model#save</code> (which
+updates model attributes based on the server’s response to the HTTP PUT/POST
+request), and <code class="literal">Collection#fetch</code>.  It’s also invoked when a new model is
+initialized and <code class="literal">options.parse</code> is set to <code class="literal">true</code>.</p>
+<p>It’s important to note that <code class="literal">parse</code> is not called by <code class="literal">Collection#reset</code>,
+which should be called with an array of models as its first argument.  Backbone
+does support calling <code class="literal">Collection#reset</code> with just an array of bare attribute
+hashes, but these will not be routed through <code class="literal">Model#parse</code>, which can be the source of some
+confusion.</p>
+<p>Another way to intercept nested attributes and produce a full object graph
+is to bind to the <code class="literal">change</code> event for the association attribute - in this case,
+<code class="literal">task.attachments</code>:</p>
+<pre class="programlisting">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.on(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
+    <b class="hl-keyword">this</b>.parseAttachments();
+  },
+
+  parseAttachments: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.attachments = <b class="hl-keyword">new</b> ExampleApp.Collections.Attachments(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>));
+    <b class="hl-keyword">delete</b> <b class="hl-keyword">this</b>.attachments;
+  },
+
+  <i class="hl-comment" style="color: silver">// ...</i></pre>
+<p>This ensures that our custom parsing is invoked whenever the <code class="literal">attachments</code>
+attribute is changed, and when new model instances are created.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_when_to_fetch_deferred_data"></a>When to fetch deferred data</h4></div></div></div>
+<p>Since a Backbone task doesn’t always have its associations filled, when you
+move from <code class="literal">TasksIndex</code> to <code class="literal">TasksShow</code>, you need to invoke <code class="literal">task.fetch()</code> to pull all
+the task attributes from <code class="literal">GET /tasks/:id</code> and populate the <code class="literal">attachments</code>
+association.  Whose concern is that? Let’s talk it through.</p>
+<p>You could lazily populate this association by making the <code class="literal">task.attachments</code>
+association a function instead of a property. Compare <code class="literal">task.attachments.each</code> to
+<code class="literal">task.attachments().each</code>; in the latter, the accessing function encapsulates the
+concern of laziness in fetching and populating, but then you run into the issue that
+fetch is asynchronous.  Passing a callback into <code class="literal">attachments()</code> is kludgy; it
+exposes the deferred nature of the association everywhere you need to access it.</p>
+<p>We’ll instead prefer to treat the deferred nature explicitly in the
+<code class="literal">Routers.Tasks#show</code> route, a natural application seam to the <code class="literal">TaskShow</code> view.
+This frees <code class="literal">TaskShow</code> from having to know about the persistence details of
+the model:</p>
+<pre class="programlisting">ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
+  <i class="hl-comment" style="color: silver">// ...</i>
+
+  show: <b class="hl-keyword">function</b>(taskId) {
+    <b class="hl-keyword">var</b> task = <b class="hl-keyword">this</b>.collection.get(taskId);
+    <b class="hl-keyword">var</b> tasksRouter = <b class="hl-keyword">this</b>;
+    task.fetch({
+      success: <b class="hl-keyword">function</b>() {
+        <b class="hl-keyword">var</b> view = <b class="hl-keyword">new</b> ExampleApp.Views.TaskShow({ model: task });
+        tasksRouter.swap(view);
+      }
+    });
+  }
+});</pre>
+<p>Now, we have successfully deferred the <code class="literal">Task#attachments</code> association and
+kept the concern clear of the view.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_complex_nested_models"></a>Complex nested models</h3></div></div></div>
+<p>As your domain model grows more complex, you might find that you want to deliver
+information about more than one model together in a request; i.e., nested
+attributes.  ActiveRecord provides <code class="literal">accepts_nested_attributes_for</code>, a facility
+for conveniently passing nested attributes through from requests to
+ActiveRecord and sorting out the relationships there.</p>
+<p>With more interactive web applications, one relevant change is that pages often
+have several independently usable sections which update more frequently and
+fluidly compared to their synchronous full-page submitting counterparts.  To
+support this more finely-grained interface, the client-side implementation and
+the HTTP JSON API are often more finely-grained to match, resulting in fewer
+bulk submissions with composite data structures.</p>
+<p>A useful way to categorize these situations is by whether they are comprised of
+singular (one-to-one) relationships or plural relationships.  It’s worth
+discussing an alternative to <code class="literal">accepts_nested_attributes_for</code> that works for
+singular associations.  Then, we’ll dive into how to model bulk updates for
+plural associations from Backbone.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_composite_models"></a>Composite models</h4></div></div></div>
+<p>Consider a signup form that allows a customer to quickly get started with a
+project management application.</p>
+<p>They fill out information for their individual user account, as well as
+information about the team they represent (and will eventually invite others
+users from) and perhaps some information about an initial project.  One way to
+model this is to present a <code class="literal">signup</code> resource that handles creating the correct
+user, team, and project records.  The implementation would involve a vanilla
+<code class="literal">SignupsController</code> and a Ruby class <code class="literal">Signup</code> class that delegates its nested
+attributes to their respective models.</p>
+<p>This composite class encodes the responsibility for translating between the
+flat data structure produced by the user interface and the cluster of objects
+that is produced.  It’s best suited for representing a handful of related
+records that each have singular relationships - <code class="literal">has_one</code>/<code class="literal">belongs_to</code>, rather
+than plural <code class="literal">has_many</code> relationships.</p>
+<p>There are a few other benefits to these composite classes, too.  They are handy
+for adding any conditional logic in the composition, such as a Signup creating
+a Billing entry for paid Plan levels.  The composite class should be easier to
+isolation test, compared to testing the persistence outcomes of
+<code class="literal">accepts_nested_attributes_for</code>.  It’s also useful to note that the composite
+Signup class is not actually persisted; it simply represents a convenient
+abstraction in the domain model.</p>
+<p>In this case, it’s straightforward to provide an HTTP API endpoint that exposes
+the <code class="literal">signups</code> resource and to model this on the client side as a corresponding
+Backbone model.  All of the attributes on the composite resource are at a single
+level (not nested), so this is a familiar client-side implementation.</p>
+<p>This general pattern encapsulates the composite nature of the resource, leaving
+the fact that it is persisted across multiple tables as an implementation
+detail.  This keeps the presentation tier simpler, unconcerned with the
+composite nature of the resource.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_literal_accepts_nested_attributes_for_literal"></a><code class="literal">accepts_nested_attributes_for</code>
+</h4></div></div></div>
+<p>A classic situation to encounter nested attributes is in <code class="literal">has_many :through</code>
+relationships.  For example, consider a workflow in which you assign multiple
+people to perform a job.  The three domain models are <code class="literal">Job</code>, <code class="literal">Worker</code>, and
+the join model <code class="literal">Assignment</code>.</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> Job &lt; ActiveRecord::Base
+  has_many :assignments
+  has_many :workers, :though =&gt; :assignments
+<b class="hl-keyword">end</b>
+
+<b class="hl-keyword">class</b> Assignment &lt; ActiveRecord::Base
+  belongs_to :job
+  belongs_to :worker
+<b class="hl-keyword">end</b>
+
+<b class="hl-keyword">class</b> Worker &lt; ActiveRecord::Base
+  has_many :assignments
+  has_many :jobs, :through =&gt; :assignments
+<b class="hl-keyword">end</b></pre>
+<p>Earlier, we discussed how Ajax-enabled web applications often provide more
+finely-grained user interfaces that allow the user to submit information in
+smaller chunks and allow the developer to model the persistence and HTTP API in
+finer pieces.  Let’s say that we have a user interface where we create a job
+and bulk assign several workers to the new job all in one form.  It’s possible
+to achieve a good, fast user experience while still creating the job and its
+child assignment records in separate requests.</p>
+<p>However, it may still be preferable in some cases to perform these bulk
+submissions, creating a parent record along with several child records all in
+one HTTP request.  We’ll model this on the backend with Rails'
+<code class="literal">accepts_nested_attributes_for</code>:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> Job &lt; ActiveRecord::Base
+  has_many :assignments
+  has_many :workers, :though =&gt; :assignments
+  accepts_nested_attributes_for :assignments
+<b class="hl-keyword">end</b></pre>
+<p>As a quick refresher, this allows us in our Rails code to set
+<code class="literal">@job.assignments_attributes = [{}, {}, ...]</code> with an Array of Hashes, each
+containing attributes for a new <code class="literal">Assignment</code>, the join model.  This behavior of
+Rails <code class="literal">accepts_nested_attributes_for</code> shapes our HTTP API: A simple API
+endpoint controller should be able to pass the request parameters straight
+through to ActiveRecord, so the JSON going over the HTTP request will look
+like this:</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">/* POST /api/v1/jobs */</i>
+{
+  name: <b class="hl-string"><i style="color:red">"Move cardboard boxes to new warehouse"</i></b>,
+  description: <b class="hl-string"><i style="color:red">"Move boxes from closet C3 to warehouse W2"</i></b>,
+  assignmment_attributes: [
+    { worker_id: <span class="hl-number">1</span> },
+    { worker_id: <span class="hl-number">3</span> },
+    { worker_id: <span class="hl-number">5</span> }
+  ]
+}</pre>
+<p>Shifting our focus to the client-side implementation, we can largely ignore the
+<code class="literal">Assignment</code> join model in Backbone, and just model this nested association
+directly.  We’ll use a <code class="literal">Job</code> Backbone model containing a <code class="literal">Workers</code> collection.
+This is a simplified perspective of the relationship, but it is all that the client
+needs to know.</p>
+<pre class="programlisting">MyApp = {};
+MyApp.Models = {};
+MyApp.Collections = {};
+
+MyApp.Models.Worker = Backbone.Model.extend({
+});
+
+MyApp.Collections.Workers = Backbone.Collection.extend({
+  model: ExampleApp.Models.Worker
+});
+
+MyApp.Models.Job = Backbone.Model.extend({
+  urlRoot: <b class="hl-string"><i style="color:red">'/api/v1/jobs'</i></b>,
+
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.workers = <b class="hl-keyword">new</b> MyApp.Collections.Workers();
+  },
+
+  toJSON: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> json = _.clone(<b class="hl-keyword">this</b>.attributes);
+
+    json.assignment_attributes = <b class="hl-keyword">this</b>.workers.map(<b class="hl-keyword">function</b>(worker) {
+      <b class="hl-keyword">return</b> { worker_id: worker.id };
+    });
+
+    <b class="hl-keyword">return</b> json;
+  }
+});</pre>
+<p>Now, you can add workers directly to the job:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> worker3 = <b class="hl-keyword">new</b> MyApp.Models.Worker({ id: <span class="hl-number">3</span> });
+<b class="hl-keyword">var</b> worker5 = <b class="hl-keyword">new</b> MyApp.Models.Worker({ id: <span class="hl-number">5</span> });
+
+<b class="hl-keyword">var</b> job = <b class="hl-keyword">new</b> MyApp.Models.Job();
+job.set({ title: <b class="hl-string"><i style="color:red">"Raise barn walls"</i></b> });
+job.workers.add(worker3);
+job.workers.add(worker5);
+
+JSON.stringify(job.toJSON()) <i class="hl-comment" style="color: silver">// Results in:</i>
+                             <i class="hl-comment" style="color: silver">//</i>
+                             <i class="hl-comment" style="color: silver">// {</i>
+                             <i class="hl-comment" style="color: silver">//   "title":  "Raise barn walls",</i>
+                             <i class="hl-comment" style="color: silver">//   "assignment_attributes": [</i>
+                             <i class="hl-comment" style="color: silver">//     {"worker_id":3},</i>
+                             <i class="hl-comment" style="color: silver">//     {"worker_id":5}</i>
+                             <i class="hl-comment" style="color: silver">//   ]</i>
+                             <i class="hl-comment" style="color: silver">// }</i></pre>
+<p>…and saving the Backbone <code class="literal">Job</code> model will submit correctly structured
+JSON to the Rails server.</p>
+<p>This, of course, only covers the creation of nested bulk models.
+Subsequently fetching a nested object graph from the server involves a handful
+of separate design decisions around producing JSON on the server and parsing it
+on the client. These concerns are discussed in the "Model relationships"
+chapter.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_example_for_literal_accepts_nested_attributes_for_literal"></a>Example for <code class="literal">accepts_nested_attributes_for</code>
+</h4></div></div></div>
+<p>In the example application, a task may be assigned to zero or more users.  The
+association is tracked through an <code class="literal">Assignment</code> join model, and you can create
+assignments and tasks at the same time.  Users can see tasks they have
+created or tasks that others have created and assigned to them.</p>
+<p>We use <code class="literal">accepts_nested_attributes_for</code> for persisting the task and its nested
+assignments.  The <code class="literal">Task</code> Backbone model takes care of parsing the
+assignment JSON to nest an <code class="literal">Assignments</code> collection inside itself.  It also
+provides correctly-formatted JSON so that Rails picks up the nested
+association.</p>
+<p>The <code class="literal">TasksNew</code> view handles the expanding interface for adding more assignees,
+and is also responsible for finding the Backbone <code class="literal">User</code> models by email
+to associate them to the task while it is constructed.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_duplicating_business_logic_across_the_client_and_server"></a>Duplicating business logic across the client and server</h3></div></div></div>
+<p>When you’re building a multi-tier application where business logic is spread
+across tiers, one big challenge you face is to avoid duplicating that logic
+across tiers.  There is a trade-off here, between duplication and performance.
+It’s desirable to have only one implementation of a particular concern
+in your domain, but it’s also desirable for your application to perform
+responsively.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_an_example_model_validations"></a>An example: model validations</h4></div></div></div>
+<p>For example, let’s say that a user must have an email address.</p>
+<p>At one end of the scale, there is no duplication: All business logic is defined
+in one tier, and other tiers access the logic by remote invocation.  Your Rails
+<code class="literal">Member</code> model provides a validation:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> Member &lt; ActiveRecord::Base
+  validate :email, :presence =&gt; <b class="hl-keyword">true</b>
+<b class="hl-keyword">end</b></pre>
+<p>The Backbone view attempts to persist the member as usual, binding to its
+<code class="literal">error</code> event to handle the server-side error:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> MemberFormView = Backbone.View.extend({
+  events: {
+    <b class="hl-string"><i style="color:red">"submit form"</i></b>: <b class="hl-string"><i style="color:red">"submit"</i></b>
+  },
+
+  initialize: <b class="hl-keyword">function</b>() {
+    _.bindAll(<b class="hl-keyword">this</b>, <b class="hl-string"><i style="color:red">"error"</i></b>);
+    <b class="hl-keyword">this</b>.model.bind(<b class="hl-string"><i style="color:red">"error"</i></b>, <b class="hl-keyword">this</b>.error);
+  },
+
+  render: <b class="hl-keyword">function</b>() {
+    <i class="hl-comment" style="color: silver">// render form...</i>
+  },
+
+  submit: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attributes = <b class="hl-keyword">new</b> FormSerializer(<b class="hl-keyword">this</b>.$(<b class="hl-string"><i style="color:red">'form'</i></b>)).attributes();
+    <b class="hl-keyword">this</b>.model.save(attributes);
+  },
+
+  error: <b class="hl-keyword">function</b>(model, errorResponse) {
+    <b class="hl-keyword">var</b> errors = <b class="hl-keyword">new</b> ErrorList(errorResponse);
+    <b class="hl-keyword">new</b> ErrorView({ el: self.el, errors: errors }).render();
+  }
+});</pre>
+<p>This uses the <code class="literal">ErrorView</code> class, which is able to parse the error hash returned
+from Rails, which was discussed in the "Validations" section of the "Models and
+Collections" chapter.</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Note</h3>
+<p>This is probably the first time you’ll see <code class="literal">_.bindAll()</code>, so let’s pause
+briefly to introduce what it is doing.</p>
+<p>When an event is triggered, the code invoking the callback is able to set the
+JavaScript context. By calling <code class="literal">_.bindAll(this, "error")</code>, we are instead
+overriding whatever context it may have been, and setting it to <code class="literal">this</code>. This is
+necessary so that when we call <code class="literal">this.$('form\')</code> in the <code class="literal">error()</code> callback,
+we get the right object back.</p>
+<p>Always use <code class="literal">_.bindAll</code> when you need to force the JavaScript context (<code class="literal">this</code>)
+within a function’s body.</p>
+</div>
+<p>In the case of no duplication, your Backbone <code class="literal">Member</code> model does not declare
+this validation.  A user fills out a form for a creating a new member in your
+application, submits the form, and, if they forget to include an email address,
+a validation message is displayed.  The application delegates the entire
+validation concern to the server, as we saw in the "Validations" section of the
+"Models and Collections" chapter.</p>
+<p>However, round-tripping validation to the server can be too slow in some cases,
+and we’d like to provide feedback to the end user more quickly.  To do this, we
+have to implement the validation concern on the client side as well.  Backbone
+provides a facility for validating models during their persistence, so we could
+write:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> Member = Backbone.Model.extend({
+  validate: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> errors = {};
+    <b class="hl-keyword">if</b> (_.isEmpty(<b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'email'</i></b>))) {
+      errors.email = [<b class="hl-string"><i style="color:red">"can't be blank"</i></b>];
+    }
+    <b class="hl-keyword">return</b> errors;
+  }
+});</pre>
+<p>Conveniently, we’ve structured the return value of the <code class="literal">validate()</code> function to
+mirror the structure of the Rails error JSON we saw returned above.  Now, we
+<span class="emphasis"><em>could</em></span> augment the <code class="literal">ErrorView</code> class’s constructor function to handle either
+client-side or server-side errors:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> ErrorList = <b class="hl-keyword">function</b>(responseOrErrors) {
+  <b class="hl-keyword">if</b> (responseOrErrors &amp;&amp; responseOrErrors.responseText) {
+    <b class="hl-keyword">this</b>.attributesWithErrors = JSON.parse(response.responseText);
+  } <b class="hl-keyword">else</b> {
+    <b class="hl-keyword">this</b>.attributesWithErrors = responseOrErrors;
+  }
+};</pre>
+<p>With Backbone, the <code class="literal">validate()</code> function is called for each invocation of
+<code class="literal">set()</code>, so as soon as we set the email address on the member, its presence is
+validated.  For the user experience with the quickest response, we could observe
+changes on the email form field, updating the model’s <code class="literal">email</code> attribute whenever
+it changes, and displaying the inline error message immediately.</p>
+<p>With <code class="literal">ErrorList</code> able to handle either client-side or server-side error messages,
+we have a server-side guarantee of data correctness, <sup>[<a id="d0e3324" href="#ftn.d0e3324" class="footnote">1</a>]</sup> and a responsive UI that can validate the member’s email presence
+without round-tripping to the server.</p>
+<p>The tradeoff we’ve made is that of duplication; the concern of "what constitutes
+a valid member" is written twice — in two different languages, no less.  In
+some cases this is unavoidable.  In others, there are mitigation strategies for
+reducing the duplication, or at least its impact on your code quality and
+maintainability.</p>
+<p>Let’s take a look at what kinds of logic you might find duplicated, and then at strategies for reducing duplication.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_kinds_of_logic_you_duplicate"></a>Kinds of logic you duplicate</h4></div></div></div>
+<p>In Rails applications, our model layer can contain a variety of kinds of
+business logic:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+Validations: This is pretty straightforward, since there’s a well-defined
+  Rails API for validating ActiveModel classes.
+</li>
+<li>
+Querying: Sorting and filtering fall into this category.  Implementations
+  vary slightly, but are often built with <code class="literal">named_scope</code> or class methods
+  returning <code class="literal">ActiveRecord::Relation</code> instances.  Occasionally querying is
+  delegated to class other than the ActiveRecord instance.
+</li>
+<li>
+Callbacks: Similar to validations, there’s a well-defined API for callbacks
+  (or "lifecycle events") on Rails models; <code class="literal">after_create</code> and so on.
+</li>
+<li>
+Algorithms: Everything else.  Sometimes they’re implemented on the
+  ActiveRecord instances, but are often split out into other classes and used via
+  composition.  One example from commerce apps would be an <code class="literal">Order</code> summing the
+  costs of its <code class="literal">LineItems</code>.  Or consider an example from an agile project planning
+  application, where a <code class="literal">ProjectPlan</code> recalculates a <code class="literal">Project</code>'s set of <code class="literal">UserStory</code>
+  objects into weekly <code class="literal">Iteration</code> bucket objects.
+</li>
+</ul></div>
+<p>There are often other methods on your Rails models, but they are either a mix of
+the above categories (a <code class="literal">state_machine</code> implementation could be considered a mix
+of validations and callback) and other methods that don’t count as business
+logic - methods that are actually implementing presentation concerns are a
+frequent example.</p>
+<p>It’s worth considering each of these categories in turn, and how they can be
+distributed across client and server to provide a responsive experience.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_validations_2"></a>Validations</h4></div></div></div>
+<p>Validations are probably the lowest-hanging fruit.  Since the API for
+declaring validations is largely declarative and well-bounded, we can imagine
+providing an interface that introspects Rails models and builds a client-side
+implementation automatically.</p>
+<p>Certainly, there are cases which aren’t possible to automate, such as custom
+Ruby validation code or validations which depend on a very large dataset that
+would be impractical to deliver to the client (say, a ZIP code database).
+These cases would need to fall back to either an XHR call to the server-side
+implementation, or a custom-written client-side implementation - a duplicate
+implementation.</p>
+<p>This is actually what the
+<a class="ulink" href="https://github.com/bcardarella/client_side_validations" target="_top"><code class="literal">client_side_validations</code> gem</a>
+does, only it is not available for Backbone yet. However, it is on the roadmap, and
+the "model" branch  is a work in progress of this functionality. We will be
+keeping an eye on this branch:
+<a class="ulink" href="https://github.com/bcardarella/client_side_validations/tree/model" target="_top">https://github.com/bcardarella/client_side_validations/tree/model</a></p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_querying"></a>Querying</h4></div></div></div>
+<p>Like validations, Rails the syntax and outcome of many common Rails query
+methods are relatively declarative. It may be possible to convert server-side
+scopes into client-side collection filtering. However, that is of questionable
+value in most Backbone applications we’ve encountered.</p>
+<p>In most Backbone apps there ends up being little duplication between client
+and server sorting and filtering. Either the logic happens on the client and
+is therefore not needed on the server, or the search logic happens on the
+server and is not needed on the client.</p>
+<p>If you find that your application has duplication here, consider whether there
+may be a better way to separate responsibilities.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_callbacks"></a>Callbacks</h4></div></div></div>
+<p>We’ve found that model callbacks are rarely duplicated between the client and
+server sides. It’s actually more likely that your client-side models will
+differ sufficiently from the server-side models, since they are in the
+presentation tier and the concerns are different.</p>
+<p>As you continue to push more logic client-side - as we’ve found is the
+trend when using Backbone - you may find that some life-cycle events
+may move or be duplicated from the server to the client. The implementation and
+concern of these often varies significantly from what they were on the server.
+For example, a callback translated to Backbone will likely be implemented
+as an event being fired and listened to by another object.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_algorithms"></a>Algorithms</h4></div></div></div>
+<p>General algorithms are often the trickiest things for which to resolve duplication
+between client and server. It’s also common that important algorithms are,
+in fact, needed on both client and server.</p>
+<p>The more complicated the algorithm, the more troubling this will become. Bugs
+may be introduced, and the client- and server-side algorithms might not
+actually produce the same results.</p>
+<p>You could implement the actual logic of the algorithm in
+JavaScript and then make that available to Ruby, by using something like ExecJS
+<a class="ulink" href="https://github.com/sstephenson/execjs" target="_top">https://github.com/sstephenson/execjs</a> to run the JavaScript code from Ruby. But you must weigh the cost of that additional complexity and overhead against
+the code of duplicating logic.</p>
+<p>Also, you could consider JavaScript on the server side in something like
+Node.js, exposed via a webservice that Rails can access. However, it is
+debatable whether this is actually easier.</p>
+<p>Finally, it may be possible to reduce duplication by splitting responsibility
+for the algorithm in pieces: half on the client and half on the server, and
+then use coordinated communication and caching to accomplish the algorithm
+and improve the performance, respectively.</p>
+<p>More information about this technique can be found here:</p>
+<p><a class="ulink" href="http://c2.com/cgi/wiki?HalfObjectPlusProtocol" target="_top">http://c2.com/cgi/wiki?HalfObjectPlusProtocol</a>
+<a class="ulink" href="http://c2.com/cgi/wiki?HoppPatternLanguage" target="_top">http://c2.com/cgi/wiki?HoppPatternLanguage</a></p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_synchronizing_between_clients"></a>Synchronizing between clients</h3></div></div></div>
+<p>A driving force behind the move to rich client web apps is to improve the
+user experience. These applications are more responsive and can support more
+detailed and stateful interactions.</p>
+<p>One such interaction involves multiple concurrent users interacting with the
+same resource in real time. We can deliver a more seamless experience by
+propagating users' changes to one another as they take place: When you and I
+edit the same document, I see your changes on my screen as you type them. If
+you’ve ever used Google Docs or Google Wave, you’ve seen this in action.</p>
+<p>So, how can we build this functionality into our own applications?</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_the_moving_parts"></a>The moving parts</h4></div></div></div>
+<p>There are a few different pieces that we’ll put together for this.  The basic parts are:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+<span class="strong"><strong>Change events.</strong></span> The fundamental unit of information that we broadcast through
+   our system to keep clients in sync.  Delivered as messages, these events
+   contain enough information for any receiving client to update its own data
+   without needing a full re-fetch from the server.
+</li>
+<li>
+<span class="strong"><strong>An event source.</strong></span>  With trusted clients, changes can originate directly from
+   the client.  More often, however, we will want the server to arbitrate
+   changes so that it can apply authorization, data filtering, and validations.
+</li>
+<li>
+<span class="strong"><strong>A transport layer that supports pushing to clients.</strong></span>
+   <a class="ulink" href="http://www.w3.org/TR/websockets/" target="_top">The WebSocket API</a> is such a transport, and
+   is ideal for its low overhead and latency.
+</li>
+<li>
+<span class="strong"><strong>Event-driven clients.</strong></span>  Clients should be able to react to incoming change
+   events, ideally handling them with incremental UI updates rather than
+   re-drawing themselves entirely.  Backbone helps in this department, as your
+   client-side application is likely already set up to handle such events.
+</li>
+<li>
+<span class="strong"><strong>A message bus.</strong></span>  Separating the concern of message delivery from our main
+   application helps it stay smaller and helps us scale our messaging and
+   application infrastructure separately. There are already several great
+   off-the-shelf tools we can use for this.
+</li>
+</ol></div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_putting_it_together_a_look_at_the_life_cycle_of_a_change"></a>Putting it together: A look at the life cycle of a change</h4></div></div></div>
+<p>Revisiting our todo application, we’d like to add the ability to collaborate on
+todo lists, so that different users will be able to work on the same todo list
+concurrently.  Several users can look at the same list; adding, changing, and
+checking off items.</p>
+<p>There are a few technical decisions mentioned previously.  For this example, we will:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Use Rails on the server and Backbone on the client.
+</li>
+<li>
+Use the server as the canonical event source so that clients do not have to
+   trust one another.  In particular, we’ll employ an <code class="literal">ActiveRecord::Observer</code>
+   that observes Rails model changes and dispatches a change event.
+</li>
+<li>
+Use <a class="ulink" href="http://faye.jcoglan.com" target="_top">Faye</a> as the messaging backend, which has Ruby
+   and JavaScript implementations for clients and server.  Faye implements the
+   <a class="ulink" href="http://svn.cometd.com/trunk/bayeux/bayeux.html" target="_top">Bayeux protocol</a>, prefers
+   WebSocket for transport (though it gracefully degrades to long polling, CORS,
+   or JSON-P), and supports a bunch of other goodies like clustering and
+   extensions (inbound- and outbound- message filtering, like Rack middleware).
+</li>
+</ol></div>
+<p>In our application, there are several connected clients viewing the same todo
+list, and one user, "Alice," makes a change to an item on the list.</p>
+<p>Let’s take a look at the lifecycle of one change event.</p>
+<p>Setup:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+An instance of JavaScript class <code class="literal">BackboneSync.FayeSubscriber</code> is
+   instantiated on each client.  It is configured with a channel to listen to,
+   and a collection to update.
+</li>
+<li>
+The Faye server is started.
+</li>
+<li>
+The Rails server is started, and several clients are connected and viewing
+   <code class="literal">#todo_lists/1</code>.
+</li>
+</ol></div>
+<p>On Alice’s machine, the client responsible for the change:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Alice clicks "Save" in her view of the list.
+</li>
+<li>
+The "save" view event is triggered.
+</li>
+<li>
+The event handler invokes <code class="literal">this.model.save(attributes)</code>.
+</li>
+<li>
+<code class="literal">Backbone.Model.prototype.save</code> calls <code class="literal">Backbone.sync</code>.
+</li>
+<li>
+<code class="literal">Backbone.sync</code> invokes <code class="literal">$.ajax</code> and issues an HTTP PUT request to the server.
+</li>
+</ol></div>
+<p>On the server:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+Rails handles the PUT request and calls <code class="literal">#update_attributes</code> on an ActiveRecord model instance.
+</li>
+<li>
+An <code class="literal">ActiveRecord::Observer</code> observing this model gets its <code class="literal">#after_save</code> method invoked.
+</li>
+<li>
+The observer dispatches a change event message to Faye.
+</li>
+<li>
+Faye broadcasts the change event to all subscribers.
+</li>
+</ol></div>
+<p>On all clients:</p>
+<div class="orderedlist"><ol type="1">
+<li>
+<code class="literal">FayeSubscriber</code> receives the change event message, likely over a WebSocket.
+</li>
+<li>
+The subscriber parses the event message, picking out the event (<code class="literal">update</code>),
+   the <code class="literal">id</code> of the model to update, and a new set of attributes to apply.
+</li>
+<li>
+The <code class="literal">FayeSubscriber</code> fetches the model from the collection, and calls <code class="literal">set</code>
+   on it to update its attributes.
+</li>
+</ol></div>
+<p>Now all the clients have received the changeset that Alice made.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementation_step_1_faye_server"></a>Implementation: Step 1, Faye server</h4></div></div></div>
+<p>We’ll need to run Faye to relay messages from publishers to subscribers.  For
+Rails apps that depend on Faye, We recommend keeping a <code class="literal">faye/</code> subdirectory under the
+app root that contains a <code class="literal">Gemfile</code> and <code class="literal">config.ru</code>, and maybe a shell script to
+start Faye:</p>
+<pre class="programlisting">$ cat faye/Gemfile
+
+source 'http://rubygems.org'
+gem 'faye'
+
+$ cat faye/config.ru
+
+require 'faye'
+bayeux = Faye::RackAdapter.new(:mount =&gt; '/faye', :timeout =&gt; 25)
+bayeux.listen(9292)
+
+$ cat faye/run.sh
+
+#!/usr/bin/env bash
+BASEDIR=$(dirname $0)
+BUNDLE_GEMFILE=$BASEDIR/Gemfile
+bundle exec rackup $BASEDIR/config.ru -s thin -E production
+
+$ ./faye/run.sh
+
+&gt;&gt; Thin web server (v1.2.11 codename Bat-Shit Crazy)
+&gt;&gt; Maximum connections set to 1024
+&gt;&gt; Listening on 0.0.0.0:9292, CTRL+C to stop</pre>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementing_it_step_2_activerecord_observers"></a>Implementing it: Step 2, ActiveRecord observers</h4></div></div></div>
+<p>Now that the message bus is running, let’s walk through the server code.  The
+Rails app’s responsibility is this: Whenever a todo model is created, updated,
+or deleted, it will publish a change event message.</p>
+<p>This is implemented with an <code class="literal">ActiveRecord::Observer</code>.  We provide the
+functionality in a module:</p>
+<pre class="programlisting"><b class="hl-keyword">module</b> BackboneSync
+  <b class="hl-keyword">module</b> Rails
+    <b class="hl-keyword">module</b> Faye
+      mattr_accessor :root_address
+      <b class="hl-keyword">self</b>.root_address = <b class="hl-string"><i style="color:red">'http://localhost:9292'</i></b>
+
+      <b class="hl-keyword">module</b> Observer
+        <b class="hl-keyword">def</b> after_update(model)
+          Event.new(model, :update).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_create(model)
+          Event.new(model, :create).publish
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> after_destroy(model)
+          Event.new(model, :destroy).publish
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+
+      <b class="hl-keyword">class</b> Event
+        <b class="hl-keyword">def</b> initialize(model, event)
+          @model = model
+          @event = event
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> broadcast
+          Net::HTTP.post_form(uri, :message =&gt; message)
+        <b class="hl-keyword">end</b>
+
+        private
+
+        <b class="hl-keyword">def</b> uri
+          URI.parse(<b class="hl-string"><i style="color:red">"#{BackboneSync::Rails::Faye.root_address}/faye"</i></b>)
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> message
+          { :channel =&gt; channel,
+            :data =&gt; data          }.to_json
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> channel
+          <b class="hl-string"><i style="color:red">"/sync/#{@model.class.table_name}"</i></b>
+        <b class="hl-keyword">end</b>
+
+        <b class="hl-keyword">def</b> data
+          { @event =&gt; { @model.id =&gt; @model.as_json } }
+        <b class="hl-keyword">end</b>
+      <b class="hl-keyword">end</b>
+    <b class="hl-keyword">end</b>
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">end</b></pre>
+<p>…and then mix it into a concrete observer class in our application.  In this
+case, we name it <code class="literal">TodoObserver</code>:</p>
+<pre class="programlisting"><b class="hl-keyword">class</b> TodoObserver &lt; ActiveRecord::Observer
+  include BackboneSync::Rails::Faye::Observer
+<b class="hl-keyword">end</b></pre>
+<p>This observer is triggered each time a Rails <code class="literal">Todo</code> model is created, updated,
+or destroyed.  When one of these events happen, the observer sends along a
+message to our message bus, indicating the change.</p>
+<p>Let’s say that a <code class="literal">Todo</code> was just created:</p>
+<pre class="programlisting">&gt;&gt; Todo.create(title: <b class="hl-string"><i style="color:red">"Buy some tasty kale juice"</i></b>)
+=&gt; <i class="hl-comment" style="color: silver">#&lt;Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09"&gt;</i></pre>
+<p>The message looks like this:</p>
+<pre class="programlisting">{
+  <b class="hl-string"><i style="color:red">"channel"</i></b>: <b class="hl-string"><i style="color:red">"/sync/todos"</i></b>,
+  <b class="hl-string"><i style="color:red">"data"</i></b>: {
+    <b class="hl-string"><i style="color:red">"create"</i></b>: {
+      <b class="hl-string"><i style="color:red">"17"</i></b>: {
+        <b class="hl-string"><i style="color:red">"id"</i></b>: <span class="hl-number">17</span>,
+        <b class="hl-string"><i style="color:red">"title"</i></b>: <b class="hl-string"><i style="color:red">"Buy some tasty kale juice"</i></b>,
+        <b class="hl-string"><i style="color:red">"created_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-06T20:49:03Z"</i></b>,
+        <b class="hl-string"><i style="color:red">"updated_at"</i></b>: <b class="hl-string"><i style="color:red">"2011-09-07T15:01:09Z"</i></b>
+      }
+    }
+  }
+}</pre>
+<p>Received by Faye, the message is broadcast to all clients subscribing to the
+<code class="literal">/sync/todos</code> channel, including our browser-side <code class="literal">FayeSubscriber</code> objects.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_implementing_it_step_3_in_browser_subscribers"></a>Implementing it: Step 3, In-browser subscribers</h4></div></div></div>
+<p>In each browser, we want to connect to the Faye server, subscribe to events on
+channels that interest us, and update Backbone collections based on those
+messages.</p>
+<p>Faye runs an HTTP server, and serves up its own client library, so that’s easy to pull in:</p>
+<pre class="programlisting"><b class="hl-tag" style="color: #000096">&lt;script</b> <span class="hl-attribute" style="color: #F5844C">type</span>=<span class="hl-value" style="color: #993300">"text/javascript"</span> <span class="hl-attribute" style="color: #F5844C">src</span>=<span class="hl-value" style="color: #993300">"http://localhost:9292/faye.js"</span><b class="hl-tag" style="color: #000096">&gt;</b><b class="hl-tag" style="color: #000096">&lt;/script&gt;</b></pre>
+<p>To subscribe to Faye channels, instantiate a <code class="literal">Faye.Client</code> and call <code class="literal">subscribe</code> on it:</p>
+<pre class="programlisting"><b class="hl-keyword">var</b> client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'http://localhost:9292/faye'</i></b>);
+client.subscribe(<b class="hl-string"><i style="color:red">'/some/channel'</i></b>, <b class="hl-keyword">function</b>(message) {
+  <i class="hl-comment" style="color: silver">// handle message</i>
+});</pre>
+<p>When the browser receives messages from Faye, we want to update a Backbone
+collection.  Let’s wrap up those two concerns into a <code class="literal">FayeSubscriber</code>:</p>
+<pre class="programlisting"><b class="hl-keyword">this</b>.BackboneSync = <b class="hl-keyword">this</b>.BackboneSync || {};
+
+BackboneSync.RailsFayeSubscriber = (<b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">function</b> RailsFayeSubscriber(collection, options) {
+    <b class="hl-keyword">this</b>.collection = collection;
+    <b class="hl-keyword">this</b>.client = <b class="hl-keyword">new</b> Faye.Client(<b class="hl-string"><i style="color:red">'&lt;%= BackboneSync::Rails::Faye.root_address %&gt;/faye'</i></b>);
+    <b class="hl-keyword">this</b>.channel = options.channel;
+    <b class="hl-keyword">this</b>.subscribe();
+  }
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.subscribe = <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>.client.subscribe(<b class="hl-string"><i style="color:red">"/sync/"</i></b> + <b class="hl-keyword">this</b>.channel, _.bind(<b class="hl-keyword">this</b>.receive, <b class="hl-keyword">this</b>));
+  };
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.receive = <b class="hl-keyword">function</b>(message) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(message, <b class="hl-keyword">function</b>(event, eventArguments) {
+      <b class="hl-keyword">return</b> self[event](eventArguments);
+    });
+  };
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.update = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> model.set(attributes);
+    });
+  };
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.create = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = <b class="hl-keyword">new</b> self.collection.model(attributes);
+      <b class="hl-keyword">return</b> self.collection.add(model);
+    });
+  };
+
+  RailsFayeSubscriber.<b class="hl-keyword">prototype</b>.destroy = <b class="hl-keyword">function</b>(params) {
+    <b class="hl-keyword">var</b> self = <b class="hl-keyword">this</b>;
+    <b class="hl-keyword">return</b> $.each(params, <b class="hl-keyword">function</b>(id, attributes) {
+      <b class="hl-keyword">var</b> model = self.collection.get(id);
+      <b class="hl-keyword">return</b> self.collection.remove(model);
+    });
+  };
+
+  <b class="hl-keyword">return</b> RailsFayeSubscriber;
+})();</pre>
+<p>Now, for each collection that we’d like to keep in sync, we instantiate a
+corresponding <code class="literal">FayeSubscriber</code>.  Say, in your application bootstrap code:</p>
+<pre class="programlisting">MyApp.Routers.TodosRouter = Backbone.Router.extend({
+  initialize: <b class="hl-keyword">function</b>(options) {
+    <b class="hl-keyword">this</b>.todos = <b class="hl-keyword">new</b> Todos.Collections.TodosCollection();
+    <b class="hl-keyword">new</b> BackboneSync.FayeSubscriber(<b class="hl-keyword">this</b>.todos, { channel: <b class="hl-string"><i style="color:red">'todos'</i></b> });
+    <b class="hl-keyword">this</b>.todos.reset(options.todos);
+  },
+
+  <i class="hl-comment" style="color: silver">// ...</i>
+});</pre>
+<p>Now run the app, and watch browsers receive push updates!</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_testing_synchronization"></a>Testing synchronization</h4></div></div></div>
+<p>Of course, this introduces a great deal of complexity into your app. There’s a
+new daemon running on the server (Faye), and every client now has to correctly
+listen to its messages and re-render the appropriate views to show the new data.
+This gets even more complex when the resource being updated is currently being
+edited by another user. Your own requirements will dictate the correct behavior
+in cases like that, but what’s most important is that you are able to reproduce
+such workflows in automated tests.</p>
+<p>While this book includes a chapter dedicated to testing Backbone applications, this next section
+describes the tools and approach that will allow you to verify this behavior in
+tests.</p>
+<p>Following an outside-in development approach, we start with an acceptance test
+and dive into the isolated testing examples when the acceptance tests drive us
+to them. There’s nothing novel in regards to isolation testing of these
+components, so we will not touch on them here. Instead, we’ll describe how to
+write an acceptance test for the above scenario.</p>
+<p>The required pieces for the approach are:</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+Ensure a faye server running on your testing environment
+</li>
+<li>
+Fire up a browser session using an browser acceptance testing framework
+</li>
+<li>
+Sign in as Alice
+</li>
+<li>
+Start a second browser session and sign in as Olivia
+</li>
+<li>
+Edit some data on Alice’s session
+</li>
+<li>
+See the edited data reflected on Olivia’s session
+</li>
+</ul></div>
+<p>We will be using Cucumber with Capybara and RSpec for this example.</p>
+<p>To ensure the Faye server is running, we merely try to make a connection
+to it when Cucumber boots, failing early if we can’t connect. Here’s a
+small snippet that you can drop in <code class="literal">features/support/faye.rb</code> to do
+just that:</p>
+<pre class="programlisting"><b class="hl-keyword">begin</b>
+  Timeout.timeout(<span class="hl-number">1</span>) <b class="hl-keyword">do</b>
+    uri = URI.parse(BackboneSync::Rails::Faye.root_address)
+    TCPSocket.new(uri.host, uri.port).close
+  <b class="hl-keyword">end</b>
+<b class="hl-keyword">rescue</b> Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
+  raise <b class="hl-string"><i style="color:red">"Could not connect to Faye"</i></b>
+<b class="hl-keyword">end</b></pre>
+<p>With that in place, we are now sure that Faye is running and we can move
+on to our Cucumber scenario. Create a <code class="literal">features/sync_task.feature</code> file
+and let’s describe the desired functionality:</p>
+<pre class="programlisting">  @javascript
+  Scenario: Viewing a task edited by another user
+    Given the following users exist:
+      | email               |
+      | alice@example.com   |
+      | olivia@example.com  |
+    Given the following task exists:
+      | title             |
+      | Get Cheeseburgers |
+    And I am using session "Alice"
+    And I sign in as "alice@example.com"
+    Then I should see "Get Cheeseburgers"
+    When I switch to session "Olivia"
+    And I sign in as "olivia@example.com"
+    And I edit the "Get Cheeseburgers" task and rename it to "Buy Cheeseburgers"
+    And I switch to session "Alice"
+    Then I should see "Buy Cheeseburgers"</pre>
+<p>Thankfully, Capybara allows us to run acceptance tests with client-side
+behavior by specifying different drivers to run scenarios that require
+JavaScript vs. those which don’t. The very first line above, <code class="literal">@javascript</code>,
+tells Capybara to use a JavaScript-enabled driver such as Selenium or
+capybara-webkit.</p>
+<p>The following two steps that create some fixture data are provided by
+<a class="ulink" href="https://github.com/thougthbot/factory_girl" target="_top">FactoryGirl</a>, which looks
+into your factory definitions and builds step definitions based on their
+attributes and associations.</p>
+<p>But then we get into the meat of the problem: switching sessions. Capybara
+introduced the ability to name and switch sessions in your scenarios via
+the <code class="literal">session_name</code> method. The definition for the <code class="literal">I am using session
+"Alice"</code> step looks like this:</p>
+<pre class="programlisting">When /^I (?:am using|switch to) session <b class="hl-string"><i style="color:red">"([^"</i></b>]+)<b class="hl-string"><i style="color:red">"$/ do |new_session_name|
+</i></b>  Capybara.session_name = new_session_name
+<b class="hl-keyword">end</b></pre>
+<p>This allows us to essentially open up different browsers, if you’re
+using the Selenium driver, and it is the key to exercising background syncing
+code in Capybara acceptance testing.</p>
+<p>With this in place, the rest is quite straightforward - we simply interact
+with the application as you would with any Cucumber scenario; visiting pages,
+filling in forms, and verifying results on the page, all the while specifying
+which session you’re interacting with.</p>
+<p>Additionally, the <code class="literal">BackboneSync.FayeSubscriber</code> JavaScript class should also
+be tested in isolation. We’ve used Jasmine for testing JavaScript behavior
+successfully, so it is the approach we recommend. For more information about
+using Jasmine, refer to the "Testing" chapter.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_further_reading"></a>Further reading</h4></div></div></div>
+<p>For a solid, readable background on idempotent messages, check out
+<a class="ulink" href="http://devhawk.net/2007/11/09/the-importance-of-idempotence/" target="_top"><span class="emphasis"><em>The Importance of
+Idempotence</em></span></a>.</p>
+</div>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h3 class="title">
+<a id="_uploading_attachments"></a>Uploading attachments</h3></div></div></div>
+<p>While Ruby gems like paperclip make the API for attaching files to models
+very similar to the standard ActiveModel attribute persistence API, attaching
+files to Backbone models is not quite as straightforward.  In this section,
+we’ll take a look at the general approach for attaching files, and then examine
+the specific implementation used in the example application.</p>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_saving_files_along_with_attributes"></a>Saving files along with attributes</h4></div></div></div>
+<p>When you save a Backbone model, its attributes are sent to the server via
+Backbone.sync.  It would be ideal to treat file uploads in the same fashion,
+storing the files as attributes on the client-side Backbone model and uploading
+them, along with all the other attributes, when then model is saved.</p>
+<p><code class="literal">Backbone.Model#save</code> delegates to <code class="literal">Backbone.sync</code> which, by default, transmits
+data using <code class="literal">$.ajax</code> with a <code class="literal">dataType</code> of <code class="literal">json</code>.</p>
+<p>We <span class="emphasis"><em>could</em></span> send files along here, too, using the HTML5 File API to read the
+file data and send it serialized inside the JSON payload.  But this would require
+us to make server-side changes to parse the file from JSON, and there is no IE
+support for the File API as of IE9.  [<a class="ulink" href="http://caniuse.com/fileapi" target="_top">http://caniuse.com/fileapi</a>]</p>
+<p>A slightly more sophisticated approach would be to use the FormData API and
+XMLHttpRequest Level 2 to serialize attributes instead, transmitting them to
+the server as multipart/form-data, which already has a defined serialization
+for files.  This would allow you to work without modifying your server, but
+still leaves IE completely unsupported.</p>
+<p>To support the broadest set of browsers, but still deliver file uploads in the
+same request as attributes, you’ll use a hidden iframe technique.  Probably the
+most transparent approach is to take advantage of jQuery’s
+<a class="ulink" href="http://api.jquery.com/extending-ajax/#Transports" target="_top">AJAX Transport</a>
+functionality with the
+<a class="ulink" href="http://cmlenz.github.com/jquery-iframe-transport/" target="_top">jquery.iframe-transport.js</a>
+plugin.  There is a caveat with this approach too, however, as we cannot get at
+the response headers, breaking automatic content type detection and, more
+importantly, breaking the use of HTTP response codes to indicate server-side
+errors.  This approach would deliver the smoothest user experience - at the cost
+of more integration code.</p>
+<p>The <a class="ulink" href="https://github.com/leppert/remotipart" target="_top">Remotipart gem</a> provides some
+conventions for delivering response information back to the client side,
+although the use-case is slightly different and the library uses the
+<code class="literal">jquery.form.js</code> <code class="literal">ajaxSubmit()</code> function to perform an iframe upload, instead
+of the smaller <code class="literal">jquery.iframe-transport.js</code> plugin.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_separating_file_upload_and_model_persistence"></a>Separating file upload and model persistence</h4></div></div></div>
+<p>The general approach we’ll take here is to separate the file upload request from the
+model persistence requests.  The server will respond to the upload with an
+identifier, which we can use on the client side to populate an attribute on a
+Backbone model, whether it is a new model or an existing one.</p>
+<p>This does mean that you can have unclaimed attachments if the end user leaves
+the page before saving the parent model, and these should be periodically swept
+if disk usage is an issue.</p>
+<p>When modeling this from the Rails side, you can choose to persist the file
+upload identifier (e.g., the local path or S3 URL) on one of your models
+directly, or you can break the attachment out into its own ActiveRecord model
+and store a foreign key relation on your primary model.  For our example
+we’ll do the latter, adding an <code class="literal">Attachment</code> model and resource to the app.</p>
+<p>We’ll use the HTML5 File API because it’s a straightforward approach to illustrate.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_example_step_1_upload_interface"></a>Example, Step 1: Upload interface</h4></div></div></div>
+<p>In our example task management app, we’d like the owner of a task to attach
+several images to each task.  We want uploads to happen in the task detail view,
+and to appear in-page as soon as they are uploaded.  We don’t
+need to display uploads on the index view.</p>
+<p>First, let’s write an acceptance test to drive the functionality:</p>
+<pre class="programlisting">@javascript
+Feature: Attach a file to a task
+
+  As a user
+  I want to attach files to a task
+  So that I can include reference materials
+
+  Background:
+    Given I am signed up as "email@example.com"
+    When I sign in as "email@example.com"
+    And I go to the tasks page
+    And I create a task "Buy"
+    And I create a task "Eat"
+
+  Scenario: Attach a file to a task
+    When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
+    Then I should see "blueberries.jpg" attached to the "Buy" task
+    And I should see no attachments on the "Eat" task
+
+  Scenario: Attach multiple files to a task
+    When I attach "spec/fixtures/blueberries.jpg" to the "Buy" task
+    And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
+    Then I should see "blueberries.jpg" attached to the "Buy" task
+    And I should see "strawberries.jpg" attached to the "Buy" task</pre>
+<p>The first failures we get are from the lack of upload UI.  We’ll drop down to
+unit tests to drive this out:</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">//= require application</i>
+
+describe(<b class="hl-string"><i style="color:red">"ExampleApp.Views.TaskShow"</i></b>, <b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">var</b> task, view, $el;
+
+  beforeEach(<b class="hl-keyword">function</b>() {
+    task = <b class="hl-keyword">new</b> ExampleApp.Models.Task({
+      id: <span class="hl-number">1</span>,
+      title: <b class="hl-string"><i style="color:red">"Wake up"</i></b>
+    });
+
+    view = <b class="hl-keyword">new</b> ExampleApp.Views.TaskShow({ model: task });
+    $el = $(view.render().el);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"renders the detail view for a task"</i></b>, <b class="hl-keyword">function</b>() {
+    expect($el).toHaveText(/Wake up/);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"renders a file upload area"</i></b>, <b class="hl-keyword">function</b>() {
+    expect($el).toContain(<b class="hl-string"><i style="color:red">".upload label:contains('Attach a file to upload')"</i></b>);
+    expect($el).toContain(<b class="hl-string"><i style="color:red">".upload button:contains('Upload attachment')"</i></b>);
+    expect($el).toContain(<b class="hl-string"><i style="color:red">".upload input[type=file]"</i></b>);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"links the upload label and input"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> $label = $el.find(<b class="hl-string"><i style="color:red">'.upload label'</i></b>);
+    <b class="hl-keyword">var</b> $input = $el.find(<b class="hl-string"><i style="color:red">'.upload input'</i></b>);
+    expect($label.attr(<b class="hl-string"><i style="color:red">'for'</i></b>)).toEqual($input.attr(<b class="hl-string"><i style="color:red">'id'</i></b>));
+  });
+});</pre>
+<p>Then, we’ll add the upload form in the <code class="literal">tasks/show.jst.ejs</code> template, so the
+UI elements are in place:</p>
+<pre class="programlisting">&lt;p&gt;Task title&lt;/p&gt;
+
+&lt;ul class="attachments"&gt;
+&lt;/ul&gt;
+
+&lt;div class="upload"&gt;
+  &lt;label for="input"&gt;Attach a file to upload&lt;/label&gt;
+  &lt;input type="file" name="file" /&gt;
+  &lt;button&gt;Upload attachment&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;a href="#"&gt;Back to task list&lt;/a&gt;</pre>
+<p>Once our units pass, we run the acceptance tests again. The next failure we see
+is that nothing happens upon upload.  We’ll drop down to Jasmine here to write
+a spec for uploading that asserts the correct upload request is issued:</p>
+<pre class="programlisting">it(<b class="hl-string"><i style="color:red">"uploads the file when the upload method is called"</i></b>, <b class="hl-keyword">function</b>() {
+  view.upload();
+  expect(<b class="hl-keyword">this</b>.requests.length).toEqual(<span class="hl-number">1</span>);
+  expect(<b class="hl-keyword">this</b>.requests[<span class="hl-number">0</span>].requestBody.constructor).toEqual(FormData);
+});
+
+it(<b class="hl-string"><i style="color:red">"uploads an attachment for the current task"</i></b>, <b class="hl-keyword">function</b>() {
+  view.upload();
+  expect(<b class="hl-keyword">this</b>.requests[<span class="hl-number">0</span>].url).toEqual(<b class="hl-string"><i style="color:red">"/tasks/1/attachments.json"</i></b>);
+});</pre>
+<p>and implement using the <code class="literal">uploader.js</code> library:</p>
+<pre class="programlisting">render: <b class="hl-keyword">function</b> () {
+  <i class="hl-comment" style="color: silver">// ...</i>
+  <b class="hl-keyword">this</b>.attachUploader();
+  <b class="hl-keyword">return</b> <b class="hl-keyword">this</b>;
+},
+
+<i class="hl-comment" style="color: silver">// ...</i>
+
+attachUploader: <b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">var</b> uploadUrl = <b class="hl-string"><i style="color:red">"/tasks/"</i></b> + <b class="hl-keyword">this</b>.model.get(<b class="hl-string"><i style="color:red">'id'</i></b>) + <b class="hl-string"><i style="color:red">'/attachments.json'</i></b>;
+
+  <b class="hl-keyword">this</b>.uploader = <b class="hl-keyword">new</b> uploader(<b class="hl-keyword">this</b>.uploadInput(), {
+    url:      uploadUrl,
+    success:  <b class="hl-keyword">this</b>.uploadSuccess,
+    prefix:   <b class="hl-string"><i style="color:red">'upload'</i></b>
+  });
+},</pre>
+<p>The acceptance tests still aren’t passing, and a little digging will reveal
+that we need to manually set the CSRF token on the upload request.  Normally,
+this would be set by <code class="literal">jquery_ujs.js</code> with a jQuery AJAX prefilter, but the
+upload code we are using manually constructs an <code class="literal">XMLHttpRequest</code> instead of
+using <code class="literal">$.+ajax</code>, so that it may bind to the <code class="literal">onprogress</code> event.</p>
+<p>We write a spec:</p>
+<pre class="programlisting">it(<b class="hl-string"><i style="color:red">"sets the CSRF token for the upload request"</i></b>, <b class="hl-keyword">function</b>() {
+  view.upload();
+  <b class="hl-keyword">var</b> expectedCsrfToken = $(<b class="hl-string"><i style="color:red">'meta[name="csrf-token"]'</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
+  expect(<b class="hl-keyword">this</b>.requests[<span class="hl-number">0</span>].requestHeaders[<b class="hl-string"><i style="color:red">'X-CSRF-Token'</i></b>]).toEqual(expectedCsrfToken);
+});</pre>
+<p>And add the CSRF token implementation at the end of <code class="literal">attachUploader</code>:</p>
+<pre class="programlisting">attachUploader: <b class="hl-keyword">function</b>() {
+  <i class="hl-comment" style="color: silver">// ...</i>
+
+  <b class="hl-keyword">this</b>.uploader.prefilter = <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> token = $(<b class="hl-string"><i style="color:red">'meta[name="csrf-token"]'</i></b>).attr(<b class="hl-string"><i style="color:red">'content'</i></b>);
+    <b class="hl-keyword">if</b> (token) <b class="hl-keyword">this</b>.xhr.setRequestHeader(<b class="hl-string"><i style="color:red">'X-CSRF-Token'</i></b>, token);
+  };
+},</pre>
+<p>And the spec is green.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_example_step_2_accept_and_persist_uploads_in_rails"></a>Example, Step 2: Accept and persist uploads in Rails</h4></div></div></div>
+<p>At this point, we are sending the upload request from the client, but the
+server isn’t responding, much less persisting the file.  This portion is
+vanilla Rails and Paperclip.  We create an <code class="literal">Attachment</code> model, a nested
+<code class="literal">:attachments</code> route under the <code class="literal">tasks</code> resource, and <code class="literal">AttachmentsController</code>.
+Then, we add the <a class="ulink" href="http://rubygems.org/gems/paperclip" target="_top">paperclip gem</a> to the Gemfile,
+and include the <code class="literal">has_attached_file</code> directive in the <code class="literal">Attachment</code> model along
+with the corresponding <code class="literal">have_attached_file</code> example to the <code class="literal">Attachment</code> model spec.</p>
+<p>Now that attachments are uploaded to the server, the final step is to display
+attachments to the user.</p>
+</div>
+<div class="section" lang="en">
+<div class="titlepage"><div><div><h4 class="title">
+<a id="_example_step_3_display_uploaded_files"></a>Example, Step 3: Display Uploaded Files</h4></div></div></div>
+<p>For structuring the attachments in Backbone, we want to be able to do something
+like the following:</p>
+<pre class="programlisting">&lt;% this.task.attachments.each(function(attachment) { %&gt;
+  Attached: &lt;img src="&lt;%= attachment.get('upload_url')" /&gt; %&gt;
+&lt;% }); %&gt;</pre>
+<p>So, the task model will have an attachments property that instantiates with an
+<code class="literal">AttachmentsCollection</code> instance.</p>
+<p>We’re providing a JSON representation rooted at the task model using
+<a class="ulink" href="https://github.com/nesquena/rabl" target="_top">Rabl</a>, which we discussed previously in
+"Implementing the API: presenting the JSON."</p>
+<pre class="programlisting">object @task
+
+attributes :id, :created_at, :updated_id, :title, :complete, :user_id
+
+child :attachments <b class="hl-keyword">do</b>
+  attributes :id, :created_at, :updated_id, :upload_file_name, :upload_url
+<b class="hl-keyword">end</b></pre>
+<p>We also tell Rabl to suppress the root JSON node, much
+like we did with <code class="literal">ActiveRecord::Base.include_root_in_json</code>:</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver"># config/initializers/rabl_init.rb</i>
+Rabl.configure <b class="hl-keyword">do</b> |config|
+  config.include_json_root = <b class="hl-keyword">false</b>
+<b class="hl-keyword">end</b></pre>
+<p>We can test drive the attachment display from Jasmine; see <code class="literal">task_show_with_attachments_spec.js</code>:</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">//= require application</i>
+
+describe(<b class="hl-string"><i style="color:red">"ExampleApp.Views.TaskShow for a task with attachments"</i></b>, <b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">var</b> task, view, $el, blueberryUrl, strawberryUrl;
+
+  beforeEach(<b class="hl-keyword">function</b>() {
+    blueberryUrl = <b class="hl-string"><i style="color:red">"http://whatscookingamerica.net/Fruit/Blueberries4.jpg"</i></b>;
+    strawberryUrl = <b class="hl-string"><i style="color:red">"http://strawberriesweb.com/three-strawberries.jpg"</i></b>
+    task = <b class="hl-keyword">new</b> ExampleApp.Models.Task({
+      id: <span class="hl-number">1</span>,
+      title: <b class="hl-string"><i style="color:red">"Buy pies"</i></b>,
+      attachments: [
+        {
+          upload_file_name: <b class="hl-string"><i style="color:red">"blueberries.jpg"</i></b>,
+          upload_url: blueberryUrl
+        },
+        {
+          upload_file_name: <b class="hl-string"><i style="color:red">"strawberries.jpg"</i></b>,
+          upload_url: strawberryUrl
+        }
+      ]
+    });
+
+    view = <b class="hl-keyword">new</b> ExampleApp.Views.TaskShow({ model: task });
+    $el = $(view.render().el);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"displays attachments"</i></b>, <b class="hl-keyword">function</b>() {
+    expect($el).toContain(<b class="hl-string"><i style="color:red">".attachments img[src='"</i></b> + blueberryUrl + <b class="hl-string"><i style="color:red">"']"</i></b>)
+    expect($el).toContain(<b class="hl-string"><i style="color:red">".attachments img[src='"</i></b> + strawberryUrl + <b class="hl-string"><i style="color:red">"']"</i></b>)
+  });
+
+  it(<b class="hl-string"><i style="color:red">"displays attachment filenames"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attachments = $el.find(<b class="hl-string"><i style="color:red">".attachments p"</i></b>);
+    expect(attachments.first()).toHaveText(<b class="hl-string"><i style="color:red">'Attached: blueberries.jpg'</i></b>);
+    expect(attachments.last()).toHaveText(<b class="hl-string"><i style="color:red">'Attached: strawberries.jpg'</i></b>);
+  });
+});</pre>
+<p>We’ll represent attachments as an associated collection on <code class="literal">Task</code>, so we’ll need
+a Backbone model and collection for attachments, too.  First, the task model
+should parse its JSON to populate the associated attachments.  Test drive that
+in the <code class="literal">ExampleApp.Models.Tasks</code> Jasmine spec:</p>
+<pre class="programlisting"><i class="hl-comment" style="color: silver">//= require application</i>
+
+describe(<b class="hl-string"><i style="color:red">"ExampleApp.Models.Tasks"</i></b>, <b class="hl-keyword">function</b>() {
+  it(<b class="hl-string"><i style="color:red">"knows if it is complete"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> completeTask = <b class="hl-keyword">new</b> ExampleApp.Models.Task({ complete: true });
+    expect(completeTask.isComplete()).toBe(true);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"knows if it is not complete"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> incompleteTask = <b class="hl-keyword">new</b> ExampleApp.Models.Task({ complete: false });
+    expect(incompleteTask.isComplete()).toBe(false);
+  });
+});
+
+describe(<b class="hl-string"><i style="color:red">"ExampleApp.Models.Tasks#initialize"</i></b>, <b class="hl-keyword">function</b>() {
+  <b class="hl-keyword">var</b> attributes, task;
+
+  beforeEach(<b class="hl-keyword">function</b>() {
+    attributes = {<b class="hl-string"><i style="color:red">"id"</i></b>:<span class="hl-number">1</span>,
+                  <b class="hl-string"><i style="color:red">"title"</i></b>:<b class="hl-string"><i style="color:red">"Sweet Task"</i></b>,
+                  <b class="hl-string"><i style="color:red">"attachments"</i></b>:[
+                    {<b class="hl-string"><i style="color:red">"upload_url"</i></b>:<b class="hl-string"><i style="color:red">"/uploads/1.jpg"</i></b>},
+                    {<b class="hl-string"><i style="color:red">"upload_url"</i></b>:<b class="hl-string"><i style="color:red">"/uploads/2.jpg"</i></b>}
+                  ]};
+    task = <b class="hl-keyword">new</b> ExampleApp.Models.Task(attributes);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"creates collections for nested attachments"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attachment = task.attachments;
+    <b class="hl-keyword">var</b> typeCheck = attachments <b class="hl-keyword">instanceof</b> ExampleApp.Collections.Attachments;
+    expect(typeCheck).toEqual(true);
+    expect(task.attachments.size()).toEqual(<span class="hl-number">2</span>);
+  });
+
+  it(<b class="hl-string"><i style="color:red">"populates the collection with Attachment models"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attachments = task.attachments;
+    <b class="hl-keyword">var</b> typeCheck = attachments.first() <b class="hl-keyword">instanceof</b> ExampleApp.Models.Attachment;
+    expect(typecheck).toEqual(true);
+    expect(attachments.first().get(<b class="hl-string"><i style="color:red">'upload_url'</i></b>)).toEqual(<b class="hl-string"><i style="color:red">'/uploads/1.jpg'</i></b>);
+
+    typeCheck = attachments.last() <b class="hl-keyword">instanceof</b> ExampleApp.Models.Attachment;
+    expect(typeCheck).toEqual(true);
+    expect(attachments.last().get(<b class="hl-string"><i style="color:red">'upload_url'</i></b>)).toEqual(<b class="hl-string"><i style="color:red">'/uploads/2.jpg'</i></b>);
+  });
+});
+
+describe(<b class="hl-string"><i style="color:red">"ExampleApp.Models.Task attachments:change"</i></b>, <b class="hl-keyword">function</b>() {
+  it(<b class="hl-string"><i style="color:red">"re-parses the collection"</i></b>, <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> task = <b class="hl-keyword">new</b> ExampleApp.Models.Task({<b class="hl-string"><i style="color:red">"attachments"</i></b>:[
+                                            {<b class="hl-string"><i style="color:red">"upload_url"</i></b>:<b class="hl-string"><i style="color:red">"1.jpg"</i></b>},
+                                            {<b class="hl-string"><i style="color:red">"upload_url"</i></b>:<b class="hl-string"><i style="color:red">"2.jpg"</i></b>}]});
+    expect(task.attachments.size()).toEqual(<span class="hl-number">2</span>);
+
+    task.set({<b class="hl-string"><i style="color:red">"attachments"</i></b>:[{<b class="hl-string"><i style="color:red">"upload_url"</i></b>:<b class="hl-string"><i style="color:red">"1.jpg"</i></b>}]});
+    expect(task.attachments.size()).toEqual(<span class="hl-number">1</span>);
+  });
+});</pre>
+<p>The first failures reference the Backbone attachment model and attachments
+collection, so we add those, driving the collection out with a spec.</p>
+<p>Next, we can implement the task model’s JSON parsing to populate its associated
+attachments:</p>
+<pre class="programlisting">ExampleApp.Models.Task = Backbone.Model.extend({
+  initialize: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">this</b>.bind(<b class="hl-string"><i style="color:red">"change:attachments"</i></b>, <b class="hl-keyword">this</b>.parseAttachments);
+    <b class="hl-keyword">this</b>.parseAttachments();
+  },
+
+  parseAttachments: <b class="hl-keyword">function</b>() {
+    <b class="hl-keyword">var</b> attachmentsAttr = <b class="hl-keyword">this</b>.get(<b class="hl-string"><i style="color:red">'attachments'</i></b>);
+    <b class="hl-keyword">this</b>.attachments = <b class="hl-keyword">new</b> ExampleApp.Collections.Attachments(attachmentsAttr);
+  },
+
+  <i class="hl-comment" style="color: silver">// ...</i>
+
+});</pre>
+<p>At this point, we return back to the acceptance test, and it’s fully passing.</p>
+</div>
+</div>
+<div class="footnotes">
+<br><hr width="100" align="left">
+<div class="footnote"><p><sup>[<a id="ftn.d0e3324" href="#d0e3324" class="simpara">1</a>] </sup>At least, we
+have a guarantee at the application level; database integrity and the
+possibility of skew between Rails models and DB content is another discussion
+entirely.</p></div>
+</div>
+</div>
+
+    </div>
+
+    <hr/>
+
+    <div class="nav" id="navfooter">
+    <table width="100%">
+      <tr><td width="33%" align="left">
+        
+         <a href="routers_views_and_templates.html">Prev</a><br/>
+         Routers, Views, and Templates
+        
+      </td><td width="33%" align="center">
+        
+         <a href="index.html">Home</a><br/>
+         Backbone.js on Rails
+        
+      </td><td width="33%" align="right">
+        
+          <a href="testing.html">Next</a><br/>
+          Testing
+        
+      </td></tr>
+    </table>
+    </div>
+  </body>
+</html>

@@ -5,13 +5,65 @@
 --------------------------------------------------------------------------- */
 
 body {
-	font-family:verdana,helvetica,arial,sans-serif;
-	font-size:81.25%;   /* 13px */
-	line-height:1.538;  /* 20px */
-	margin:40px 50px;
-	max-width:53.8461538462em; /* 790px */
-	color:#333;
+  font-family:"Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 1.0em;
+  line-height:140%;
+  margin-left: 10%;
+  margin-right: 10%;
+  min-width: 790px;
+  color:#222;
+  background: #eee;
 }
+
+.tip { 
+	background: #eee;
+	padding: 0 10px;
+}
+.warning { 
+	background: #fcc;
+	padding: 0 10px;
+}
+.important { 
+	background: #ccf;
+	padding: 0 10px;
+}
+.caution { 
+	background: #ffc;
+	padding: 0 10px;
+}
+.content {
+  background: #fff;
+  padding: 20px;
+}
+
+a {
+  color: #336;
+}
+
+a:visited {
+  color: #447;
+}
+
+.nav {
+  color: #777;
+}
+.nav a {
+  color: #555;
+}
+
+#toc a { 
+	text-decoration: none; 
+	color: #444;
+}
+#toc > ul { 
+	list-style: none;
+	padding-left: 0;
+}
+#toc > ul ul { 
+	list-style: none;
+}
+
+hr { border: none; border-bottom: 1px solid #ccc; }
 
 em {
 	font-style:italic;
@@ -32,7 +84,9 @@ p, ul, ol, dl {
 	margin:10px 0
 }
 
-dl { }
+dl {
+	margin-left:40px
+}
 
 dt {
 	font-weight:normal;
@@ -186,12 +240,6 @@ pre {
    Based on The FreeBSD Handbook and various other FreeBSD documenration.
 --------------------------------------------------------------------------- */
 
-body {
-  font-family:verdana,helvetica,arial,sans-serif;
-  font-size:100%;
-  color:#000;
-}
-
 tt { color:#007A00 }
 pre tt { color:#000 }
 
@@ -225,7 +273,9 @@ h2 {
 }
 
 pre {
-  background:#EEE;
+  background:#000;
+  color:#fff;
+  padding: 15px;
 }
 
 /* vim: set ft=css ts=4 sw=4 noexpandtab: */
