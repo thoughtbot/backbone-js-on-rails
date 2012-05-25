@@ -21,7 +21,8 @@ end
 group :development, :test do
   gem "rspec-rails", "~> 2.9.0"
   gem "ruby-debug19"
-  gem 'jasmine', :git => "git://github.com/pivotal/jasmine-gem.git", :ref => "34c1529c3f7"
+  gem 'jasmine', :git => "git://github.com/pivotal/jasmine-gem.git", 
+                 :ref => "34c1529c3f7"
   gem 'cucumber-rails', "~> 1.0.2", :require => false
 end
 

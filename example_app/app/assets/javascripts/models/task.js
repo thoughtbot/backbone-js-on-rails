@@ -8,11 +8,13 @@ ExampleApp.Models.Task = Backbone.Model.extend({
   },
 
   parseAttachments: function() {
-    this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
+    var attachmentsAttr = this.get('attachments');
+    this.attachments = new ExampleApp.Collections.Attachments(attachmentsAttr);
   },
 
   parseAssignedUsers: function() {
-    this.assignedUsers = new ExampleApp.Collections.Users(this.get('assigned_users'));
+    var usersAttr = this.get('assigned_users');
+    this.assignedUsers = new ExampleApp.Collections.Users(usersAttr);
   },
 
   urlRoot: '/tasks',
