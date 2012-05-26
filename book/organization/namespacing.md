@@ -1,4 +1,4 @@
-=== Namespacing your application
+### Namespacing your application
 
 You will want to create an object in JavaScript in which your Backbone
 application will reside. This variable will serve as a namespace for your
@@ -14,8 +14,7 @@ Typically, initializing your application will involve creating a router and
 starting Backbone history to route the initial URL fragment.  This app variable
 will look like the following:
 
-[javascript]
-source~~~~
+~~~~javascript
 var ExampleApp = {
   Models: {},
   Collections: {},
@@ -26,7 +25,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-source~~~~
+~~~~
 
 You can find a more fully fleshed-out version of this file in the example app
-in +app/assets/javascripts/example_app.js+.
+in `app/assets/javascripts/example_app.js`.

@@ -9,7 +9,7 @@ browser support and that additional server-side work is required to support it.
 pushState support is currently limited to the latest versions of Firefox,
 Chrome, Safari, and Mobile Safari. For a full listing of support and more
 information about the History API, of which pushState is a part, visit
-http://diveintohtml5.info/history.html#how.
+<http://diveintohtml5.info/history.html#how>.
 
 Thankfully, if you opt-in to pushState in Backbone, browsers that don't
 support pushState will continue to use hash-based URL fragments, and if a hash

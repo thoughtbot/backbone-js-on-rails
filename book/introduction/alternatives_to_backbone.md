@@ -1,4 +1,4 @@
-=== Alternatives to Backbone
+### Alternatives to Backbone
 
 Web applications are pushing an increasing amount of responsibility to the client.
 The user experience can be quite enjoyable, but deeply nesting callbacks and

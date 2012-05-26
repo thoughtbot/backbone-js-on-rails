@@ -1,11 +1,10 @@
-=== Backbone and MVC
+### Backbone and MVC
 
 Model–View–Controller (MVC) is a software architectural pattern used in many
 applications to isolate domain or business logic (the application logic for the user)
 from the user interface (input and presentation).
 
-.Model-View-Controller concept
-image::image/MVCDiagram.png[align="center",scaledwidth="65%"]
+![Model-View-Controller concept](image/MVCDiagram.png)
 
 In the above diagram, a solid line represents a direct association and a dashed
 line represents an indirect association, such as one mediated by an observer.
@@ -13,7 +12,7 @@ line represents an indirect association, such as one mediated by an observer.
 As a user of Rails, you're likely already familiar with the concept of MVC and
 the benefits that the separation of concerns can provide. However, Rails
 itself is, technically, not traditional MVC, but a pattern called
-http://en.wikipedia.org/wiki/Model2[Model2]. A traditional MVC is event-based,
+[Model2](http://en.wikipedia.org/wiki/Model2). A traditional MVC is event-based,
 and views are bound directly to models as observers, updating themselves when
 the model changes.
 
@@ -30,7 +29,7 @@ to do with it.  In Backbone, these two concerns are merged into view classes,
 which are responsible for presentation as well as both establishing and responding
 to UI event bindings.
 
-=== What goes where
+### What goes where
 
 Part of the initial learning curve of Backbone can be figuring out what goes
 where, and mapping it to expectations set by working with Rails.  In Rails
@@ -60,45 +59,47 @@ can be difficult to keep straight everything that's going on in your application
 Ultimately, though, the additional organization and functionality of Backbone
 outweighs the costs - let's break it down.
 
-.Rails
-* Model
-* Controller
-* View
+| Rails      |
+--------------
+| Model      |
+| Controller |
+| View       |
 
-.Backbone
-* Model and Collection
-* Router
-* View
-* Template
+| Backbone             |
+------------------------
+| Model and Collection |
+| Router               |
+| View                 |
+| Template             |
 
 In a typical Rails and Backbone application, the initial interaction between
 the layers will be as follows:
 
-- A request from a user comes in; the *Rails router* identifies what should
+- A request from a user comes in; the **Rails router** identifies what should
   handle the request, based on the URL
-- The *Rails controller action* to handle the request is called; some initial
+- The **Rails controller action** to handle the request is called; some initial
   processing may be performed
-- The *Rails view template* is rendered and returned to the user's browser
-- The *Rails view template* will include *Backbone initialization*; usually
-  this is populating some *Backbone collections* as sets of *Backbone models*
-  with JSON data provided by the *Rails view*
-- The *Backbone router* determines which of its methods should handle the
+- The **Rails view template** is rendered and returned to the user's browser
+- The **Rails view template** will include **Backbone initialization**; usually
+  this is populating some *Backbone collections* as sets of **Backbone models**
+  with JSON data provided by the **Rails view**
+- The **Backbone router** determines which of its methods should handle the
   display, based on the URL
-- The *Backbone router* calls that method; some initial processing
-  may be performed, and one or more *Backbone views* are rendered
-- The *Backbone view* reads *templates* and uses *Backbone* models to
+- The **Backbone router** calls that method; some initial processing
+  may be performed, and one or more **Backbone views** are rendered
+- The **Backbone view** reads **templates** and uses **Backbone** models to
   render itself onto the page
 
 At this point, the user will see your application in their browser and be able to
 interact with it.  The user interacting with elements on the page will trigger
-actions to be taken at any level of the above sequence: *Backbone model*,
-*Backbone views*, *Backbone routers*, or requests to the remote server.
+actions to be taken at any level of the above sequence: **Backbone model**,
+**Backbone views**, **Backbone routers**, or requests to the remote server.
 
 Requests to the remote server may be any one of the following:
 
 - Normal requests that don't hit Backbone and trigger a full page reload
 - Normal Ajax requests, not using Backbone at all
-- Ajax requests from the *Backbone model* or *Backbone collection*,
+- Ajax requests from the **Backbone model** or **Backbone collection**,
   communicating with Rails via JSON
 
 Generally speaking, by introducing Backbone into our application we'll reduce

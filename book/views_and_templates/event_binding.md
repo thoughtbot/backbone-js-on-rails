@@ -1,4 +1,4 @@
-=== Event binding
+### Event binding
 
 A big part of writing snappy rich client applications is building models and
 views that update in real-time with respect to one another. With Backbone,
@@ -9,46 +9,45 @@ using event-driven programming where components emit and handle events,
 achieving non-blocking UIs.
 
 With Backbone, it's very easy to write such applications. Backbone provides
-the +Backbone.Events+ mixin, which can be included in any other class.
+the `Backbone.Events` mixin, which can be included in any other class.
 
 Here's a quick example of a very simple game engine, where things happen in the
 system and an event is triggered, which in turn invokes any event handlers that
 are bound to that event:
 
-[javascript]
-source~~~~
+~~~~javascript
 var gameEngine = {};
 _.extend(gameEngine, Backbone.Events);
 
 gameEngine.on("user_registered", function(user) {
-  user.points += 10
+  user.points `= 10
 });
 
 gameEngine.trigger("user_registered", User.new({ points: 0 }));
-source~~~~
+~~~~
 
-In the example above, +on+ subscribes the gameEngine to listen for the
-"user_registered" event, then +trigger+ broadcasts that event to all
+In the example above, `on` subscribes the gameEngine to listen for the
+"user_registered" event, then `trigger` broadcasts that event to all
 subscribed listeners, which invokes the function that adds points to the user.
-Any arguments passed to +trigger+ after the name of the event are in turn
-passed to the event handler.  So in this case the output of +User.new()+ is
-received as +user+ in the handler.
+Any arguments passed to `trigger` after the name of the event are in turn
+passed to the event handler.  So in this case the output of `User.new()` is
+received as `user` in the handler.
 
-+Backbone.Views+, +Backbone.Model+ and +Backbone.Collection+ are all extended
-with +Backbone.Events+. There are some events that are triggered by Backbone at
+`Backbone.Views`, `Backbone.Model` and `Backbone.Collection` are all extended
+with `Backbone.Events`. There are some events that are triggered by Backbone at
 particularly convenient moments. These are common events to which many user interface
 flows need to react.  For example, when a Backbone model's attributes are
-changed, that model will trigger the +change+ event. It is still up to you to
+changed, that model will trigger the `change` event. It is still up to you to
 bind a handler on those events.  (More on that later.)
 
 As you can see from the example though, it is possible to bind and trigger
-arbitrary events on any object that extends +Backbone.Events+. Additionally,
+arbitrary events on any object that extends `Backbone.Events`. Additionally,
 if an event handler should always trigger regardless of which event is fired,
-you can bind to the special +all+ event.
+you can bind to the special `all` event.
 
 There are three primary kinds of events that your views will bind to:
 
-* DOM events within the view's +this.el+ element
+* DOM events within the view's `this.el` element
 * Events triggered by closely associated objects, such as the view's model or
 collection
 * Events your view itself publishes
@@ -58,20 +57,18 @@ disposed of. Events that your view publishes will need to be handled a
 different way. Each of these three categories of events is discussed in more
 detail below.
 
-==== Binding to DOM events within the view element
+#### Binding to DOM events within the view element
 
 The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
 
-[xml]
-source~~~~
+~~~~erb
 <!-- templates/soundboard.jst -->
 <a class="sound">Honk</a>
 <a class="sound">Beep</a>
-source~~~~
+~~~~
 
-[javascript]
-source~~~~
+~~~~javascript
 var SoundBoard = Backbone.View.extend({
   render: function() {
     $(this.el).html(JST['soundboard']());
@@ -82,12 +79,11 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-source~~~~
+~~~~
 
-But Backbone provides an easier and more declarative approach with the +events+ hash:
+But Backbone provides an easier and more declarative approach with the `events` hash:
 
-[javascript]
-source~~~~
+~~~~javascript
 var SoundBoard = Backbone.View.extend({
   events: {
     "click a.sound": "playSound"
@@ -101,37 +97,34 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-source~~~~
+~~~~
 
 Backbone will bind the events with the
-http://documentcloud.github.com/backbone/#View-delegateEvents[+Backbone.View.prototype.delegateEvents()+]
-function.  It binds DOM events with +$.delegate()+, whether you're using the
-http://api.jquery.com/delegate/[jQuery] or
-https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108[Zepto]
-+.delegate()+ function.
+[`Backbone.View.prototype.delegateEvents()`](http://documentcloud.github.com/backbone/#View-delegateEvents)
+function.  It binds DOM events with `$.delegate()`, whether you're using the
+[jQuery](http://api.jquery.com/delegate/) or
+[Zepto](https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108)
+`.delegate()` function.
 
-It also takes care of binding the event handlers' +this+ to the view instance
-using +_.on()+.
+It also takes care of binding the event handlers' `this` to the view instance
+using `_.on()`.
 
-==== Events observed by your view
+#### Events observed by your view
 
-In almost every view you write, the view will be bound to a +Backbone.Model+ or
-a +Backbone.Collection+, most often with the convenience properties +this.model+
-or +this.collection+.
+In almost every view you write, the view will be bound to a `Backbone.Model` or
+a `Backbone.Collection`, most often with the convenience properties `this.model`
+or `this.collection`.
 
-Consider a view that displays a collection of +Task+ models. It will re-render
+Consider a view that displays a collection of `Task` models. It will re-render
 itself when any model in the collection is changed or removed, or when a new
 model is added:
 
-[javascript]
-source~~~~
-include::tasks_index_view_class.js[]
-source~~~~
+<<(tasks_index_view_class.js)
 
-Note how we bind to the collection's +change+, +add+ and +remove+ events.
-The +add+ and +remove+ events are triggered when you either +add()+ or +remove()+
-a model from that collection as expected. The +change+ event requires special
-mention; it will trigger when any of the underlying models' +change+ event triggers.
+Note how we bind to the collection's `change`, `add` and `remove` events.
+The `add` and `remove` events are triggered when you either `add()` or `remove()`
+a model from that collection as expected. The `change` event requires special
+mention; it will trigger when any of the underlying models' `change` event triggers.
 Backbone just bubbles up that event to the containing collection for convenience.
 
 While the most common view bindings will be to events from its associated
@@ -139,7 +132,7 @@ models and collections, your view can bind to any events to which it wants to
 listen.  The life-cycle for the binding and unbinding, and the handling of
 these events will be the same as those for models and collections.
 
-==== Events your view publishes
+#### Events your view publishes
 
 With sufficiently complex views, you may encounter a situation where you want
 one view to change in response to another. This can be accomplished with events. Your view can trigger an event to which
@@ -148,8 +141,7 @@ the other view has bindings.
 Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:
 
-[javascript]
-source~~~~
+~~~~javascript
 GenderPicker = Backbone.View.extend({
   render: {
     // render template
@@ -183,16 +175,16 @@ UsersTable = Backbone.View.extend({
     this.render();
   }
 });
-source~~~~
+~~~~
 
-In the above snippet, the +GenderPicker+ is responsible for the filter
-control. When the appropriate elements are clicked, a custom +changed+ event
+In the above snippet, the `GenderPicker` is responsible for the filter
+control. When the appropriate elements are clicked, a custom `changed` event
 is triggered on itself. Note how it is also possible to pass arbitrary
-parameters to the +trigger()+ function.
+parameters to the `trigger()` function.
 
-On the other hand, we have a +UsersTable+ which is responsible for
+On the other hand, we have a `UsersTable` which is responsible for
 rendering a collection of users. It also observes this event via the call to
-+on()+, where it invokes the +filterByGender+ function.
+`on()`, where it invokes the `filterByGender` function.
 
 While your views will generally bind to events on models and collections, a
 situation like the above may arise where it is handy to trigger and bind to

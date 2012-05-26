@@ -1,4 +1,4 @@
-=== The shift to client-side web applications
+### The shift to client-side web applications
 
 Modern web applications have become increasingly rich, shifting their complexity onto
 the client side.  While there are very well-understood approaches embodied in

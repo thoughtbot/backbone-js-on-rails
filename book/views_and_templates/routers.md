@@ -1,8 +1,8 @@
-=== Routers
+### Routers
 
 Routers are an important part of the Backbone infrastructure. Backbone
 routers provide methods for routing application flow based on client-side URL
-fragments (+yourapp.com/tasks#fragment+).
+fragments (`yourapp.com/tasks#fragment`).
 
 Routes are meant to represent serializable, bookmarkable entry points into your
 Backbone application.  This means that the pertinent application state is
@@ -27,8 +27,7 @@ include::a_note_about_push_state.asc[]
 
 A typical Backbone router will appear as shown below:
 
-[javascript]
-source~~~~
+~~~~javascript
 ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
     ""         : "index"
@@ -43,9 +42,9 @@ ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
     // Instantiate and render the show view
   }
 });
-source~~~~
+~~~~
 
-==== The routes hash
+#### The routes hash
 
 The basic router consists of a routes hash, which is a mapping between URL
 fragments and methods on the router. If the current URL fragment, or one that
@@ -53,19 +52,19 @@ is being visited, matches one of the routes in the hash, its method will be
 called.
 
 Like Rails routes, Backbone routes can contain parameter parts, as seen in
-the +show+ route in the example above. In this route, the part of the fragment
-after +show/+ will then be based as an argument to the +show+ method.
+the `show` route in the example above. In this route, the part of the fragment
+after `show/` will then be based as an argument to the `show` method.
 
 Multiple parameters are possible, as well. For example, a route of
-+search/:query/p:page+ will match a fragment of +search/completed/p2+ passing
-+completed+ and +2+ to the action.
+`search/:query/p:page` will match a fragment of `search/completed/p2` passing
+`completed` and `2` to the action.
 
-In the routes, +/+ is the natural separator. For example, a route of
-+show/:id+ will not match a fragment of +show/1/2+. To allow you to match
+In the routes, `/` is the natural separator. For example, a route of
+`show/:id` will not match a fragment of `show/1/2`. To allow you to match
 fragments like this, Backbone provides the concept of splat parts,
-identified by +*+ instead of +:+. For example, a route of +show/*id+ would
-match the previous fragment, and +1/2+ would be passed to the action as the
-+id+ variable.
+identified by `*` instead of `:`. For example, a route of `show/*id` would
+match the previous fragment, and `1/2` would be passed to the action as the
+`id` variable.
 
 Routing occurs when the browser's URL changes. This can occur when a link is clicked,
 when a URL is entered into the browser's URL bar, or when the back button is clicked.
@@ -74,17 +73,17 @@ matches an existing route. If it does, the specified function will be called
 with any parameters extracted from the URL fragment.
 
 In addition, an event with the name of "route" and the function will be
-triggered. For example, when the router's +show+ function above is triggered, an event of
-+route:show+ will be fired. This is so that other objects can listen to the
+triggered. For example, when the router's `show` function above is triggered, an event of
+`route:show` will be fired. This is so that other objects can listen to the
 router, and be notified when the router responds to certain routes.
 
-==== Initializing a router
+#### Initializing a router
 
-It is possible to specify an +initialize+ function in a Router which will be
+It is possible to specify an `initialize` function in a Router which will be
 called when the router is instantiated. Any arguments passed to the router's
-constructor will be passed to this +initialize+ function.
+constructor will be passed to this `initialize` function.
 
 Additionally, it is possible to pass the routes for a router via the
-constructor such as +new ExampleRouter({ routes: { "" : "index" }}+. But note
+constructor such as `new ExampleRouter({ routes: { "" : "index" }}`. But note
 that this will override any routes defined in the routes hash on the router
 itself.

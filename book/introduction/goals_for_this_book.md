@@ -1,4 +1,4 @@
-=== Goals for this book
+### Goals for this book
 
 This book aims to cover topics that are of interest when integrating
 Backbone into a Rails application.  The primary Backbone documentation is

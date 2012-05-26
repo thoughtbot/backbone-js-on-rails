@@ -1,19 +1,17 @@
-=== Mixins
+### Mixins
 
 Backbone provides a basic mechanism for inheritance.  Sometimes, you'll want to
 build a collection of related, reusable behavior and include that in several
 classes that already inherit from a Backbone base class.  In these cases,
-you'll want to use a http://en.wikipedia.org/wiki/Mixin[mixin].
+you'll want to use a [mixin](http://en.wikipedia.org/wiki/Mixin).
 
-Backbone includes
-http://documentcloud.github.com/backbone/#Events[Backbone.Events] as an example
-of a mixin.
+Backbone includes [Backbone.Events](http://documentcloud.github.com/backbone/#Events) 
+as an example of a mixin.
 
-Here, we create a mixin named +Observer+ that contains behavior for binding to
+Here, we create a mixin named `Observer` that contains behavior for binding to
 events in a fashion that can be cleaned up later:
 
-[javascript]
-source~~~~
+~~~~javascript
 var Observer = {
   bindTo: function(source, event, callback) {
     source.on(event, callback, this);
@@ -28,13 +26,12 @@ var Observer = {
     this.bindings = [];
   }
 };
-source~~~~
+~~~~
 
-We can mix +Observer+ into a class by using Underscore.js' +_.extend+ on the
+We can mix `Observer` into a class by using Underscore.js' `_.extend` on the
 prototype of that class:
 
-[javascript]
-source~~~~
+~~~~javascript
 SomeCollectionView = Backbone.View.extend({
   initialize: function() {
     this.bindTo(this.collection, "change", this.render);
@@ -47,4 +44,4 @@ SomeCollectionView = Backbone.View.extend({
 });
 
 _.extend(SomeCollectionView.prototype, Observer);
-source~~~~
+~~~~

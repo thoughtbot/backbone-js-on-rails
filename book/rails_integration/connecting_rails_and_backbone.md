@@ -1,4 +1,4 @@
-=== An overview of the stack: connecting Rails and Backbone
+### An overview of the stack: connecting Rails and Backbone
 
 By default, Backbone communicates with your Rails application via JSON HTTP
 requests. If you've ever made a JSON API for your Rails app, then
@@ -9,22 +9,21 @@ This section will briefly touch on each of the major parts of an application
 using both Rails and Backbone.  We'll go into more detail in later chapters,
 but this should give you the big picture of how the pieces fit together.
 
-==== Setting up models
+#### Setting up models
 
 In our example application, we have a Task model, exposed via a JSON API at
-+/tasks+. The simplest Backbone representation of this model would be as
+`/tasks`. The simplest Backbone representation of this model would be as
 shown below:
 
-[javascript]
-source~~~~
+~~~~javascript
 var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-source~~~~
+~~~~
 
 The `urlRoot` property above describes a base for the server-side JSON API that
 houses this resource.  Collection-level requests will occur at that root URL,
-and requests relating to instances of this model will be found at +/tasks/:id+.
+and requests relating to instances of this model will be found at `/tasks/:id`.
 
 NOTE: There is no need to have a one-to-one mapping between Rails models and
 Backbone models.  Backbone models instead correspond with RESTful resources.
@@ -41,27 +40,25 @@ plural representation of `Tasks` into `Collections`.
 The simplest Backbone collection to represent our `Tasks` would be the
 following.
 
-[javascript]
-source~~~~
+~~~~javascript
 var Tasks = Backbone.Collection.extend({
   model: Task
 });
-source~~~~
+~~~~
 
 If we specify the URL for `Tasks` in our collection instead, then models within
 the collection will use the collection's URL to construct their own URLs, and
 the `urlRoot` no longer needs to be specified in the model. If we make that
 change, then our collection and model will be as follows.
 
-[javascript]
-source~~~~
+~~~~javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks'
 });
 
 var Task = Backbone.Model.extend({});
-source~~~~
+~~~~
 
 Notice in the above model definitions that there is no specification of the
 attributes on the model. As in ActiveRecord, Backbone models get their
@@ -70,17 +67,17 @@ this schema and data are JSON responses from the Rails server.
 
 The default JSON representation of an ActiveRecord model is an object that includes
 all the model's attributes. It does not include the data for any related models
-or any methods on the model, but it does include the ids of any +belongs_to+ relations
-as those are stored in a +relation_name_id+ attribute on the model.
+or any methods on the model, but it does include the ids of any `belongs_to` relations
+as those are stored in a `relation_name_id` attribute on the model.
 
 The JSON representation of your ActiveRecord models will be retrieved by
-calling +to_json+ on them, which returns a string of JSON. Customize the output
-of +to_json+ by overriding the +as_json+ method in your model, which returns a
+calling `to_json` on them, which returns a string of JSON. Customize the output
+of `to_json` by overriding the `as_json` method in your model, which returns a
 Ruby data structure like a Hash or Array which will be serialized into the JSON
 string.  We'll touch on this more later in the section, "Customizing your
 Rails-generated JSON."
 
-==== Setting up Rails controllers
+#### Setting up Rails controllers
 
 The Backbone models and collections will talk to your Rails controllers. The
 most basic pattern is one Rails controller providing one family of RESTful
@@ -92,15 +89,14 @@ Rails controller actions: index, show, create, update, and destroy. Backbone
 does not make any use of the new action.
 
 Therefore, it's just up to us to write a _normal_ RESTful controller.  The
-newest and most succinct way to structure these is to use the +respond_with+
+newest and most succinct way to structure these is to use the `respond_with`
 method, introduced in Rails 3.0.
 
-When using +respond_with+, declare supported formats with +respond_to+. Inside
+When using `respond_with`, declare supported formats with `respond_to`. Inside
 individual actions, you then specify the resource or resources to be delivered
-using +respond_with+:
+using `respond_with`:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TasksController < ApplicationController::Base
   respond_to :html, :json
 
@@ -108,21 +104,21 @@ class TasksController < ApplicationController::Base
     respond_with(@tasks = Task.all)
   end
 end
-source~~~~
+~~~~
 
-In the above example tasks controller, the +respond_to+ line declares that this
+In the above example tasks controller, the `respond_to` line declares that this
 controller should respond to requests for both the HTML and JSON formats. Then,
-in the index action, the +respond_with+ call will build a response according to
+in the index action, the `respond_with` call will build a response according to
 the requested content type (which may be HTML or JSON in this case) and
 provided resource, `@tasks`.
 
-===== Validations and your HTTP API
+####= Validations and your HTTP API
 
-If a Backbone model has a +validate+ method defined, it will be validated on
+If a Backbone model has a `validate` method defined, it will be validated on
 the client side, before its attributes are set. If validation fails, no changes
-to the model will occur, and the "error" event will be fired. Your +validate+
+to the model will occur, and the "error" event will be fired. Your `validate`
 method will be passed the attributes that are about to be updated. You can
-signal that validation passed by returning nothing from your +validate+ method.
+signal that validation passed by returning nothing from your `validate` method.
 You signify that validation has failed by returning something from the method.
 What you return can be as simple as a string, or a more complex object that
 describes the error in all its gory detail.
@@ -135,14 +131,13 @@ So, your Backbone applications will likely rely on at least some server-side
 validation logic.  Invalid requests return non-2xx HTTP responses, which
 are handled by error callbacks in Backbone:
 
-[javascript]
-source~~~~
+~~~~javascript
 task.save({ title: "New Task title" }, {
   error: function() {
     // handle error from server
   }
 });
-source~~~~
+~~~~
 
 The error callback will be triggered if your server returns a non-2xx
 response. Therefore, you'll want your controller to return a non-2xx HTTP
@@ -150,8 +145,7 @@ response code if validations fail.
 
 A controller that does this would appear as shown in the following example:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TasksController < ApplicationController::Base
   respond_to :json
 
@@ -164,14 +158,13 @@ class TasksController < ApplicationController::Base
     end
   end
 end
-source~~~~
+~~~~
 
 The default Rails responders will respond with an unprocessable entity (422)
 status code when there are validation errors, so the action above can be
 refactored:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TasksController < ApplicationController::Base
   respond_to :json
   def create
@@ -180,7 +173,7 @@ class TasksController < ApplicationController::Base
     respond_with @task
   end
 end
-source~~~~
+~~~~
 
 Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
@@ -195,7 +188,7 @@ the "Models and Collections" chapter. For more information about handling and
 displaying errors on the client side, see the "Forms" section of the
 "Routers, Views and Templates" chapter.
 
-==== Setting Up Views
+#### Setting Up Views
 
 Most Backbone applications will be a single-page app, or "SPA." This means that
 your Rails application handles two jobs: First, it renders a single page which
@@ -203,7 +196,7 @@ hosts your Backbone application and, optionally, an initial data set for it to
 use. From there, ongoing interaction with your Rails application occurs via
 HTTP JSON APIs.
 
-For our example application, this host page will be located at +Tasks#index+,
+For our example application, this host page will be located at `Tasks#index`,
 which is also routed to the root route.
 
 You will want to create an object in JavaScript for your Backbone application.
@@ -214,8 +207,7 @@ Organization chapter.
 
 This application object will look like the following:
 
-[javascript]
-source~~~~
+~~~~javascript
 var ExampleApp = {
   Models: {},
   Collections: {},
@@ -227,29 +219,28 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-source~~~~
+~~~~
 
 You can find this file in the example app in
-+app/assets/javascripts/example_app.js+.
+`app/assets/javascripts/example_app.js`.
 
 IMPORTANT: You must instantiate a Backbone router before calling
-`Backbone.history.start()` otherwise `Backbone.history` will be +undefined+.
+`Backbone.history.start()` otherwise `Backbone.history` will be `undefined`.
 
-Then, inside +app/views/tasks/index.html.erb+ you will call the +initialize+ method.
+Then, inside `app/views/tasks/index.html.erb` you will call the `initialize` method.
 You will often bootstrap data into the Backbone application to provide initial
 state.  In our example, the tasks have already been provided to the Rails view
-in an +@tasks+ instance variable:
+in an `@tasks` instance variable:
 
-[javascript]
-source~~~~
+~~~~javascript
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.initialize({ tasks: <%== @tasks.to_json %> });
   <% end %>
 <% end -%>
-source~~~~
+~~~~
 
-NOTE: The above example uses ERB to pass the JSON for the tasks to the +initialize+
+NOTE: The above example uses ERB to pass the JSON for the tasks to the `initialize`
 method, but we should be mindful of the XSS risks that dumping user-generated
 content here poses.  See the "Encoding data when bootstrapping JSON data"
 section in the "Security" chapter for a more secure approach.
@@ -257,8 +248,7 @@ section in the "Security" chapter for a more secure approach.
 Finally, you must have a Router in place that knows what to do.  We'll cover
 routers in more detail in the "Routers, Views and Templates" chapter.
 
-[javascript]
-source~~~~
+~~~~javascript
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"
@@ -276,10 +266,10 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     // We'll pick back up here in the "Converting Views" section.
   }
 });
-source~~~~
+~~~~
 
 The example router above is the last piece needed to complete our
-initial Backbone infrastructure. When a user visits +/tasks+, the
+initial Backbone infrastructure. When a user visits `/tasks`, the
 `index.html.erb` Rails view will be rendered, which properly initializes
 Backbone and its dependencies and the Backbone models, collections, routers,
 and views.

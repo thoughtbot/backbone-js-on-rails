@@ -1,36 +1,29 @@
-=== Composite views
+### Composite views
 
-The +SwappingRouter+ above calls +leave()+ on the view it currently holds.
+The `SwappingRouter` above calls `leave()` on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
 library to help make views more modular and maintainable. This section goes
-over the Composite View pattern, the +CompositeView+ class itself, and some
+over the Composite View pattern, the `CompositeView` class itself, and some
 concerns to keep in mind while creating your views.
 
-==== Refactoring from a large view
+#### Refactoring from a large view
 
 One of the first refactorings you'll find yourself doing in a non-trivial Backbone
 app is splitting up large views into composable parts. Let's take another look
-at the +TaskDetail+ source code from the beginning of this section:
+at the `TaskDetail` source code from the beginning of this section:
 
-[javascript]
-source~~~~
-include::task_detail_view_class.js[]
-source~~~~
+<<(task_detail_view_class.js)
 
 The view class references a template, which renders out the HTML for this page:
 
-[xml]
-source~~~~
-include::task_detail.html.jst
-source~~~~
+<<(task_detail.html.jst)
 
 There are clearly several concerns going on here: rendering the task, rendering
 the comments that folks have left, and rendering the form to create new
 comments. Let's separate those concerns. A first approach might be to just
 break up the template files:
 
-[xml]
-source~~~~
+~~~~erb
 <!-- tasks/show.jst -->
 <section class="task-details">
   <%= JST['tasks/details']({ task: task }) %>
@@ -39,17 +32,15 @@ source~~~~
 <section class="comments">
   <%= JST['comments/list']({ task: task }) %>
 </section>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- tasks/details.jst -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/list.jst -->
 <ul>
   <% task.comments.each(function(comment) { %>
@@ -58,52 +49,46 @@ source~~~~
 </ul>
 
 <%= JST['comments/new']() %>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/item.jst -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/new.jst -->
 <div class="form-inputs">
   <label for="new-comment-input">Add comment</label>
   <textarea id="new-comment-input" cols="30" rows="10"></textarea>
   <button>Add Comment</button>
 </div>
-source~~~~
+~~~~
 
-But this is really only half the story. The +TaskDetail+ view class still
+But this is really only half the story. The `TaskDetail` view class still
 handles multiple concerns, such as displaying the task and creating comments. Let's
-split that view class up, using the +CompositeView+ base class:
+split that view class up, using the `CompositeView` base class:
 
-[javascript]
-source~~~~
-include::composite_view.js[]
-source~~~~
+<<(composite_view.js)
 
-Similar to the +SwappingRouter+, the +CompositeView+ base class solves common
+Similar to the `SwappingRouter`, the `CompositeView` base class solves common
 housekeeping problems by establishing a convention. See the "SwappingRouter and
 Backbone internals" section for an in-depth analysis of how this subclassing
 pattern works.
 
-Now our +CompositeView+ maintains an array of its immediate children as
-+this.children+.  With this reference in place, a parent view's +leave()+ method
-can invoke +leave()+ on its children, ensuring that an entire tree of composed
+Now our `CompositeView` maintains an array of its immediate children as
+`this.children`.  With this reference in place, a parent view's `leave()` method
+can invoke `leave()` on its children, ensuring that an entire tree of composed
 views is cleaned up properly.
 
 For child views that can dismiss themselves, such as dialog boxes, children
-maintain a back-reference at +this.parent+. This is used to reach up and call
-+this.parent.removeChild(this)+ for these self-dismissing views.
+maintain a back-reference at `this.parent`. This is used to reach up and call
+`this.parent.removeChild(this)` for these self-dismissing views.
 
-Making use of +CompositeView+, we split up the +TaskDetail+ view class:
+Making use of `CompositeView`, we split up the `TaskDetail` view class:
 
-[javascript]
-source~~~~
+~~~~javascript
 var TaskDetail = CompositeView.extend({
   tagName: 'section',
   id: 'task',
@@ -134,10 +119,9 @@ var TaskDetail = CompositeView.extend({
     this.renderChildInto(commentsList, commentsContainer);
   }
 });
-source~~~~
+~~~~
 
-[javascript]
-source~~~~
+~~~~javascript
 var CommentsList = CompositeView.extend({
   tagName: 'ul',
 
@@ -171,10 +155,9 @@ var CommentsList = CompositeView.extend({
     this.renderChildInto(commentForm, commentFormContainer);
   }
 });
-source~~~~
+~~~~
 
-[javascript]
-source~~~~
+~~~~javascript
 var CommentForm = CompositeView.extend({
   events: {
     "click button": "createComment"
@@ -194,53 +177,48 @@ var CommentForm = CompositeView.extend({
     this.model.comments.create(comment);
   }
 });
-source~~~~
+~~~~
 
-Along with this, remove the +<%= JST(...) %>+ template nestings, allowing the
+Along with this, remove the `<%= JST(...) %>` template nestings, allowing the
 view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:
 
-[xml]
-source~~~~
+~~~~erb
 <!-- tasks/show.jst -->
 <section class="task-details">
 </section>
 
 <section class="comments">
 </section>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- tasks/details.jst -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/list.jst -->
 <ul class="comments-list">
 </ul>
 
 <section class="new-comment-form">
 </section>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/item.jst -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-source~~~~
+~~~~
 
-[xml]
-source~~~~
+~~~~erb
 <!-- comments/new.jst -->
 <label for="new-comment-input">Add comment</label>
 <textarea class="new-comment-input" cols="30" rows="10"></textarea>
 <button>Add Comment</button>
-source~~~~
+~~~~
 
 There are several advantages to this approach:
 
@@ -249,18 +227,18 @@ There are several advantages to this approach:
   now be reused on other domain objects with comments
 - The task view performs better, since adding new comments or updating the task
   details will only re-render the pertinent section, instead of re-rendering the
-  entire task + comments composite
+  entire task ` comments composite
 
-In the example app, we make use of a composite view on +TasksIndex+ located at
-+app/assets/javascripts/views/tasks_index.js+. The situation is similar to
+In the example app, we make use of a composite view on `TasksIndex` located at
+`app/assets/javascripts/views/tasks_index.js`. The situation is similar to
 what has been discussed here. The view responsible for rendering the list of
-children will actually render them as children. Note how the +renderTasks+
-function iterates over the  collection of tasks, instantiates a +TaskItem+
-view for each, renders it as a child with +renderChild+, and finally appends
-it to table's body. Now, when the router cleans up the +TasksIndex+ with +leave+,
+children will actually render them as children. Note how the `renderTasks`
+function iterates over the  collection of tasks, instantiates a `TaskItem`
+view for each, renders it as a child with `renderChild`, and finally appends
+it to table's body. Now, when the router cleans up the `TasksIndex` with `leave`,
 it will also clean up all of its children.
 
-==== Cleaning up views properly
+#### Cleaning up views properly
 
 You've learned how leaving lingering events bound on views that are no longer
 on the page can cause both UI bugs or, what's probably worse, memory leaks.
@@ -277,11 +255,11 @@ to clean up before it swaps in a new view
 - A *Composite View* that keeps track of its child views so it can tell them to
 clean up when it is cleaning itself up
 
-The +leave()+ function ties this all together. A call to +leave()+ can either
-come from a +SwappingRouter+ or from a parent +CompositeView+.  A +CompositeView+
-will respond to +leave()+ by passing that call down to its children. At each
-level, in addition to propagating the call, +leave()+ handles the task of
+The `leave()` function ties this all together. A call to `leave()` can either
+come from a `SwappingRouter` or from a parent `CompositeView`.  A `CompositeView`
+will respond to `leave()` by passing that call down to its children. At each
+level, in addition to propagating the call, `leave()` handles the task of
 completely cleaning up after a view by removing the corresponding element from
-the DOM via jQuery's +remove()+ function, and removing all event bindings via a
-call to +Backbone.Events.off()+. In this way a single call at the top level
+the DOM via jQuery's `remove()` function, and removing all event bindings via a
+call to `Backbone.Events.off()`. In this way a single call at the top level
 cleans the slate for an entirely new view.
