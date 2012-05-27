@@ -163,13 +163,13 @@ Sprockets, and requires the `ejs` gem to be included in the application Gemfile.
 [NOTE]
 ##############################=
 Underscore.js templates:
-http://documentcloud.github.com/underscore/#template
+<http://documentcloud.github.com/underscore/#template>
 
 EJS gem:
-https://github.com/sstephenson/ruby-ejs
+<https://github.com/sstephenson/ruby-ejs>
 
 Sprockets support for EJS:
-https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb
+<https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb>
 ##############################=
 
 To make the `*.jst` files available and create the `window.JST` object, require
@@ -190,7 +190,7 @@ models) and then your routers and views must be loaded.
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
-<<[Example Application.js](../../example_app/app/assets/javascripts/application.js)
+<<(../../example_app/app/assets/javascripts/application.js)
 
 The above is taken from the example application included with this book. You
 can view it at `example_app/app/assets/javascripts/application.js`.

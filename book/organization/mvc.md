@@ -4,7 +4,7 @@ Model–View–Controller (MVC) is a software architectural pattern used in many
 applications to isolate domain or business logic (the application logic for the user)
 from the user interface (input and presentation).
 
-![Model-View-Controller concept](image/MVCDiagram.png)
+![Model-View-Controller concept](../image/MVCDiagram.png)
 
 In the above diagram, a solid line represents a direct association and a dashed
 line represents an indirect association, such as one mediated by an observer.
@@ -60,13 +60,13 @@ Ultimately, though, the additional organization and functionality of Backbone
 outweighs the costs - let's break it down.
 
 | Rails      |
---------------
+|------------|
 | Model      |
 | Controller |
 | View       |
 
 | Backbone             |
-------------------------
+|----------------------|
 | Model and Collection |
 | Router               |
 | View                 |

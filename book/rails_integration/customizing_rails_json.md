@@ -60,7 +60,7 @@ overriding the `as_json` method on the `Comment` model.
 While this is the most common set of `as_json` options you'll use when working with
 Backbone, it certainly isn't all of them. The official, complete
 documentation for the `as_json` method can be found here:
-http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json
+<http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json>
 
 #### ActiveRecord::Base.include_root_in_json
 

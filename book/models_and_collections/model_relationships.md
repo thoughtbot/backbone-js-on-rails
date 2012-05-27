@@ -209,7 +209,7 @@ Backbone attribute which can be accessed with `get()` and `set()`.  We are
 replacing it with an instance of a Backbone `Attachments` collection and
 placing that as an object property:
 
-source~~~~javascript
+~~~~javascript
 taskBeforeParsing.get('attachments')
 // => [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]
 taskBeforeParsing.attachments
