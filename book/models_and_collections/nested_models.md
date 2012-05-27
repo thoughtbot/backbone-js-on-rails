@@ -1,4 +1,4 @@
-=== Complex nested models
+### Complex nested models
 
 As your domain model grows more complex, you might find that you want to deliver
 information about more than one model together in a request; i.e., nested
@@ -19,7 +19,7 @@ discussing an alternative to `accepts_nested_attributes_for` that works for
 singular associations.  Then, we'll dive into how to model bulk updates for
 plural associations from Backbone.
 
-==== Composite models
+#### Composite models
 
 Consider a signup form that allows a customer to quickly get started with a
 project management application.
@@ -56,15 +56,14 @@ the fact that it is persisted across multiple tables as an implementation
 detail.  This keeps the presentation tier simpler, unconcerned with the
 composite nature of the resource.
 
-==== `accepts_nested_attributes_for`
+#### `accepts_nested_attributes_for`
 
 A classic situation to encounter nested attributes is in `has_many :through`
 relationships.  For example, consider a workflow in which you assign multiple
 people to perform a job.  The three domain models are `Job`, `Worker`, and
 the join model `Assignment`.
 
-[ruby]
-source~~~~
+~~~~ruby
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
@@ -79,7 +78,7 @@ class Worker < ActiveRecord::Base
   has_many :assignments
   has_many :jobs, :through => :assignments
 end
-source~~~~
+~~~~
 
 Earlier, we discussed how Ajax-enabled web applications often provide more
 finely-grained user interfaces that allow the user to submit information in
@@ -94,14 +93,13 @@ submissions, creating a parent record along with several child records all in
 one HTTP request.  We'll model this on the backend with Rails'
 `accepts_nested_attributes_for`:
 
-[ruby]
-source~~~~
+~~~~ruby
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
   accepts_nested_attributes_for :assignments
 end
-source~~~~
+~~~~
 
 As a quick refresher, this allows us in our Rails code to set
 `@job.assignments_attributes = [{}, {}, ...]` with an Array of Hashes, each
@@ -111,8 +109,7 @@ endpoint controller should be able to pass the request parameters straight
 through to ActiveRecord, so the JSON going over the HTTP request will look
 like this:
 
-[javascript]
-source~~~~
+~~~~javascript
 /* POST /api/v1/jobs */
 {
   name: "Move cardboard boxes to new warehouse",
@@ -123,7 +120,7 @@ source~~~~
     { worker_id: 5 }
   ]
 }
-source~~~~
+~~~~
 
 Shifting our focus to the client-side implementation, we can largely ignore the
 `Assignment` join model in Backbone, and just model this nested association
@@ -131,8 +128,7 @@ directly.  We'll use a `Job` Backbone model containing a `Workers` collection.
 This is a simplified perspective of the relationship, but it is all that the client
 needs to know.
 
-[javascript]
-source~~~~
+~~~~javascript
 MyApp = {};
 MyApp.Models = {};
 MyApp.Collections = {};
@@ -161,12 +157,11 @@ MyApp.Models.Job = Backbone.Model.extend({
     return json;
   }
 });
-source~~~~
+~~~~
 
 Now, you can add workers directly to the job:
 
-[javascript]
-source~~~~
+~~~~javascript
 var worker3 = new MyApp.Models.Worker({ id: 3 });
 var worker5 = new MyApp.Models.Worker({ id: 5 });
 
@@ -184,7 +179,7 @@ JSON.stringify(job.toJSON()) // Results in:
                              //     {"worker_id":5}
                              //   ]
                              // }
-source~~~~
+~~~~
 
 ...and saving the Backbone `Job` model will submit correctly structured
 JSON to the Rails server.
@@ -195,7 +190,7 @@ of separate design decisions around producing JSON on the server and parsing it
 on the client. These concerns are discussed in the "Model relationships"
 chapter.
 
-==== Example for `accepts_nested_attributes_for`
+#### Example for `accepts_nested_attributes_for`
 
 In the example application, a task may be assigned to zero or more users.  The
 association is tracked through an `Assignment` join model, and you can create

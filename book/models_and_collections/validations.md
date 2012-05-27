@@ -1,8 +1,8 @@
-=== Validations
+### Validations
 
 The server is the authoritative place for verifying whether data being
 stored is valid. Even though Backbone.js
-link:http://documentcloud.github.com/backbone/#Model-validate[exposes an API]
+[exposes an API](http://documentcloud.github.com/backbone/#Model-validate)
 for performing client-side validations, when it comes to validating user data
 in a Backbone.js application, we want to continue to use the very same
 mechanisms on the server side that we've used in Rails all along: the
@@ -16,28 +16,25 @@ easy for the developer.
 Let's wire this up. To get started, we'll add a validation on the task's title
 attribute on the ActiveRecord model, like so:
 
-[ruby]
-source~~~~
+~~~~ruby
 class Task < ActiveRecord::Base
   validates :title, presence: true
 end
-source~~~~
+~~~~
 
 On the Backbone side of the world, we have a Backbone task called
-+YourApp.Models.Task+:
+`YourApp.Models.Task`:
 
-[javascript]
-source~~~~
+~~~~javascript
 YourApp.Models.Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-source~~~~
+~~~~
 
 We also have a place where users enter new tasks - just a form on the task
 list:
 
-[javascript]
-source~~~~
+~~~~html
 <form>
   <ul>
     <li class="task_title_input">
@@ -49,13 +46,12 @@ source~~~~
     </li>
   </ul>
 </form>
-source~~~~
+~~~~
 
-On the +NewTask+ Backbone view, we bind the button's click event to a new
-function that we'll call +createTask+:
+On the `NewTask` Backbone view, we bind the button's click event to a new
+function that we'll call `createTask`:
 
-[javascript]
-source~~~~
+~~~~javascript
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -81,16 +77,15 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-source~~~~
+~~~~
 
 This gets the job done, but let's introduce a new class to handle extracting
 attributes from the form so that it's decoupled from this view and is
 therefore easier to extend and reuse.
 
-We'll call this the +FormAttributes+, and its code is as follows:
+We'll call this the `FormAttributes`, and its code is as follows:
 
-[javascript]
-source~~~~
+~~~~javascript
 FormAttributes = function(form) {
   this.form = form;
 }
@@ -107,12 +102,11 @@ _.extend(FormAttributes.prototype, {
     return attributes;
   }
 });
-source~~~~
+~~~~
 
 With this class in place, we can rewrite our form submit action to:
 
-[javascript]
-source~~~~
+~~~~javascript
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -130,17 +124,16 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-source~~~~
+~~~~
 
-When you call +save()+ on a Backbone model, Backbone will delegate to +.sync()+
+When you call `save()` on a Backbone model, Backbone will delegate to `.sync()`
 and create a POST request on the model's URL, where the payload is the
-attributes that you've passed onto the +save()+ call.
+attributes that you've passed onto the `save()` call.
 
-The easiest way to handle this in Rails is to use +respond_to+/+respond_with+,
+The easiest way to handle this in Rails is to use `respond_to`/`respond_with`,
 available in Rails 3 applications:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TasksController < ApplicationController
   respond_to :json
   def create
@@ -148,16 +141,15 @@ class TasksController < ApplicationController
     respond_with task
   end
 end
-source~~~~
+~~~~
 
 When the task is created successfully, Rails will render the show action using
-the object that you've passed to the +respond_with+ call, so make sure the show
+the object that you've passed to the `respond_with` call, so make sure the show
 action is defined in your routes:
 
-[ruby]
-source~~~~
+~~~~ruby
 resources :tasks, only: [:create, :show]
-source~~~~
+~~~~
 
 When the task cannot be created successfully because some validation constraint
 is not met, the Rails responder will render the model's errors as a JSON
@@ -166,15 +158,14 @@ there was an error in the request and it was not processed.
 
 The response from Rails in that case looks something like this:
 
-[javascript]
-source~~~~
+~~~~javascript
 { "title": ["can't be blank"] }
-source~~~~
+~~~~
 
 That two-line action in a Rails controller is all we need to talk to our
 Backbone models and handle error cases.
 
-Back to the Backbone model's +save()+ call: Backbone will invoke one of two
+Back to the Backbone model's `save()` call: Backbone will invoke one of two
 callbacks when it receives a response from the Rails app, so we simply pass in
 a hash containing a function to run for both the success and the error cases.
 
@@ -183,18 +174,17 @@ collection of tasks. Backbone will trigger the add event on that collection, whi
 itself so that the new task appears on the page.
 
 In the error case, however, we want to display inline errors on the form. When
-Backbone triggers the +error+ callback, it passes along two parameters: the
+Backbone triggers the `error` callback, it passes along two parameters: the
 model being saved and the raw response. We have to parse the JSON response and
 iterate through it, rendering an inline error on the form corresponding to each
 of the errors. Let's introduce a couple of new classes that will help along the
 way.
 
-First is the +ErrorList+. An +ErrorList+ encapsulates parsing of the raw
+First is the `ErrorList`. An `ErrorList` encapsulates parsing of the raw
 JSON that came in from the server and provides an iterator to easily loop
 through errors:
 
-[javascript]
-source~~~~
+~~~~javascript
 ErrorList = function (response) {
   if (response && response.responseText) {
     this.attributesWithErrors = JSON.parse(response.responseText);
@@ -210,14 +200,13 @@ _.extend(ErrorList.prototype, {
     return _.size(attributesWithErrors);
   }
 });
-source~~~~
+~~~~
 
-Next up is the +ErrorView+, which is in charge of taking the +ErrorList+ and
+Next up is the `ErrorView`, which is in charge of taking the `ErrorList` and
 appending each inline error in the form, providing feedback to the user that
 their input is invalid:
 
-[javascript]
-source~~~~
+~~~~javascript
 ErrorView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "renderError");
@@ -238,27 +227,26 @@ ErrorView = Backbone.View.extend({
   },
 
   fieldFor: function(attribute) {
-    return $(this.options.el).find('[id*="_' + attribute + '_input"]').first();
+    return $(this.options.el).find('[id*="_' ` attribute ` '_input"]').first();
   }
 });
-source~~~~
+~~~~
 
-Note the +fieldFor+ function. It expects a field with an id containing a
+Note the `fieldFor` function. It expects a field with an id containing a
 certain format. Therefore, in order for this to work, the form's HTML must
 contain a matching element. In our case, it was the list item with an id of
-+task_title_input+.
+`task_title_input`.
 
-When a Backbone view's +el+ is already on the DOM, we need to pass it into the
-view's constructor. In the case of the +ErrorView+ class, we want to operate on
+When a Backbone view's `el` is already on the DOM, we need to pass it into the
+view's constructor. In the case of the `ErrorView` class, we want to operate on
 the view that contains the form that originated the errors.
 
 To use these classes, we take the response from the server and pass that along
-to the +ErrorList+ constructor, which we then pass to the +ErrorView+, which will do
-its fine job inserting the inline errors when we call +render()+ on it.
+to the `ErrorList` constructor, which we then pass to the `ErrorView`, which will do
+its fine job inserting the inline errors when we call `render()` on it.
 Putting it all together, our save call's callbacks now look like this:
 
-[javascript]
-source~~~~
+~~~~javascript
 var self = this;
 var model = new YourApp.Models.Task(attributes);
 model.save({
@@ -268,17 +256,16 @@ model.save({
     view.render();
   }
 });
-source~~~~
+~~~~
 
 Here, we've shown how you can decouple different concerns into their own
 classes, creating a system that is easier to extend, and potentially
 arriving at solutions generic enough even to be shared across applications.
-Our simple +FormAttributes+ class has a long way to go. It can grow up to handle
+Our simple `FormAttributes` class has a long way to go. It can grow up to handle
 many other cases, such as dates.
 
 One example of a generic library that handles much of what we've done here,
 as well as helpers for rendering the forms, is Backbone.Form. In order to know
 how to render all attributes of a model, it requires you to specify a
 "schema" on the model class - and it will take it from there. The source for
-Backbone.Form can be found
-link:https://github.com/powmedia/backbone-forms[on github].
+Backbone.Form can be found [on github](https://github.com/powmedia/backbone-forms).

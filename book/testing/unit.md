@@ -1,4 +1,4 @@
-=== Isolated unit testing
+### Isolated unit testing
 
 Integration testing your application is great for ensuring that the product
 functions as intended, and works to mitigate against risk of regressions.
@@ -42,7 +42,7 @@ Refactoring Test Code_.
 As there is plentiful content available for testing tools and strategies in
 Rails, we'll focus on isolation testing your Backbone code.
 
-==== Isolation testing in JavaScript
+#### Isolation testing in JavaScript
 
 There are many JavaScript testing frameworks available.  Some run in-browser and
 provide facility for setting up DOM fixtures.  Others are designed for
@@ -52,8 +52,7 @@ We'll use the Jasmine framework for writing our isolation specs.  It integrates
 easily into a Rails application, and provides an RSpec-like syntax for writing
 specs:
 
-[javascript]
-source~~~~
+~~~~javascript
 describe("ExampleApp.Models.Tasks", function() {
   it("knows if it is complete", function() {
     var completeTask = new ExampleApp.Models.Task({ complete: true });
@@ -65,12 +64,12 @@ describe("ExampleApp.Models.Tasks", function() {
     expect(incompleteTask.isComplete()).toBe(false);
   });
 });
-source~~~~
+~~~~
 
 To run the Jasmine tests in the example application, simply run `bundle exec
 rake jasmine` and visit http://localhost:8888.
 
-==== What to test?
+#### What to test?
 
 We frequently found it difficult to test JavaScript components in isolation
 before we started using Backbone. Although jQuery really takes the pain out of
@@ -135,9 +134,9 @@ details and edge cases described in unit tests, and to write tests that
 exercise the fewest number of components possible while remaining robust and
 descriptive without becoming brittle.
 
-==== Helpful Tools
+#### Helpful Tools
 
-* Spy/stub/mock, even your HTTP, with http://sinonjs.org/[Sinon.js]
-* If you're looking for factory_girl.js, it's called https://github.com/bkeepers/rosie[Rosie]
+* Spy/stub/mock, even your HTTP, with [Sinon.js](http://sinonjs.org/)
+* If you're looking for factory_girl.js, it's called [Rosie](https://github.com/bkeepers/rosie)
 * Use the Rails 3.1 asset pipeline with the latest edge versions of the Jasmine gem
-* See other examples on James Newbery's blog: http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html[testing Backbone with Jasmine] and check out his https://github.com/froots/backbone-jasmine-examples[examples on GitHub]
+* See other examples on James Newbery's blog: [testing Backbone with Jasmine](http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html) and check out his [examples on GitHub](https://github.com/froots/backbone-jasmine-examples)

@@ -1,4 +1,4 @@
-=== Synchronizing between clients
+### Synchronizing between clients
 
 A driving force behind the move to rich client web apps is to improve the
 user experience. These applications are more responsive and can support more
@@ -12,30 +12,30 @@ you've ever used Google Docs or Google Wave, you've seen this in action.
 
 So, how can we build this functionality into our own applications?
 
-==== The moving parts
+#### The moving parts
 
 There are a few different pieces that we'll put together for this.  The basic parts are:
 
-1. *Change events.* The fundamental unit of information that we broadcast through
+1. **Change events.** The fundamental unit of information that we broadcast through
    our system to keep clients in sync.  Delivered as messages, these events
    contain enough information for any receiving client to update its own data
    without needing a full re-fetch from the server.
-2. *An event source.*  With trusted clients, changes can originate directly from
+2. **An event source.**  With trusted clients, changes can originate directly from
    the client.  More often, however, we will want the server to arbitrate
    changes so that it can apply authorization, data filtering, and validations.
-3. *A transport layer that supports pushing to clients.*
-   http://www.w3.org/TR/websockets/[The WebSocket API] is such a transport, and
+3. **A transport layer that supports pushing to clients.**
+   [The WebSocket API](http://www.w3.org/TR/websockets/) is such a transport, and
    is ideal for its low overhead and latency.
-4. *Event-driven clients.*  Clients should be able to react to incoming change
+4. **Event-driven clients.**  Clients should be able to react to incoming change
    events, ideally handling them with incremental UI updates rather than
    re-drawing themselves entirely.  Backbone helps in this department, as your
    client-side application is likely already set up to handle such events.
-5. *A message bus.*  Separating the concern of message delivery from our main
+5. **A message bus.**  Separating the concern of message delivery from our main
    application helps it stay smaller and helps us scale our messaging and
    application infrastructure separately. There are already several great
    off-the-shelf tools we can use for this.
 
-==== Putting it together: A look at the life cycle of a change
+#### Putting it together: A look at the life cycle of a change
 
 Revisiting our todo application, we'd like to add the ability to collaborate on
 todo lists, so that different users will be able to work on the same todo list
@@ -48,9 +48,9 @@ There are a few technical decisions mentioned previously.  For this example, we 
 2. Use the server as the canonical event source so that clients do not have to
    trust one another.  In particular, we'll employ an `ActiveRecord::Observer`
    that observes Rails model changes and dispatches a change event.
-3. Use http://faye.jcoglan.com[Faye] as the messaging backend, which has Ruby
+3. Use [Faye](http://faye.jcoglan.com) as the messaging backend, which has Ruby
    and JavaScript implementations for clients and server.  Faye implements the
-   http://svn.cometd.com/trunk/bayeux/bayeux.html[Bayeux protocol], prefers
+   [Bayeux protocol](http://svn.cometd.com/trunk/bayeux/bayeux.html), prefers
    WebSocket for transport (though it gracefully degrades to long polling, CORS,
    or JSON-P), and supports a bunch of other goodies like clustering and
    extensions (inbound- and outbound- message filtering, like Rack middleware).
@@ -94,15 +94,14 @@ On all clients:
 
 Now all the clients have received the changeset that Alice made.
 
-==== Implementation: Step 1, Faye server
+#### Implementation: Step 1, Faye server
 
 We'll need to run Faye to relay messages from publishers to subscribers.  For
 Rails apps that depend on Faye, We recommend keeping a `faye/` subdirectory under the
 app root that contains a `Gemfile` and `config.ru`, and maybe a shell script to
 start Faye:
 
-[bash]
-source~~~~
+~~~~bash
 $ cat faye/Gemfile
 
 source 'http://rubygems.org'
@@ -125,10 +124,10 @@ $ ./faye/run.sh
 
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
 >> Maximum connections set to 1024
->> Listening on 0.0.0.0:9292, CTRL+C to stop
-source~~~~
+>> Listening on 0.0.0.0:9292, CTRL`C to stop
+~~~~
 
-==== Implementing it: Step 2, ActiveRecord observers
+#### Implementing it: Step 2, ActiveRecord observers
 Now that the message bus is running, let's walk through the server code.  The
 Rails app's responsibility is this: Whenever a todo model is created, updated,
 or deleted, it will publish a change event message.
@@ -136,20 +135,16 @@ or deleted, it will publish a change event message.
 This is implemented with an `ActiveRecord::Observer`.  We provide the
 functionality in a module:
 
-[ruby]
-source~~~~
-include::./backbone_sync.rb[]
-source~~~~
+<<(backbone_sync.rb)
 
 ...and then mix it into a concrete observer class in our application.  In this
 case, we name it `TodoObserver`:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TodoObserver < ActiveRecord::Observer
   include BackboneSync::Rails::Faye::Observer
 end
-source~~~~
+~~~~
 
 This observer is triggered each time a Rails `Todo` model is created, updated,
 or destroyed.  When one of these events happen, the observer sends along a
@@ -157,16 +152,14 @@ message to our message bus, indicating the change.
 
 Let's say that a `Todo` was just created:
 
-[ruby]
-source~~~~
+~~~~ruby
 >> Todo.create(title: "Buy some tasty kale juice")
 => #<Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09">
-source~~~~
+~~~~
 
 The message looks like this:
 
-[javascript]
-source~~~~
+~~~~javascript
 {
   "channel": "/sync/todos",
   "data": {
@@ -180,12 +173,12 @@ source~~~~
     }
   }
 }
-source~~~~
+~~~~
 
 Received by Faye, the message is broadcast to all clients subscribing to the
 `/sync/todos` channel, including our browser-side `FayeSubscriber` objects.
 
-==== Implementing it: Step 3, In-browser subscribers
+#### Implementing it: Step 3, In-browser subscribers
 
 In each browser, we want to connect to the Faye server, subscribe to events on
 channels that interest us, and update Backbone collections based on those
@@ -193,26 +186,23 @@ messages.
 
 Faye runs an HTTP server, and serves up its own client library, so that's easy to pull in:
 
-[xml]
-source~~~~
+~~~~html
 <script type="text/javascript" src="http://localhost:9292/faye.js"></script>
-source~~~~
+~~~~
 
 To subscribe to Faye channels, instantiate a `Faye.Client` and call `subscribe` on it:
 
-[javascript]
-source~~~~
+~~~~javascript
 var client = new Faye.Client('http://localhost:9292/faye');
 client.subscribe('/some/channel', function(message) {
   // handle message
 });
-source~~~~
+~~~~
 
 When the browser receives messages from Faye, we want to update a Backbone
 collection.  Let's wrap up those two concerns into a `FayeSubscriber`:
 
-[javascript]
-source~~~~
+~~~~javascript
 this.BackboneSync = this.BackboneSync || {};
 
 BackboneSync.RailsFayeSubscriber = (function() {
@@ -224,7 +214,7 @@ BackboneSync.RailsFayeSubscriber = (function() {
   }
 
   RailsFayeSubscriber.prototype.subscribe = function() {
-    return this.client.subscribe("/sync/" + this.channel, _.bind(this.receive, this));
+    return this.client.subscribe("/sync/" ` this.channel, _.bind(this.receive, this));
   };
 
   RailsFayeSubscriber.prototype.receive = function(message) {
@@ -260,13 +250,12 @@ BackboneSync.RailsFayeSubscriber = (function() {
 
   return RailsFayeSubscriber;
 })();
-source~~~~
+~~~~
 
 Now, for each collection that we'd like to keep in sync, we instantiate a
 corresponding `FayeSubscriber`.  Say, in your application bootstrap code:
 
-[javascript]
-source~~~~
+~~~~javascript
 MyApp.Routers.TodosRouter = Backbone.Router.extend({
   initialize: function(options) {
     this.todos = new Todos.Collections.TodosCollection();
@@ -276,11 +265,11 @@ MyApp.Routers.TodosRouter = Backbone.Router.extend({
 
   // ...
 });
-source~~~~
+~~~~
 
 Now run the app, and watch browsers receive push updates!
 
-==== Testing synchronization
+#### Testing synchronization
 
 Of course, this introduces a great deal of complexity into your app. There's a
 new daemon running on the server (Faye), and every client now has to correctly
@@ -313,11 +302,10 @@ We will be using Cucumber with Capybara and RSpec for this example.
 
 To ensure the Faye server is running, we merely try to make a connection
 to it when Cucumber boots, failing early if we can't connect. Here's a
-small snippet that you can drop in +features/support/faye.rb+ to do
+small snippet that you can drop in `features/support/faye.rb` to do
 just that:
 
-[ruby]
-source~~~~
+~~~~ruby
 begin
   Timeout.timeout(1) do
     uri = URI.parse(BackboneSync::Rails::Faye.root_address)
@@ -326,14 +314,13 @@ begin
 rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
   raise "Could not connect to Faye"
 end
-source~~~~
+~~~~
 
 With that in place, we are now sure that Faye is running and we can move
-on to our Cucumber scenario. Create a +features/sync_task.feature+ file
+on to our Cucumber scenario. Create a `features/sync_task.feature` file
 and let's describe the desired functionality:
 
-[text]
-source~~~~
+~~~~cucumber
   @javascript
   Scenario: Viewing a task edited by another user
     Given the following users exist:
@@ -351,31 +338,29 @@ source~~~~
     And I edit the "Get Cheeseburgers" task and rename it to "Buy Cheeseburgers"
     And I switch to session "Alice"
     Then I should see "Buy Cheeseburgers"
-
-source~~~~
+~~~~
 
 Thankfully, Capybara allows us to run acceptance tests with client-side
 behavior by specifying different drivers to run scenarios that require
-JavaScript vs. those which don't. The very first line above, +@javascript+,
+JavaScript vs. those which don't. The very first line above, `@javascript`,
 tells Capybara to use a JavaScript-enabled driver such as Selenium or
 capybara-webkit.
 
 The following two steps that create some fixture data are provided by
-link:https://github.com/thougthbot/factory_girl[FactoryGirl], which looks
+[FactoryGirl](https://github.com/thougthbot/factory_girl), which looks
 into your factory definitions and builds step definitions based on their
 attributes and associations.
 
 But then we get into the meat of the problem: switching sessions. Capybara
 introduced the ability to name and switch sessions in your scenarios via
-the +session_name+ method. The definition for the +I am using session
-"Alice"+ step looks like this:
+the `session_name` method. The definition for the `I am using session
+"Alice"` step looks like this:
 
-[ruby]
-source~~~~
-When /^I (?:am using|switch to) session "([^"]+)"$/ do |new_session_name|
+~~~~ruby
+When /^I (?:am using|switch to) session "([^"]`)"$/ do |new_session_name|
   Capybara.session_name = new_session_name
 end
-source~~~~
+~~~~
 
 This allows us to essentially open up different browsers, if you're
 using the Selenium driver, and it is the key to exercising background syncing
@@ -386,13 +371,13 @@ with the application as you would with any Cucumber scenario; visiting pages,
 filling in forms, and verifying results on the page, all the while specifying
 which session you're interacting with.
 
-Additionally, the +BackboneSync.FayeSubscriber+ JavaScript class should also
+Additionally, the `BackboneSync.FayeSubscriber` JavaScript class should also
 be tested in isolation. We've used Jasmine for testing JavaScript behavior
 successfully, so it is the approach we recommend. For more information about
 using Jasmine, refer to the "Testing" chapter.
 
-==== Further reading
+#### Further reading
 
 For a solid, readable background on idempotent messages, check out
-http://devhawk.net/2007/11/09/the-importance-of-idempotence/[_The Importance of
-Idempotence_].
+[_The Importance of
+Idempotence_](http://devhawk.net/2007/11/09/the-importance-of-idempotence/).

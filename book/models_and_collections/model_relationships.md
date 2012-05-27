@@ -1,4 +1,4 @@
-=== Model relationships
+### Model relationships
 
 In any non-trivial application, you will have relationships in your domain model
 that are valuable to express on the client side.  For example, consider a
@@ -33,29 +33,29 @@ relationships, when to eagerly pre-fetch associations and when to lazily defer
 loading, and whether to employ a supporting library to help define your model
 relationships.
 
-==== Backbone-relational plugin
+#### Backbone-relational plugin
 
 If your use cases are supported by it, Paul Uithol's
-https://github.com/PaulUithol/Backbone-relational[Backbone-relational] is
+[Backbone-relational](https://github.com/PaulUithol/Backbone-relational) is
 arguably the most popular and actively maintained library for this.  It lets
 you declare one-to-one, one-to-many, and many-to-one relations on your Backbone
-models by extending a new base class, +Backbone.RelationalModel+.  It's good to
+models by extending a new base class, `Backbone.RelationalModel`.  It's good to
 understand how this works under the hood, so we'll cover one way to implement a
 relational object model in Backbone below, but we encourage you to check out
-the +Backbone-relational+ plugin as a way to work at a higher level of
+the `Backbone-relational` plugin as a way to work at a higher level of
 abstraction.
 
-==== Relations in the task app
+#### Relations in the task app
 
 In the example application, there are users which have many tasks.  Each task
 has many attachments and assignments.  Tasks are assigned to users through
 assignments, so tasks have many assigned users as well.
 
-==== Deciding how to deliver data to the client
+#### Deciding how to deliver data to the client
 
 Before you decide how to model your JSON API or how to declare your client-side model
 relationships, consider the user experience of your application.
-For +TaskApp+, we decided to have interactions as follows:
+For `TaskApp`, we decided to have interactions as follows:
 
 * A user signs up or logs in
 * The user is directed to their dashboard
@@ -85,11 +85,11 @@ We could have selected from several other alternatives, including:
 * Preload all the information, including attachments.  This would
   work well if we expect users to frequently access the
   attachments of many tasks, but incurs a longer initial page load.
-* Use +localStorage+ as the primary storage engine, and sync to the Rails server
+* Use `localStorage` as the primary storage engine, and sync to the Rails server
   in the background.  While this would be advantageous if we expected network access
   to be intermittent, it incurs the additional complexity of server-side conflict resolution if two clients submit conflicting updates.
 
-==== Designing the HTTP JSON API
+#### Designing the HTTP JSON API
 
 Now that we know we'll bootstrap the tasks with assignees and defer the
 Associations, we should decide how to deliver the deferred content.  Our goal
@@ -98,8 +98,7 @@ is to fetch attachments for an individual task.  Let's discuss two options.
 One way we could approach this is to issue an API call for the
 nested collection:
 
-[bash]
-source~~~~
+~~~~bash
 $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
 [
   {
@@ -111,17 +110,16 @@ $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
     "file_url": "https://s3.amazonaws.com/tasksapp/uploads/33/users.jpg"
   }
 ]
-source~~~~
+~~~~
 
 NOTE: We will authenticate API requests with cookies, just like normal user
 logins, so the actual curl request would need to include a cookie from a logged-in user.
 
 Another way we could approach this is to embed the comment and attachment data in
 the JSON representation of an individual task, and deliver this data from the
-+/tasks/:id+ endpoint:
+`/tasks/:id` endpoint:
 
-[bash]
-source~~~~
+~~~~bash
 $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
 {
   /* some attributes left out for clarity */
@@ -136,7 +134,7 @@ $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
     }
   ]
 }
-source~~~~
+~~~~
 
 We'll take this approach for the example application, because it illustrates
 parsing nested models in Backbone.
@@ -144,40 +142,38 @@ parsing nested models in Backbone.
 At this point, we know that our HTTP JSON API should support at least the
 following Rails routes:
 
-[ruby]
-source~~~~
+~~~~ruby
 resources :tasks, :only => [:show, :create] do
   resources :attachments, :only => [:create]
 end
-source~~~~
+~~~~
 
 As an aside: In some applications, you may choose to expose a user-facing API.  It's
 valuable to dogfood this endpoint by making use of it from your own Backbone
 code.  Often these APIs will be scoped under an "/api" namespace, possibly with
 an API version namespace as well like "/api/v1".
 
-==== Implementing the API: presenting the JSON
+#### Implementing the API: presenting the JSON
 
 To build the JSON presentation, we have a few options. Rails already comes
-with support for overriding the +Task#as_json+ method, which is probably the
+with support for overriding the `Task#as_json` method, which is probably the
 easiest thing to do. However, logic regarding the JSON representation of a
 model is not the model's concern.  An approach that separates presentation
 logic is preferable, such as creating a separate presenter object, or writing a
 builder-like view.
 
-The link:https://github.com/nesquena/rabl[RABL gem] helps you concisely build
+The [RABL gem](https://github.com/nesquena/rabl) helps you concisely build
 a view of your models, and keeps this logic in the presentation tier.
 
 RABL allows you to create templates where you can easily specify the JSON
-representation of your models. If you've worked with the +builder+
+representation of your models. If you've worked with the `builder`
 library to generate XML such as an RSS feed, you'll feel right at home.
 
-To use it, first include the +rabl+ and +yajl-ruby+ gems in your Gemfile. Then
-you can create a view ending with +.json.rabl+ to handle any particular request.
-For example, a +tasks#show+ action may look like this:
+To use it, first include the `rabl` and `yajl-ruby` gems in your Gemfile. Then
+you can create a view ending with `.json.rabl` to handle any particular request.
+For example, a `tasks#show` action may look like this:
 
-[ruby]
-source~~~~
+~~~~ruby
 class TasksController < ApplicationController
   respond_to :json
 
@@ -186,36 +182,34 @@ class TasksController < ApplicationController
     respond_with @task
   end
 end
-source~~~~
+~~~~
 
 Rails' responder will first look for a template matching the controller/action
-with the format in the file name, in this case +json+. If it doesn't find anything,
-it will invoke +to_json+ on the +@task+ model, but in this case we are providing
-one in +app/views/tasks/show.json.rabl+, so it will render that instead:
+with the format in the file name, in this case `json`. If it doesn't find anything,
+it will invoke `to_json` on the `@task` model, but in this case we are providing
+one in `app/views/tasks/show.json.rabl`, so it will render that instead:
 
-[ruby]
-source~~~~
+~~~~ruby
 object @task
 attributes(:id, :title, :complete)
 child(:user) { attributes(:id, :email) }
 child(:attachments) { attributes(:id, :email) }
-source~~~~
+~~~~
 
-==== Parsing the JSON and instantiating client-side models
+#### Parsing the JSON and instantiating client-side models
 
-Now that our API delivers the +Task+ JSON to the client, including its
-nested +Attachments+, we need to correctly handle this nested data in the
+Now that our API delivers the `Task` JSON to the client, including its
+nested `Attachments`, we need to correctly handle this nested data in the
 client-side model.  Instead of a nested hash of attributes on the
-+Task+, we want to instantiate a Backbone collection for the
-attachments that contains a set of Backbone +Attachment+ models.
+`Task`, we want to instantiate a Backbone collection for the
+attachments that contains a set of Backbone `Attachment` models.
 
-The JSON for the attachments is initially set on the Backbone +Task+ model as a
-Backbone attribute which can be accessed with +get()+ and +set()+.  We are
-replacing it with an instance of a Backbone +Attachments+ collection and
+The JSON for the attachments is initially set on the Backbone `Task` model as a
+Backbone attribute which can be accessed with `get()` and `set()`.  We are
+replacing it with an instance of a Backbone `Attachments` collection and
 placing that as an object property:
 
-[javascript]
-source~~~~
+source~~~~javascript
 taskBeforeParsing.get('attachments')
 // => [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]
 taskBeforeParsing.attachments
@@ -227,29 +221,28 @@ taskAfterParsing.get('attachments')
 // => undefined
 taskAfterParsing.attachments
 // => ExampleApp.Collection.Attachments(...)
-source~~~~
+~~~~
 
-One way to do this is to override the +parse+ function on the +Task+ model.
+One way to do this is to override the `parse` function on the `Task` model.
 
-There are two +parse+ functions in Backbone: one on +Collection+ and another on
-+Model+.  Backbone will invoke them whenever a model or collection is populated
-with data from the server; that is, during +Model#fetch+, +Model#save+ (which
+There are two `parse` functions in Backbone: one on `Collection` and another on
+`Model`.  Backbone will invoke them whenever a model or collection is populated
+with data from the server; that is, during `Model#fetch`, `Model#save` (which
 updates model attributes based on the server's response to the HTTP PUT/POST
-request), and +Collection#fetch+.  It's also invoked when a new model is
-initialized and +options.parse+ is set to +true+.
+request), and `Collection#fetch`.  It's also invoked when a new model is
+initialized and `options.parse` is set to `true`.
 
-It's important to note that +parse+ is not called by +Collection#reset+,
+It's important to note that `parse` is not called by `Collection#reset`,
 which should be called with an array of models as its first argument.  Backbone
-does support calling +Collection#reset+ with just an array of bare attribute
-hashes, but these will not be routed through +Model#parse+, which can be the source of some
+does support calling `Collection#reset` with just an array of bare attribute
+hashes, but these will not be routed through `Model#parse`, which can be the source of some
 confusion.
 
 Another way to intercept nested attributes and produce a full object graph
-is to bind to the +change+ event for the association attribute - in this case,
-+task.attachments+:
+is to bind to the `change` event for the association attribute - in this case,
+`task.attachments`:
 
-[javascript]
-source~~~~
+~~~~javascript
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
     this.on("change:attachments", this.parseAttachments);
@@ -262,32 +255,31 @@ ExampleApp.Models.Task = Backbone.Model.extend({
   },
 
   // ...
-source~~~~
+~~~~
 
-This ensures that our custom parsing is invoked whenever the +attachments+
+This ensures that our custom parsing is invoked whenever the `attachments`
 attribute is changed, and when new model instances are created.
 
-==== When to fetch deferred data
+#### When to fetch deferred data
 
 Since a Backbone task doesn't always have its associations filled, when you
-move from +TasksIndex+ to +TasksShow+, you need to invoke +task.fetch()+ to pull all
+move from `TasksIndex` to `TasksShow`, you need to invoke `task.fetch()` to pull all
 the task attributes from `GET /tasks/:id` and populate the `attachments`
 association.  Whose concern is that? Let's talk it through.
 
-You could lazily populate this association by making the +task.attachments+
+You could lazily populate this association by making the `task.attachments`
 association a function instead of a property. Compare `task.attachments.each` to
 `task.attachments().each`; in the latter, the accessing function encapsulates the
 concern of laziness in fetching and populating, but then you run into the issue that
-fetch is asynchronous.  Passing a callback into +attachments()+ is kludgy; it
+fetch is asynchronous.  Passing a callback into `attachments()` is kludgy; it
 exposes the deferred nature of the association everywhere you need to access it.
 
 We'll instead prefer to treat the deferred nature explicitly in the
-+Routers.Tasks#show+ route, a natural application seam to the +TaskShow+ view.
-This frees +TaskShow+ from having to know about the persistence details of
+`Routers.Tasks#show` route, a natural application seam to the `TaskShow` view.
+This frees `TaskShow` from having to know about the persistence details of
 the model:
 
-[javascript]
-source~~~~
+~~~~javascript
 ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   // ...
 
@@ -302,7 +294,7 @@ ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
     });
   }
 });
-source~~~~
+~~~~
 
-Now, we have successfully deferred the +Task#attachments+ association and
+Now, we have successfully deferred the `Task#attachments` association and
 kept the concern clear of the view.

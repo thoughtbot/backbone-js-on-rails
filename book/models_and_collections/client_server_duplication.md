@@ -1,4 +1,4 @@
-=== Duplicating business logic across the client and server
+### Duplicating business logic across the client and server
 
 When you're building a multi-tier application where business logic is spread
 across tiers, one big challenge you face is to avoid duplicating that logic
@@ -7,7 +7,7 @@ It's desirable to have only one implementation of a particular concern
 in your domain, but it's also desirable for your application to perform
 responsively.
 
-==== An example: model validations
+#### An example: model validations
 
 For example, let's say that a user must have an email address.
 
@@ -15,18 +15,16 @@ At one end of the scale, there is no duplication: All business logic is defined
 in one tier, and other tiers access the logic by remote invocation.  Your Rails
 `Member` model provides a validation:
 
-[ruby]
-source~~~~
+~~~~ruby
 class Member < ActiveRecord::Base
   validate :email, :presence => true
 end
-source~~~~
+~~~~
 
 The Backbone view attempts to persist the member as usual, binding to its
 `error` event to handle the server-side error:
 
-[javascript]
-source~~~~
+~~~~javascript
 var MemberFormView = Backbone.View.extend({
   events: {
     "submit form": "submit"
@@ -51,13 +49,13 @@ var MemberFormView = Backbone.View.extend({
     new ErrorView({ el: self.el, errors: errors }).render();
   }
 });
-source~~~~
+~~~~
 
 This uses the `ErrorView` class, which is able to parse the error hash returned
 from Rails, which was discussed in the "Validations" section of the "Models and
 Collections" chapter.
 
-include::a_note_about_bindall.asc[]
+<<[a_note_about_bindall.md]
 
 In the case of no duplication, your Backbone `Member` model does not declare
 this validation.  A user fills out a form for a creating a new member in your
@@ -72,8 +70,7 @@ have to implement the validation concern on the client side as well.  Backbone
 provides a facility for validating models during their persistence, so we could
 write:
 
-[javascript]
-source~~~~
+~~~~javascript
 var Member = Backbone.Model.extend({
   validate: function() {
     var errors = {};
@@ -83,15 +80,14 @@ var Member = Backbone.Model.extend({
     return errors;
   }
 });
-source~~~~
+~~~~
 
 Conveniently, we've structured the return value of the `validate()` function to
 mirror the structure of the Rails error JSON we saw returned above.  Now, we
 _could_ augment the `ErrorView` class's constructor function to handle either
 client-side or server-side errors:
 
-[javascript]
-source~~~~
+~~~~javascript
 var ErrorList = function(responseOrErrors) {
   if (responseOrErrors && responseOrErrors.responseText) {
     this.attributesWithErrors = JSON.parse(response.responseText);
@@ -99,7 +95,7 @@ var ErrorList = function(responseOrErrors) {
     this.attributesWithErrors = responseOrErrors;
   }
 };
-source~~~~
+~~~~
 
 With Backbone, the `validate()` function is called for each invocation of
 `set()`, so as soon as we set the email address on the member, its presence is
@@ -107,7 +103,7 @@ validated.  For the user experience with the quickest response, we could observe
 changes on the email form field, updating the model's `email` attribute whenever
 it changes, and displaying the inline error message immediately.
 
-With +ErrorList+ able to handle either client-side or server-side error messages,
+With `ErrorList` able to handle either client-side or server-side error messages,
 we have a server-side guarantee of data correctness, footnote:[At least, we
 have a guarantee at the application level; database integrity and the
 possibility of skew between Rails models and DB content is another discussion
@@ -122,7 +118,7 @@ maintainability.
 
 Let's take a look at what kinds of logic you might find duplicated, and then at strategies for reducing duplication.
 
-==== Kinds of logic you duplicate
+#### Kinds of logic you duplicate
 
 In Rails applications, our model layer can contain a variety of kinds of
 business logic:
@@ -151,7 +147,7 @@ frequent example.
 It's worth considering each of these categories in turn, and how they can be
 distributed across client and server to provide a responsive experience.
 
-==== Validations
+#### Validations
 
 Validations are probably the lowest-hanging fruit.  Since the API for
 declaring validations is largely declarative and well-bounded, we can imagine
@@ -166,13 +162,13 @@ implementation, or a custom-written client-side implementation - a duplicate
 implementation.
 
 This is actually what the
-https://github.com/bcardarella/client_side_validations[+client_side_validations+ gem]
+[`client_side_validations` gem](https://github.com/bcardarella/client_side_validations)
 does, only it is not available for Backbone yet. However, it is on the roadmap, and
 the "model" branch  is a work in progress of this functionality. We will be
 keeping an eye on this branch:
-https://github.com/bcardarella/client_side_validations/tree/model
+<https://github.com/bcardarella/client_side_validations/tree/model>
 
-==== Querying
+#### Querying
 
 Like validations, Rails the syntax and outcome of many common Rails query
 methods are relatively declarative. It may be possible to convert server-side
@@ -187,7 +183,7 @@ server and is not needed on the client.
 If you find that your application has duplication here, consider whether there
 may be a better way to separate responsibilities.
 
-==== Callbacks
+#### Callbacks
 
 We've found that model callbacks are rarely duplicated between the client and
 server sides. It's actually more likely that your client-side models will
@@ -201,7 +197,7 @@ concern of these often varies significantly from what they were on the server.
 For example, a callback translated to Backbone will likely be implemented
 as an event being fired and listened to by another object.
 
-==== Algorithms
+#### Algorithms
 
 General algorithms are often the trickiest things for which to resolve duplication
 between client and server. It's also common that important algorithms are,
@@ -212,8 +208,7 @@ may be introduced, and the client- and server-side algorithms might not
 actually produce the same results.
 
 You could implement the actual logic of the algorithm in
-JavaScript and then make that available to Ruby, by using something like ExecJS
-https://github.com/sstephenson/execjs to run the JavaScript code from Ruby. But you must weigh the cost of that additional complexity and overhead against
+JavaScript and then make that available to Ruby, by using something like [ExecJS](https://github.com/sstephenson/execjs) to run the JavaScript code from Ruby. But you must weigh the cost of that additional complexity and overhead against
 the code of duplicating logic.
 
 Also, you could consider JavaScript on the server side in something like
@@ -227,5 +222,5 @@ and improve the performance, respectively.
 
 More information about this technique can be found here:
 
-http://c2.com/cgi/wiki?HalfObjectPlusProtocol
-http://c2.com/cgi/wiki?HoppPatternLanguage
+* <http://c2.com/cgi/wiki?HalfObjectPlusProtocol>
+* <http://c2.com/cgi/wiki?HoppPatternLanguage>
