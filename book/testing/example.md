@@ -206,7 +206,7 @@ collection into the template, and iterate over it there:
 
 <<(../../example_app/app/assets/javascripts/views/tasks_index.js)
 
-<(../../example_app/app/assets/templates/tasks/index.jst.ejs)
+<<(../../example_app/app/assets/templates/tasks/index.jst.ejs)
 
 Now, Jasmine passes, but the Cucumber story is still failing:
 
