@@ -10,7 +10,7 @@ get running. By default, it runs your tests in a remote-controlled Firefox
 session, so you'll want to install Firefox if you don't have it.
 
 NOTE: If you'd like to test on a WebKit-based browser, you can set up the
-http://code.google.com/p/selenium/wiki/ChromeDriver[Selenium ChromeDriver] to
+[Selenium ChromeDriver](http://code.google.com/p/selenium/wiki/ChromeDriver) to
 run integration tests against Chrome.
 
 The other dependencies you can install by adding them to your Gemfile. The gems
