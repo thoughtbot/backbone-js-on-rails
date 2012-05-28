@@ -16,7 +16,7 @@ it using a simple jquery selector, and parse it ourselves.
 
 Here's an example:
 
-~~~~javascript
+````javascript
 <script type="text/json" id="bootstrap">
   { "tasks": <%= @tasks.to_json %> }
 </script>
@@ -33,7 +33,7 @@ Here's an example:
     ExampleApp.initialize(data);
   });
 </script>
-~~~~
+````
 
 A reliable way to unencode the HTML-encoded JSON string is to use the browser's
 native functionality by setting an element's `innerHTML`.  So in the above
@@ -49,8 +49,8 @@ Now, the application's models, populated by the bootstrap data structure,
 contain raw data that is not HTML-escaped.  When you render this data into the
 DOM, make sure you escape the HTML at that point:
 
-~~~~javascript
+````javascript
 // From app/assets/javascripts/views/task_item.js:
 
 this.$('label').html(this.model.escape('title')); // not model.get
-~~~~
+````

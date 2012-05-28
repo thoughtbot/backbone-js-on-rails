@@ -34,7 +34,7 @@ that abstracts the difference as much as possible.
 Capybara is a high-level library that allows you to write tests from a user's
 perspective.  Consider this example, which uses RSpec:
 
-~~~~ruby
+````ruby
 describe "the login process", :type => :request do
   it "accepts an email and password" do
     User.create(:email => 'alice@example.com', :password => 'password')
@@ -45,7 +45,7 @@ describe "the login process", :type => :request do
     page.should have_content('You are logged in as alice@example.com')
   end
 end
-~~~~
+````
 
 Notice that, as you read the spec, you're not concerned about whether the login
 interface is rendered with JavaScript, or whether the authentication request is
@@ -73,18 +73,18 @@ the description phase and the implementation phase of the test.  In the
 description phase, you are writing an English description of the software
 interaction:
 
-~~~~cucumber
+````cucumber
 Given there is a user account "alice@example.com" with the password "password"
 When I go to the home page
 And I fill in the login form with "alice@example.com" and "password"
 And I click the login button
 Then I should see "You are logged in as alice@example.com"
-~~~~
+````
 
 In the implementation phase of the test, you define what these steps do.  In
 this case, they are defined to run Capybara methods:
 
-~~~~ruby
+````ruby
 Given /^there is a user account "(.*)" with the password "(.*)"$/ do \\
 |email, password|
   User.create(:email => email, :password => password)
@@ -106,7 +106,7 @@ end
 Then /^I should see "(.*)"$/ do |text|
   page.should have_content(text)
 end
-~~~~
+````
 
 #### Drivers
 
@@ -127,8 +127,8 @@ Chrome, Safari, and even Internet Explorer.
 
 Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:
 
-~~~~ruby
+````ruby
 Capybara.javascript_driver = :webkit
-~~~~
+````
 
 Then, tag a Cucumber scenario as @javascript. If you need to fall back to using Selenium, tag that scenario with @selenium.

@@ -24,15 +24,15 @@ sample application looks like this:
 
 If you haven't already, bootstrap your application for Cucumber and Capybara:
 
-~~~~bash
+````bash
 rails generate cucumber:install
-~~~~
+````
 
 Next, bootstrap the application for Jasmine:
 
-~~~~bash
+````bash
 rails generate jasmine:install
-~~~~
+````
 
 With this configuration, you can run Cucumber scenarios with the Cucumber
 command and you can run Jasmine tests by running `bundle exec rake jasmine`
@@ -43,11 +43,11 @@ One final helpful configuration change is to include the `jasmine:ci` task
 in the default rake task.  This way, running `rake` will run all your specs,
 including Jasmine specs:
 
-~~~~ruby
+````ruby
 # Rakefile
 # ...
 task :default => ['spec', 'jasmine:ci', 'cucumber']
-~~~~
+````
 
 #### Step by step
 
@@ -65,7 +65,7 @@ the list.  We'll start with the list of items, and create fixture data with
 
 Running this, we see a failure:
 
-~~~~text
+````text
 Then I should see "Master Backbone" within the tasks list
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
   (eval):2:in `find'
@@ -73,7 +73,7 @@ Then I should see "Master Backbone" within the tasks list
   ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
   features/view_tasks.feature:13:in `Then I should see "Master Backbone" \\
   within the tasks list'
-~~~~
+````
 
 A common mis-step when testing Rails apps with our structure is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
@@ -94,7 +94,7 @@ Backbone app on `tasks#index`.
 To render our tasks, we'll want a TasksIndex Backbone view class.  But before we
 write this class, we'll motivate it with a Jasmine isolation spec:
 
-~~~~javascript
+````javascript
 describe("ExampleApp.Views.TasksIndex", function() {
   it("renders a task table", function() {
     var view = new ExampleApp.Views.TasksIndex();
@@ -104,7 +104,7 @@ describe("ExampleApp.Views.TasksIndex", function() {
     expect(view.$el).toContain("table");
   });
 });
-~~~~
+````
 
 We use the [jasmine-jquery](https://github.com/velesin/jasmine-jquery) library to
 provide DOM matchers for Jasmine like `toContain()`.
@@ -114,7 +114,7 @@ To run the Jasmine spec, run `bundle exec rake jasmine` and visit http://localho
 To make this test pass, we'll add a small template and make the `TasksIndex`
 view render it:
 
-~~~~ruby
+````ruby
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   tagName: 'div',
   id: 'tasks',
@@ -127,13 +127,13 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-~~~~
+````
 
 The `app/assets/templates/tasks/index.jst.ejs` template:
 
-~~~~html
+````html
 <table></table>
-~~~~
+````
 
 Now our Jasmine specs pass:
 
@@ -143,7 +143,7 @@ Since the Jasmine specs pass, we'll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The `"#tasks
 table"` element is present on the page, but doesn't contain the content we want:
 
-~~~~text
+````text
 @javascript
 Scenario: View tasks
   Given the following tasks exist:
@@ -158,7 +158,7 @@ Scenario: View tasks
 `/^(?:|I )should see "([^"]*)"$/'
     features/view_tasks.feature:13:in `Then I should see "Master Backbone" \\
 within the tasks list'
-~~~~
+````
 
 Drop back down to Jasmine and write a spec motivating the `TasksIndex` view to
 accept a collection and render it.  We'll rewrite our existing spec, since we
@@ -168,7 +168,7 @@ are changing the `TasksIndex` interface to require that a collection be passed i
 
 This spec fails:
 
-~~~~text
+````text
 1 spec, 1 failure in 0.008s
 Finished at Thu Sep 22 2011 18:10:26 GMT-0400 (EDT)
 ExampleApp.Views.TasksIndex
@@ -177,7 +177,7 @@ TypeError: undefined is not a function
 TypeError: undefined is not a function
     at [object Object].<anonymous> \\
 (http://localhost:8888/assets/views/tasks_index_spec.js?body=1:4:27)
-~~~~
+````
 
 It's failing because we haven't defined `ExampleApp.Collections.Tasks` yet.  We
 need to define a task model and tasks collection.  We'll define the model:
@@ -195,11 +195,11 @@ need to define a task model and tasks collection.  We'll define the model:
 Running the Jasmine specs again, we're making progress.  The `TasksIndex` view is
 accepting a collection of tasks, and now we have to render it:
 
-~~~~text
+````text
 Expected '<div id="tasks"><table> <tbody><tr> <th>Title</th> \\
 <th>Completed</th> </tr> </tbody><div></div><div></div></table> </div>' to \\
 have text 'Wake up'.
-~~~~
+````
 
 The simplest thing we can do to get the spec passing is to pass the `tasks`
 collection into the template, and iterate over it there:
@@ -210,10 +210,10 @@ collection into the template, and iterate over it there:
 
 Now, Jasmine passes, but the Cucumber story is still failing:
 
-~~~~text
+````text
 Then I should see "Master Backbone" within the tasks list
 Unable to find css "#tasks table" (Capybara::ElementNotFound)
-~~~~
+````
 
 This is because the Jasmine spec is an isolation spec, and verifies that the
 `TasksIndex` view works in isolation.  There is additional code we need to write
@@ -237,7 +237,7 @@ Then we bootstrap the app from the Rails view:
 
 And the integration test passes!
 
-~~~~text
+````text
 Feature: Viewing Tasks
   As a user
   So that I can see what I have to do
@@ -255,4 +255,4 @@ Feature: Viewing Tasks
 
 1 scenario (1 passed)
 5 steps (5 passed)
-~~~~
+````

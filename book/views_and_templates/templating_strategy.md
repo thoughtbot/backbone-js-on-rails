@@ -9,13 +9,13 @@ There's no shortage of templating options for JavaScript. They generally fall in
 To quickly compare the different approaches, we will work with creating a
 template that renders the following HTML:
 
-~~~~html
+````html
 <ul class="tasks">
   <li><span class="title">Buy milk</span> Get the good kind </li>
   <li><span class="title">Buy cheese</span> Sharp cheddar </li>
   <li><span class="title">Eat cheeseburger</span> Make with above cheese </li>
 </ul>
-~~~~
+````
 
 Assuming we have a TasksCollection instance containing the three elements
 displayed in the above HTML snippet, let's look at how different templating
@@ -23,7 +23,7 @@ libraries accomplish the same goal of rendering the above. Since you're already 
 
 An Underscore.js template may look like this:
 
-~~~~erb
+````erb
 <ul class="tasks">
   <% tasks.each(function(task) { %>
     <li>
@@ -32,7 +32,7 @@ An Underscore.js template may look like this:
     </li>
   <% }) %>
 </ul>
-~~~~
+````
 
 Here, we interpolate a bit of JavaScript logic in order to iterate
 through the collection and render the desired markup. Also note
@@ -63,7 +63,7 @@ and `unless`, and simply provide control structures for rendering logic.
 
 The above template would look like this in Handlebars:
 
-~~~~erb
+````erb
 <ul class="title">
   {{#each tasks}}
     <li>
@@ -72,7 +72,7 @@ The above template would look like this in Handlebars:
     </li>
   {{/each}}
 <ul>
-~~~~
+````
 
 Of note:
 
@@ -138,7 +138,7 @@ your view class.
 You can build static HTML mockups of the application first, and pull these
 mockups directly in as templates, without modifying them.
 
-~~~~html
+````html
 <!-- snip -->
 <div id="song-player">
   <nav>
@@ -153,9 +153,9 @@ mockups directly in as templates, without modifying them.
   </audio>
 </div>
 <!-- snip -->
-~~~~
+````
 
-~~~~javascript
+````javascript
 MyView = Backbone.View.extend({
   render: function() {
     this.renderTemplate();
@@ -180,7 +180,7 @@ MyView = Backbone.View.extend({
     });
   }
 });
-~~~~
+````
 
 You can see an example of this in the example application's `TaskItem` view
 class, at `app/assets/javascripts/views/task_item.js`.

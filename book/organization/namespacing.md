@@ -14,7 +14,7 @@ Typically, initializing your application will involve creating a router and
 starting Backbone history to route the initial URL fragment.  This app variable
 will look like the following:
 
-~~~~javascript
+````javascript
 var ExampleApp = {
   Models: {},
   Collections: {},
@@ -25,7 +25,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-~~~~
+````
 
 You can find a more fully fleshed-out version of this file in the example app
 in `app/assets/javascripts/example_app.js`.

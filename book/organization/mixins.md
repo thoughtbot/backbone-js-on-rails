@@ -11,7 +11,7 @@ as an example of a mixin.
 Here, we create a mixin named `Observer` that contains behavior for binding to
 events in a fashion that can be cleaned up later:
 
-~~~~javascript
+````javascript
 var Observer = {
   bindTo: function(source, event, callback) {
     source.on(event, callback, this);
@@ -26,12 +26,12 @@ var Observer = {
     this.bindings = [];
   }
 };
-~~~~
+````
 
 We can mix `Observer` into a class by using Underscore.js' `_.extend` on the
 prototype of that class:
 
-~~~~javascript
+````javascript
 SomeCollectionView = Backbone.View.extend({
   initialize: function() {
     this.bindTo(this.collection, "change", this.render);
@@ -44,4 +44,4 @@ SomeCollectionView = Backbone.View.extend({
 });
 
 _.extend(SomeCollectionView.prototype, Observer);
-~~~~
+````

@@ -75,7 +75,7 @@ any additional event unbinding that's needed.  As a convention, when you use
 this view elsewhere, you'll call `leave()` instead of `remove()` when you're
 done:
 
-~~~~javascript
+````javascript
 var SomeCollectionView = Backbone.View.extend({
   // snip...
 
@@ -90,7 +90,7 @@ var SomeCollectionView = Backbone.View.extend({
 
   // snip...
 });
-~~~~
+````
 
 #### Keep track of `on()` calls to unbind more easily
 
@@ -104,7 +104,7 @@ clean up all the events with one call.  We'll add and use a `bindTo()`
 function that keeps track of all the event handlers we bind, and then issue a
 single call to `unbindFromAll()` to unbind them:
 
-~~~~javascript
+````javascript
 var SomeCollectionView = Backbone.View.extend({
   initialize: function() {
     this.bindings = [];
@@ -128,7 +128,7 @@ var SomeCollectionView = Backbone.View.extend({
     this.bindings = [];
   }
 });
-~~~~
+````
 
 These functions, `bindTo()` and `unbindFromAll()`, can be extracted into a
 reusable mixin or superclass.  Then, we just have to use `bindTo()` instead of
@@ -153,7 +153,7 @@ triggers.
 
 This is handled by invoking `Backbone.Events.off()`:
 
-~~~~javascript
+````javascript
 var FilteringView = Backbone.View.extend({
   // snip...
 
@@ -174,7 +174,7 @@ var FilteringView = Backbone.View.extend({
 
   // snip...
 });
-~~~~
+````
 
 #### Establish a convention for consistent and correct unbinding
 

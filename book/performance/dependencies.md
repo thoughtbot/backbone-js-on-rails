@@ -7,7 +7,7 @@ Zepto http://zeptojs.com for a more lightweight dependency.  Zepto is "a
 minimalist JavaScript framework for mobile WebKit browsers, with a
 jQuery-compatible syntax."  From `backbone.js`:
 
-~~~~javascript
+````javascript
 (function(){
 
   // Initial Setup
@@ -22,4 +22,4 @@ jQuery-compatible syntax."  From `backbone.js`:
   // ...
 
 }).call(this);
-~~~~
+````

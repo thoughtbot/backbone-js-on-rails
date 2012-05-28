@@ -15,7 +15,7 @@ Here's a quick example of a very simple game engine, where things happen in the
 system and an event is triggered, which in turn invokes any event handlers that
 are bound to that event:
 
-~~~~javascript
+````javascript
 var gameEngine = {};
 _.extend(gameEngine, Backbone.Events);
 
@@ -24,7 +24,7 @@ gameEngine.on("user_registered", function(user) {
 });
 
 gameEngine.trigger("user_registered", User.new({ points: 0 }));
-~~~~
+````
 
 In the example above, `on` subscribes the gameEngine to listen for the
 "user_registered" event, then `trigger` broadcasts that event to all
@@ -62,13 +62,13 @@ detail below.
 The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
 
-~~~~erb
+````erb
 <!-- templates/soundboard.jst -->
 <a class="sound">Honk</a>
 <a class="sound">Beep</a>
-~~~~
+````
 
-~~~~javascript
+````javascript
 var SoundBoard = Backbone.View.extend({
   render: function() {
     $(this.el).html(JST['soundboard']());
@@ -79,11 +79,11 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-~~~~
+````
 
 But Backbone provides an easier and more declarative approach with the `events` hash:
 
-~~~~javascript
+````javascript
 var SoundBoard = Backbone.View.extend({
   events: {
     "click a.sound": "playSound"
@@ -97,7 +97,7 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-~~~~
+````
 
 Backbone will bind the events with the
 [`Backbone.View.prototype.delegateEvents()`](http://documentcloud.github.com/backbone/#View-delegateEvents)
@@ -141,7 +141,7 @@ the other view has bindings.
 Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:
 
-~~~~javascript
+````javascript
 GenderPicker = Backbone.View.extend({
   render: {
     // render template
@@ -175,7 +175,7 @@ UsersTable = Backbone.View.extend({
     this.render();
   }
 });
-~~~~
+````
 
 In the above snippet, the `GenderPicker` is responsible for the filter
 control. When the appropriate elements are clicked, a custom `changed` event

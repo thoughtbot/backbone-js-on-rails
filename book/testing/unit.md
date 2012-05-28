@@ -52,7 +52,7 @@ We'll use the Jasmine framework for writing our isolation specs.  It integrates
 easily into a Rails application, and provides an RSpec-like syntax for writing
 specs:
 
-~~~~javascript
+````javascript
 describe("ExampleApp.Models.Tasks", function() {
   it("knows if it is complete", function() {
     var completeTask = new ExampleApp.Models.Task({ complete: true });
@@ -64,7 +64,7 @@ describe("ExampleApp.Models.Tasks", function() {
     expect(incompleteTask.isComplete()).toBe(false);
   });
 });
-~~~~
+````
 
 To run the Jasmine tests in the example application, simply run `bundle exec
 rake jasmine` and visit http://localhost:8888.

@@ -98,7 +98,7 @@ is to fetch attachments for an individual task.  Let's discuss two options.
 One way we could approach this is to issue an API call for the
 nested collection:
 
-~~~~bash
+````bash
 $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
 [
   {
@@ -110,7 +110,7 @@ $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
     "file_url": "https://s3.amazonaws.com/tasksapp/uploads/33/users.jpg"
   }
 ]
-~~~~
+````
 
 NOTE: We will authenticate API requests with cookies, just like normal user
 logins, so the actual curl request would need to include a cookie from a logged-in user.
@@ -119,7 +119,7 @@ Another way we could approach this is to embed the comment and attachment data i
 the JSON representation of an individual task, and deliver this data from the
 `/tasks/:id` endpoint:
 
-~~~~bash
+````bash
 $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
 {
   /* some attributes left out for clarity */
@@ -134,7 +134,7 @@ $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
     }
   ]
 }
-~~~~
+````
 
 We'll take this approach for the example application, because it illustrates
 parsing nested models in Backbone.
@@ -142,11 +142,11 @@ parsing nested models in Backbone.
 At this point, we know that our HTTP JSON API should support at least the
 following Rails routes:
 
-~~~~ruby
+````ruby
 resources :tasks, :only => [:show, :create] do
   resources :attachments, :only => [:create]
 end
-~~~~
+````
 
 As an aside: In some applications, you may choose to expose a user-facing API.  It's
 valuable to dogfood this endpoint by making use of it from your own Backbone
@@ -173,7 +173,7 @@ To use it, first include the `rabl` and `yajl-ruby` gems in your Gemfile. Then
 you can create a view ending with `.json.rabl` to handle any particular request.
 For example, a `tasks#show` action may look like this:
 
-~~~~ruby
+````ruby
 class TasksController < ApplicationController
   respond_to :json
 
@@ -182,19 +182,19 @@ class TasksController < ApplicationController
     respond_with @task
   end
 end
-~~~~
+````
 
 Rails' responder will first look for a template matching the controller/action
 with the format in the file name, in this case `json`. If it doesn't find anything,
 it will invoke `to_json` on the `@task` model, but in this case we are providing
 one in `app/views/tasks/show.json.rabl`, so it will render that instead:
 
-~~~~ruby
+````ruby
 object @task
 attributes(:id, :title, :complete)
 child(:user) { attributes(:id, :email) }
 child(:attachments) { attributes(:id, :email) }
-~~~~
+````
 
 #### Parsing the JSON and instantiating client-side models
 
@@ -209,7 +209,7 @@ Backbone attribute which can be accessed with `get()` and `set()`.  We are
 replacing it with an instance of a Backbone `Attachments` collection and
 placing that as an object property:
 
-~~~~javascript
+````javascript
 taskBeforeParsing.get('attachments')
 // => [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]
 taskBeforeParsing.attachments
@@ -221,7 +221,7 @@ taskAfterParsing.get('attachments')
 // => undefined
 taskAfterParsing.attachments
 // => ExampleApp.Collection.Attachments(...)
-~~~~
+````
 
 One way to do this is to override the `parse` function on the `Task` model.
 
@@ -242,7 +242,7 @@ Another way to intercept nested attributes and produce a full object graph
 is to bind to the `change` event for the association attribute - in this case,
 `task.attachments`:
 
-~~~~javascript
+````javascript
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
     this.on("change:attachments", this.parseAttachments);
@@ -255,7 +255,7 @@ ExampleApp.Models.Task = Backbone.Model.extend({
   },
 
   // ...
-~~~~
+````
 
 This ensures that our custom parsing is invoked whenever the `attachments`
 attribute is changed, and when new model instances are created.
@@ -279,7 +279,7 @@ We'll instead prefer to treat the deferred nature explicitly in the
 This frees `TaskShow` from having to know about the persistence details of
 the model:
 
-~~~~javascript
+````javascript
 ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   // ...
 
@@ -294,7 +294,7 @@ ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
     });
   }
 });
-~~~~
+````
 
 Now, we have successfully deferred the `Task#attachments` association and
 kept the concern clear of the view.

@@ -9,7 +9,7 @@ Backbone views are classes that contain event handling and presentation logic.
 
 Consider the following Rails view for a tasks index:
 
-~~~~erb
+````erb
 <h1>Tasks</h1>
 
 <table>
@@ -25,7 +25,7 @@ Consider the following Rails view for a tasks index:
     </tr>
   <% end %>
 </table>
-~~~~
+````
 
 So far, we have the Backbone `Task` model and collection and the Rails `Task`
 model and controller discussed above, and we're bootstrapping the Backbone app
@@ -39,14 +39,14 @@ its DOM scope that trigger various behaviors.
 We'll start with a basic view that achieves the same result as the Rails template
 above, rendering a collection of tasks:
 
-~~~~javascript
+````javascript
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
     return this;
   }
 };
-~~~~
+````
 
 The `render` method above renders the `tasks/index` JST template, passing
 the collection of tasks into the template.
@@ -59,7 +59,7 @@ We'll update the Backbone route to instantiate this view, passing in the
 collection for it to render. The router then renders the view, and inserts it
 into the DOM:
 
-~~~~javascript
+````javascript
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"
@@ -70,7 +70,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     $('body').html(view.render().$el);
   }
 });
-~~~~
+````
 
 Now that we have the Backbone view in place that renders the template, and
 it's being called by the router, we can focus on converting the above Rails
@@ -93,7 +93,7 @@ Underscore.js to provide these iteration functions as methods on `Backbone.Colle
 We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
-~~~~erb
+````erb
 <h1>Tasks</h1>
 
 <table>
@@ -109,7 +109,7 @@ passed to the view, as shown in the converted Underscore.js template below:
     </tr>
   <% }); %>
 </table>
-~~~~
+````
 
 In Rails 3.0 and above, template output is HTML-escaped by default. In order to
 ensure that we have the same XSS protection as we did in our Rails template, we
@@ -132,16 +132,16 @@ which re-renders only the markup for one task.
 Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
-~~~~erb
+````erb
 <tr>
   <td><%= model.escape('title') %></td>
   <td><%= model.escape('completed') %></td>
 </tr>
-~~~~
+````
 
 And the Task index template will be changed to appear as shown below:
 
-~~~~erb
+````erb
 <h1>Tasks</h1>
 
 <table>
@@ -153,27 +153,27 @@ And the Task index template will be changed to appear as shown below:
   <!-- child content will be rendered here -->
 
 </table>
-~~~~
+````
 
 As you can see above in the index template, the individual tasks are no longer
 iterated over and rendered inside the table, but instead within the
 `TasksIndex` and `TaskView` views, respectively:
 
-~~~~javascript
+````javascript
 ExampleApp.Views.TaskView = Backbone.View.extend({
   render: function () {
     this.$el.html(JST['tasks/view']({ model: this.model }));
     return this;
   }
 });
-~~~~
+````
 
 The `TaskView` view above is very similar to the one we saw previously for the
 `TasksIndex` view.  It is only responsible for rendering the contents of its own
 element, and the concern of assembling the view of the list is left to the 
 parent view object:
 
-~~~~javascript
+````javascript
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
     var self = this;
@@ -189,7 +189,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-~~~~
+````
 
 In the new `TasksIndex` view above, the `tasks` collection is iterated over. For
 each task, a new `TaskView` is instantiated, rendered, and then inserted into
@@ -197,7 +197,7 @@ the `<table>` element.
 
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
-~~~~erb
+````erb
 <div>
   <h1>Tasks</h1>
 
@@ -221,7 +221,7 @@ If you look at the output of the `TasksIndex`, it will appear as follows:
     </div>
   </table>
 </div>
-~~~~
+````
 
 Unfortunately, we can see that there is a problem with the above rendered
 view: the surrounding div around each of the rendered tasks.
@@ -241,7 +241,7 @@ removed from the task view template.
 The element to use is specified by the `tagName` member of the `TaskView`, as
 shown below:
 
-~~~~javascript
+````javascript
 ExampleApp.Views.TaskView = Backbone.View.extend({
   tagName: "tr",
 
@@ -253,20 +253,20 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     return this;
   }
 };
-~~~~
+````
 
 Given the above `tagName` customization, the task view template will appear as
 follows:
 
-~~~~erb
+````erb
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
-~~~~
+````
 
 And the resulting output of the `TasksIndex` will be much cleaner, as shown
 below:
 
-~~~~html
+````html
 <div>
   <h1>Tasks</h1>
 
@@ -286,7 +286,7 @@ below:
     </tr>
   </table>
 </div>
-~~~~
+````
 
 We've now covered the basic building blocks of converting Rails views to
 Backbone and getting a functional system. The majority of Backbone programming

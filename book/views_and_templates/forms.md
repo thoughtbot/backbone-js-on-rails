@@ -24,7 +24,7 @@ Our first requirement is the ability to build markup.  For example, consider a
 Rails model `User` that has a username and password.  We might want to build
 form markup that looks like this:
 
-~~~~html
+````html
 <form>
   <li>
     <label for="email">Email</label>
@@ -35,7 +35,7 @@ form markup that looks like this:
     <input type="password" id="password" name="password">
   </li>
 </form>
-~~~~
+````
 
 One approach you could take is writing the full form markup by hand.  You could
 create a template available to Backbone via JST that contains the raw HTML.  If
@@ -57,7 +57,7 @@ markup; it doesn't serialize forms into data hashes or Backbone models.
 The second requirement in building forms is to serialize them into objects suitable for setting Backbone model attributes.  Assuming the markup we discussed above, you could
 approach this manually:
 
-~~~~javascript
+````javascript
 var serialize = function(form) {
   var elements = $('input, select, textarea', form);
 
@@ -73,7 +73,7 @@ var form = $('form');
 var model = new MyApp.Models.User();
 var attributes = serialize(form);
 model.set(attributes);
-~~~~
+````
 
 This gets you started, but has a few shortcomings.  It doesn't handle nested
 attributes, doesn't handle typing (consider a date picker input; ideally it
@@ -109,18 +109,18 @@ where attributes are processed and a response is generated.
 Let's add a validation to the Task Rails model, ensuring each task has something
 entered for the title:
 
-~~~~ruby
+````ruby
   validates :title, :presence => true
-~~~~
+````
 
 Now, if you create a task without a title, the Rails `TasksController` still
 delivers a response:
 
-~~~~ruby
+````ruby
 def create
   respond_with(current_user.tasks.create(params[:task]))
 end
-~~~~
+````
 
 but the response now returns with an HTTP response code of 422 and a JSON
 response body of `{"title":["can't be blank"]}`.
@@ -130,7 +130,7 @@ their corresponding form inputs.  We'll establish a few conventions that, when w
 
 For an example, let's examine a form field modeled after Formtastic conventions:
 
-~~~~html
+````html
 <form id="example_form">
   <ol>
     <li id="task_title_input">
@@ -144,14 +144,14 @@ For an example, let's examine a form field modeled after Formtastic conventions:
     </li>
   </ol>
 </form>
-~~~~
+````
 
 Elsewhere, likely in a view class, when a user triggers a save action in the
 interface, we save the form's corresponding model.  If the `save()` fails,
 we'll parse the model attributes and corresponding error(s) from the server's
 response and render an `ErrorView`.
 
-~~~~javascript
+````javascript
 var formField = $('form#example_form');
 
 model.on('error', function(model, response, options) {
@@ -164,14 +164,14 @@ model.on('error', function(model, response, options) {
 });
 
 model.save();
-~~~~
+````
 
 The `ErrorView` iterates over the response attributes and their errors (there
 may be more than one error per model attribute), rendering them inline into
 the form.  The `ErrorView` also adds the `error` CSS class to the `<li>` field
 container:
 
-~~~~javascript
+````javascript
 ErrorView = Backbone.View.extend({
   initialize: function(options) {
     this.attributesWithErrors = this.options.attributesWithErrors;
@@ -204,4 +204,4 @@ ErrorView = Backbone.View.extend({
     return this.$('li[id*="_' ` attribute ` '_input"]');
   }
 });
-~~~~
+````

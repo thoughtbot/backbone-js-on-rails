@@ -15,11 +15,11 @@ In our example application, we have a Task model, exposed via a JSON API at
 `/tasks`. The simplest Backbone representation of this model would be as
 shown below:
 
-~~~~javascript
+````javascript
 var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-~~~~
+````
 
 The `urlRoot` property above describes a base for the server-side JSON API that
 houses this resource.  Collection-level requests will occur at that root URL,
@@ -40,25 +40,25 @@ plural representation of `Tasks` into `Collections`.
 The simplest Backbone collection to represent our `Tasks` would be the
 following.
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task
 });
-~~~~
+````
 
 If we specify the URL for `Tasks` in our collection instead, then models within
 the collection will use the collection's URL to construct their own URLs, and
 the `urlRoot` no longer needs to be specified in the model. If we make that
 change, then our collection and model will be as follows.
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks'
 });
 
 var Task = Backbone.Model.extend({});
-~~~~
+````
 
 Notice in the above model definitions that there is no specification of the
 attributes on the model. As in ActiveRecord, Backbone models get their
@@ -96,7 +96,7 @@ When using `respond_with`, declare supported formats with `respond_to`. Inside
 individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
-~~~~ruby
+````ruby
 class TasksController < ApplicationController::Base
   respond_to :html, :json
 
@@ -104,7 +104,7 @@ class TasksController < ApplicationController::Base
     respond_with(@tasks = Task.all)
   end
 end
-~~~~
+````
 
 In the above example tasks controller, the `respond_to` line declares that this
 controller should respond to requests for both the HTML and JSON formats. Then,
@@ -131,13 +131,13 @@ So, your Backbone applications will likely rely on at least some server-side
 validation logic.  Invalid requests return non-2xx HTTP responses, which
 are handled by error callbacks in Backbone:
 
-~~~~javascript
+````javascript
 task.save({ title: "New Task title" }, {
   error: function() {
     // handle error from server
   }
 });
-~~~~
+````
 
 The error callback will be triggered if your server returns a non-2xx
 response. Therefore, you'll want your controller to return a non-2xx HTTP
@@ -145,7 +145,7 @@ response code if validations fail.
 
 A controller that does this would appear as shown in the following example:
 
-~~~~ruby
+````ruby
 class TasksController < ApplicationController::Base
   respond_to :json
 
@@ -158,13 +158,13 @@ class TasksController < ApplicationController::Base
     end
   end
 end
-~~~~
+````
 
 The default Rails responders will respond with an unprocessable entity (422)
 status code when there are validation errors, so the action above can be
 refactored:
 
-~~~~ruby
+````ruby
 class TasksController < ApplicationController::Base
   respond_to :json
   def create
@@ -173,7 +173,7 @@ class TasksController < ApplicationController::Base
     respond_with @task
   end
 end
-~~~~
+````
 
 Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
@@ -207,7 +207,7 @@ Organization chapter.
 
 This application object will look like the following:
 
-~~~~javascript
+````javascript
 var ExampleApp = {
   Models: {},
   Collections: {},
@@ -219,7 +219,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-~~~~
+````
 
 You can find this file in the example app in
 `app/assets/javascripts/example_app.js`.
@@ -232,13 +232,13 @@ You will often bootstrap data into the Backbone application to provide initial
 state.  In our example, the tasks have already been provided to the Rails view
 in an `@tasks` instance variable:
 
-~~~~javascript
+````javascript
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.initialize({ tasks: <%== @tasks.to_json %> });
   <% end %>
 <% end -%>
-~~~~
+````
 
 NOTE: The above example uses ERB to pass the JSON for the tasks to the `initialize`
 method, but we should be mindful of the XSS risks that dumping user-generated
@@ -248,7 +248,7 @@ section in the "Security" chapter for a more secure approach.
 Finally, you must have a Router in place that knows what to do.  We'll cover
 routers in more detail in the "Routers, Views and Templates" chapter.
 
-~~~~javascript
+````javascript
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"
@@ -266,7 +266,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     // We'll pick back up here in the "Converting Views" section.
   }
 });
-~~~~
+````
 
 The example router above is the last piece needed to complete our
 initial Backbone infrastructure. When a user visits `/tasks`, the

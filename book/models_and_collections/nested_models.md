@@ -63,7 +63,7 @@ relationships.  For example, consider a workflow in which you assign multiple
 people to perform a job.  The three domain models are `Job`, `Worker`, and
 the join model `Assignment`.
 
-~~~~ruby
+````ruby
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
@@ -78,7 +78,7 @@ class Worker < ActiveRecord::Base
   has_many :assignments
   has_many :jobs, :through => :assignments
 end
-~~~~
+````
 
 Earlier, we discussed how Ajax-enabled web applications often provide more
 finely-grained user interfaces that allow the user to submit information in
@@ -93,13 +93,13 @@ submissions, creating a parent record along with several child records all in
 one HTTP request.  We'll model this on the backend with Rails'
 `accepts_nested_attributes_for`:
 
-~~~~ruby
+````ruby
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
   accepts_nested_attributes_for :assignments
 end
-~~~~
+````
 
 As a quick refresher, this allows us in our Rails code to set
 `@job.assignments_attributes = [{}, {}, ...]` with an Array of Hashes, each
@@ -109,7 +109,7 @@ endpoint controller should be able to pass the request parameters straight
 through to ActiveRecord, so the JSON going over the HTTP request will look
 like this:
 
-~~~~javascript
+````javascript
 /* POST /api/v1/jobs */
 {
   name: "Move cardboard boxes to new warehouse",
@@ -120,7 +120,7 @@ like this:
     { worker_id: 5 }
   ]
 }
-~~~~
+````
 
 Shifting our focus to the client-side implementation, we can largely ignore the
 `Assignment` join model in Backbone, and just model this nested association
@@ -128,7 +128,7 @@ directly.  We'll use a `Job` Backbone model containing a `Workers` collection.
 This is a simplified perspective of the relationship, but it is all that the client
 needs to know.
 
-~~~~javascript
+````javascript
 MyApp = {};
 MyApp.Models = {};
 MyApp.Collections = {};
@@ -157,11 +157,11 @@ MyApp.Models.Job = Backbone.Model.extend({
     return json;
   }
 });
-~~~~
+````
 
 Now, you can add workers directly to the job:
 
-~~~~javascript
+````javascript
 var worker3 = new MyApp.Models.Worker({ id: 3 });
 var worker5 = new MyApp.Models.Worker({ id: 5 });
 
@@ -179,7 +179,7 @@ JSON.stringify(job.toJSON()) // Results in:
                              //     {"worker_id":5}
                              //   ]
                              // }
-~~~~
+````
 
 ...and saving the Backbone `Job` model will submit correctly structured
 JSON to the Rails server.

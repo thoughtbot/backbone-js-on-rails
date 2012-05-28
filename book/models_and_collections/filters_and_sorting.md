@@ -10,7 +10,7 @@ functions on your collections that filter by your criteria, using the `select`
 function from Underscore.js; then, return new instances of the collection class. A
 first implementation might look like this:
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -22,12 +22,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-~~~~
+````
 
 Let's refactor this a bit.  Ideally, the filter functions will reuse logic
 already defined in your model class:
 
-~~~~javascript
+````javascript
 var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
@@ -45,7 +45,7 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-~~~~
+````
 
 Going further, notice that there are actually two concerns in this function.
 The first is the notion of filtering the collection, and the second is the
@@ -53,7 +53,7 @@ specific filtering criteria (`task.isComplete()`).
 
 Let's separate the two concerns here, and extract a `filtered` function:
 
-~~~~javascript
+````javascript
 var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
@@ -74,12 +74,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(this.select(criteriaFunction));
   }
 });
-~~~~
+````
 
 We can extract this function into a reusable mixin, abstracting the `Tasks`
 collection class using `this.constructor`:
 
-~~~~javascript
+````javascript
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
     return new this.constructor(this.select(criteriaFunction));
@@ -104,7 +104,7 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, FilterableCollectionMixin);
-~~~~
+````
 
 #### Propagating collection changes
 
@@ -113,7 +113,7 @@ collection that does not update when the original collection is changed.  To do
 so, bind to the change, add, and remove events on the source collection,
 reapply the filter function, and repopulate the filtered collection:
 
-~~~~javascript
+````javascript
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
     var sourceCollection = this;
@@ -132,14 +132,14 @@ var FilterableCollectionMixin = {
     return filteredCollection;
   }
 };
-~~~~
+````
 
 #### Sorting
 
 The simplest way to sort a `Backbone.Collection` is to define a `comparator`
 function.  This functionality is built in:
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -148,14 +148,14 @@ var Tasks = Backbone.Collection.extend({
     return task.dueDate;
   }
 });
-~~~~
+````
 
 If you'd like to provide more than one sort order on your collection, you can
 use an approach similar to the `filtered` function above, and return a new
 `Backbone.Collection` whose `comparator` is overridden.  Call `sort` to update
 the ordering on the new collection:
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -173,11 +173,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-~~~~
+````
 
 Similarly, you can extract the reusable concern to another function:
 
-~~~~javascript
+````javascript
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -205,11 +205,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-~~~~
+````
 
 ...And then into another reusable mixin:
 
-~~~~javascript
+````javascript
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
     var sortedCollection = new this.constructor(this.models);
@@ -241,13 +241,13 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, SortableCollectionMixin);
-~~~~
+````
 
 Just as with the `FilterableCollectionMixin` before, the
 `SortableCollectionMixin` should observe its source if updates are to propagate
 from one collection to another:
 
-~~~~javascript
+````javascript
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
     var sourceCollection = this;
@@ -268,4 +268,4 @@ var SortableCollectionMixin = {
     return sortedCollection;
   }
 };
-~~~~
+````

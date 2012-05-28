@@ -27,7 +27,7 @@ include::a_note_about_push_state.asc[]
 
 A typical Backbone router will appear as shown below:
 
-~~~~javascript
+````javascript
 ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
     ""         : "index"
@@ -42,7 +42,7 @@ ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
     // Instantiate and render the show view
   }
 });
-~~~~
+````
 
 #### The routes hash
 

@@ -13,7 +13,7 @@ with Backbone.
 
 A basic Backbone view appears as follows.
 
-~~~~javascript
+````javascript
 ExampleApp.Views.ExampleView = Backbone.View.extend({
   tagName: "li",
   className: "example",
@@ -32,7 +32,7 @@ ExampleApp.Views.ExampleView = Backbone.View.extend({
     // do something
   }
 };
-~~~~
+````
 
 #### Initialization
 
@@ -75,10 +75,10 @@ option to the view constructor with `new ExampleView({ el: existingElement })`.
 
 You can also set this after the fact with the `setElement()` function:
 
-~~~~javascript
+````javascript
 var view = new ExampleView();
 view.setElement(existingElement);
-~~~~
+````
 
 #### Customizing the View's Element
 
@@ -119,12 +119,12 @@ A nice convention of the render function is to return `this` at the end of
 render to enable chained calls on the view - usually fetching the element.
 For example:
 
-~~~~javascript
+````javascript
 render: function() {
   this.$el.html(this.childView.render().el);
   return this;
 }
-~~~~
+````
 
 #### Events
 

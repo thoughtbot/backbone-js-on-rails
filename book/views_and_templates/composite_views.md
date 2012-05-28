@@ -23,7 +23,7 @@ the comments that folks have left, and rendering the form to create new
 comments. Let's separate those concerns. A first approach might be to just
 break up the template files:
 
-~~~~erb
+````erb
 <!-- tasks/show.jst -->
 <section class="task-details">
   <%= JST['tasks/details']({ task: task }) %>
@@ -32,15 +32,15 @@ break up the template files:
 <section class="comments">
   <%= JST['comments/list']({ task: task }) %>
 </section>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- tasks/details.jst -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/list.jst -->
 <ul>
   <% task.comments.each(function(comment) { %>
@@ -49,22 +49,22 @@ break up the template files:
 </ul>
 
 <%= JST['comments/new']() %>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/item.jst -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/new.jst -->
 <div class="form-inputs">
   <label for="new-comment-input">Add comment</label>
   <textarea id="new-comment-input" cols="30" rows="10"></textarea>
   <button>Add Comment</button>
 </div>
-~~~~
+````
 
 But this is really only half the story. The `TaskDetail` view class still
 handles multiple concerns, such as displaying the task and creating comments. Let's
@@ -88,7 +88,7 @@ maintain a back-reference at `this.parent`. This is used to reach up and call
 
 Making use of `CompositeView`, we split up the `TaskDetail` view class:
 
-~~~~javascript
+````javascript
 var TaskDetail = CompositeView.extend({
   tagName: 'section',
   id: 'task',
@@ -119,9 +119,9 @@ var TaskDetail = CompositeView.extend({
     this.renderChildInto(commentsList, commentsContainer);
   }
 });
-~~~~
+````
 
-~~~~javascript
+````javascript
 var CommentsList = CompositeView.extend({
   tagName: 'ul',
 
@@ -155,9 +155,9 @@ var CommentsList = CompositeView.extend({
     this.renderChildInto(commentForm, commentFormContainer);
   }
 });
-~~~~
+````
 
-~~~~javascript
+````javascript
 var CommentForm = CompositeView.extend({
   events: {
     "click button": "createComment"
@@ -177,48 +177,48 @@ var CommentForm = CompositeView.extend({
     this.model.comments.create(comment);
   }
 });
-~~~~
+````
 
 Along with this, remove the `<%= JST(...) %>` template nestings, allowing the
 view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:
 
-~~~~erb
+````erb
 <!-- tasks/show.jst -->
 <section class="task-details">
 </section>
 
 <section class="comments">
 </section>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- tasks/details.jst -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/list.jst -->
 <ul class="comments-list">
 </ul>
 
 <section class="new-comment-form">
 </section>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/item.jst -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-~~~~
+````
 
-~~~~erb
+````erb
 <!-- comments/new.jst -->
 <label for="new-comment-input">Add comment</label>
 <textarea class="new-comment-input" cols="30" rows="10"></textarea>
 <button>Add Comment</button>
-~~~~
+````
 
 There are several advantages to this approach:
 

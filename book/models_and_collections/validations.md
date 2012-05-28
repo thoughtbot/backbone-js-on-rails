@@ -16,25 +16,25 @@ easy for the developer.
 Let's wire this up. To get started, we'll add a validation on the task's title
 attribute on the ActiveRecord model, like so:
 
-~~~~ruby
+````ruby
 class Task < ActiveRecord::Base
   validates :title, presence: true
 end
-~~~~
+````
 
 On the Backbone side of the world, we have a Backbone task called
 `YourApp.Models.Task`:
 
-~~~~javascript
+````javascript
 YourApp.Models.Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-~~~~
+````
 
 We also have a place where users enter new tasks - just a form on the task
 list:
 
-~~~~html
+````html
 <form>
   <ul>
     <li class="task_title_input">
@@ -46,12 +46,12 @@ list:
     </li>
   </ul>
 </form>
-~~~~
+````
 
 On the `NewTask` Backbone view, we bind the button's click event to a new
 function that we'll call `createTask`:
 
-~~~~javascript
+````javascript
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -77,7 +77,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-~~~~
+````
 
 This gets the job done, but let's introduce a new class to handle extracting
 attributes from the form so that it's decoupled from this view and is
@@ -85,7 +85,7 @@ therefore easier to extend and reuse.
 
 We'll call this the `FormAttributes`, and its code is as follows:
 
-~~~~javascript
+````javascript
 FormAttributes = function(form) {
   this.form = form;
 }
@@ -102,11 +102,11 @@ _.extend(FormAttributes.prototype, {
     return attributes;
   }
 });
-~~~~
+````
 
 With this class in place, we can rewrite our form submit action to:
 
-~~~~javascript
+````javascript
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -124,7 +124,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-~~~~
+````
 
 When you call `save()` on a Backbone model, Backbone will delegate to `.sync()`
 and create a POST request on the model's URL, where the payload is the
@@ -133,7 +133,7 @@ attributes that you've passed onto the `save()` call.
 The easiest way to handle this in Rails is to use `respond_to`/`respond_with`,
 available in Rails 3 applications:
 
-~~~~ruby
+````ruby
 class TasksController < ApplicationController
   respond_to :json
   def create
@@ -141,15 +141,15 @@ class TasksController < ApplicationController
     respond_with task
   end
 end
-~~~~
+````
 
 When the task is created successfully, Rails will render the show action using
 the object that you've passed to the `respond_with` call, so make sure the show
 action is defined in your routes:
 
-~~~~ruby
+````ruby
 resources :tasks, only: [:create, :show]
-~~~~
+````
 
 When the task cannot be created successfully because some validation constraint
 is not met, the Rails responder will render the model's errors as a JSON
@@ -158,9 +158,9 @@ there was an error in the request and it was not processed.
 
 The response from Rails in that case looks something like this:
 
-~~~~javascript
+````javascript
 { "title": ["can't be blank"] }
-~~~~
+````
 
 That two-line action in a Rails controller is all we need to talk to our
 Backbone models and handle error cases.
@@ -184,7 +184,7 @@ First is the `ErrorList`. An `ErrorList` encapsulates parsing of the raw
 JSON that came in from the server and provides an iterator to easily loop
 through errors:
 
-~~~~javascript
+````javascript
 ErrorList = function (response) {
   if (response && response.responseText) {
     this.attributesWithErrors = JSON.parse(response.responseText);
@@ -200,13 +200,13 @@ _.extend(ErrorList.prototype, {
     return _.size(attributesWithErrors);
   }
 });
-~~~~
+````
 
 Next up is the `ErrorView`, which is in charge of taking the `ErrorList` and
 appending each inline error in the form, providing feedback to the user that
 their input is invalid:
 
-~~~~javascript
+````javascript
 ErrorView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "renderError");
@@ -230,7 +230,7 @@ ErrorView = Backbone.View.extend({
     return $(this.options.el).find('[id*="_' ` attribute ` '_input"]').first();
   }
 });
-~~~~
+````
 
 Note the `fieldFor` function. It expects a field with an id containing a
 certain format. Therefore, in order for this to work, the form's HTML must
@@ -246,7 +246,7 @@ to the `ErrorList` constructor, which we then pass to the `ErrorView`, which wil
 its fine job inserting the inline errors when we call `render()` on it.
 Putting it all together, our save call's callbacks now look like this:
 
-~~~~javascript
+````javascript
 var self = this;
 var model = new YourApp.Models.Task(attributes);
 model.save({
@@ -256,7 +256,7 @@ model.save({
     view.render();
   }
 });
-~~~~
+````
 
 Here, we've shown how you can decouple different concerns into their own
 classes, creating a system that is easier to extend, and potentially

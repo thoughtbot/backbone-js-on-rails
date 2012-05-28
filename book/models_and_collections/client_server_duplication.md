@@ -15,16 +15,16 @@ At one end of the scale, there is no duplication: All business logic is defined
 in one tier, and other tiers access the logic by remote invocation.  Your Rails
 `Member` model provides a validation:
 
-~~~~ruby
+````ruby
 class Member < ActiveRecord::Base
   validate :email, :presence => true
 end
-~~~~
+````
 
 The Backbone view attempts to persist the member as usual, binding to its
 `error` event to handle the server-side error:
 
-~~~~javascript
+````javascript
 var MemberFormView = Backbone.View.extend({
   events: {
     "submit form": "submit"
@@ -49,7 +49,7 @@ var MemberFormView = Backbone.View.extend({
     new ErrorView({ el: self.el, errors: errors }).render();
   }
 });
-~~~~
+````
 
 This uses the `ErrorView` class, which is able to parse the error hash returned
 from Rails, which was discussed in the "Validations" section of the "Models and
@@ -70,7 +70,7 @@ have to implement the validation concern on the client side as well.  Backbone
 provides a facility for validating models during their persistence, so we could
 write:
 
-~~~~javascript
+````javascript
 var Member = Backbone.Model.extend({
   validate: function() {
     var errors = {};
@@ -80,14 +80,14 @@ var Member = Backbone.Model.extend({
     return errors;
   }
 });
-~~~~
+````
 
 Conveniently, we've structured the return value of the `validate()` function to
 mirror the structure of the Rails error JSON we saw returned above.  Now, we
 _could_ augment the `ErrorView` class's constructor function to handle either
 client-side or server-side errors:
 
-~~~~javascript
+````javascript
 var ErrorList = function(responseOrErrors) {
   if (responseOrErrors && responseOrErrors.responseText) {
     this.attributesWithErrors = JSON.parse(response.responseText);
@@ -95,7 +95,7 @@ var ErrorList = function(responseOrErrors) {
     this.attributesWithErrors = responseOrErrors;
   }
 };
-~~~~
+````
 
 With Backbone, the `validate()` function is called for each invocation of
 `set()`, so as soon as we set the email address on the member, its presence is
