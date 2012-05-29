@@ -1,4 +1,4 @@
-### Routers
+## Routers
 
 Routers are an important part of the Backbone infrastructure. Backbone
 routers provide methods for routing application flow based on client-side URL
@@ -44,7 +44,7 @@ ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
 });
 ````
 
-#### The routes hash
+### The routes hash
 
 The basic router consists of a routes hash, which is a mapping between URL
 fragments and methods on the router. If the current URL fragment, or one that
@@ -77,7 +77,7 @@ triggered. For example, when the router's `show` function above is triggered, an
 `route:show` will be fired. This is so that other objects can listen to the
 router, and be notified when the router responds to certain routes.
 
-#### Initializing a router
+### Initializing a router
 
 It is possible to specify an `initialize` function in a Router which will be
 called when the router is instantiated. Any arguments passed to the router's

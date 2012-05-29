@@ -1,4 +1,4 @@
-### Validations
+## Validations
 
 The server is the authoritative place for verifying whether data being
 stored is valid. Even though Backbone.js

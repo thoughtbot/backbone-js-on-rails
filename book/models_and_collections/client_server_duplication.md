@@ -1,4 +1,4 @@
-### Duplicating business logic across the client and server
+## Duplicating business logic across the client and server
 
 When you're building a multi-tier application where business logic is spread
 across tiers, one big challenge you face is to avoid duplicating that logic
@@ -7,7 +7,7 @@ It's desirable to have only one implementation of a particular concern
 in your domain, but it's also desirable for your application to perform
 responsively.
 
-#### An example: model validations
+### An example: model validations
 
 For example, let's say that a user must have an email address.
 
@@ -118,7 +118,7 @@ maintainability.
 
 Let's take a look at what kinds of logic you might find duplicated, and then at strategies for reducing duplication.
 
-#### Kinds of logic you duplicate
+### Kinds of logic you duplicate
 
 In Rails applications, our model layer can contain a variety of kinds of
 business logic:
@@ -147,7 +147,7 @@ frequent example.
 It's worth considering each of these categories in turn, and how they can be
 distributed across client and server to provide a responsive experience.
 
-#### Validations
+### Validations
 
 Validations are probably the lowest-hanging fruit.  Since the API for
 declaring validations is largely declarative and well-bounded, we can imagine
@@ -168,7 +168,7 @@ the "model" branch  is a work in progress of this functionality. We will be
 keeping an eye on this branch:
 <https://github.com/bcardarella/client_side_validations/tree/model>
 
-#### Querying
+### Querying
 
 Like validations, Rails the syntax and outcome of many common Rails query
 methods are relatively declarative. It may be possible to convert server-side
@@ -183,7 +183,7 @@ server and is not needed on the client.
 If you find that your application has duplication here, consider whether there
 may be a better way to separate responsibilities.
 
-#### Callbacks
+### Callbacks
 
 We've found that model callbacks are rarely duplicated between the client and
 server sides. It's actually more likely that your client-side models will
@@ -197,7 +197,7 @@ concern of these often varies significantly from what they were on the server.
 For example, a callback translated to Backbone will likely be implemented
 as an event being fired and listened to by another object.
 
-#### Algorithms
+### Algorithms
 
 General algorithms are often the trickiest things for which to resolve duplication
 between client and server. It's also common that important algorithms are,

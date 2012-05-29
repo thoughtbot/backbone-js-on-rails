@@ -1,4 +1,4 @@
-### Dependency choice
+## Dependency choice
 
 Backbone defines a `$` variable that defers to jQuery if present.
 

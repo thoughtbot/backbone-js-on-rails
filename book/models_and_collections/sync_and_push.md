@@ -1,4 +1,4 @@
-### Synchronizing between clients
+## Synchronizing between clients
 
 A driving force behind the move to rich client web apps is to improve the
 user experience. These applications are more responsive and can support more
@@ -12,7 +12,7 @@ you've ever used Google Docs or Google Wave, you've seen this in action.
 
 So, how can we build this functionality into our own applications?
 
-#### The moving parts
+### The moving parts
 
 There are a few different pieces that we'll put together for this.  The basic parts are:
 
@@ -35,7 +35,7 @@ There are a few different pieces that we'll put together for this.  The basic pa
    application infrastructure separately. There are already several great
    off-the-shelf tools we can use for this.
 
-#### Putting it together: A look at the life cycle of a change
+### Putting it together: A look at the life cycle of a change
 
 Revisiting our todo application, we'd like to add the ability to collaborate on
 todo lists, so that different users will be able to work on the same todo list
@@ -94,7 +94,7 @@ On all clients:
 
 Now all the clients have received the changeset that Alice made.
 
-#### Implementation: Step 1, Faye server
+### Implementation: Step 1, Faye server
 
 We'll need to run Faye to relay messages from publishers to subscribers.  For
 Rails apps that depend on Faye, We recommend keeping a `faye/` subdirectory under the
@@ -127,7 +127,7 @@ $ ./faye/run.sh
 >> Listening on 0.0.0.0:9292, CTRL`C to stop
 ````
 
-#### Implementing it: Step 2, ActiveRecord observers
+### Implementing it: Step 2, ActiveRecord observers
 Now that the message bus is running, let's walk through the server code.  The
 Rails app's responsibility is this: Whenever a todo model is created, updated,
 or deleted, it will publish a change event message.
@@ -178,7 +178,7 @@ The message looks like this:
 Received by Faye, the message is broadcast to all clients subscribing to the
 `/sync/todos` channel, including our browser-side `FayeSubscriber` objects.
 
-#### Implementing it: Step 3, In-browser subscribers
+### Implementing it: Step 3, In-browser subscribers
 
 In each browser, we want to connect to the Faye server, subscribe to events on
 channels that interest us, and update Backbone collections based on those
@@ -269,7 +269,7 @@ MyApp.Routers.TodosRouter = Backbone.Router.extend({
 
 Now run the app, and watch browsers receive push updates!
 
-#### Testing synchronization
+### Testing synchronization
 
 Of course, this introduces a great deal of complexity into your app. There's a
 new daemon running on the server (Faye), and every client now has to correctly
@@ -376,7 +376,7 @@ be tested in isolation. We've used Jasmine for testing JavaScript behavior
 successfully, so it is the approach we recommend. For more information about
 using Jasmine, refer to the "Testing" chapter.
 
-#### Further reading
+### Further reading
 
 For a solid, readable background on idempotent messages, check out
 [_The Importance of

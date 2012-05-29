@@ -1,4 +1,4 @@
-### Composite views
+## Composite views
 
 The `SwappingRouter` above calls `leave()` on the view it currently holds.
 This function is not part of Backbone itself, and is part of our extension
@@ -6,7 +6,7 @@ library to help make views more modular and maintainable. This section goes
 over the Composite View pattern, the `CompositeView` class itself, and some
 concerns to keep in mind while creating your views.
 
-#### Refactoring from a large view
+### Refactoring from a large view
 
 One of the first refactorings you'll find yourself doing in a non-trivial Backbone
 app is splitting up large views into composable parts. Let's take another look
@@ -238,7 +238,7 @@ view for each, renders it as a child with `renderChild`, and finally appends
 it to table's body. Now, when the router cleans up the `TasksIndex` with `leave`,
 it will also clean up all of its children.
 
-#### Cleaning up views properly
+### Cleaning up views properly
 
 You've learned how leaving lingering events bound on views that are no longer
 on the page can cause both UI bugs or, what's probably worse, memory leaks.

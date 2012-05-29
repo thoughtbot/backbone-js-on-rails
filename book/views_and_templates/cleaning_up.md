@@ -1,20 +1,20 @@
-### Cleaning up: unbinding
+## Cleaning up: unbinding
 
 In the last section, we discussed three different kinds of event binding in
 your `Backbone.Views` classes: DOM events, model/collection events, and custom
 view events.  Next, we'll discuss unbinding these events: why it's a good idea,
 and how to do it.
 
-#### Why unbind events?
+### Why unbind events?
 
 Consider two views in a todo app: an index view, which contains all the tasks
 that need to be done:
 
-![Tasks index view](views_and_templates/tasks-index.png)
+![Tasks index view](images/tasks-index.png)
 
 ...and a detail view that shows detail on one task:
 
-![Tasks detail view](views_and_templates/task-detail.png)
+![Tasks detail view](images/task-detail.png)
 
 The interface switches between the two views.
 
@@ -48,7 +48,7 @@ bindings.
 Let's take a look at how to unbind three kinds of events: DOM events, model
 and collection events, and events you trigger in your views.
 
-#### Unbinding DOM events
+### Unbinding DOM events
 
 DOM events are the simplest case - they more or less get cleaned up for you.
 When you call `this.remove()` in your view, it delegates to `jQuery.remove()`
@@ -57,7 +57,7 @@ cleaning up any events bound on DOM elements within your view, regardless of
 whether you bound them with the Backbone `events` hash or by hand; for example,
 with `$.bind()`, `$.delegate()`, `live()` or `$.on()`.
 
-#### Unbinding model and collection events
+### Unbinding model and collection events
 
 If your view binds to events on a model or collection with `on()`, you are
 responsible for unbinding these events.  You do this with a simple call to
@@ -92,7 +92,7 @@ var SomeCollectionView = Backbone.View.extend({
 });
 ````
 
-#### Keep track of `on()` calls to unbind more easily
+### Keep track of `on()` calls to unbind more easily
 
 In the example above, unbinding the collection change event isn't too much
 hassle; since we're only observing one thing, we only have to unbind one
@@ -135,7 +135,7 @@ reusable mixin or superclass.  Then, we just have to use `bindTo()` instead of
 `model.on()` and be assured that the handlers will be cleaned up during
 `leave()`.
 
-#### Unbinding view-triggered events
+### Unbinding view-triggered events
 
 With the first two kinds of event binding that we discussed, DOM and
 model/collection, the view is the observer.  The responsibility to clean up is
@@ -176,7 +176,7 @@ var FilteringView = Backbone.View.extend({
 });
 ````
 
-#### Establish a convention for consistent and correct unbinding
+### Establish a convention for consistent and correct unbinding
 
 There's no built-in garbage collection for Backbone's event bindings, and
 forgetting to unbind can cause bugs and memory leaks. The solution is to make

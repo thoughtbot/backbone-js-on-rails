@@ -1,4 +1,4 @@
-### An overview of the stack: connecting Rails and Backbone
+## An overview of the stack: connecting Rails and Backbone
 
 By default, Backbone communicates with your Rails application via JSON HTTP
 requests. If you've ever made a JSON API for your Rails app, then
@@ -9,7 +9,7 @@ This section will briefly touch on each of the major parts of an application
 using both Rails and Backbone.  We'll go into more detail in later chapters,
 but this should give you the big picture of how the pieces fit together.
 
-#### Setting up models
+### Setting up models
 
 In our example application, we have a Task model, exposed via a JSON API at
 `/tasks`. The simplest Backbone representation of this model would be as
@@ -77,7 +77,7 @@ Ruby data structure like a Hash or Array which will be serialized into the JSON
 string.  We'll touch on this more later in the section, "Customizing your
 Rails-generated JSON."
 
-#### Setting up Rails controllers
+### Setting up Rails controllers
 
 The Backbone models and collections will talk to your Rails controllers. The
 most basic pattern is one Rails controller providing one family of RESTful
@@ -112,7 +112,7 @@ in the index action, the `respond_with` call will build a response according to
 the requested content type (which may be HTML or JSON in this case) and
 provided resource, `@tasks`.
 
-####= Validations and your HTTP API
+#### Validations and your HTTP API
 
 If a Backbone model has a `validate` method defined, it will be validated on
 the client side, before its attributes are set. If validation fails, no changes
@@ -188,7 +188,7 @@ the "Models and Collections" chapter. For more information about handling and
 displaying errors on the client side, see the "Forms" section of the
 "Routers, Views and Templates" chapter.
 
-#### Setting Up Views
+### Setting Up Views
 
 Most Backbone applications will be a single-page app, or "SPA." This means that
 your Rails application handles two jobs: First, it renders a single page which

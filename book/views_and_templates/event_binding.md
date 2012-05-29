@@ -1,4 +1,4 @@
-### Event binding
+## Event binding
 
 A big part of writing snappy rich client applications is building models and
 views that update in real-time with respect to one another. With Backbone,
@@ -57,7 +57,7 @@ disposed of. Events that your view publishes will need to be handled a
 different way. Each of these three categories of events is discussed in more
 detail below.
 
-#### Binding to DOM events within the view element
+### Binding to DOM events within the view element
 
 The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
@@ -109,7 +109,7 @@ function.  It binds DOM events with `$.delegate()`, whether you're using the
 It also takes care of binding the event handlers' `this` to the view instance
 using `_.on()`.
 
-#### Events observed by your view
+### Events observed by your view
 
 In almost every view you write, the view will be bound to a `Backbone.Model` or
 a `Backbone.Collection`, most often with the convenience properties `this.model`
@@ -132,7 +132,7 @@ models and collections, your view can bind to any events to which it wants to
 listen.  The life-cycle for the binding and unbinding, and the handling of
 these events will be the same as those for models and collections.
 
-#### Events your view publishes
+### Events your view publishes
 
 With sufficiently complex views, you may encounter a situation where you want
 one view to change in response to another. This can be accomplished with events. Your view can trigger an event to which

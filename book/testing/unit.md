@@ -1,4 +1,4 @@
-### Isolated unit testing
+## Isolated unit testing
 
 Integration testing your application is great for ensuring that the product
 functions as intended, and works to mitigate against risk of regressions.
@@ -42,7 +42,7 @@ Refactoring Test Code_.
 As there is plentiful content available for testing tools and strategies in
 Rails, we'll focus on isolation testing your Backbone code.
 
-#### Isolation testing in JavaScript
+### Isolation testing in JavaScript
 
 There are many JavaScript testing frameworks available.  Some run in-browser and
 provide facility for setting up DOM fixtures.  Others are designed for
@@ -69,7 +69,7 @@ describe("ExampleApp.Models.Tasks", function() {
 To run the Jasmine tests in the example application, simply run `bundle exec
 rake jasmine` and visit http://localhost:8888.
 
-#### What to test?
+### What to test?
 
 We frequently found it difficult to test JavaScript components in isolation
 before we started using Backbone. Although jQuery really takes the pain out of
@@ -134,7 +134,7 @@ details and edge cases described in unit tests, and to write tests that
 exercise the fewest number of components possible while remaining robust and
 descriptive without becoming brittle.
 
-#### Helpful Tools
+### Helpful Tools
 
 * Spy/stub/mock, even your HTTP, with [Sinon.js](http://sinonjs.org/)
 * If you're looking for factory_girl.js, it's called [Rosie](https://github.com/bkeepers/rosie)

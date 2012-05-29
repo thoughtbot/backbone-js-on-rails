@@ -1,4 +1,4 @@
-### Mixins
+## Mixins
 
 Backbone provides a basic mechanism for inheritance.  Sometimes, you'll want to
 build a collection of related, reusable behavior and include that in several

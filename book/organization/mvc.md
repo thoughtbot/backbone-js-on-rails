@@ -1,10 +1,10 @@
-### Backbone and MVC
+## Backbone and MVC
 
 Model–View–Controller (MVC) is a software architectural pattern used in many
 applications to isolate domain or business logic (the application logic for the user)
 from the user interface (input and presentation).
 
-![Model-View-Controller concept](../image/MVCDiagram.png)
+![Model-View-Controller concept](images/MVCDiagram.png)
 
 In the above diagram, a solid line represents a direct association and a dashed
 line represents an indirect association, such as one mediated by an observer.
@@ -29,7 +29,7 @@ to do with it.  In Backbone, these two concerns are merged into view classes,
 which are responsible for presentation as well as both establishing and responding
 to UI event bindings.
 
-### What goes where
+## What goes where
 
 Part of the initial learning curve of Backbone can be figuring out what goes
 where, and mapping it to expectations set by working with Rails.  In Rails

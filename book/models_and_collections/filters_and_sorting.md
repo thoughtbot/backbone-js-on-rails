@@ -1,9 +1,9 @@
-### Filters and sorting
+## Filters and sorting
 
 When using our Backbone models and collections, it's often handy to filter the
 collections by reusable criteria, or sort them by several different criteria.
 
-#### Filters
+## Filters
 
 To filter a `Backbone.Collection`, as with Rails named scopes, first define
 functions on your collections that filter by your criteria, using the `select`
@@ -106,7 +106,7 @@ var Tasks = Backbone.Collection.extend({
 _.extend(Tasks.prototype, FilterableCollectionMixin);
 ````
 
-#### Propagating collection changes
+## Propagating collection changes
 
 The `FilterableCollectionMixin`, as we've written it, will produce a filtered
 collection that does not update when the original collection is changed.  To do
@@ -134,7 +134,7 @@ var FilterableCollectionMixin = {
 };
 ````
 
-#### Sorting
+## Sorting
 
 The simplest way to sort a `Backbone.Collection` is to define a `comparator`
 function.  This functionality is built in:

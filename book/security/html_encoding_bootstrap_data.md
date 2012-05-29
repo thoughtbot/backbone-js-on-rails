@@ -1,4 +1,4 @@
-### Encoding data when bootstrapping JSON data
+## Encoding data when bootstrapping JSON data
 
 As it turns out, bootstrapping JSON data in your ERB templates can introduce a
 security vulnerability. Consider the case when a user enters a malicious

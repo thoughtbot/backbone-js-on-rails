@@ -1,4 +1,4 @@
-### Namespacing your application
+## Namespacing your application
 
 You will want to create an object in JavaScript in which your Backbone
 application will reside. This variable will serve as a namespace for your

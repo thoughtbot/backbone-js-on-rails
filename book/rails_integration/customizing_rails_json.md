@@ -1,4 +1,4 @@
-### Customizing your Rails-generated JSON
+## Customizing your Rails-generated JSON
 
 There are a few common things you'll do in your Rails app when working with
 Backbone.
@@ -62,7 +62,7 @@ Backbone, it certainly isn't all of them. The official, complete
 documentation for the `as_json` method can be found here:
 <http://apidock.com/rails/ActiveModel/Serializers/JSON/as_json>
 
-#### ActiveRecord::Base.include_root_in_json
+### ActiveRecord::Base.include_root_in_json
 
 Depending on the versions, Backbone and Rails may have different expectations
 about the format of JSON structures; specifically, whether or not a root key is

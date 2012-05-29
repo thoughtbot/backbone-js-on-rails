@@ -1,4 +1,4 @@
-### The example application
+## The example application
 
 The example application is a classic todo item manager.  This is a
 popular example, and for good reason: The concepts and domain are familiar,

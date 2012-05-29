@@ -1,4 +1,4 @@
-### Templating strategy
+## Templating strategy
 
 There's no shortage of templating options for JavaScript. They generally fall into three categories:
 
@@ -95,7 +95,7 @@ You can learn more about Handlebars at the [project's home on the web](http://ww
 and Mustache at [the project's man page](http://mustache.github.com/mustache.5.html)
 and [javascript implementation(https://github.com/janl/mustache.js)
 
-### Choosing a strategy
+## Choosing a strategy
 
 Like any technology choice, there are trade-offs to evaluate and external factors
 to consider when choosing a templating approach.
@@ -105,7 +105,7 @@ already have server-side templates written that I'd like to "Backbone-ify," or
 am I writing new Backbone functionality from scratch? Both of these scenarios
 are described in more detail in the next two sections.
 
-#### Adding Backbone to existing Rails views
+### Adding Backbone to existing Rails views
 
 If you are replacing existing Rails app pages with Backbone, you are already
 using a templating engine, and it's likely ERB. When making the switch to
@@ -128,7 +128,7 @@ comfortable with, while minimizing the cost of rewriting templates.  Make sure
 that designers' considerations are taken into account, because it will affect how
 they work with that area of the app as well.
 
-#### Writing new Backbone functionality from scratch
+### Writing new Backbone functionality from scratch
 
 If you're not migrating from existing server-side view templates,
 you have more freedom of choice. Strongly consider the option of no templating

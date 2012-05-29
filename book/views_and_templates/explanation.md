@@ -1,4 +1,4 @@
-### View explanation
+## View explanation
 
 A Backbone view is a class that is responsible for rendering the display of
 a logical element on the page. A view can also bind to events which may cause
@@ -34,7 +34,7 @@ ExampleApp.Views.ExampleView = Backbone.View.extend({
 };
 ````
 
-#### Initialization
+### Initialization
 
 Backbone views could also include an `initialize` function which will
 be called when the view is instantiated.
@@ -55,7 +55,7 @@ properties of view. These are `model`, `collection`, `el`, `id`,
 a model option using `new ExampleView({ model: someTask })`, then inside of the view
 `someTask` will be available as `this.model`.
 
-#### The View's element
+### The View's element
 
 Each Backbone view has an element which it stores in `this.el`. This element
 can be populated with content, but isn't on the page until placed there by
@@ -80,7 +80,7 @@ var view = new ExampleView();
 view.setElement(existingElement);
 ````
 
-#### Customizing the View's Element
+### Customizing the View's Element
 
 You can use `tagName`, `className`, and `id` to customize the new element
 created for the view. If no customization is done, the element is an empty
@@ -99,7 +99,7 @@ view's element being an `li` rather than a `div`.
 the view. For example, setting `className: "example"` in the view will result
 in that view's element having that additional class like `<div class="example">`.
 
-#### Rendering
+### Rendering
 
 The `render` function above renders the `example/view` template. Template
 rendering is covered in depth in the "Templating strategy" chapter. Suffice to
@@ -126,7 +126,7 @@ render: function() {
 }
 ````
 
-#### Events
+### Events
 
 The view's `events` hash specifies a mapping of the events and elements that
 should have events bound, and the functions that should be bound to those

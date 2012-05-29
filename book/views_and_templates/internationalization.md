@@ -1,4 +1,4 @@
-### Internationalization
+## Internationalization
 
 When you move your application's view logic onto the client, such as with
 Backbone, you quickly find that the library support for views is not as

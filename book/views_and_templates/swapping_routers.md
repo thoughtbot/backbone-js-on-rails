@@ -1,4 +1,4 @@
-### Swapping router
+## Swapping router
 
 When switching from one view to another, we should clean up the previous view.
 Earlier, we discussed a convention of writing a `view.leave()`. Let's augment our view to include the ability to clean itself up by "leaving" the DOM:
@@ -37,7 +37,7 @@ new view that should be rendered. The `swap()` function's job is to call
 router's `el`, and, finally, store what view is the current view, so that the
 next time `swap()` is invoked, it can be properly cleaned up as well.
 
-#### SwappingRouter and Backbone internals
+### SwappingRouter and Backbone internals
 
 If the code for `SwappingRouter` seems a little confusing, don't fret: it is,
 thanks to JavaScript's object model! Sadly, it's not as simple to just drop
@@ -90,7 +90,7 @@ The end result here is that whenever you make a custom controller internally
 in Backbone, you're making *another* subclass. The inheritance chain for
 `TasksRouter` would then look like:
 
-![Router class inheritance](views_and_templates/router-diagram.png)
+![Router class inheritance](images/router-diagram.png)
 
 Phew! Hopefully this adventure into Backbone and JavaScript internals has
 taught you that although it entails learning and employing more code, it can (and should) save time down the road for those maintaining your code.

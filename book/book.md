@@ -1,9 +1,9 @@
-# Backbone.js on Rails
+% Backbone.js on Rails
+% thoughtbot; Jason Morrison; Chad Pytel; Nick Quaranto; Harold Giménez; Joshua Clayton; Gabe Berke-Williams; Chad Mazzola
 
-:Author:    Jason Morrison, Chad Pytel, Nick Quaranto, Harold Giménez, Joshua Clayton, Gabe Berke-Williams, Chad Mazzola
-:Email:     <support@thoughtbot.com>
+\clearpage
 
-## Introduction
+# Introduction
 
 <<[introduction/introduction.md]
 
@@ -13,13 +13,17 @@
 
 <<[introduction/example_app.md]
 
-## Getting up to speed
+\clearpage
+
+# Getting up to speed
 
 <<[getting_up_to_speed/backbone_resources.md]
 
 <<[getting_up_to_speed/javascript_resources.md]
 
-## Organization
+\clearpage
+
+# Organization
 
 <<[organization/mvc.md]
 
@@ -27,7 +31,9 @@
 
 <<[organization/mixins.md]
 
-## Rails Integration
+\clearpage
+
+# Rails Integration
 
 <<[rails_integration/file_organization.md]
 
@@ -37,7 +43,9 @@
 
 <<[rails_integration/converting_views.md]
 
-## Routers, Views, and Templates
+\clearpage
+
+# Routers, Views, and Templates
 
 <<[views_and_templates/explanation.md]
 
@@ -57,7 +65,9 @@
 
 <<[views_and_templates/internationalization.md]
 
-## Models and collections
+\clearpage
+
+# Models and collections
 
 <<[models_and_collections/filters_and_sorting.md]
 
@@ -73,7 +83,9 @@
 
 <<[models_and_collections/uploading_attachments.md]
 
-## Testing
+\clearpage
+
+# Testing
 
 <<[testing/integration.md]
 
@@ -81,6 +93,8 @@
 
 <<[testing/example.md]
 
-## Security
+\clearpage
+
+# Security
 
 <<[security/html_encoding_bootstrap_data.md]

@@ -1,4 +1,4 @@
-### Converting an existing page/view area to use Backbone
+## Converting an existing page/view area to use Backbone
 
 This section is meant to get you started understanding how Backbone views
 work by illustrating the conversion of a Rails view to a Backbone view.
@@ -116,7 +116,7 @@ ensure that we have the same XSS protection as we did in our Rails template, we
 access and output the Backbone model attributes using the `escape` method
 instead of the normal `get` method.
 
-#### Breaking out the TaskView
+### Breaking out the TaskView
 
 In Backbone, views are often bound to an underlying model, re-rendering
 themselves when the model data changes.  Consider what happens when any task

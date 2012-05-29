@@ -1,4 +1,4 @@
-### Uploading attachments
+## Uploading attachments
 
 While Ruby gems like paperclip make the API for attaching files to models
 very similar to the standard ActiveModel attribute persistence API, attaching
@@ -6,7 +6,7 @@ files to Backbone models is not quite as straightforward.  In this section,
 we'll take a look at the general approach for attaching files, and then examine
 the specific implementation used in the example application.
 
-#### Saving files along with attributes
+### Saving files along with attributes
 
 When you save a Backbone model, its attributes are sent to the server via
 Backbone.sync.  It would be ideal to treat file uploads in the same fashion,
@@ -45,7 +45,7 @@ although the use-case is slightly different and the library uses the
 `jquery.form.js` `ajaxSubmit()` function to perform an iframe upload, instead
 of the smaller `jquery.iframe-transport.js` plugin.
 
-#### Separating file upload and model persistence
+### Separating file upload and model persistence
 
 The general approach we'll take here is to separate the file upload request from the
 model persistence requests.  The server will respond to the upload with an
@@ -64,7 +64,7 @@ we'll do the latter, adding an `Attachment` model and resource to the app.
 
 We'll use the HTML5 File API because it's a straightforward approach to illustrate.
 
-#### Example, Step 1: Upload interface
+### Example, Step 1: Upload interface
 
 In our example task management app, we'd like the owner of a task to attach
 several images to each task.  We want uploads to happen in the task detail view,
@@ -157,7 +157,7 @@ attachUploader: function() {
 
 And the spec is green.
 
-#### Example, Step 2: Accept and persist uploads in Rails
+### Example, Step 2: Accept and persist uploads in Rails
 
 At this point, we are sending the upload request from the client, but the
 server isn't responding, much less persisting the file.  This portion is
@@ -170,7 +170,7 @@ with the corresponding `have_attached_file` example to the `Attachment` model sp
 Now that attachments are uploaded to the server, the final step is to display
 attachments to the user.
 
-#### Example, Step 3: Display Uploaded Files
+### Example, Step 3: Display Uploaded Files
 
 For structuring the attachments in Backbone, we want to be able to do something
 like the following:

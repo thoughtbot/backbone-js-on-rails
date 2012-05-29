@@ -1,6 +1,6 @@
-### Example: Test-driving a task application
+## Example: Test-driving a task application
 
-#### Setup
+### Setup
 
 In this example, we'll be using Cucumber, Capybara, RSpec, and Jasmine to
 test-drive a todo list.
@@ -49,7 +49,7 @@ including Jasmine specs:
 task :default => ['spec', 'jasmine:ci', 'cucumber']
 ````
 
-#### Step by step
+### Step by step
 
 We'll go outside in: Cucumber first, then RSpec or Jasmine as needed.
 
@@ -137,7 +137,7 @@ The `app/assets/templates/tasks/index.jst.ejs` template:
 
 Now our Jasmine specs pass:
 
-![Passing Jasmine spec](testing/jasmine-passing.png)
+![Passing Jasmine spec](images/jasmine-passing.png)
 
 Since the Jasmine specs pass, we'll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The `"#tasks

@@ -1,4 +1,4 @@
-### Complex nested models
+## Complex nested models
 
 As your domain model grows more complex, you might find that you want to deliver
 information about more than one model together in a request; i.e., nested
@@ -19,7 +19,7 @@ discussing an alternative to `accepts_nested_attributes_for` that works for
 singular associations.  Then, we'll dive into how to model bulk updates for
 plural associations from Backbone.
 
-#### Composite models
+## Composite models
 
 Consider a signup form that allows a customer to quickly get started with a
 project management application.
@@ -56,7 +56,7 @@ the fact that it is persisted across multiple tables as an implementation
 detail.  This keeps the presentation tier simpler, unconcerned with the
 composite nature of the resource.
 
-#### `accepts_nested_attributes_for`
+## `accepts_nested_attributes_for`
 
 A classic situation to encounter nested attributes is in `has_many :through`
 relationships.  For example, consider a workflow in which you assign multiple
@@ -190,7 +190,7 @@ of separate design decisions around producing JSON on the server and parsing it
 on the client. These concerns are discussed in the "Model relationships"
 chapter.
 
-#### Example for `accepts_nested_attributes_for`
+## Example for `accepts_nested_attributes_for`
 
 In the example application, a task may be assigned to zero or more users.  The
 association is tracked through an `Assignment` join model, and you can create

@@ -1,4 +1,4 @@
-### Forms
+## Forms
 
 Who likes writing form code by hand?  Nobody, that's who.  Rails' form builder API greatly helps reduce application code, and we aim to maintain a similar level of abstraction in
 our Backbone application code.  Let's take a look at what we need from form
@@ -18,7 +18,7 @@ Additionally, it's nice to:
 
 Let's look at the requirements one by one and compare approaches.
 
-#### Building markup
+### Building markup
 
 Our first requirement is the ability to build markup.  For example, consider a
 Rails model `User` that has a username and password.  We might want to build
@@ -52,7 +52,7 @@ delimiters `<% %>` to not conflict and mixing the Rails helper modules into the
 `Tilt::ERbTemplate` rendering context.  However, this approach still only generates
 markup; it doesn't serialize forms into data hashes or Backbone models.
 
-#### Serializing forms
+### Serializing forms
 
 The second requirement in building forms is to serialize them into objects suitable for setting Backbone model attributes.  Assuming the markup we discussed above, you could
 approach this manually:
@@ -81,7 +81,7 @@ would set a Backbone model's attribute to a JavaScript Date instance), and will
 include any `<input type="submit">` elements when constructing the attribute
 hash.
 
-#### A Backbone forms library
+### A Backbone forms library
 
 If you want to avoid writing form markup by hand, your best bet is to use a
 JavaScript form builder.  Since the model data is being read and written by
@@ -95,7 +95,7 @@ method for declaring a typed schema to support both of those facilities.  It
 offers a flexible system for adding custom editor types, and supports
 configuring your form markup structure by providing HTML template fragments.
 
-#### Display server errors
+### Display server errors
 
 We are assuming, with a hybrid Rails/Backbone application, that at least some of
 your business logic resides on the server.  Let's take a look at the client/server

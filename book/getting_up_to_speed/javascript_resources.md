@@ -1,4 +1,4 @@
-### JavaScript resources
+## JavaScript resources
 
 _JavaScript: The Good Parts_ by Douglas Crockford is highly recommended for
 any JavaScript developer.

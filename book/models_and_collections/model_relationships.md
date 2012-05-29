@@ -1,4 +1,4 @@
-### Model relationships
+## Model relationships
 
 In any non-trivial application, you will have relationships in your domain model
 that are valuable to express on the client side.  For example, consider a
@@ -33,7 +33,7 @@ relationships, when to eagerly pre-fetch associations and when to lazily defer
 loading, and whether to employ a supporting library to help define your model
 relationships.
 
-#### Backbone-relational plugin
+## Backbone-relational plugin
 
 If your use cases are supported by it, Paul Uithol's
 [Backbone-relational](https://github.com/PaulUithol/Backbone-relational) is
@@ -45,13 +45,13 @@ relational object model in Backbone below, but we encourage you to check out
 the `Backbone-relational` plugin as a way to work at a higher level of
 abstraction.
 
-#### Relations in the task app
+## Relations in the task app
 
 In the example application, there are users which have many tasks.  Each task
 has many attachments and assignments.  Tasks are assigned to users through
 assignments, so tasks have many assigned users as well.
 
-#### Deciding how to deliver data to the client
+## Deciding how to deliver data to the client
 
 Before you decide how to model your JSON API or how to declare your client-side model
 relationships, consider the user experience of your application.
@@ -89,7 +89,7 @@ We could have selected from several other alternatives, including:
   in the background.  While this would be advantageous if we expected network access
   to be intermittent, it incurs the additional complexity of server-side conflict resolution if two clients submit conflicting updates.
 
-#### Designing the HTTP JSON API
+## Designing the HTTP JSON API
 
 Now that we know we'll bootstrap the tasks with assignees and defer the
 Associations, we should decide how to deliver the deferred content.  Our goal
@@ -153,7 +153,7 @@ valuable to dogfood this endpoint by making use of it from your own Backbone
 code.  Often these APIs will be scoped under an "/api" namespace, possibly with
 an API version namespace as well like "/api/v1".
 
-#### Implementing the API: presenting the JSON
+## Implementing the API: presenting the JSON
 
 To build the JSON presentation, we have a few options. Rails already comes
 with support for overriding the `Task#as_json` method, which is probably the
@@ -196,7 +196,7 @@ child(:user) { attributes(:id, :email) }
 child(:attachments) { attributes(:id, :email) }
 ````
 
-#### Parsing the JSON and instantiating client-side models
+## Parsing the JSON and instantiating client-side models
 
 Now that our API delivers the `Task` JSON to the client, including its
 nested `Attachments`, we need to correctly handle this nested data in the
@@ -260,7 +260,7 @@ ExampleApp.Models.Task = Backbone.Model.extend({
 This ensures that our custom parsing is invoked whenever the `attachments`
 attribute is changed, and when new model instances are created.
 
-#### When to fetch deferred data
+## When to fetch deferred data
 
 Since a Backbone task doesn't always have its associations filled, when you
 move from `TasksIndex` to `TasksShow`, you need to invoke `task.fetch()` to pull all

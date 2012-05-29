@@ -1,9 +1,9 @@
-### Organizing your Backbone code in a Rails app
+## Organizing your Backbone code in a Rails app
 
 When using Backbone in a Rails app, you'll have two kinds of
 Backbone-related assets: classes and templates.
 
-### Rails 3.0 and prior
+## Rails 3.0 and prior
 
 With Rails 3.0 and prior, store your Backbone classes in
 `public/javascripts`:
@@ -74,7 +74,7 @@ shown below.
 JST['todos/index']({ model: this.model })
 ````
 
-#### Jammit and a JST naming gotcha
+### Jammit and a JST naming gotcha
 
 One issue with Jammit that we've encountered and worked around is that the JST
 template path can change when adding new templates.  Let's say you place
@@ -119,7 +119,7 @@ packaging.  We have an open issue and workaround:
 
 <https://github.com/documentcloud/jammit/issues/192>
 
-### Rails 3.1
+## Rails 3.1
 
 Rails 3.1 introduces the
 [asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html), which uses

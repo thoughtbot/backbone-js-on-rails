@@ -1,4 +1,4 @@
-### Full-stack integration testing
+## Full-stack integration testing
 
 Your application is built from a collection of loosely coupled modules,
 spreading across several layers of the development stack.  To ensure the
@@ -6,7 +6,7 @@ application works correctly from the perspective of the end user, full-stack
 integration testing drives your application and verifies correct functionality
 from the user interface level.  This is also referred to as "acceptance testing."
 
-#### Introduction
+### Introduction
 
 Writing a full-stack integration test for a JavaScript-driven web application
 will always involve some kind of browser, and although writing an application
@@ -23,7 +23,7 @@ dive right in and start testing your Backbone application. If not, the
 following sections should give you a taste of the available tools for
 full-stack integration tests written in Ruby.
 
-#### Capybara
+### Capybara
 
 Though there is a host of tools available to you for writing automated
 integration tests, we recommend [Capybara](https://github.com/jnicklas/capybara).
@@ -54,7 +54,7 @@ consider the back-end implementation, freeing you to focus on describing the
 application's behavior from an end-user's perspective.  This perspective of
 writing specs is often called "behavior-driven development" (BDD).
 
-#### Cucumber
+### Cucumber
 
 You can take another step toward natural language tests, using Cucumber to
 define mappings.  Cucumber is a test runner and a mapping layer.  The specs you
@@ -108,7 +108,7 @@ Then /^I should see "(.*)"$/ do |text|
 end
 ````
 
-#### Drivers
+### Drivers
 
 Capybara supports multiple drivers through a common API, each with benefits and
 drawbacks. We prefer to use either
