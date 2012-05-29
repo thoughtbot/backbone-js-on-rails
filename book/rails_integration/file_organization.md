@@ -160,17 +160,14 @@ available on the client side via the `window.JST` object. Identifying the
 `.ejs` extension and invoking EJS to compile the templates is managed by
 Sprockets, and requires the `ejs` gem to be included in the application Gemfile.
 
-[NOTE]
-##############################=
-Underscore.js templates:
-<http://documentcloud.github.com/underscore/#template>
-
-EJS gem:
-<https://github.com/sstephenson/ruby-ejs>
-
-Sprockets support for EJS:
-<https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb>
-##############################=
+> Underscore.js templates:
+> <http://documentcloud.github.com/underscore/#template>
+>
+> EJS gem:
+> <https://github.com/sstephenson/ruby-ejs>
+>
+> Sprockets support for EJS:
+> <https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb>
 
 To make the `*.jst` files available and create the `window.JST` object, require
 them in your application.js Sprockets manifest:

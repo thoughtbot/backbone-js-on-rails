@@ -112,8 +112,9 @@ $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
 ]
 ````
 
-NOTE: We will authenticate API requests with cookies, just like normal user
-logins, so the actual curl request would need to include a cookie from a logged-in user.
+Note that we will authenticate API requests with cookies, just like normal user
+logins, so the actual curl request would need to include a cookie from a
+logged-in user.
 
 Another way we could approach this is to embed the comment and attachment data in
 the JSON representation of an individual task, and deliver this data from the

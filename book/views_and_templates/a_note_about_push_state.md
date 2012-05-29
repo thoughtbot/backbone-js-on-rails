@@ -1,5 +1,6 @@
-[NOTE]
-===============================
+
+#### A note about `pushState`
+
 Backbone now includes support for pushState, which can use real, full URLs
 instead of URL fragments for routing.
 
@@ -29,4 +30,3 @@ server-side application will need to render the entire HTML of the requested pag
 
 For the reasons and complications above, the examples in this book all
 currently use URL fragments and not pushState.
-===============================

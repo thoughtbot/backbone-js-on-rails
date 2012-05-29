@@ -23,7 +23,9 @@ view classes, but fewer than twenty routes.  Additionally, many of the view
 classes are displayed in parallel and have multiple internal states of their own,
 providing for much more than 100 different interface states.
 
-include::a_note_about_push_state.asc[]
+<<[a_note_about_push_state.md]
+
+### Example router
 
 A typical Backbone router will appear as shown below:
 

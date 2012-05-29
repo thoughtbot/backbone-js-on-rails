@@ -25,12 +25,12 @@ The `urlRoot` property above describes a base for the server-side JSON API that
 houses this resource.  Collection-level requests will occur at that root URL,
 and requests relating to instances of this model will be found at `/tasks/:id`.
 
-NOTE: There is no need to have a one-to-one mapping between Rails models and
-Backbone models.  Backbone models instead correspond with RESTful resources.
-Since your Backbone code is in the presentation tier, it's likely that some of
-your Backbone models may end up providing only a subset of the information present
-in the Rails models, or they may aggregate information from multiple Rails
-models into a composite resource.
+It's important to understand that there is no need to have a one-to-one mapping
+between Rails models and Backbone models.  Backbone models instead correspond
+with RESTful resources.  Since your Backbone code is in the presentation tier,
+it's likely that some of your Backbone models may end up providing only a
+subset of the information present in the Rails models, or they may aggregate
+information from multiple Rails models into a composite resource.
 
 In Rails, it's possible to access individual tasks, as well as all tasks (and
 query all tasks) through the same `Task` model. In Backbone, models
@@ -240,7 +240,7 @@ in an `@tasks` instance variable:
 <% end -%>
 ````
 
-NOTE: The above example uses ERB to pass the JSON for the tasks to the `initialize`
+The above example uses ERB to pass the JSON for the tasks to the `initialize`
 method, but we should be mindful of the XSS risks that dumping user-generated
 content here poses.  See the "Encoding data when bootstrapping JSON data"
 section in the "Security" chapter for a more secure approach.
