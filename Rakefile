@@ -94,6 +94,7 @@ class Releaser
   include Runner
 
   def release
+    Dir.chdir File.dirname(__FILE__)
     ensure_clean_git
     copy_output_folder_to_release_folder
     commit_release_folder
