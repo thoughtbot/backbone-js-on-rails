@@ -105,15 +105,18 @@ class Releaser
   end
 
   def copy_output_folder_to_release_folder
+    puts "## Making release..."
     run "rm -rf release"
     run "cp -R output release"
   end
 
   def commit_release_folder
+    puts "## Commit release..."
     run "git add -u && git add . && git commit -m 'Generate new release'"
   end
 
   def push
+    puts "## Pushing release..."
     run "git push"
   end
 
