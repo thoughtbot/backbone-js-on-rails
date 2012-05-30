@@ -2,14 +2,14 @@
 
 The quickest way to start reading right now is to view the PDF version here:
 
-https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.pdf
+<https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.pdf>
 
 The book is currently available in the following formats:
 
-* PDF: release/book.pdf
-* Single-page HTML: release/book.html
-* Epub (iPad, Nook): release/book.epub
-* Mobi (Kindle): release/book.mobi
+* PDF: [release/book.pdf](https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.pdf)
+* Single-page HTML: [release/book.html](https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.html)
+* Epub (iPad, Nook): [release/book.epub](https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.epub)
+* Mobi (Kindle): [release/book.mobi](https://github.com/thoughtbot/backbone-js-on-rails/raw/master/release/book.mobi)
 
 For the HTML version, clone the repository and look at the HTML so that images
 and other assets are properly loaded.
@@ -40,25 +40,22 @@ Now install the pandoc dependencies:
 #### Installing dependencies on OSX
 
   brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
-  brew install asciidoc fop source-highlight docbook
 
-Make sure you register docbook after installation:
+Latex is needed for PDF distribution:
 
-  sudo docbook-register
-
-And add the following to your ~/.bashrc or equivalent (as per `brew info docbook`):
-
-  export XML_CATALOG_FILES#"/usr/local/etc/xml/catalog"
+We recommend downloading the [smaller, basic version of MacTex](http://www.tug.org/mactex/morepackages.html).
 
 #### Installing dependencies on Ubuntu
-
-   sudo aptitude install asciidoc fop source-highlight docbook
 
 Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
 
    wget -P /tmp/ http://s3.amazonaws.com/kindlegen/kindlegen_linux_2.6_i386_v1.2.tar.gz
    tar -C /tmp/ -xzf /tmp/kindlegen_linux_2.6_i386_v1.2.tar.gz
    mv /tmp/kindlegen ~/bin/
+
+Latex is needed for PDF creation:
+
+   sudo apt-get install texlive
 
 ## Releasing
 
