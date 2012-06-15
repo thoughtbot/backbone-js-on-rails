@@ -70,7 +70,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
 
     var self = this;
     // create a new task and save it to the server
-    new YourApp.Models.Task(attributes).save({
+    new YourApp.Models.Task(attributes).save({}, {
         success: function() { /* handle success */ }
         error:   function() { /* validation error occurred, show user */ }
       });
@@ -117,7 +117,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
 
     var self = this;
     // create a new task and save it to the server
-    new YourApp.Models.Task(attributes).save({
+    new YourApp.Models.Task(attributes).save({}, {
         success: function() { /* handle success */ }
         error:   function() { /* validation error occurred, show user */ }
       });
