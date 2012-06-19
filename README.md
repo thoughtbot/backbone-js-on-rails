@@ -40,6 +40,7 @@ Now install the pandoc dependencies:
 #### Installing dependencies on OSX
 
   brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
+  brew install imagemagick
 
 Latex is needed for PDF distribution:
 
@@ -57,7 +58,13 @@ Latex is needed for PDF creation:
 
    sudo apt-get install texlive
 
+## Building
+
+Run `rake build:all` to build all output targets.
+
+Run `rake build:epub` (or `:html`, `:pdf`, `:mobi`) to build individual versions.
+
 ## Releasing
 
-Run +rake release+ to build all output targets, commit to git, and push up to
+Run `rake release` to build all output targets, commit to git, and push up to
 GitHub.
