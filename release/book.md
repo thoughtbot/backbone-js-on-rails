@@ -110,13 +110,13 @@ popular example, and for good reason: The concepts and domain are familiar,
 and room is left to explore interesting implementations like deferred
 loading and file attachment.
 
-The application uses Rails 3.1.0 and Ruby 1.9.3.  We provide an `.rvmrc`.
+The application uses Rails 3.2.6 and Ruby 1.9.2.  We provide an `.rvmrc`.
 
 The included JavaScript libraries are non-minified for readability.  This
 is a general good practice, and the Rails asset pipeline will properly package
 the assets for production.
 
-While Rails 3.1 provides the ability to write in CoffeeScript, we have decided
+While Rails provides the ability to write in CoffeeScript, we have decided
 to make all of the example code normal JavaScript so as to reduce the number
 of new things introduced at once.
 
@@ -476,15 +476,15 @@ Jammit::Compressor.class_eval do
 end
 ````
 
-As applications are moving to Rails 3.1, they're also moving to Sprockets for
-the asset packager.  Until then, many apps are using Jammit for asset
-packaging.  We have an open issue and workaround:
+As applications are moving to Rails 3.1 or above, they're also moving to
+Sprockets for the asset packager.  Until then, many apps are using Jammit for
+asset packaging.  We have an open issue and workaround:
 
 <https://github.com/documentcloud/jammit/issues/192>
 
-## Rails 3.1
+## Rails 3.1 and above
 
-Rails 3.1 introduces the
+Rails 3.1 introduced the
 [asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html), which uses
 the [Sprockets library](http://getsprockets.org) for preprocessing and packaging
 assets.
@@ -513,8 +513,8 @@ app/
         show.jst.ejs
 ````
 
-In Rails 3.1, jQuery is provided by the `jquery-rails` gem, and no longer
-needs to be included in your directory structure.
+In Rails 3.1 and above, jQuery is provided by the `jquery-rails` gem, and no
+longer needs to be included in your directory structure.
 
 Using Sprockets' preprocessors, we can use templates as before. Here, we're
 using the EJS template preprocessor to provide the same functionality as
@@ -934,14 +934,15 @@ ActiveRecord setting `ActiveRecord::Base.include_root_in_json`.
  => {"task"=>{"id"=>4, "title"=>"Enjoy a three mile swim"}}
 ````
 
-In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true." In 3.1,
-it defaults to "false." This reversal was made to simplify the JSON returned by
-default in Rails application, but it is a fairly big change from the default
-behavior of Rails 3.0.
+In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true." 
+Starting with 3.1, it defaults to "false." This reversal was made to simplify 
+the JSON returned by default in Rails application, but it is a fairly big 
+change from the default behavior of Rails 3.0.
 
 Practically speaking, this change is a good one, but take particular note if
-you're upgrading an existing Rails 3.0 application to Rails 3.1 and you already
-have a published API; you may need to expose a new version of your API.
+you're upgrading an existing Rails 3.0 application to Rails 3.1 or above and 
+you already have a published API; you may need to expose a new version of your
+API.
 
 From the Backbone side, the default behavior expects no root node.  This
 behavior is defined in a few places: `Backbone.Collection.prototype.parse`,
@@ -2731,7 +2732,7 @@ it would be accessible as `JST["users/form"]()`.
 You _could_ write all the HTML by hand, but we'd like to avoid that.
 
 Another route that might seem appealing is reusing the Rails form builders
-through the 3.1 asset pipeline.  Consider `app/templates/users/form.jst.ejs.erb`
+through the asset pipeline.  Consider `app/templates/users/form.jst.ejs.erb`
 which is processed first with ERB, and then made available as a JST template.
 There are a few concerns to address, such as including changing the EJS or ERB template
 delimiters `<% %>` to not conflict and mixing the Rails helper modules into the
@@ -5032,16 +5033,16 @@ describe("ExampleApp.Models.Tasks#initialize", function() {
   });
 
   it("creates collections for nested attachments", function() {
-    var attachment = task.attachments;
+    var attachments = task.attachments;
     var typeCheck = attachments instanceof ExampleApp.Collections.Attachments;
     expect(typeCheck).toEqual(true);
-    expect(task.attachments.size()).toEqual(2);
+    expect(attachments.size()).toEqual(2);
   });
 
   it("populates the collection with Attachment models", function() {
     var attachments = task.attachments;
     var typeCheck = attachments.first() instanceof ExampleApp.Models.Attachment;
-    expect(typecheck).toEqual(true);
+    expect(typeCheck).toEqual(true);
     expect(attachments.first().get('upload_url')).toEqual('/uploads/1.jpg');
 
     typeCheck = attachments.last() instanceof ExampleApp.Models.Attachment;
@@ -5367,7 +5368,7 @@ descriptive without becoming brittle.
 
 * Spy/stub/mock, even your HTTP, with [Sinon.js](http://sinonjs.org/)
 * If you're looking for factory_girl.js, it's called [Rosie](https://github.com/bkeepers/rosie)
-* Use the Rails 3.1 asset pipeline with the latest edge versions of the Jasmine gem
+* Use the Rails asset pipeline with the latest edge versions of the Jasmine gem
 * See other examples on James Newbery's blog: [testing Backbone with Jasmine](http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html) and check out his [examples on GitHub](https://github.com/froots/backbone-jasmine-examples)
 
 ## Example: Test-driving a task application
@@ -5395,8 +5396,8 @@ sample application looks like this:
 ````
 source 'http://rubygems.org'
 
-gem 'rails', '3.1.0'
-gem 'sqlite3'
+gem 'rails', '3.2.6'
+gem 'sqlite3', '~> 1.3.5'
 
 gem 'rails-backbone', '~> 0.7.0'
 gem 'jquery-rails'
@@ -5408,8 +5409,8 @@ gem 'rabl'
 gem 'backbone-support'
 
 group :assets do
-  gem 'sass-rails', "  ~> 3.1.0"
-  gem 'coffee-rails', "~> 3.1.0"
+  gem "sass-rails", "~> 3.2.0"
+  gem 'coffee-rails', "~> 3.2.0"
   gem 'uglifier'
 end
 
@@ -5425,7 +5426,7 @@ group :test do
   gem 'turn', :require => false
   gem "capybara", "~> 1.1.1"
   gem 'selenium-webdriver', '~> 2.18.0'
-  gem "factory_girl_rails"
+  gem "factory_girl_rails", "~> 3.4.0"
   gem "bourne"
   gem "database_cleaner"
   gem "nokogiri"

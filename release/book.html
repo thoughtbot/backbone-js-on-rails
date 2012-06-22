@@ -70,7 +70,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <li><a href="#rails-3.0-and-prior">Rails 3.0 and prior</a><ul>
 <li><a href="#jammit-and-a-jst-naming-gotcha">Jammit and a JST naming gotcha</a></li>
 </ul></li>
-<li><a href="#rails-3.1">Rails 3.1</a></li>
+<li><a href="#rails-3.1-and-above">Rails 3.1 and above</a></li>
 <li><a href="#an-overview-of-the-stack-connecting-rails-and-backbone">An overview of the stack: connecting Rails and Backbone</a><ul>
 <li><a href="#setting-up-models">Setting up models</a></li>
 <li><a href="#setting-up-rails-controllers">Setting up Rails controllers</a><ul>
@@ -226,9 +226,9 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <section class="level2" id="the-example-application">
 <h2><a href="#TOC">The example application</a></h2>
 <p>The example application is a classic todo item manager. This is a popular example, and for good reason: The concepts and domain are familiar, and room is left to explore interesting implementations like deferred loading and file attachment.</p>
-<p>The application uses Rails 3.1.0 and Ruby 1.9.3. We provide an <code>.rvmrc</code>.</p>
+<p>The application uses Rails 3.2.6 and Ruby 1.9.2. We provide an <code>.rvmrc</code>.</p>
 <p>The included JavaScript libraries are non-minified for readability. This is a general good practice, and the Rails asset pipeline will properly package the assets for production.</p>
-<p>While Rails 3.1 provides the ability to write in CoffeeScript, we have decided to make all of the example code normal JavaScript so as to reduce the number of new things introduced at once.</p>
+<p>While Rails provides the ability to write in CoffeeScript, we have decided to make all of the example code normal JavaScript so as to reduce the number of new things introduced at once.</p>
 <p>The example application comes with a full test suite. The README in the <code>example_app</code> root directory has instructions for bootstrapping the app and running all the tests.</p>
 <p></p>
 </section>
@@ -421,13 +421,13 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
     <span class="dt">File</span>.expand_path(<span class="dt">Rails</span>.root.join(<span class="st">'app'</span>,<span class="st">'templates'</span>))
   <span class="kw">end</span>
 <span class="kw">end</span></code></pre>
-<p>As applications are moving to Rails 3.1, they're also moving to Sprockets for the asset packager. Until then, many apps are using Jammit for asset packaging. We have an open issue and workaround:</p>
+<p>As applications are moving to Rails 3.1 or above, they're also moving to Sprockets for the asset packager. Until then, many apps are using Jammit for asset packaging. We have an open issue and workaround:</p>
 <p><a href="https://github.com/documentcloud/jammit/issues/192"><code class="url">https://github.com/documentcloud/jammit/issues/192</code></a></p>
 </section>
 </section>
-<section class="level2" id="rails-3.1">
-<h2><a href="#TOC">Rails 3.1</a></h2>
-<p>Rails 3.1 introduces the <a href="http://guides.rubyonrails.org/asset_pipeline.html">asset pipeline</a>, which uses the <a href="http://getsprockets.org">Sprockets library</a> for preprocessing and packaging assets.</p>
+<section class="level2" id="rails-3.1-and-above">
+<h2><a href="#TOC">Rails 3.1 and above</a></h2>
+<p>Rails 3.1 introduced the <a href="http://guides.rubyonrails.org/asset_pipeline.html">asset pipeline</a>, which uses the <a href="http://getsprockets.org">Sprockets library</a> for preprocessing and packaging assets.</p>
 <p>To take advantage of the built-in asset pipeline, organize your Backbone templates and classes in paths available to it: classes go in <code>app/assets/javascripts/</code>, and templates go alongside, in <code>app/assets/templates/</code>:</p>
 <pre><code>app/
   assets/
@@ -445,7 +445,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
       todos/
         index.jst.ejs
         show.jst.ejs</code></pre>
-<p>In Rails 3.1, jQuery is provided by the <code>jquery-rails</code> gem, and no longer needs to be included in your directory structure.</p>
+<p>In Rails 3.1 and above, jQuery is provided by the <code>jquery-rails</code> gem, and no longer needs to be included in your directory structure.</p>
 <p>Using Sprockets' preprocessors, we can use templates as before. Here, we're using the EJS template preprocessor to provide the same functionality as Underscore.js' templates. It compiles the <code>*.jst</code> files and makes them available on the client side via the <code>window.JST</code> object. Identifying the <code>.ejs</code> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <code>ejs</code> gem to be included in the application Gemfile.</p>
 <blockquote>
 <p>Underscore.js templates: <a href="http://documentcloud.github.com/underscore/#template"><code class="url">http://documentcloud.github.com/underscore/#template</code></a></p>
@@ -641,8 +641,8 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
   &gt; <span class="dt">ActiveRecord</span>::<span class="dt">Base</span>.include_root_in_json = <span class="dv">true</span>
   &gt; <span class="dt">Task</span>.last.as_json
  =&gt; {<span class="st">&quot;task&quot;</span>=&gt;{<span class="st">&quot;id&quot;</span>=&gt;<span class="dv">4</span>, <span class="st">&quot;title&quot;</span>=&gt;<span class="st">&quot;Enjoy a three mile swim&quot;</span>}}</code></pre>
-<p>In Rails 3.0, <code>ActiveRecord::Base.include_root_in_json</code> is set to &quot;true.&quot; In 3.1, it defaults to &quot;false.&quot; This reversal was made to simplify the JSON returned by default in Rails application, but it is a fairly big change from the default behavior of Rails 3.0.</p>
-<p>Practically speaking, this change is a good one, but take particular note if you're upgrading an existing Rails 3.0 application to Rails 3.1 and you already have a published API; you may need to expose a new version of your API.</p>
+<p>In Rails 3.0, <code>ActiveRecord::Base.include_root_in_json</code> is set to &quot;true.&quot; Starting with 3.1, it defaults to &quot;false.&quot; This reversal was made to simplify the JSON returned by default in Rails application, but it is a fairly big change from the default behavior of Rails 3.0.</p>
+<p>Practically speaking, this change is a good one, but take particular note if you're upgrading an existing Rails 3.0 application to Rails 3.1 or above and you already have a published API; you may need to expose a new version of your API.</p>
 <p>From the Backbone side, the default behavior expects no root node. This behavior is defined in a few places: <code>Backbone.Collection.prototype.parse</code>, <code>Backbone.Model.prototype.parse</code>, and <code>Backbone.Model.prototype.toJSON</code>:</p>
 <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">_</span>.<span class="fu">extend</span>(<span class="kw">Backbone.Collection</span>.<span class="fu">prototype</span>, <span class="kw">Backbone</span>.<span class="fu">Events</span>, {
   <span class="co">// http://documentcloud.github.com/backbone/#Collection-parse</span>
@@ -1707,7 +1707,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 <span class="kw">&lt;/form&gt;</span></code></pre>
 <p>One approach you could take is writing the full form markup by hand. You could create a template available to Backbone via JST that contains the raw HTML. If you took the above markup and saved it into <code>app/templates/users/form.jst</code>, it would be accessible as <code>JST[&quot;users/form&quot;]()</code>.</p>
 <p>You <em>could</em> write all the HTML by hand, but we'd like to avoid that.</p>
-<p>Another route that might seem appealing is reusing the Rails form builders through the 3.1 asset pipeline. Consider <code>app/templates/users/form.jst.ejs.erb</code> which is processed first with ERB, and then made available as a JST template. There are a few concerns to address, such as including changing the EJS or ERB template delimiters <code>&lt;% %&gt;</code> to not conflict and mixing the Rails helper modules into the <code>Tilt::ERbTemplate</code> rendering context. However, this approach still only generates markup; it doesn't serialize forms into data hashes or Backbone models.</p>
+<p>Another route that might seem appealing is reusing the Rails form builders through the asset pipeline. Consider <code>app/templates/users/form.jst.ejs.erb</code> which is processed first with ERB, and then made available as a JST template. There are a few concerns to address, such as including changing the EJS or ERB template delimiters <code>&lt;% %&gt;</code> to not conflict and mixing the Rails helper modules into the <code>Tilt::ERbTemplate</code> rendering context. However, this approach still only generates markup; it doesn't serialize forms into data hashes or Backbone models.</p>
 </section>
 <section class="level3" id="serializing-forms">
 <h3><a href="#TOC">Serializing forms</a></h3>
@@ -3075,16 +3075,16 @@ describe(&quot;ExampleApp.Models.Tasks#initialize&quot;, function() {
   });
 
   it(&quot;creates collections for nested attachments&quot;, function() {
-    var attachment = task.attachments;
+    var attachments = task.attachments;
     var typeCheck = attachments instanceof ExampleApp.Collections.Attachments;
     expect(typeCheck).toEqual(true);
-    expect(task.attachments.size()).toEqual(2);
+    expect(attachments.size()).toEqual(2);
   });
 
   it(&quot;populates the collection with Attachment models&quot;, function() {
     var attachments = task.attachments;
     var typeCheck = attachments.first() instanceof ExampleApp.Models.Attachment;
-    expect(typecheck).toEqual(true);
+    expect(typeCheck).toEqual(true);
     expect(attachments.first().get('upload_url')).toEqual('/uploads/1.jpg');
 
     typeCheck = attachments.last() instanceof ExampleApp.Models.Attachment;
@@ -3233,7 +3233,7 @@ Then I should see &quot;You are logged in as alice@example.com&quot;</code></pre
 <ul>
 <li>Spy/stub/mock, even your HTTP, with <a href="http://sinonjs.org/">Sinon.js</a></li>
 <li>If you're looking for factory_girl.js, it's called <a href="https://github.com/bkeepers/rosie">Rosie</a></li>
-<li>Use the Rails 3.1 asset pipeline with the latest edge versions of the Jasmine gem</li>
+<li>Use the Rails asset pipeline with the latest edge versions of the Jasmine gem</li>
 <li>See other examples on James Newbery's blog: <a href="http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html">testing Backbone with Jasmine</a> and check out his <a href="https://github.com/froots/backbone-jasmine-examples">examples on GitHub</a></li>
 </ul>
 </section>
@@ -3248,8 +3248,8 @@ Then I should see &quot;You are logged in as alice@example.com&quot;</code></pre
 <p>The other dependencies you can install by adding them to your Gemfile. The gems you'll need for testing are jasmine (currently tracking the edge version from GitHub), cucumber-rails, rspec-rails, and capybara. You'll want to add RSpec, Cucumber, and Jasmine to both the test and development groups so that you can run generators. With all our testing dependencies in place, the Gemfile in our sample application looks like this:</p>
 <pre><code>source 'http://rubygems.org'
 
-gem 'rails', '3.1.0'
-gem 'sqlite3'
+gem 'rails', '3.2.6'
+gem 'sqlite3', '~&gt; 1.3.5'
 
 gem 'rails-backbone', '~&gt; 0.7.0'
 gem 'jquery-rails'
@@ -3261,8 +3261,8 @@ gem 'rabl'
 gem 'backbone-support'
 
 group :assets do
-  gem 'sass-rails', &quot;  ~&gt; 3.1.0&quot;
-  gem 'coffee-rails', &quot;~&gt; 3.1.0&quot;
+  gem &quot;sass-rails&quot;, &quot;~&gt; 3.2.0&quot;
+  gem 'coffee-rails', &quot;~&gt; 3.2.0&quot;
   gem 'uglifier'
 end
 
@@ -3278,7 +3278,7 @@ group :test do
   gem 'turn', :require =&gt; false
   gem &quot;capybara&quot;, &quot;~&gt; 1.1.1&quot;
   gem 'selenium-webdriver', '~&gt; 2.18.0'
-  gem &quot;factory_girl_rails&quot;
+  gem &quot;factory_girl_rails&quot;, &quot;~&gt; 3.4.0&quot;
   gem &quot;bourne&quot;
   gem &quot;database_cleaner&quot;
   gem &quot;nokogiri&quot;
