@@ -26,16 +26,16 @@ describe("ExampleApp.Models.Tasks#initialize", function() {
   });
 
   it("creates collections for nested attachments", function() {
-    var attachment = task.attachments;
+    var attachments = task.attachments;
     var typeCheck = attachments instanceof ExampleApp.Collections.Attachments;
     expect(typeCheck).toEqual(true);
-    expect(task.attachments.size()).toEqual(2);
+    expect(attachments.size()).toEqual(2);
   });
 
   it("populates the collection with Attachment models", function() {
     var attachments = task.attachments;
     var typeCheck = attachments.first() instanceof ExampleApp.Models.Attachment;
-    expect(typecheck).toEqual(true);
+    expect(typeCheck).toEqual(true);
     expect(attachments.first().get('upload_url')).toEqual('/uploads/1.jpg');
 
     typeCheck = attachments.last() instanceof ExampleApp.Models.Attachment;
