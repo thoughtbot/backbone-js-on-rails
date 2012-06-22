@@ -113,15 +113,15 @@ Jammit::Compressor.class_eval do
 end
 ````
 
-As applications are moving to Rails 3.1, they're also moving to Sprockets for
-the asset packager.  Until then, many apps are using Jammit for asset
-packaging.  We have an open issue and workaround:
+As applications are moving to Rails 3.1 or above, they're also moving to
+Sprockets for the asset packager.  Until then, many apps are using Jammit for
+asset packaging.  We have an open issue and workaround:
 
 <https://github.com/documentcloud/jammit/issues/192>
 
-## Rails 3.1
+## Rails 3.1 and above
 
-Rails 3.1 introduces the
+Rails 3.1 introduced the
 [asset pipeline](http://guides.rubyonrails.org/asset_pipeline.html), which uses
 the [Sprockets library](http://getsprockets.org) for preprocessing and packaging
 assets.
@@ -150,8 +150,8 @@ app/
         show.jst.ejs
 ````
 
-In Rails 3.1, jQuery is provided by the `jquery-rails` gem, and no longer
-needs to be included in your directory structure.
+In Rails 3.1 and above, jQuery is provided by the `jquery-rails` gem, and no
+longer needs to be included in your directory structure.
 
 Using Sprockets' preprocessors, we can use templates as before. Here, we're
 using the EJS template preprocessor to provide the same functionality as

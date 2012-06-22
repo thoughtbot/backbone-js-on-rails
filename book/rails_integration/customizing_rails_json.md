@@ -79,14 +79,15 @@ ActiveRecord setting `ActiveRecord::Base.include_root_in_json`.
  => {"task"=>{"id"=>4, "title"=>"Enjoy a three mile swim"}}
 ````
 
-In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true." In 3.1,
-it defaults to "false." This reversal was made to simplify the JSON returned by
-default in Rails application, but it is a fairly big change from the default
-behavior of Rails 3.0.
+In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true." 
+Starting with 3.1, it defaults to "false." This reversal was made to simplify 
+the JSON returned by default in Rails application, but it is a fairly big 
+change from the default behavior of Rails 3.0.
 
 Practically speaking, this change is a good one, but take particular note if
-you're upgrading an existing Rails 3.0 application to Rails 3.1 and you already
-have a published API; you may need to expose a new version of your API.
+you're upgrading an existing Rails 3.0 application to Rails 3.1 or above and 
+you already have a published API; you may need to expose a new version of your
+API.
 
 From the Backbone side, the default behavior expects no root node.  This
 behavior is defined in a few places: `Backbone.Collection.prototype.parse`,

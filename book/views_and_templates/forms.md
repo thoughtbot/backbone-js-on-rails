@@ -45,7 +45,7 @@ it would be accessible as `JST["users/form"]()`.
 You _could_ write all the HTML by hand, but we'd like to avoid that.
 
 Another route that might seem appealing is reusing the Rails form builders
-through the 3.1 asset pipeline.  Consider `app/templates/users/form.jst.ejs.erb`
+through the asset pipeline.  Consider `app/templates/users/form.jst.ejs.erb`
 which is processed first with ERB, and then made available as a JST template.
 There are a few concerns to address, such as including changing the EJS or ERB template
 delimiters `<% %>` to not conflict and mixing the Rails helper modules into the

@@ -138,5 +138,5 @@ descriptive without becoming brittle.
 
 * Spy/stub/mock, even your HTTP, with [Sinon.js](http://sinonjs.org/)
 * If you're looking for factory_girl.js, it's called [Rosie](https://github.com/bkeepers/rosie)
-* Use the Rails 3.1 asset pipeline with the latest edge versions of the Jasmine gem
+* Use the Rails asset pipeline with the latest edge versions of the Jasmine gem
 * See other examples on James Newbery's blog: [testing Backbone with Jasmine](http://tinnedfruit.com/2011/03/03/testing-backbone-apps-with-jasmine-sinon.html) and check out his [examples on GitHub](https://github.com/froots/backbone-jasmine-examples)
