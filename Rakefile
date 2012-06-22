@@ -32,8 +32,12 @@ namespace :build do
     Builder.new.generate_mobi
   end
 
+  task :sample => [:prepare] do
+    Builder.new.generate_sample
+  end
+
   desc "Build all output targets"
-  task :all => [:html, :pdf, :epub, :mobi] do
+  task :all => [:html, :pdf, :epub, :mobi, :sample] do
   end
 end
 
@@ -107,6 +111,19 @@ class Builder
       run "pandoc book.md --data-dir=#{working} --template=template --chapters --toc -o book-without-cover.pdf"
       run "gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=book.pdf ../book/images/cover.pdf book-without-cover.pdf"
       run "rm book-without-cover.pdf"
+    end
+  end
+
+  def generate_sample
+    markdown = File.new("output/sample.md", "w+")
+    parse_file(markdown, "book/sample.md")
+    markdown.close
+    Dir.chdir OUTPUT_DIR do
+      puts "## Generating Sample PDF version..."
+      working = File.expand_path File.dirname(__FILE__)
+      run "pandoc sample.md --data-dir=#{working} --template=template --chapters --toc -o sample-without-cover.pdf"
+      run "gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=sample.pdf ../book/images/cover.pdf sample-without-cover.pdf"
+      run "rm sample-without-cover.pdf"
     end
   end
 
