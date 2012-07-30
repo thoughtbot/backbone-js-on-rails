@@ -179,8 +179,7 @@ them in your application.js Sprockets manifest:
 ````
 
 Load order for Backbone and your Backbone app is very
-important. jQuery and Underscore must be loaded before Backbone, then
-the Rails authenticity token patch must be applied. Then your models must be
+important. jQuery and Underscore must be loaded before Backbone. Then your models must be
 loaded before your collections (because your collections will reference your
 models) and then your routers and views must be loaded.
 
