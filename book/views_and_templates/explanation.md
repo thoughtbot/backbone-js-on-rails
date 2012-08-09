@@ -87,7 +87,7 @@ created for the view. If no customization is done, the element is an empty
 `div`.
 
 `tagName`, `className`, and `id` can either be specified directly on the view
-or passed in as options at instantiation. Since `id` will usually to correspond
+or passed in as options at instantiation. Since `id` will usually correspond
 to the `id` of each model, it will likely be passed in as an option rather
 than declared statically in the view.
 

@@ -61,9 +61,9 @@ with `$.bind()`, `$.delegate()`, `live()` or `$.on()`.
 
 If your view binds to events on a model or collection with `on()`, you are
 responsible for unbinding these events.  You do this with a simple call to
-`this.model.off()` or `this.collection.off()`; the
-http://documentcloud.github.com/backbone/#Events-off[`Backbone.Events.off()`
-function] removes all callbacks on that object.
+`this.model.off()` or `this.collection.off()`; the [`Backbone.Events.off()`
+function](http://documentcloud.github.com/backbone/#Events-off) removes all
+callbacks on that object.
 
 When should you unbind these handlers?  Whenever the view is going away.  This
 means that any pieces of code that create new instances of this view become
