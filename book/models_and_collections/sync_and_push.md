@@ -121,6 +121,10 @@ BASEDIR=$(dirname $0)
 BUNDLE_GEMFILE=$BASEDIR/Gemfile
 bundle exec rackup $BASEDIR/config.ru -s thin -E production
 
+$ bundle
+(...)
+Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.
+
 $ ./faye/run.sh
 
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
