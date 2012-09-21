@@ -193,11 +193,11 @@ ErrorList = function (response) {
 
 _.extend(ErrorList.prototype, {
   each: function (iterator) {
-    _.each(attributesWithErrors, iterator);
+    _.each(this.attributesWithErrors, iterator);
   },
 
   size: function() {
-    return _.size(attributesWithErrors);
+    return _.size(this.attributesWithErrors);
   }
 });
 ````
