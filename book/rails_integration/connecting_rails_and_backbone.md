@@ -97,7 +97,7 @@ individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
 ````ruby
-class TasksController < ApplicationController::Base
+class TasksController < ApplicationController
   respond_to :html, :json
 
   def index
@@ -146,7 +146,7 @@ response code if validations fail.
 A controller that does this would appear as shown in the following example:
 
 ````ruby
-class TasksController < ApplicationController::Base
+class TasksController < ApplicationController
   respond_to :json
 
   def create
@@ -165,7 +165,7 @@ status code when there are validation errors, so the action above can be
 refactored:
 
 ````ruby
-class TasksController < ApplicationController::Base
+class TasksController < ApplicationController
   respond_to :json
   def create
     @task = Task.new(params[:task])
