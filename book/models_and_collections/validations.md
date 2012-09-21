@@ -227,7 +227,7 @@ ErrorView = Backbone.View.extend({
   },
 
   fieldFor: function(attribute) {
-    return $(this.options.el).find('[id*="_' ` attribute ` '_input"]').first();
+    return $(this.options.el).find('li[id*="_' ` attribute ` '_input"]').first();
   }
 });
 ````
