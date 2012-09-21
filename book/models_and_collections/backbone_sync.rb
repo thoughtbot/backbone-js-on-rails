@@ -6,15 +6,15 @@ module BackboneSync
 
       module Observer
         def after_update(model)
-          Event.new(model, :update).publish
+          Event.new(model, :update).broadcast
         end
 
         def after_create(model)
-          Event.new(model, :create).publish
+          Event.new(model, :create).broadcast
         end
 
         def after_destroy(model)
-          Event.new(model, :destroy).publish
+          Event.new(model, :destroy).broadcast
         end
       end
 
