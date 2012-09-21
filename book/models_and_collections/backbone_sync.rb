@@ -1,3 +1,5 @@
+# lib/backbone_sync.rb
+
 module BackboneSync
   module Rails
     module Faye
