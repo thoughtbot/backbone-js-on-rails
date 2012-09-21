@@ -41,6 +41,7 @@ Now install the pandoc dependencies:
 
   brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
   brew install imagemagick
+  brew install ghostscript
 
 Latex is needed for PDF distribution:
 
