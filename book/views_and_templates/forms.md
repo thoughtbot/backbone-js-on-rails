@@ -137,7 +137,7 @@ For an example, let's examine a form field modeled after Formtastic conventions:
       <label for="task_title">Title</label>
       <input id="task_title" name="title" type="text">
       <!--
-        <p class="inline_errors">
+        <p class="inline-errors">
           The error for this field will be rendered here.
         </p>
       -->
@@ -185,7 +185,7 @@ ErrorView = Backbone.View.extend({
 
   clearOldErrors: function() {
     this.$(".error").removeClass("error");
-    this.$("p.inline_errors").remove();
+    this.$("p.inline-errors").remove();
   },
 
   renderErrors: function() {
@@ -195,7 +195,7 @@ ErrorView = Backbone.View.extend({
   renderError: function(errors, attribute) {
     var errorString = errors.join(", ");
     var field = this.fieldFor(attribute);
-    var errorTag = $('<p>').addClass('inline_errors').text(errorString);
+    var errorTag = $('<p>').addClass('inline-errors').text(errorString);
     field.append(errorTag);
     field.addClass("error");
   },
