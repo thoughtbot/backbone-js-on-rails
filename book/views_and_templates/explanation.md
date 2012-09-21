@@ -47,13 +47,13 @@ but it's relatively common to do so.
 You create a new view by instantiating it with `new`. For example, `new
 ExampleView()`. It is possible to pass in a hash of options with `new
 ExampleView(options)`. Any options you pass into the constructor will be
-available inside of the view in `this.options`.
+available as `this.options` from inside of the view.
 
 There are a few special options that, when passed, will be assigned as
 properties of view. These are `model`, `collection`, `el`, `id`,
 `className`, and `tagName`. For example, if you create a new view and give it
-a model option using `new ExampleView({ model: someTask })`, then inside of the view
-`someTask` will be available as `this.model`.
+a model option using `new ExampleView({ model: someTask })`, then
+`someTask` will be available as `this.model` from inside of the view.
 
 ### The View's element
 
