@@ -89,7 +89,7 @@ maintain a back-reference at `this.parent`. This is used to reach up and call
 Making use of `CompositeView`, we split up the `TaskDetail` view class:
 
 ````javascript
-var TaskDetail = CompositeView.extend({
+var TaskDetail = Support.CompositeView.extend({
   tagName: 'section',
   id: 'task',
 
@@ -122,7 +122,7 @@ var TaskDetail = CompositeView.extend({
 ````
 
 ````javascript
-var CommentsList = CompositeView.extend({
+var CommentsList = Support.CompositeView.extend({
   tagName: 'ul',
 
   initialize: function() {
@@ -158,7 +158,7 @@ var CommentsList = CompositeView.extend({
 ````
 
 ````javascript
-var CommentForm = CompositeView.extend({
+var CommentForm = Support.CompositeView.extend({
   events: {
     "click button": "createComment"
   },
