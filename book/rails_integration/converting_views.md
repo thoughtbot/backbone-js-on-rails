@@ -45,7 +45,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
     return this;
   }
-};
+});
 ````
 
 The `render` method above renders the `tasks/index` JST template, passing
