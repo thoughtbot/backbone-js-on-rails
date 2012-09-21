@@ -39,7 +39,7 @@ form markup that looks like this:
 
 One approach you could take is writing the full form markup by hand.  You could
 create a template available to Backbone via JST that contains the raw HTML.  If
-you took the above markup and saved it into `app/templates/users/form.jst`, 
+you took the above markup and saved it into `app/templates/users/form.jst`,
 it would be accessible as `JST["users/form"]()`.
 
 You _could_ write all the HTML by hand, but we'd like to avoid that.
@@ -88,12 +88,12 @@ JavaScript form builder.  Since the model data is being read and written by
 Backbone views and models, it's ideal to have markup construction and form
 serialization implemented on the client side.
 
-One solid implementation is
-https://github.com/powmedia/backbone-forms[`backbone-forms` by Charles
-Davison].  It provides markup construction and serialization, as well as a
-method for declaring a typed schema to support both of those facilities.  It
-offers a flexible system for adding custom editor types, and supports
-configuring your form markup structure by providing HTML template fragments.
+One solid implementation is [`backbone-forms` by Charles
+Davison](https://github.com/powmedia/backbone-forms).  It provides markup
+construction and serialization, as well as a method for declaring a typed
+schema to support both of those facilities.  It offers a flexible system for
+adding custom editor types, and supports configuring your form markup structure
+by providing HTML template fragments.
 
 ### Display server errors
 

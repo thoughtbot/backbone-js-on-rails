@@ -77,7 +77,7 @@ The above template would look like this in Handlebars:
 Of note:
 
 * Use of `{{#each}}`, which iterates over the collection
-* Within the `{{#each}}` block, the JavaScriptJavaScript context is
+* Within the `{{#each}}` block, the JavaScript context is
   the task itself, so you access its properties via `this`
 * There's no need to escape HTML output, as Handlebars escapes
   by default
@@ -93,7 +93,7 @@ Like Handlebars, Mustache HTML escapes rendered values by default.
 
 You can learn more about Handlebars at the [project's home on the web](http://www.handlebarsjs.com/),
 and Mustache at [the project's man page](http://mustache.github.com/mustache.5.html)
-and [javascript implementation(https://github.com/janl/mustache.js)
+and [javascript implementation](https://github.com/janl/mustache.js)
 
 ## Choosing a strategy
 
