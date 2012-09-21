@@ -7,17 +7,17 @@ describe Task do
   it { should have_many :assignments }
 
   it "has many assigned users through assignments" do
-    task = Factory(:task)
-    user = Factory(:user)
+    task = FactoryGirl.create(:task)
+    user = FactoryGirl.create(:user)
 
-    Factory(:assignment, task: task, user: user)
+    FactoryGirl.create(:assignment, task: task, user: user)
 
     task.reload.assigned_users.should == [user]
   end
 
   it "accepts nested attributes for assignments" do
-    task = Factory.build(:task)
-    user = Factory(:user)
+    task = FactoryGirl.build(:task)
+    user = FactoryGirl.create(:user)
 
     task.assignments_attributes = [{ user_id: user.id }]
 
