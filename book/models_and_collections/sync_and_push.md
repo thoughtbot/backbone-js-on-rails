@@ -106,6 +106,7 @@ $ cat faye/Gemfile
 
 source 'http://rubygems.org'
 gem 'faye'
+gem 'thin'
 
 $ cat faye/config.ru
 
