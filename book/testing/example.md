@@ -225,6 +225,7 @@ We'll motivate writing a top-level Backbone application object with a spec.
 Note the use of a `sinon.spy` for verifying the router instantiation:
 
 `spec/javascripts/example_app_spec.js`
+
 <<(../../example_app/spec/javascripts/example_app_spec.js)
 
 Get it to green:

@@ -116,7 +116,7 @@ render: function () {
 // ...
 
 attachUploader: function() {
-  var uploadUrl = "/tasks/" ` this.model.get('id') ` '/attachments.json';
+  var uploadUrl = "/tasks/" + this.model.get('id') + '/attachments.json';
 
   this.uploader = new uploader(this.uploadInput(), {
     url:      uploadUrl,
@@ -130,7 +130,7 @@ The acceptance tests still aren't passing, and a little digging will reveal
 that we need to manually set the CSRF token on the upload request.  Normally,
 this would be set by `jquery_ujs.js` with a jQuery AJAX prefilter, but the
 upload code we are using manually constructs an `XMLHttpRequest` instead of
-using `$.`ajax`, so that it may bind to the `onprogress` event.
+using `$.ajax`, so that it may bind to the `onprogress` event.
 
 We write a spec:
 

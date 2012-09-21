@@ -227,7 +227,7 @@ There are several advantages to this approach:
   now be reused on other domain objects with comments
 - The task view performs better, since adding new comments or updating the task
   details will only re-render the pertinent section, instead of re-rendering the
-  entire task ` comments composite
+  entire composite of task and comments
 
 In the example app, we make use of a composite view on `TasksIndex` located at
 `app/assets/javascripts/views/tasks_index.js`. The situation is similar to

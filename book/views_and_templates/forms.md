@@ -201,7 +201,7 @@ ErrorView = Backbone.View.extend({
   },
 
   fieldFor: function(attribute) {
-    return this.$('li[id*="_' ` attribute ` '_input"]');
+    return this.$('li[id*="_' + attribute + '_input"]');
   }
 });
 ````

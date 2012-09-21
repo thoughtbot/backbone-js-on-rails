@@ -20,7 +20,7 @@ var gameEngine = {};
 _.extend(gameEngine, Backbone.Events);
 
 gameEngine.on("user_registered", function(user) {
-  user.points `= 10
+  user.points += 10
 });
 
 gameEngine.trigger("user_registered", User.new({ points: 0 }));

@@ -124,7 +124,7 @@ $ ./faye/run.sh
 
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
 >> Maximum connections set to 1024
->> Listening on 0.0.0.0:9292, CTRL`C to stop
+>> Listening on 0.0.0.0:9292, CTRL+C to stop
 ````
 
 ### Implementing it: Step 2, ActiveRecord observers
@@ -214,7 +214,7 @@ BackboneSync.RailsFayeSubscriber = (function() {
   }
 
   RailsFayeSubscriber.prototype.subscribe = function() {
-    return this.client.subscribe("/sync/" ` this.channel, _.bind(this.receive, this));
+    return this.client.subscribe("/sync/" + this.channel, _.bind(this.receive, this));
   };
 
   RailsFayeSubscriber.prototype.receive = function(message) {
@@ -357,7 +357,7 @@ the `session_name` method. The definition for the `I am using session
 "Alice"` step looks like this:
 
 ````ruby
-When /^I (?:am using|switch to) session "([^"]`)"$/ do |new_session_name|
+When /^I (?:am using|switch to) session "([^"]+)"$/ do |new_session_name|
   Capybara.session_name = new_session_name
 end
 ````
