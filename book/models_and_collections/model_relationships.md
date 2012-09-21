@@ -252,7 +252,6 @@ ExampleApp.Models.Task = Backbone.Model.extend({
 
   parseAttachments: function() {
     this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
-    delete this.attachments;
   },
 
   // ...
