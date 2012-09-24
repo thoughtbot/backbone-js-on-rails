@@ -10,7 +10,7 @@ covers filtering and sorting your Backbone collections.
 If you enjoy the sample, you can get access to the entire book and sample
 application at:
 
-<https://workshops.thoughtbot.com/products/1-backbone-js-on-rails>
+<https://learn.thoughtbot.com/products/1-backbone-js-on-rails>
 
 # What can I expect from that?
 
@@ -34,7 +34,7 @@ working code. Fully up to date for Rails 3.2.
 # Contact us
 
 If you have any questions, or just want to get in touch, drop us a line at 
-[workshops@thoughtbot.com](mailto:workshops@thoughtbot.com).
+[learn@thoughtbot.com](mailto:learn@thoughtbot.com).
 
 \clearpage
 
@@ -59,4 +59,4 @@ like to get access to the full content, the example application, ongoing
 updates, and the ability to get your questions about Bakcbone.js and Rails
 answered by us, you can pick it up on our website:
 
-<https://workshops.thoughtbot.com/products/1-backbone-js-on-rails>
+<https://learn.thoughtbot.com/products/1-backbone-js-on-rails>
