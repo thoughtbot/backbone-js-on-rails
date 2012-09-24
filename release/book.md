@@ -542,7 +542,8 @@ them in your application.js Sprockets manifest:
 ````
 
 Load order for Backbone and your Backbone app is very
-important. jQuery and Underscore must be loaded before Backbone. Then your models must be
+important. jQuery and Underscore must be loaded before Backbone, then
+the Rails authenticity token patch must be applied. Then your models must be
 loaded before your collections (because your collections will reference your
 models) and then your routers and views must be loaded.
 
@@ -675,7 +676,7 @@ individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
 ````ruby
-class TasksController < ApplicationController
+class TasksController < ApplicationController::Base
   respond_to :html, :json
 
   def index
@@ -724,7 +725,7 @@ response code if validations fail.
 A controller that does this would appear as shown in the following example:
 
 ````ruby
-class TasksController < ApplicationController
+class TasksController < ApplicationController::Base
   respond_to :json
 
   def create
@@ -743,7 +744,7 @@ status code when there are validation errors, so the action above can be
 refactored:
 
 ````ruby
-class TasksController < ApplicationController
+class TasksController < ApplicationController::Base
   respond_to :json
   def create
     @task = Task.new(params[:task])
@@ -1042,7 +1043,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
     return this;
   }
-});
+};
 ````
 
 The `render` method above renders the `tasks/index` JST template, passing
@@ -1345,13 +1346,13 @@ but it's relatively common to do so.
 You create a new view by instantiating it with `new`. For example, `new
 ExampleView()`. It is possible to pass in a hash of options with `new
 ExampleView(options)`. Any options you pass into the constructor will be
-available as `this.options` from inside of the view.
+available inside of the view in `this.options`.
 
 There are a few special options that, when passed, will be assigned as
 properties of view. These are `model`, `collection`, `el`, `id`,
 `className`, and `tagName`. For example, if you create a new view and give it
-a model option using `new ExampleView({ model: someTask })`, then
-`someTask` will be available as `this.model` from inside of the view.
+a model option using `new ExampleView({ model: someTask })`, then inside of the view
+`someTask` will be available as `this.model`.
 
 ### The View's element
 
@@ -1385,7 +1386,7 @@ created for the view. If no customization is done, the element is an empty
 `div`.
 
 `tagName`, `className`, and `id` can either be specified directly on the view
-or passed in as options at instantiation. Since `id` will usually correspond
+or passed in as options at instantiation. Since `id` will usually to correspond
 to the `id` of each model, it will likely be passed in as an option rather
 than declared statically in the view.
 
@@ -1517,7 +1518,7 @@ The above template would look like this in Handlebars:
 Of note:
 
 * Use of `{{#each}}`, which iterates over the collection
-* Within the `{{#each}}` block, the JavaScript context is
+* Within the `{{#each}}` block, the JavaScriptJavaScript context is
   the task itself, so you access its properties via `this`
 * There's no need to escape HTML output, as Handlebars escapes
   by default
@@ -1533,7 +1534,7 @@ Like Handlebars, Mustache HTML escapes rendered values by default.
 
 You can learn more about Handlebars at the [project's home on the web](http://www.handlebarsjs.com/),
 and Mustache at [the project's man page](http://mustache.github.com/mustache.5.html)
-and [javascript implementation](https://github.com/janl/mustache.js)
+and [javascript implementation(https://github.com/janl/mustache.js)
 
 ## Choosing a strategy
 
@@ -1776,7 +1777,7 @@ var gameEngine = {};
 _.extend(gameEngine, Backbone.Events);
 
 gameEngine.on("user_registered", function(user) {
-  user.points += 10
+  user.points `= 10
 });
 
 gameEngine.trigger("user_registered", User.new({ points: 0 }));
@@ -2073,9 +2074,9 @@ with `$.bind()`, `$.delegate()`, `live()` or `$.on()`.
 
 If your view binds to events on a model or collection with `on()`, you are
 responsible for unbinding these events.  You do this with a simple call to
-`this.model.off()` or `this.collection.off()`; the [`Backbone.Events.off()`
-function](http://documentcloud.github.com/backbone/#Events-off) removes all
-callbacks on that object.
+`this.model.off()` or `this.collection.off()`; the
+http://documentcloud.github.com/backbone/#Events-off[`Backbone.Events.off()`
+function] removes all callbacks on that object.
 
 When should you unbind these handlers?  Whenever the view is going away.  This
 means that any pieces of code that create new instances of this view become
@@ -2509,7 +2510,7 @@ maintain a back-reference at `this.parent`. This is used to reach up and call
 Making use of `CompositeView`, we split up the `TaskDetail` view class:
 
 ````javascript
-var TaskDetail = Support.CompositeView.extend({
+var TaskDetail = CompositeView.extend({
   tagName: 'section',
   id: 'task',
 
@@ -2542,7 +2543,7 @@ var TaskDetail = Support.CompositeView.extend({
 ````
 
 ````javascript
-var CommentsList = Support.CompositeView.extend({
+var CommentsList = CompositeView.extend({
   tagName: 'ul',
 
   initialize: function() {
@@ -2578,7 +2579,7 @@ var CommentsList = Support.CompositeView.extend({
 ````
 
 ````javascript
-var CommentForm = Support.CompositeView.extend({
+var CommentForm = CompositeView.extend({
   events: {
     "click button": "createComment"
   },
@@ -2647,7 +2648,7 @@ There are several advantages to this approach:
   now be reused on other domain objects with comments
 - The task view performs better, since adding new comments or updating the task
   details will only re-render the pertinent section, instead of re-rendering the
-  entire composite of task and comments
+  entire task ` comments composite
 
 In the example app, we make use of a composite view on `TasksIndex` located at
 `app/assets/javascripts/views/tasks_index.js`. The situation is similar to
@@ -2725,7 +2726,7 @@ form markup that looks like this:
 
 One approach you could take is writing the full form markup by hand.  You could
 create a template available to Backbone via JST that contains the raw HTML.  If
-you took the above markup and saved it into `app/templates/users/form.jst`,
+you took the above markup and saved it into `app/templates/users/form.jst`, 
 it would be accessible as `JST["users/form"]()`.
 
 You _could_ write all the HTML by hand, but we'd like to avoid that.
@@ -2774,12 +2775,12 @@ JavaScript form builder.  Since the model data is being read and written by
 Backbone views and models, it's ideal to have markup construction and form
 serialization implemented on the client side.
 
-One solid implementation is [`backbone-forms` by Charles
-Davison](https://github.com/powmedia/backbone-forms).  It provides markup
-construction and serialization, as well as a method for declaring a typed
-schema to support both of those facilities.  It offers a flexible system for
-adding custom editor types, and supports configuring your form markup structure
-by providing HTML template fragments.
+One solid implementation is
+https://github.com/powmedia/backbone-forms[`backbone-forms` by Charles
+Davison].  It provides markup construction and serialization, as well as a
+method for declaring a typed schema to support both of those facilities.  It
+offers a flexible system for adding custom editor types, and supports
+configuring your form markup structure by providing HTML template fragments.
 
 ### Display server errors
 
@@ -2823,7 +2824,7 @@ For an example, let's examine a form field modeled after Formtastic conventions:
       <label for="task_title">Title</label>
       <input id="task_title" name="title" type="text">
       <!--
-        <p class="inline-errors">
+        <p class="inline_errors">
           The error for this field will be rendered here.
         </p>
       -->
@@ -2871,7 +2872,7 @@ ErrorView = Backbone.View.extend({
 
   clearOldErrors: function() {
     this.$(".error").removeClass("error");
-    this.$("p.inline-errors").remove();
+    this.$("p.inline_errors").remove();
   },
 
   renderErrors: function() {
@@ -2881,13 +2882,13 @@ ErrorView = Backbone.View.extend({
   renderError: function(errors, attribute) {
     var errorString = errors.join(", ");
     var field = this.fieldFor(attribute);
-    var errorTag = $('<p>').addClass('inline-errors').text(errorString);
+    var errorTag = $('<p>').addClass('inline_errors').text(errorString);
     field.append(errorTag);
     field.addClass("error");
   },
 
   fieldFor: function(attribute) {
-    return this.$('li[id*="_' + attribute + '_input"]');
+    return this.$('li[id*="_' ` attribute ` '_input"]');
   }
 });
 ````
@@ -3290,7 +3291,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
 
     var self = this;
     // create a new task and save it to the server
-    new YourApp.Models.Task(attributes).save({}, {
+    new YourApp.Models.Task(attributes).save({
         success: function() { /* handle success */ }
         error:   function() { /* validation error occurred, show user */ }
       });
@@ -3337,7 +3338,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
 
     var self = this;
     // create a new task and save it to the server
-    new YourApp.Models.Task(attributes).save({}, {
+    new YourApp.Models.Task(attributes).save({
         success: function() { /* handle success */ }
         error:   function() { /* validation error occurred, show user */ }
       });
@@ -3413,11 +3414,11 @@ ErrorList = function (response) {
 
 _.extend(ErrorList.prototype, {
   each: function (iterator) {
-    _.each(this.attributesWithErrors, iterator);
+    _.each(attributesWithErrors, iterator);
   },
 
   size: function() {
-    return _.size(this.attributesWithErrors);
+    return _.size(attributesWithErrors);
   }
 });
 ````
@@ -3447,7 +3448,7 @@ ErrorView = Backbone.View.extend({
   },
 
   fieldFor: function(attribute) {
-    return $(this.options.el).find('li[id*="_' + attribute + '_input"]').first();
+    return $(this.options.el).find('[id*="_' ` attribute ` '_input"]').first();
   }
 });
 ````
@@ -3744,6 +3745,7 @@ ExampleApp.Models.Task = Backbone.Model.extend({
 
   parseAttachments: function() {
     this.attachments = new ExampleApp.Collections.Attachments(this.get('attachments'));
+    delete this.attachments;
   },
 
   // ...
@@ -4345,7 +4347,6 @@ $ cat faye/Gemfile
 
 source 'http://rubygems.org'
 gem 'faye'
-gem 'thin'
 
 $ cat faye/config.ru
 
@@ -4360,15 +4361,11 @@ BASEDIR=$(dirname $0)
 BUNDLE_GEMFILE=$BASEDIR/Gemfile
 bundle exec rackup $BASEDIR/config.ru -s thin -E production
 
-$ bundle
-(...)
-Your bundle is complete! Use `bundle show [gemname]` to see where a bundled gem is installed.
-
 $ ./faye/run.sh
 
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
 >> Maximum connections set to 1024
->> Listening on 0.0.0.0:9292, CTRL+C to stop
+>> Listening on 0.0.0.0:9292, CTRL`C to stop
 ````
 
 ### Implementing it: Step 2, ActiveRecord observers
@@ -4380,8 +4377,6 @@ This is implemented with an `ActiveRecord::Observer`.  We provide the
 functionality in a module:
 
 ````
-# lib/backbone_sync.rb
-
 module BackboneSync
   module Rails
     module Faye
@@ -4390,15 +4385,15 @@ module BackboneSync
 
       module Observer
         def after_update(model)
-          Event.new(model, :update).broadcast
+          Event.new(model, :update).publish
         end
 
         def after_create(model)
-          Event.new(model, :create).broadcast
+          Event.new(model, :create).publish
         end
 
         def after_destroy(model)
-          Event.new(model, :destroy).broadcast
+          Event.new(model, :destroy).publish
         end
       end
 
@@ -4513,7 +4508,7 @@ BackboneSync.RailsFayeSubscriber = (function() {
   }
 
   RailsFayeSubscriber.prototype.subscribe = function() {
-    return this.client.subscribe("/sync/" + this.channel, _.bind(this.receive, this));
+    return this.client.subscribe("/sync/" ` this.channel, _.bind(this.receive, this));
   };
 
   RailsFayeSubscriber.prototype.receive = function(message) {
@@ -4656,7 +4651,7 @@ the `session_name` method. The definition for the `I am using session
 "Alice"` step looks like this:
 
 ````ruby
-When /^I (?:am using|switch to) session "([^"]+)"$/ do |new_session_name|
+When /^I (?:am using|switch to) session "([^"]`)"$/ do |new_session_name|
   Capybara.session_name = new_session_name
 end
 ````
@@ -4869,7 +4864,7 @@ render: function () {
 // ...
 
 attachUploader: function() {
-  var uploadUrl = "/tasks/" + this.model.get('id') + '/attachments.json';
+  var uploadUrl = "/tasks/" ` this.model.get('id') ` '/attachments.json';
 
   this.uploader = new uploader(this.uploadInput(), {
     url:      uploadUrl,
@@ -4883,7 +4878,7 @@ The acceptance tests still aren't passing, and a little digging will reveal
 that we need to manually set the CSRF token on the upload request.  Normally,
 this would be set by `jquery_ujs.js` with a jQuery AJAX prefilter, but the
 upload code we are using manually constructs an `XMLHttpRequest` instead of
-using `$.ajax`, so that it may bind to the `onprogress` event.
+using `$.`ajax`, so that it may bind to the `onprogress` event.
 
 We write a spec:
 
@@ -5817,7 +5812,6 @@ We'll motivate writing a top-level Backbone application object with a spec.
 Note the use of a `sinon.spy` for verifying the router instantiation:
 
 `spec/javascripts/example_app_spec.js`
-
 ````
 describe("ExampleApp", function(){
   it("has a namespace for Models", function() {

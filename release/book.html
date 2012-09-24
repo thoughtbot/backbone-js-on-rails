@@ -456,7 +456,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">//  other application requires</span>
 <span class="co">//= require_tree ../templates</span>
 <span class="co">//= require_tree .</span></code></pre>
-<p>Load order for Backbone and your Backbone app is very important. jQuery and Underscore must be loaded before Backbone. Then your models must be loaded before your collections (because your collections will reference your models) and then your routers and views must be loaded.</p>
+<p>Load order for Backbone and your Backbone app is very important. jQuery and Underscore must be loaded before Backbone, then the Rails authenticity token patch must be applied. Then your models must be loaded before your collections (because your collections will reference your models) and then your routers and views must be loaded.</p>
 <p>Fortunately, Sprockets can handle this load order for us. When all is said and done, your application.js Sprockets manifest will look as shown below:</p>
 <pre><code>//= require jquery
 //= require jquery_ujs
@@ -515,7 +515,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <p>By default, Backbone models communicate in the normal RESTful way that Rails controllers understand, using the proper verbs to support the standard RESTful Rails controller actions: index, show, create, update, and destroy. Backbone does not make any use of the new action.</p>
 <p>Therefore, it's just up to us to write a <em>normal</em> RESTful controller. The newest and most succinct way to structure these is to use the <code>respond_with</code> method, introduced in Rails 3.0.</p>
 <p>When using <code>respond_with</code>, declare supported formats with <code>respond_to</code>. Inside individual actions, you then specify the resource or resources to be delivered using <code>respond_with</code>:</p>
-<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>::<span class="dt">Base</span>
   respond_to <span class="st">:html</span>, <span class="st">:json</span>
 
   <span class="kw">def</span> index
@@ -535,7 +535,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 });</code></pre>
 <p>The error callback will be triggered if your server returns a non-2xx response. Therefore, you'll want your controller to return a non-2xx HTTP response code if validations fail.</p>
 <p>A controller that does this would appear as shown in the following example:</p>
-<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>::<span class="dt">Base</span>
   respond_to <span class="st">:json</span>
 
   <span class="kw">def</span> create
@@ -548,7 +548,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
   <span class="kw">end</span>
 <span class="kw">end</span></code></pre>
 <p>The default Rails responders will respond with an unprocessable entity (422) status code when there are validation errors, so the action above can be refactored:</p>
-<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>::<span class="dt">Base</span>
   respond_to <span class="st">:json</span>
   <span class="kw">def</span> create
     <span class="ot">@task</span> = <span class="dt">Task</span>.new(params[<span class="st">:task</span>])
@@ -709,7 +709,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
     <span class="kw">this</span>.$<span class="fu">el</span>.<span class="fu">html</span>(JST[<span class="ch">'tasks/index'</span>]({ <span class="dt">tasks</span>: <span class="kw">this</span>.<span class="fu">collection</span> }));
     <span class="kw">return</span> <span class="kw">this</span>;
   }
-});</code></pre>
+};</code></pre>
 <p>The <code>render</code> method above renders the <code>tasks/index</code> JST template, passing the collection of tasks into the template.</p>
 <p>Each Backbone view has an element that it stores in <code>this.$el</code>. This element can be populated with content, although it's a good practice for code outside the view to actually insert the view into the DOM.</p>
 <p>We'll update the Backbone route to instantiate this view, passing in the collection for it to render. The router then renders the view, and inserts it into the DOM:</p>
@@ -889,8 +889,8 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <h3><a href="#TOC">Initialization</a></h3>
 <p>Backbone views could also include an <code>initialize</code> function which will be called when the view is instantiated.</p>
 <p>You only need to specify the initialize function if you wish to do something custom. For example, some views call the <code>render()</code> function upon instantiation. It's not necessary to immediately render that way, but it's relatively common to do so.</p>
-<p>You create a new view by instantiating it with <code>new</code>. For example, <code>new ExampleView()</code>. It is possible to pass in a hash of options with <code>new ExampleView(options)</code>. Any options you pass into the constructor will be available as <code>this.options</code> from inside of the view.</p>
-<p>There are a few special options that, when passed, will be assigned as properties of view. These are <code>model</code>, <code>collection</code>, <code>el</code>, <code>id</code>, <code>className</code>, and <code>tagName</code>. For example, if you create a new view and give it a model option using <code>new ExampleView({ model: someTask })</code>, then <code>someTask</code> will be available as <code>this.model</code> from inside of the view.</p>
+<p>You create a new view by instantiating it with <code>new</code>. For example, <code>new ExampleView()</code>. It is possible to pass in a hash of options with <code>new ExampleView(options)</code>. Any options you pass into the constructor will be available inside of the view in <code>this.options</code>.</p>
+<p>There are a few special options that, when passed, will be assigned as properties of view. These are <code>model</code>, <code>collection</code>, <code>el</code>, <code>id</code>, <code>className</code>, and <code>tagName</code>. For example, if you create a new view and give it a model option using <code>new ExampleView({ model: someTask })</code>, then inside of the view <code>someTask</code> will be available as <code>this.model</code>.</p>
 </section>
 <section class="level3" id="the-views-element">
 <h3><a href="#TOC">The View's element</a></h3>
@@ -904,7 +904,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <section class="level3" id="customizing-the-views-element">
 <h3><a href="#TOC">Customizing the View's Element</a></h3>
 <p>You can use <code>tagName</code>, <code>className</code>, and <code>id</code> to customize the new element created for the view. If no customization is done, the element is an empty <code>div</code>.</p>
-<p><code>tagName</code>, <code>className</code>, and <code>id</code> can either be specified directly on the view or passed in as options at instantiation. Since <code>id</code> will usually correspond to the <code>id</code> of each model, it will likely be passed in as an option rather than declared statically in the view.</p>
+<p><code>tagName</code>, <code>className</code>, and <code>id</code> can either be specified directly on the view or passed in as options at instantiation. Since <code>id</code> will usually to correspond to the <code>id</code> of each model, it will likely be passed in as an option rather than declared statically in the view.</p>
 <p><code>tagName</code> will change the element that is created from a <code>div</code> to something else that you specify. For example, setting <code>tagName: &quot;li&quot;</code> will result in the view's element being an <code>li</code> rather than a <code>div</code>.</p>
 <p><code>className</code> will add an additional class to the element that is created for the view. For example, setting <code>className: &quot;example&quot;</code> in the view will result in that view's element having that additional class like <code>&lt;div class=&quot;example&quot;&gt;</code>.</p>
 </section>
@@ -966,12 +966,12 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <p>Of note:</p>
 <ul>
 <li>Use of <code>{{#each}}</code>, which iterates over the collection</li>
-<li>Within the <code>{{#each}}</code> block, the JavaScript context is the task itself, so you access its properties via <code>this</code></li>
+<li>Within the <code>{{#each}}</code> block, the JavaScriptJavaScript context is the task itself, so you access its properties via <code>this</code></li>
 <li>There's no need to escape HTML output, as Handlebars escapes by default</li>
 </ul>
 <p>A similar library is Mustache.js. Mustache is a templating system that has been ported to a number of languages including JavaScript. The promise of Mustache is &quot;logic-less templates.&quot; Instead of requiring you to write logic in pure JavaScript, using <code>if</code>, for example, Mustache provides a set of tags that take on different meanings. They can render values or not render anything at all.</p>
 <p>Like Handlebars, Mustache HTML escapes rendered values by default.</p>
-<p>You can learn more about Handlebars at the <a href="http://www.handlebarsjs.com/">project's home on the web</a>, and Mustache at <a href="http://mustache.github.com/mustache.5.html">the project's man page</a> and <a href="https://github.com/janl/mustache.js">javascript implementation</a></p>
+<p>You can learn more about Handlebars at the <a href="http://www.handlebarsjs.com/">project's home on the web</a>, and Mustache at <a href="http://mustache.github.com/mustache.5.html">the project's man page</a> and [javascript implementation(https://github.com/janl/mustache.js)</p>
 </section>
 <section class="level2" id="choosing-a-strategy">
 <h2><a href="#TOC">Choosing a strategy</a></h2>
@@ -1090,7 +1090,7 @@ JST[<span class="ch">'users/index'</span>]</code></pre>
 <span class="kw">_</span>.<span class="fu">extend</span>(gameEngine, <span class="kw">Backbone</span>.<span class="fu">Events</span>);
 
 <span class="kw">gameEngine</span>.<span class="fu">on</span>(<span class="st">&quot;user_registered&quot;</span>, <span class="kw">function</span>(user) {
-  <span class="kw">user</span>.<span class="fu">points</span> += <span class="dv">10</span>
+  <span class="kw">user</span>.<span class="fu">points</span> `= <span class="dv">10</span>
 });
 
 <span class="kw">gameEngine</span>.<span class="fu">trigger</span>(<span class="st">&quot;user_registered&quot;</span>, <span class="kw">User</span>.<span class="fu">new</span>({ <span class="dt">points</span>: <span class="dv">0</span> }));</code></pre>
@@ -1274,7 +1274,7 @@ UsersTable = <span class="kw">Backbone.View</span>.<span class="fu">extend</span
 </section>
 <section class="level3" id="unbinding-model-and-collection-events">
 <h3><a href="#TOC">Unbinding model and collection events</a></h3>
-<p>If your view binds to events on a model or collection with <code>on()</code>, you are responsible for unbinding these events. You do this with a simple call to <code>this.model.off()</code> or <code>this.collection.off()</code>; the <a href="http://documentcloud.github.com/backbone/#Events-off"><code>Backbone.Events.off()</code> function</a> removes all callbacks on that object.</p>
+<p>If your view binds to events on a model or collection with <code>on()</code>, you are responsible for unbinding these events. You do this with a simple call to <code>this.model.off()</code> or <code>this.collection.off()</code>; the http://documentcloud.github.com/backbone/#Events-off[<code>Backbone.Events.off()</code> function] removes all callbacks on that object.</p>
 <p>When should you unbind these handlers? Whenever the view is going away. This means that any pieces of code that create new instances of this view become responsible for cleaning up after it's gone. That isn't a very cohesive approach, so it's best to include the cleanup responsibility on the view itself.</p>
 <p>To do this, you'll write a <code>leave()</code> function on your view that wraps <code>remove()</code> and handles any additional event unbinding that's needed. As a convention, when you use this view elsewhere, you'll call <code>leave()</code> instead of <code>remove()</code> when you're done:</p>
 <pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> SomeCollectionView = <span class="kw">Backbone.View</span>.<span class="fu">extend</span>({
@@ -1552,7 +1552,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 <p>Now our <code>CompositeView</code> maintains an array of its immediate children as <code>this.children</code>. With this reference in place, a parent view's <code>leave()</code> method can invoke <code>leave()</code> on its children, ensuring that an entire tree of composed views is cleaned up properly.</p>
 <p>For child views that can dismiss themselves, such as dialog boxes, children maintain a back-reference at <code>this.parent</code>. This is used to reach up and call <code>this.parent.removeChild(this)</code> for these self-dismissing views.</p>
 <p>Making use of <code>CompositeView</code>, we split up the <code>TaskDetail</code> view class:</p>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> TaskDetail = <span class="kw">Support.CompositeView</span>.<span class="fu">extend</span>({
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> TaskDetail = <span class="kw">CompositeView</span>.<span class="fu">extend</span>({
   <span class="dt">tagName</span>: <span class="ch">'section'</span>,
   <span class="dt">id</span>: <span class="ch">'task'</span>,
 
@@ -1582,7 +1582,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
     <span class="kw">this</span>.<span class="fu">renderChildInto</span>(commentsList, commentsContainer);
   }
 });</code></pre>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> CommentsList = <span class="kw">Support.CompositeView</span>.<span class="fu">extend</span>({
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> CommentsList = <span class="kw">CompositeView</span>.<span class="fu">extend</span>({
   <span class="dt">tagName</span>: <span class="ch">'ul'</span>,
 
   <span class="dt">initialize</span>: <span class="kw">function</span>() {
@@ -1615,7 +1615,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
     <span class="kw">this</span>.<span class="fu">renderChildInto</span>(commentForm, commentFormContainer);
   }
 });</code></pre>
-<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> CommentForm = <span class="kw">Support.CompositeView</span>.<span class="fu">extend</span>({
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> CommentForm = <span class="kw">CompositeView</span>.<span class="fu">extend</span>({
   <span class="dt">events</span>: {
     <span class="st">&quot;click button&quot;</span>: <span class="st">&quot;createComment&quot;</span>
   },
@@ -1661,7 +1661,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 <ul>
 <li>Each view class has a smaller and more cohesive set of responsibilities</li>
 <li>The comments view code, extracted and decoupled from the task view code, can now be reused on other domain objects with comments</li>
-<li>The task view performs better, since adding new comments or updating the task details will only re-render the pertinent section, instead of re-rendering the entire composite of task and comments</li>
+<li>The task view performs better, since adding new comments or updating the task details will only re-render the pertinent section, instead of re-rendering the entire task ` comments composite</li>
 </ul>
 <p>In the example app, we make use of a composite view on <code>TasksIndex</code> located at <code>app/assets/javascripts/views/tasks_index.js</code>. The situation is similar to what has been discussed here. The view responsible for rendering the list of children will actually render them as children. Note how the <code>renderTasks</code> function iterates over the collection of tasks, instantiates a <code>TaskItem</code> view for each, renders it as a child with <code>renderChild</code>, and finally appends it to table's body. Now, when the router cleans up the <code>TasksIndex</code> with <code>leave</code>, it will also clean up all of its children.</p>
 </section>
@@ -1732,7 +1732,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 <section class="level3" id="a-backbone-forms-library">
 <h3><a href="#TOC">A Backbone forms library</a></h3>
 <p>If you want to avoid writing form markup by hand, your best bet is to use a JavaScript form builder. Since the model data is being read and written by Backbone views and models, it's ideal to have markup construction and form serialization implemented on the client side.</p>
-<p>One solid implementation is <a href="https://github.com/powmedia/backbone-forms"><code>backbone-forms</code> by Charles Davison</a>. It provides markup construction and serialization, as well as a method for declaring a typed schema to support both of those facilities. It offers a flexible system for adding custom editor types, and supports configuring your form markup structure by providing HTML template fragments.</p>
+<p>One solid implementation is https://github.com/powmedia/backbone-forms[<code>backbone-forms</code> by Charles Davison]. It provides markup construction and serialization, as well as a method for declaring a typed schema to support both of those facilities. It offers a flexible system for adding custom editor types, and supports configuring your form markup structure by providing HTML template fragments.</p>
 </section>
 <section class="level3" id="display-server-errors">
 <h3><a href="#TOC">Display server errors</a></h3>
@@ -1753,7 +1753,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
       <span class="kw">&lt;label</span><span class="ot"> for=</span><span class="st">&quot;task_title&quot;</span><span class="kw">&gt;</span>Title<span class="kw">&lt;/label&gt;</span>
       <span class="kw">&lt;input</span><span class="ot"> id=</span><span class="st">&quot;task_title&quot;</span><span class="ot"> name=</span><span class="st">&quot;title&quot;</span><span class="ot"> type=</span><span class="st">&quot;text&quot;</span><span class="kw">&gt;</span>
       <span class="co">&lt;!--</span>
-<span class="co">        &lt;p class=&quot;inline-errors&quot;&gt;</span>
+<span class="co">        &lt;p class=&quot;inline_errors&quot;&gt;</span>
 <span class="co">          The error for this field will be rendered here.</span>
 <span class="co">        &lt;/p&gt;</span>
 <span class="co">      --&gt;</span>
@@ -1787,7 +1787,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 
   <span class="dt">clearOldErrors</span>: <span class="kw">function</span>() {
     <span class="kw">this</span>.$(<span class="st">&quot;.error&quot;</span>).<span class="fu">removeClass</span>(<span class="st">&quot;error&quot;</span>);
-    <span class="kw">this</span>.$(<span class="st">&quot;p.inline-errors&quot;</span>).<span class="fu">remove</span>();
+    <span class="kw">this</span>.$(<span class="st">&quot;p.inline_errors&quot;</span>).<span class="fu">remove</span>();
   },
 
   <span class="dt">renderErrors</span>: <span class="kw">function</span>() {
@@ -1797,13 +1797,13 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
   <span class="dt">renderError</span>: <span class="kw">function</span>(errors, attribute) {
     <span class="kw">var</span> errorString = <span class="kw">errors</span>.<span class="fu">join</span>(<span class="st">&quot;, &quot;</span>);
     <span class="kw">var</span> field = <span class="kw">this</span>.<span class="fu">fieldFor</span>(attribute);
-    <span class="kw">var</span> errorTag = $(<span class="ch">'&lt;p&gt;'</span>).<span class="fu">addClass</span>(<span class="ch">'inline-errors'</span>).<span class="fu">text</span>(errorString);
+    <span class="kw">var</span> errorTag = $(<span class="ch">'&lt;p&gt;'</span>).<span class="fu">addClass</span>(<span class="ch">'inline_errors'</span>).<span class="fu">text</span>(errorString);
     <span class="kw">field</span>.<span class="fu">append</span>(errorTag);
     <span class="kw">field</span>.<span class="fu">addClass</span>(<span class="st">&quot;error&quot;</span>);
   },
 
   <span class="dt">fieldFor</span>: <span class="kw">function</span>(attribute) {
-    <span class="kw">return</span> <span class="kw">this</span>.$(<span class="ch">'li[id*=&quot;_'</span> + attribute + <span class="ch">'_input&quot;]'</span>);
+    <span class="kw">return</span> <span class="kw">this</span>.$(<span class="ch">'li[id*=&quot;_'</span> ` attribute ` <span class="ch">'_input&quot;]'</span>);
   }
 });</code></pre>
 </section>
@@ -2095,7 +2095,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 
     <span class="kw">var</span> self = <span class="kw">this</span>;
     <span class="co">// create a new task and save it to the server</span>
-    <span class="kw">new</span> <span class="kw">YourApp.Models</span>.<span class="fu">Task</span>(attributes).<span class="fu">save</span>({}, {
+    <span class="kw">new</span> <span class="kw">YourApp.Models</span>.<span class="fu">Task</span>(attributes).<span class="fu">save</span>({
         <span class="dt">success</span>: <span class="kw">function</span>() { <span class="co">/* handle success */</span> }
         <span class="dt">error</span>:   <span class="kw">function</span>() { <span class="co">/* validation error occurred, show user */</span> }
       });
@@ -2131,7 +2131,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 
     <span class="kw">var</span> self = <span class="kw">this</span>;
     <span class="co">// create a new task and save it to the server</span>
-    <span class="kw">new</span> <span class="kw">YourApp.Models</span>.<span class="fu">Task</span>(attributes).<span class="fu">save</span>({}, {
+    <span class="kw">new</span> <span class="kw">YourApp.Models</span>.<span class="fu">Task</span>(attributes).<span class="fu">save</span>({
         <span class="dt">success</span>: <span class="kw">function</span>() { <span class="co">/* handle success */</span> }
         <span class="dt">error</span>:   <span class="kw">function</span>() { <span class="co">/* validation error occurred, show user */</span> }
       });
@@ -2165,11 +2165,11 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
 
 <span class="kw">_</span>.<span class="fu">extend</span>(<span class="kw">ErrorList</span>.<span class="fu">prototype</span>, {
   <span class="dt">each</span>: <span class="kw">function</span> (iterator) {
-    <span class="kw">_</span>.<span class="fu">each</span>(<span class="kw">this</span>.<span class="fu">attributesWithErrors</span>, iterator);
+    <span class="kw">_</span>.<span class="fu">each</span>(attributesWithErrors, iterator);
   },
 
   <span class="dt">size</span>: <span class="kw">function</span>() {
-    <span class="kw">return</span> <span class="kw">_</span>.<span class="fu">size</span>(<span class="kw">this</span>.<span class="fu">attributesWithErrors</span>);
+    <span class="kw">return</span> <span class="kw">_</span>.<span class="fu">size</span>(attributesWithErrors);
   }
 });</code></pre>
 <p>Next up is the <code>ErrorView</code>, which is in charge of taking the <code>ErrorList</code> and appending each inline error in the form, providing feedback to the user that their input is invalid:</p>
@@ -2193,7 +2193,7 @@ Support.CompositeView.extend = Backbone.View.extend;</code></pre>
   },
 
   <span class="dt">fieldFor</span>: <span class="kw">function</span>(attribute) {
-    <span class="kw">return</span> $(<span class="kw">this</span>.<span class="fu">options</span>.<span class="fu">el</span>).<span class="fu">find</span>(<span class="ch">'li[id*=&quot;_'</span> + attribute + <span class="ch">'_input&quot;]'</span>).<span class="fu">first</span>();
+    <span class="kw">return</span> $(<span class="kw">this</span>.<span class="fu">options</span>.<span class="fu">el</span>).<span class="fu">find</span>(<span class="ch">'[id*=&quot;_'</span> ` attribute ` <span class="ch">'_input&quot;]'</span>).<span class="fu">first</span>();
   }
 });</code></pre>
 <p>Note the <code>fieldFor</code> function. It expects a field with an id containing a certain format. Therefore, in order for this to work, the form's HTML must contain a matching element. In our case, it was the list item with an id of <code>task_title_input</code>.</p>
@@ -2331,6 +2331,7 @@ child(<span class="st">:attachments</span>) { attributes(<span class="st">:id</s
 
   <span class="dt">parseAttachments</span>: <span class="kw">function</span>() {
     <span class="kw">this</span>.<span class="fu">attachments</span> = <span class="kw">new</span> <span class="kw">ExampleApp.Collections</span>.<span class="fu">Attachments</span>(<span class="kw">this</span>.<span class="fu">get</span>(<span class="ch">'attachments'</span>));
+    <span class="kw">delete</span> <span class="kw">this</span>.<span class="fu">attachments</span>;
   },
 
   <span class="co">// ...</span></code></pre>
@@ -2634,7 +2635,6 @@ child(<span class="st">:attachments</span>) { attributes(<span class="st">:id</s
 
 <span class="kw">source</span> <span class="st">'http://rubygems.org'</span>
 gem <span class="st">'faye'</span>
-gem <span class="st">'thin'</span>
 
 $ <span class="kw">cat</span> faye/config.ru
 
@@ -2649,23 +2649,17 @@ $ <span class="kw">cat</span> faye/run.sh
 <span class="ot">BUNDLE_GEMFILE=$BASEDIR</span>/Gemfile
 bundle <span class="kw">exec</span> rackup <span class="ot">$BASEDIR</span>/config.ru -s thin -E production
 
-$ bundle
-<span class="kw">(</span>...<span class="kw">)</span>
-Your bundle is <span class="kw">complete</span>! Use <span class="kw">`</span>bundle show [gemname]<span class="kw">`</span> to see where a bundled gem is installed.
-
 $ ./faye/run.sh
 
 <span class="kw">&gt;&gt;</span> Thin web server <span class="kw">(</span>v1.2.11 codename Bat-Shit Crazy<span class="kw">)</span>
 <span class="kw">&gt;&gt;</span> Maximum connections <span class="kw">set</span> to 1024
-<span class="kw">&gt;&gt;</span> Listening on 0.0.0.0:9292, CTRL+C to stop</code></pre>
+<span class="kw">&gt;&gt;</span> Listening on 0.0.0.0:9292, CTRL<span class="kw">`</span>C to stop</code></pre>
 </section>
 <section class="level3" id="implementing-it-step-2-activerecord-observers">
 <h3><a href="#TOC">Implementing it: Step 2, ActiveRecord observers</a></h3>
 <p>Now that the message bus is running, let's walk through the server code. The Rails app's responsibility is this: Whenever a todo model is created, updated, or deleted, it will publish a change event message.</p>
 <p>This is implemented with an <code>ActiveRecord::Observer</code>. We provide the functionality in a module:</p>
-<pre><code># lib/backbone_sync.rb
-
-module BackboneSync
+<pre><code>module BackboneSync
   module Rails
     module Faye
       mattr_accessor :root_address
@@ -2673,15 +2667,15 @@ module BackboneSync
 
       module Observer
         def after_update(model)
-          Event.new(model, :update).broadcast
+          Event.new(model, :update).publish
         end
 
         def after_create(model)
-          Event.new(model, :create).broadcast
+          Event.new(model, :create).publish
         end
 
         def after_destroy(model)
-          Event.new(model, :destroy).broadcast
+          Event.new(model, :destroy).publish
         end
       end
 
@@ -2763,7 +2757,7 @@ end</code></pre>
   }
 
   <span class="kw">RailsFayeSubscriber.prototype</span>.<span class="fu">subscribe</span> = <span class="kw">function</span>() {
-    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">client</span>.<span class="fu">subscribe</span>(<span class="st">&quot;/sync/&quot;</span> + <span class="kw">this</span>.<span class="fu">channel</span>, <span class="kw">_</span>.<span class="fu">bind</span>(<span class="kw">this</span>.<span class="fu">receive</span>, <span class="kw">this</span>));
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">client</span>.<span class="fu">subscribe</span>(<span class="st">&quot;/sync/&quot;</span> ` <span class="kw">this</span>.<span class="fu">channel</span>, <span class="kw">_</span>.<span class="fu">bind</span>(<span class="kw">this</span>.<span class="fu">receive</span>, <span class="kw">this</span>));
   };
 
   <span class="kw">RailsFayeSubscriber.prototype</span>.<span class="fu">receive</span> = <span class="kw">function</span>(message) {
@@ -2856,7 +2850,7 @@ end</code></pre>
 <p>Thankfully, Capybara allows us to run acceptance tests with client-side behavior by specifying different drivers to run scenarios that require JavaScript vs. those which don't. The very first line above, <code>@javascript</code>, tells Capybara to use a JavaScript-enabled driver such as Selenium or capybara-webkit.</p>
 <p>The following two steps that create some fixture data are provided by <a href="https://github.com/thougthbot/factory_girl">FactoryGirl</a>, which looks into your factory definitions and builds step definitions based on their attributes and associations.</p>
 <p>But then we get into the meat of the problem: switching sessions. Capybara introduced the ability to name and switch sessions in your scenarios via the <code>session_name</code> method. The definition for the <code>I am using session &quot;Alice&quot;</code> step looks like this:</p>
-<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">When</span> <span class="ot">/^I (?:am using|switch to) session &quot;([^&quot;]+)&quot;$/</span> <span class="kw">do</span> |new_session_name|
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">When</span> <span class="ot">/^I (?:am using|switch to) session &quot;([^&quot;]`)&quot;$/</span> <span class="kw">do</span> |new_session_name|
   <span class="dt">Capybara</span>.session_name = new_session_name
 <span class="kw">end</span></code></pre>
 <p>This allows us to essentially open up different browsers, if you're using the Selenium driver, and it is the key to exercising background syncing code in Capybara acceptance testing.</p>
@@ -2962,7 +2956,7 @@ it(<span class="st">&quot;uploads an attachment for the current task&quot;</span
 <span class="co">// ...</span>
 
 <span class="dt">attachUploader</span>: <span class="kw">function</span>() {
-  <span class="kw">var</span> uploadUrl = <span class="st">&quot;/tasks/&quot;</span> + <span class="kw">this</span>.<span class="fu">model</span>.<span class="fu">get</span>(<span class="ch">'id'</span>) + <span class="ch">'/attachments.json'</span>;
+  <span class="kw">var</span> uploadUrl = <span class="st">&quot;/tasks/&quot;</span> ` <span class="kw">this</span>.<span class="fu">model</span>.<span class="fu">get</span>(<span class="ch">'id'</span>) ` <span class="ch">'/attachments.json'</span>;
 
   <span class="kw">this</span>.<span class="fu">uploader</span> = <span class="kw">new</span> uploader(<span class="kw">this</span>.<span class="fu">uploadInput</span>(), {
     <span class="dt">url</span>:      uploadUrl,
@@ -2970,7 +2964,7 @@ it(<span class="st">&quot;uploads an attachment for the current task&quot;</span
     <span class="dt">prefix</span>:   <span class="ch">'upload'</span>
   });
 },</code></pre>
-<p>The acceptance tests still aren't passing, and a little digging will reveal that we need to manually set the CSRF token on the upload request. Normally, this would be set by <code>jquery_ujs.js</code> with a jQuery AJAX prefilter, but the upload code we are using manually constructs an <code>XMLHttpRequest</code> instead of using <code>$.ajax</code>, so that it may bind to the <code>onprogress</code> event.</p>
+<p>The acceptance tests still aren't passing, and a little digging will reveal that we need to manually set the CSRF token on the upload request. Normally, this would be set by <code>jquery_ujs.js</code> with a jQuery AJAX prefilter, but the upload code we are using manually constructs an <code>XMLHttpRequest</code> instead of using <code>$.</code>ajax<code>, so that it may bind to the</code>onprogress` event.</p>
 <p>We write a spec:</p>
 <pre class="sourceCode javascript"><code class="sourceCode javascript">it(<span class="st">&quot;sets the CSRF token for the upload request&quot;</span>, <span class="kw">function</span>() {
   <span class="kw">view</span>.<span class="fu">upload</span>();
@@ -3550,59 +3544,37 @@ have text 'Wake up'.</code></pre>
 Unable to find css &quot;#tasks table&quot; (Capybara::ElementNotFound)</code></pre>
 <p>This is because the Jasmine spec is an isolation spec, and verifies that the <code>TasksIndex</code> view works in isolation. There is additional code we need to write to hook up the data in the Rails test database to the Backbone view. Adding this code to bootstrap the Backbone application should wrap up our exercise and get the tests passing.</p>
 <p>We'll motivate writing a top-level Backbone application object with a spec. Note the use of a <code>sinon.spy</code> for verifying the router instantiation:</p>
-<p><code>spec/javascripts/example_app_spec.js</code></p>
-<pre><code>describe(&quot;ExampleApp&quot;, function(){
-  it(&quot;has a namespace for Models&quot;, function() {
-    expect(ExampleApp.Models).toBeTruthy();
-  });
+<p><code>spec/javascripts/example_app_spec.js</code> ```` describe(&quot;ExampleApp&quot;, function(){ it(&quot;has a namespace for Models&quot;, function() { expect(ExampleApp.Models).toBeTruthy(); });</p>
+<p>it(&quot;has a namespace for Collections&quot;, function() { expect(ExampleApp.Collections).toBeTruthy(); });</p>
+<p>it(&quot;has a namespace for Views&quot;, function() { expect(ExampleApp.Views).toBeTruthy(); });</p>
+<p>it(&quot;has a namespace for Routers&quot;, function() { expect(ExampleApp.Routers).toBeTruthy(); });</p>
+<p>describe(&quot;initialize()&quot;, function() { it(&quot;accepts data JSON and instantiates a collection from it&quot;, function() { var data = { &quot;tasks&quot;: [{&quot;title&quot;:&quot;thing to do&quot;}, {&quot;title&quot;:&quot;another thing&quot;}], &quot;users&quot;: [{&quot;id&quot;:&quot;1&quot;,&quot;email&quot;:&quot;alice@example.com&quot;}] }; ExampleApp.initialize(data);</p>
+<pre><code>  expect(ExampleApp.tasks).not.toEqual(undefined);
+  expect(ExampleApp.tasks.length).toEqual(2);
+  expect(ExampleApp.tasks.models[0].get('title')).toEqual(&quot;thing to do&quot;);
+  expect(ExampleApp.tasks.models[1].get('title')).toEqual(&quot;another thing&quot;);
 
-  it(&quot;has a namespace for Collections&quot;, function() {
-    expect(ExampleApp.Collections).toBeTruthy();
-  });
+  expect(ExampleApp.users.length).toEqual(1);
+});
 
-  it(&quot;has a namespace for Views&quot;, function() {
-    expect(ExampleApp.Views).toBeTruthy();
-  });
+it(&quot;instantiates a Tasks router&quot;, function() {
+  sinon.spy(ExampleApp.Routers, 'Tasks');
+  ExampleApp.initialize({});
+  expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
+  ExampleApp.Routers.Tasks.restore();
+});
 
-  it(&quot;has a namespace for Routers&quot;, function() {
-    expect(ExampleApp.Routers).toBeTruthy();
-  });
+it(&quot;starts Backbone.history&quot;, function() {
+  Backbone.history.started = null;
+  Backbone.history.stop();
+  sinon.spy(Backbone.history, 'start');
+  ExampleApp.initialize({});
 
-  describe(&quot;initialize()&quot;, function() {
-    it(&quot;accepts data JSON and instantiates a collection from it&quot;, function() {
-      var data = {
-        &quot;tasks&quot;: [{&quot;title&quot;:&quot;thing to do&quot;}, {&quot;title&quot;:&quot;another thing&quot;}],
-        &quot;users&quot;: [{&quot;id&quot;:&quot;1&quot;,&quot;email&quot;:&quot;alice@example.com&quot;}]
-      };
-      ExampleApp.initialize(data);
+  expect(Backbone.history.start).toHaveBeenCalled();
 
-      expect(ExampleApp.tasks).not.toEqual(undefined);
-      expect(ExampleApp.tasks.length).toEqual(2);
-      expect(ExampleApp.tasks.models[0].get('title')).toEqual(&quot;thing to do&quot;);
-      expect(ExampleApp.tasks.models[1].get('title')).toEqual(&quot;another thing&quot;);
-
-      expect(ExampleApp.users.length).toEqual(1);
-    });
-
-    it(&quot;instantiates a Tasks router&quot;, function() {
-      sinon.spy(ExampleApp.Routers, 'Tasks');
-      ExampleApp.initialize({});
-      expect(ExampleApp.Routers.Tasks).toHaveBeenCalled();
-      ExampleApp.Routers.Tasks.restore();
-    });
-
-    it(&quot;starts Backbone.history&quot;, function() {
-      Backbone.history.started = null;
-      Backbone.history.stop();
-      sinon.spy(Backbone.history, 'start');
-      ExampleApp.initialize({});
-
-      expect(Backbone.history.start).toHaveBeenCalled();
-
-      Backbone.history.start.restore();
-    });
-  });
+  Backbone.history.start.restore();
 });</code></pre>
+<p>}); }); ````</p>
 <p>Get it to green:</p>
 <pre><code>window.ExampleApp = {
   Models: {},
