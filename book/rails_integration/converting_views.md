@@ -252,7 +252,7 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     this.$el.html(JST['tasks/view']({ model: this.model }));
     return this;
   }
-};
+});
 ````
 
 Given the above `tagName` customization, the task view template will appear as
