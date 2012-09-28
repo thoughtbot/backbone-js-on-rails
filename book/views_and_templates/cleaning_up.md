@@ -131,9 +131,29 @@ var SomeCollectionView = Backbone.View.extend({
 ````
 
 These functions, `bindTo()` and `unbindFromAll()`, can be extracted into a
-reusable mixin or superclass.  Then, we just have to use `bindTo()` instead of
-`model.on()` and be assured that the handlers will be cleaned up during
-`leave()`.
+reusable mixin or superclass.  Then, we just have to use `this.bindTo()`
+instead of `model.on()` and be assured that the handlers will be cleaned up
+during `leave()`.
+
+Now, to clarify, Backbone does provide the facility to unbind from all
+callbacks for one object, with `this.model.off(null, null, this)`.  There are
+two kinds of situations that make `bindTo` preferable.
+
+The first case is when a view binds to events on more than one
+model/collection. Consider a `ReportHeader` view binds to events on its `user`,
+`report`, and `reportDetails` objects; unbinding would require three calls to
+`off`. Using `bindTo` allows the cleanup to happen with one call to
+`unbindFromAll`, without having to keep track of the various objects you've
+bound to.
+
+The second is when you want to extract the cleanup to a base view class, like
+we will discuss shortly.  This eliminates the need to repeat unbinding code
+across all view classes by extracting it up to the parent/base view class.  In
+order to unbind, the base class must know the name of the object to unbind. You
+could make the assumption that it's always named `this.model`, but you'll
+sometimes want to bind to other things, say `this.collection`. Using `bindTo`
+means that the base class doesn't need to know what the child classes bind
+onto, and it can still cleanly unbind.
 
 ### Unbinding view-triggered events
 
