@@ -109,9 +109,11 @@ _.extend(Tasks.prototype, FilterableCollectionMixin);
 ## Propagating collection changes
 
 The `FilterableCollectionMixin`, as we've written it, will produce a filtered
-collection that does not update when the original collection is changed.  To do
-so, bind to the change, add, and remove events on the source collection,
-reapply the filter function, and repopulate the filtered collection:
+collection that does not update when the original collection is changed.
+
+A naive approach is to bind to the change, add, and remove events on the source
+collection, reapply the filter function, and repopulate the filtered
+collection:
 
 ````javascript
 var FilterableCollectionMixin = {
@@ -133,6 +135,15 @@ var FilterableCollectionMixin = {
   }
 };
 ````
+
+While this correctly updates the filtered collection when the base collection
+or one of its models is changed, this will always trigger a `reset` event
+on the filtered collection, rather than the appropriate event.
+
+A full `FilteredCollectionMixin`, along with specs for its event triggering in
+various states, is included in the `example_app` under
+`app/assets/javascripts/filterable_collection_mixin.js` and
+`spec/javascripts/filterable_collection_mixin_spec.js`.
 
 ## Sorting
 
@@ -269,3 +280,7 @@ var SortableCollectionMixin = {
   }
 };
 ````
+
+It is left as an excerise for the reader to update `SortableCollectionMixin`
+to trigger the correct change/add/remove events as in the improved
+`FilterableCollectionMixin` above.
