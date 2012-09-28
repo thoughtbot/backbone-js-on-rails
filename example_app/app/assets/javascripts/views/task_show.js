@@ -1,7 +1,7 @@
-ExampleApp.Views.TaskShow = Backbone.View.extend({
+ExampleApp.Views.TaskShow = Support.CompositeView.extend({
   initialize: function() {
     _.bindAll(this, "render", "uploadSuccess");
-    this.model.on("change", this.render);
+    this.bindTo(this.model, "change", this.render);
   },
 
   events: {
