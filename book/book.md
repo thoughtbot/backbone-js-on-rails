@@ -98,3 +98,7 @@
 # Security
 
 <<[security/html_encoding_bootstrap_data.md]
+
+# Application Structure
+
+<<[app_structure/app_structure.md]
