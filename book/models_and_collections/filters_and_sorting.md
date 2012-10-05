@@ -3,7 +3,57 @@
 When using our Backbone models and collections, it's often handy to filter the
 collections by reusable criteria, or sort them by several different criteria.
 
-## Filters
+## Modifying collections in-place
+
+An easy method of filtering or sorting a collection is by updating it in-place.
+
+To sort a collection in-place, change its `comparator` property to a new
+function and call `#sort`:
+
+````javascript
+var alphabet = new Backbone.Collection([
+  new Backbone.Model({ letter: 'W', syllables: 3 }),
+  new Backbone.Model({ letter: 'X', syllables: 2 }),
+  new Backbone.Model({ letter: 'Y', syllables: 1 }),
+  new Backbone.Model({ letter: 'Z', syllables: 1 })
+]);
+
+// the collection starts off in natural, insertion order
+console.log(alphabet.pluck('letter')); // ['W', 'X', 'Y', 'Z']
+
+// sort them by number of syllables in the pronunciation
+alphabet.comparator = function(letter) { return letter.get('syllables') };
+alphabet.sort();
+console.log(alphabet.pluck('letter')); // ['Y', 'Z', 'X', 'W']
+````
+
+To filter a collection in-place, iterate over it and reject the elements you
+want to remove:
+
+````javascript
+// get rid of letters that take too long to say
+shortLetters = alphabet.filter(function(letter) {
+  return letter.get('syllables') == 1;
+});
+alphabet.reset(shortLetters);
+console.log(alphabet.pluck('letter')); // ['Y', 'Z']
+````
+
+Note that the filtering is destructive; after we invoke `alphabet#reset`, there
+is no way to get the discarded elements back.  Also, there is no link back to
+the parent collection - if elements are added to the base collection, they are
+not propagated automatically to the filtered view.  Since it's occasionally
+valuable to produce a filtered view on a collection that receives changes to
+the root collection, let's take a look at implementing it.
+
+After that, we'll take a look at a memory leak that this pattern can introduce,
+and how to effectively manage that.
+
+Finally, while the clone-and-modify approach is more clearly useful for
+filtering, it can be helpful in sorting as well if you need to render multiple
+views from the same base collection, but with different sort orders.
+
+## Filtering
 
 To filter a `Backbone.Collection`, as with Rails named scopes, first define
 functions on your collections that filter by your criteria, using the `select`
@@ -212,11 +262,12 @@ var FilterableResultsView = Support.CompositeView.extend({
     // If we just assign filteredCollection to baseCollection, either:
     //
     // 1. baseCollection does not have #teardown, so calling it blows up.
-    // 2. baseCollection does have #teardown, and we tear it down while filtering,
-    //    breaking the chain from its parent.  Oops.
+    // 2. baseCollection does have #teardown, and we tear it down while
+    //    filtering, breaking the chain from its parent.  Oops.
     //
     // So, produce a filtered copy that initially contains all member elements.
-    this.filteredCollection = this.baseCollection.filtered(function() { return true; });
+    this.filteredCollection = this.baseCollection.filtered(
+      function() { return true; });
   },
 
   applyFilter: function() {
@@ -369,3 +420,4 @@ var SortableCollectionMixin = {
 It is left as an excerise for the reader to update `SortableCollectionMixin`
 to trigger the correct change/add/remove events as in the improved
 `FilterableCollectionMixin` above.
+
