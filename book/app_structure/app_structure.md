@@ -23,6 +23,7 @@ classes to improve include:
 * Convention-based construction of form markup from models
 * Single- or bi-directional binding of models to views
 * More finely-grained control over serialization, particularly for dates and times
+* Producing subset views of a collection, for filtering and sorting
 
 Another one of the selling points of Backbone is its rich ecosystem of addons
 and plugins.  Several of these are worth reading about and employing in your
