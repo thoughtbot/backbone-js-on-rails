@@ -2,6 +2,7 @@ describe("FilteredCollection", function() {
   var baseCollection, oddCollection, onAdd, onRemove, onChange, m1, m2, m3, m4;
 
   beforeEach(function() {
+    console.log('beforeEach');
     var FilterableCollection = Backbone.Collection.extend({});
     _.extend(FilterableCollection.prototype, FilterableCollectionMixin);
 
@@ -83,5 +84,11 @@ describe("FilteredCollection", function() {
       expect(onRemove).not.toHaveBeenCalled();
       expect(onChange).not.toHaveBeenCalled();
     });
+  });
+
+  it("provides an teardown function which unbinds the filtered collection from the base collection, allowing it to be GC'd", function() {
+    expect(_.size(baseCollection._callbacks)).toEqual(3);
+    oddCollection.teardown();
+    expect(_.size(baseCollection._callbacks)).toEqual(0);
   });
 });

@@ -145,6 +145,91 @@ various states, is included in the `example_app` under
 `app/assets/javascripts/filterable_collection_mixin.js` and
 `spec/javascripts/filterable_collection_mixin_spec.js`.
 
+### A note on event bindings and reference leaks
+
+The general approach of duplicating a collection to filter or sort it is handy,
+but there is a piece of bookkeeping that you have to keep in mind.  Consider a
+filterable results interface that renders a collection, and assume that the view
+uses this derivative collection approach to filtering.
+
+The view accepts a base collection and then maintains a filtered version of that
+collection, which it renders from.
+
+````javascript
+var FilterableResultsView = Support.CompositeView.extend({
+  events: {
+    "click button.filter": applyFilter,
+  },
+
+  initialize: function(options) {
+    this.baseCollection = options.collection;
+    this.filteredCollection = this.baseCollection;
+  },
+
+  applyFilter: function() {
+    var filterFunction = this.computeFilterFunction(); // filtering logic goes here
+    this.filteredCollection = this.baseCollection.filtered(filterFunction);
+    this.render();
+  },
+
+  render: function() {
+    // render from this.filteredCollection
+  },
+
+  // ...
+});
+````
+
+There is a leak in FilterableMixinCollection, as we have it now, which is
+exposed by this usage pattern.  The contructor-local functions `addToFiltered`,
+`removeFromFiltered`, and `changeFiltered` close over the `filteredCollection`
+reference inside `FilterableCollectionMixin#filtered`.  Those functions are
+also bound as event handlers on the `baseCollection`, which means a reference
+chain is maintained from the base collection, through its event handlers, to
+those functions, to the filtered collection.
+
+Unless these event handlers are unbound, the filtered collection will never be
+eligible for garbage collection.  If the user re-filters the view many times,
+which is particularly likely in a long-lived client-side application, this
+leakage can grow quite large.  Additionally, the chain of references extending
+from the filtered collections may grow quite large themselves.
+
+Unfortunately, a filtered collection is not aware of when you are finished
+using it, so we must expose the cleanup concern as something for the view to
+handle.  See the `teardown` function in `FilterableCollectionMixin`, which
+unbinds these event handlers, allowing the filtered collection to be
+correctly garbage collected.
+
+You can think of this in a similar way to how the `SwappingRouter` tracks
+its current view, disposing of the old view before swapping in the new one.
+
+
+````javascript
+var FilterableResultsView = Support.CompositeView.extend({
+  initialize: function(options) {
+    this.baseCollection = options.collection;
+
+    // If we just assign filteredCollection to baseCollection, either:
+    //
+    // 1. baseCollection does not have #teardown, so calling it blows up.
+    // 2. baseCollection does have #teardown, and we tear it down while filtering,
+    //    breaking the chain from its parent.  Oops.
+    //
+    // So, produce a filtered copy that initially contains all member elements.
+    this.filteredCollection = this.baseCollection.filtered(function() { return true; });
+  },
+
+  applyFilter: function() {
+    var filterFunction = this.computeFilterFunction(); // filtering logic goes here
+    this.filteredFunction.teardown();
+    this.filteredCollection = this.baseCollection.filtered(filterFunction);
+    this.render();
+  },
+
+  // ...
+});
+````
+
 ## Sorting
 
 The simplest way to sort a `Backbone.Collection` is to define a `comparator`

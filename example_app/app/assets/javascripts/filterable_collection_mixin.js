@@ -1,5 +1,6 @@
 // Adapted from contribution by Luke Ehresman https://github.com/lehresman
 // Originally included on: https://github.com/thoughtbot/backbone-js-on-rails/issues/84
+//
 var FilterableCollectionMixin = {
   filtered: function(criteria) {
     var sourceCollection = this;
@@ -30,6 +31,12 @@ var FilterableCollectionMixin = {
     this.bind("change", changeFiltered);
     this.bind("add",    addToFiltered);
     this.bind("remove", removeFromFiltered);
+
+    filteredCollection.teardown = function() {
+      sourceCollection.unbind('change', changeFiltered);
+      sourceCollection.unbind('add',    addToFiltered);
+      sourceCollection.unbind('remove', removeFromFiltered);
+    };
 
     filteredCollection.reset(sourceCollection.select(criteria));
 
