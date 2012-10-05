@@ -5,6 +5,19 @@ popular example, and for good reason: The concepts and domain are familiar,
 and room is left to explore interesting implementations like deferred
 loading and file attachment.
 
+While the example application is based on the content of the book, it
+represents the _finished_ state of a lot of concepts discussed in the book. So,
+while we show some concepts in the book and break them down, the example
+application may then use a plugin that encapsulates that idea or is more
+officially supported. The book is not meant to be a walk through of the
+contents of `example_app`. Instead, `example_app` is intended to be a
+standalone reference in and of itself, while being related to the book.
+
+We did this intentionally so that the book can be a standalone reference rather
+than being a sequential read that must be understood in sequence.
+
+### Framework and library choice in the example application
+
 The application uses Rails 3.2.6 and Ruby 1.9.2.  We provide an `.rvmrc`.
 
 The included JavaScript libraries are non-minified for readability.  This
