@@ -51,7 +51,7 @@ build large backbone applications, there are other templating libraries
 that are worth mentioning here because they either provide richer
 functionality or take a different approach to templating.
 
-Handlebars is one such example. One major distinction of Underscore.js is
+Handlebars is one such example. One major distinction of Handlebars is
 that it allows you to define and register helpers that can be used when
 rendering a template, providing a framework for writing helpers similar
 to those found in ActionView::Helpers, like `domID` or other generic
