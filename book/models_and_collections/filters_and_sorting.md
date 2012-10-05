@@ -191,9 +191,10 @@ or one of its models is changed, this will always trigger a `reset` event
 on the filtered collection, rather than the appropriate event.
 
 A full `FilteredCollectionMixin`, along with specs for its event triggering in
-various states, is included in the `example_app` under
-`app/assets/javascripts/filterable_collection_mixin.js` and
-`spec/javascripts/filterable_collection_mixin_spec.js`.
+various states, is included in the `example_app` in:
+
+* `app/assets/javascripts/filterable_collection_mixin.js`
+* `spec/javascripts/filterable_collection_mixin_spec.js`
 
 ### A note on event bindings and reference leaks
 
