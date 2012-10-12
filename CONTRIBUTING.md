@@ -56,11 +56,14 @@ Latex is needed for PDF distribution:
 
 We recommend downloading the [smaller, basic version of MacTex](http://www.tug.org/mactex/morepackages.html).
 
-The `upquote` TeX package is required to correctly render single quotes in source listings.  Assuming
-you installed the BasicTeX package above, install this with the TeXLive manager commandline tool:
+The `upquote` TeX package is required to correctly render single quotes in source listings.
+The `cm-super` TeX package is required to correctly render outline (vector) fonts for the T1 encoding.
+
+Assuming you installed the BasicTeX package above, install this with the TeXLive manager commandline tool:
 
   sudo tlmgr update --self
   sudo tlmgr install upquote
+  sudo tlmgr install cm-super
 
 #### Installing dependencies on Ubuntu
 
@@ -74,10 +77,11 @@ Latex is needed for PDF creation:
 
    sudo apt-get install texlive
 
-As is the upquote TeX package:
+As are the upquote and cm-super TeX packages:
 
   sudo tlmgr update --self
   sudo tlmgr install upquote
+  sudo tlmgr install cm-super
 
 ## Building
 
