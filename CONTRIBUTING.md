@@ -56,6 +56,12 @@ Latex is needed for PDF distribution:
 
 We recommend downloading the [smaller, basic version of MacTex](http://www.tug.org/mactex/morepackages.html).
 
+The `upquote` TeX package is required to correctly render single quotes in source listings.  Assuming
+you installed the BasicTeX package above, install this with the TeXLive manager commandline tool:
+
+  sudo tlmgr update --self
+  sudo tlmgr install upquote
+
 #### Installing dependencies on Ubuntu
 
 Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
@@ -67,6 +73,11 @@ Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
 Latex is needed for PDF creation:
 
    sudo apt-get install texlive
+
+As is the upquote TeX package:
+
+  sudo tlmgr update --self
+  sudo tlmgr install upquote
 
 ## Building
 
