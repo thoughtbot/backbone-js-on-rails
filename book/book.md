@@ -43,6 +43,8 @@
 
 <<[rails_integration/converting_views.md]
 
+<<[rails_integration/rails_url_helpers.md]
+
 \clearpage
 
 # Routers, Views, and Templates
