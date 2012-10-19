@@ -17,6 +17,7 @@ JSON when it shouldn't be, then you'll want to whitelist attributes into the
 JSON with the `:only` option:
 
 ````ruby
+# app/models/some_model.rb
 def as_json(options = {}) 
   super(options.merge(:only => [ :id, :title ]))
 end
@@ -29,6 +30,7 @@ If instead you want to include all attributes by default and just exclude a few,
 you accomplish this with the `:except` option:
 
 ````ruby
+# app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:except => [ :encrypted_password ]))
 end
@@ -39,6 +41,7 @@ output of methods (say, calculated values) on your model. This is accomplished
 with the `:methods` option, as shown in the following example:
 
 ````ruby
+# app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:methods => [ :calculated_value ]))
 end
@@ -49,6 +52,7 @@ objects. If the `Task` model `has_many :comments`, include all of the JSON for
 comments in the JSON for a Task with the `:include` option:
 
 ````ruby
+# app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:include => [ :comments ]))
 end
@@ -94,6 +98,8 @@ behavior is defined in a few places: `Backbone.Collection.prototype.parse`,
 `Backbone.Model.prototype.parse`, and `Backbone.Model.prototype.toJSON`:
 
 ````javascript
+// backbone.js
+
 _.extend(Backbone.Collection.prototype, Backbone.Events, {
   // http://documentcloud.github.com/backbone/#Collection-parse
   parse : function(resp, xhr) {
@@ -128,12 +134,14 @@ need to explicitly specify the name of the root key.  We use a convention of a
 `modelName` function on your model to provide this:
 
 ````javascript
+// app/assets/javascripts/backbone_overrides.js
 Backbone.Model.prototype.toJSON = function() {
   var hashWithRoot = {};
   hashWithRoot[this.modelName] = this.attributes;
   return _.clone(hashWithRoot);
 };
 
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   modelName: "task",
 

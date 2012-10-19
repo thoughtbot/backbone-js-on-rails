@@ -25,6 +25,7 @@ Rails model `User` that has a username and password.  We might want to build
 form markup that looks like this:
 
 ````html
+<!-- app/templates/users/form.jst.ejs -->
 <form>
   <li>
     <label for="email">Email</label>
@@ -39,7 +40,7 @@ form markup that looks like this:
 
 One approach you could take is writing the full form markup by hand.  You could
 create a template available to Backbone via JST that contains the raw HTML.  If
-you took the above markup and saved it into `app/templates/users/form.jst`,
+you took the above markup and saved it into `app/templates/users/form.jst.ejs`,
 it would be accessible as `JST["users/form"]()`.
 
 You _could_ write all the HTML by hand, but we'd like to avoid that.
@@ -172,6 +173,7 @@ the form.  The `ErrorView` also adds the `error` CSS class to the `<li>` field
 container:
 
 ````javascript
+// app/assets/javascripts/views/error_view.js
 ErrorView = Backbone.View.extend({
   initialize: function(options) {
     this.attributesWithErrors = this.options.attributesWithErrors;

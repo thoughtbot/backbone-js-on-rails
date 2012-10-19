@@ -63,12 +63,13 @@ The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
 
 ````erb
-<!-- templates/soundboard.jst -->
+<!-- app/assets/templates/soundboard.jst.ejs -->
 <a class="sound">Honk</a>
 <a class="sound">Beep</a>
 ````
 
 ````javascript
+// app/assets/javascripts/views/sound_board.js
 var SoundBoard = Backbone.View.extend({
   render: function() {
     $(this.el).html(JST['soundboard']());
@@ -84,6 +85,7 @@ var SoundBoard = Backbone.View.extend({
 But Backbone provides an easier and more declarative approach with the `events` hash:
 
 ````javascript
+// app/assets/javascripts/views/sound_board.js
 var SoundBoard = Backbone.View.extend({
   events: {
     "click a.sound": "playSound"
@@ -142,6 +144,7 @@ Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:
 
 ````javascript
+// app/assets/javascripts/views/gender_picker.js
 GenderPicker = Backbone.View.extend({
   render: {
     // render template

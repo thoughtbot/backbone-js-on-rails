@@ -17,7 +17,7 @@ The other dependencies you can install by adding them to your Gemfile. The gems
 you'll need for testing are jasmine (currently tracking the edge version from
 GitHub), cucumber-rails, rspec-rails, and capybara.  You'll want to add RSpec,
 Cucumber, and Jasmine to both the test and development groups so that you can
-run generators. With all our testing dependencies in place, the Gemfile in our
+run generators. With all our testing dependencies in place, the `Gemfile` in our
 sample application looks like this:
 
 <<(../../example_app/Gemfile)
@@ -61,6 +61,10 @@ two parts: a list of existing tasks, and an interface for adding new items to
 the list.  We'll start with the list of items, and create fixture data with
 [Factory Girl Cucumber steps](https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md):
 
+````
+# features/users/view_tasks.feature
+````
+
 <<(../../example_app/features/users/view_tasks.feature)
 
 Running this, we see a failure:
@@ -87,7 +91,15 @@ we will need to outline the UI first.  To do this, first we'll need a page to ho
 our code.  Let's create and route a Rails `TasksController`. We'll bootstrap the
 Backbone app on `tasks#index`.
 
+````
+# config/routes.rb
+````
+
 <<(../../example_app/config/routes.rb)
+
+````
+# app/controllers/tasks_controller.rb
+````
 
 <<(../../example_app/app/controllers/tasks_controller.rb)
 
@@ -95,6 +107,7 @@ To render our tasks, we'll want a TasksIndex Backbone view class.  But before we
 write this class, we'll motivate it with a Jasmine isolation spec:
 
 ````javascript
+// spec/javascripts/views/tasks_index_spec.js
 describe("ExampleApp.Views.TasksIndex", function() {
   it("renders a task table", function() {
     var view = new ExampleApp.Views.TasksIndex();
@@ -114,7 +127,8 @@ To run the Jasmine spec, run `bundle exec rake jasmine` and visit http://localho
 To make this test pass, we'll add a small template and make the `TasksIndex`
 view render it:
 
-````ruby
+````javascript
+// app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   tagName: 'div',
   id: 'tasks',
@@ -164,6 +178,10 @@ Drop back down to Jasmine and write a spec motivating the `TasksIndex` view to
 accept a collection and render it.  We'll rewrite our existing spec, since we
 are changing the `TasksIndex` interface to require that a collection be passed in:
 
+````
+// spec/javascripts/views/tasks_index_spec.js
+````
+
 <<(../../example_app/spec/javascripts/views/tasks_index_spec.js)
 
 This spec fails:
@@ -182,13 +200,25 @@ TypeError: undefined is not a function
 It's failing because we haven't defined `ExampleApp.Collections.Tasks` yet.  We
 need to define a task model and tasks collection.  We'll define the model:
 
-<<(../../example_app/app/assets/javascripts/models/task.js)
+````
+// app/assets/javascripts/models/task.js
+````
+
+<<(../../example_app/app/assets/javascripts/models/task.js
 
 ...write a test to motivate the collection:
 
-<<(../../example_app/spec/javascripts/collections/tasks_spec.js)
+````
+// spec/javascripts/collections/tasks_spec.js
+````
+
+<<(../../example_app/spec/javascripts/collections/tasks_spec.js
 
 ...and pass the test by implementing the collection:
+
+````
+// app/assets/javascripts/collections/tasks.js
+````
 
 <<(../../example_app/app/assets/javascripts/collections/tasks.js)
 
@@ -204,7 +234,15 @@ have text 'Wake up'.
 The simplest thing we can do to get the spec passing is to pass the `tasks`
 collection into the template, and iterate over it there:
 
+````
+// app/assets/javascripts/views/tasks_index.js
+````
+
 <<(../../example_app/app/assets/javascripts/views/tasks_index.js)
+
+````
+// app/assets/templates/tasks/index.jst.ejs
+````
 
 <<(../../example_app/app/assets/templates/tasks/index.jst.ejs)
 
@@ -224,15 +262,19 @@ get the tests passing.
 We'll motivate writing a top-level Backbone application object with a spec.
 Note the use of a `sinon.spy` for verifying the router instantiation:
 
-`spec/javascripts/example_app_spec.js`
+`// spec/javascripts/example_app_spec.js`
 
 <<(../../example_app/spec/javascripts/example_app_spec.js)
 
 Get it to green:
 
+`// app/assets/javascripts/example_app.js`
+
 <<(../../example_app/app/assets/javascripts/example_app.js)
 
 Then we bootstrap the app from the Rails view:
+
+`<!-- app/views/tasks/index.html.erb -->`
 
 <<(../../example_app/app/views/tasks/index.html.erb)
 

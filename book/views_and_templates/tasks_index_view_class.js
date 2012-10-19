@@ -1,3 +1,5 @@
+// app/assets/javascripts/views/tasks_index.js
+
 var TasksIndexView = Backbone.View.extend({
   template: JST['tasks/tasks_index'],
   tagName: 'section',

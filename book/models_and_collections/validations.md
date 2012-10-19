@@ -17,6 +17,7 @@ Let's wire this up. To get started, we'll add a validation on the task's title
 attribute on the ActiveRecord model, like so:
 
 ````ruby
+# app/models/task.rb
 class Task < ActiveRecord::Base
   validates :title, presence: true
 end
@@ -26,6 +27,7 @@ On the Backbone side of the world, we have a Backbone task called
 `YourApp.Models.Task`:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 YourApp.Models.Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
@@ -35,6 +37,7 @@ We also have a place where users enter new tasks - just a form on the task
 list:
 
 ````html
+<!-- app/assets/templates/tasks/form_fields.jst.ejs -->
 <form>
   <ul>
     <li class="task_title_input">
@@ -52,6 +55,7 @@ On the `NewTask` Backbone view, we bind the button's click event to a new
 function that we'll call `createTask`:
 
 ````javascript
+// app/assets/javascripts/views/new_task.js
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -86,6 +90,7 @@ therefore easier to extend and reuse.
 We'll call this the `FormAttributes`, and its code is as follows:
 
 ````javascript
+// app/assets/javascripts/form_attributes.js
 FormAttributes = function(form) {
   this.form = form;
 }
@@ -107,6 +112,7 @@ _.extend(FormAttributes.prototype, {
 With this class in place, we can rewrite our form submit action to:
 
 ````javascript
+// app/assets/javascripts/views/new_task.js
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
     "click #create-task": "createTask"
@@ -134,6 +140,7 @@ The easiest way to handle this in Rails is to use `respond_to`/`respond_with`,
 available in Rails 3 applications:
 
 ````ruby
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
   def create
@@ -148,6 +155,7 @@ the object that you've passed to the `respond_with` call, so make sure the show
 action is defined in your routes:
 
 ````ruby
+# config/routes.rb
 resources :tasks, only: [:create, :show]
 ````
 
@@ -185,6 +193,7 @@ JSON that came in from the server and provides an iterator to easily loop
 through errors:
 
 ````javascript
+// app/assets/javascripts/error_list.js
 ErrorList = function (response) {
   if (response && response.responseText) {
     this.attributesWithErrors = JSON.parse(response.responseText);
@@ -207,6 +216,7 @@ appending each inline error in the form, providing feedback to the user that
 their input is invalid:
 
 ````javascript
+// app/assets/javascripts/error_view.js
 ErrorView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "renderError");

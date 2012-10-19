@@ -15,6 +15,7 @@ starting Backbone history to route the initial URL fragment.  This app variable
 will look like the following:
 
 ````javascript
+// app/assets/javascripts/example_app.js
 var ExampleApp = {
   Models: {},
   Collections: {},

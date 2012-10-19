@@ -35,6 +35,7 @@ Capybara is a high-level library that allows you to write tests from a user's
 perspective.  Consider this example, which uses RSpec:
 
 ````ruby
+# spec/requests/login_spec.rb
 describe "the login process", :type => :request do
   it "accepts an email and password" do
     User.create(:email => 'alice@example.com', :password => 'password')
@@ -74,6 +75,7 @@ description phase, you are writing an English description of the software
 interaction:
 
 ````cucumber
+# features/login.feature
 Given there is a user account "alice@example.com" with the password "password"
 When I go to the home page
 And I fill in the login form with "alice@example.com" and "password"
@@ -85,6 +87,7 @@ In the implementation phase of the test, you define what these steps do.  In
 this case, they are defined to run Capybara methods:
 
 ````ruby
+# features/step_definitions/login_steps.rb
 Given /^there is a user account "(.*)" with the password "(.*)"$/ do \\
 |email, password|
   User.create(:email => email, :password => password)
@@ -128,6 +131,7 @@ Chrome, Safari, and even Internet Explorer.
 Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:
 
 ````ruby
+# features/support/javascript_driver.rb or spec/spec_helper.rb
 Capybara.javascript_driver = :webkit
 ````
 

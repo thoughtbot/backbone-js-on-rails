@@ -1,3 +1,5 @@
+// app/assets/javascripts/support/composite_view.js
+
 Support.CompositeView = function(options) {
   this.children = _([]);
   this.bindings = _([]);

@@ -14,6 +14,7 @@ with Backbone.
 A basic Backbone view appears as follows.
 
 ````javascript
+// app/assets/javascripts/views/example_view.js
 ExampleApp.Views.ExampleView = Backbone.View.extend({
   tagName: "li",
   className: "example",
@@ -120,6 +121,7 @@ render to enable chained calls on the view - usually fetching the element.
 For example:
 
 ````javascript
+// app/assets/javascripts/views/some_view.js
 render: function() {
   this.$el.html(this.childView.render().el);
   return this;

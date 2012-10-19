@@ -83,9 +83,11 @@ placing templates under `app/templates/tasks`. So, `window.JST` looks something
 like:
 
 ````javascript
-JST['form']
-JST['show']
-JST['index']
+window.JST == {
+  "form":  "html for template...",
+  "show":  "html for template...",
+  "index": "html for template...",
+};
 ````
 
 Now, you add another directory under `app/templates`, say `app/templates/user`.
@@ -93,12 +95,14 @@ Now, templates with colliding names in JST references are prefixed with their
  parent directory name so they are unambiguous:
 
 ````javascript
-JST['form'] // in tasks/form.jst
-JST['tasks/show']
-JST['tasks/index']
-JST['new']  // in users/new.jst
-JST['users/show']
-JST['users/index']
+window.JST == {
+  "form":        "html...", // from tasks/form.jst.ejs
+  "tasks/show":  "html...",
+  "tasks/index": "html...",
+  "new":         "html...", // from users/new.jst.ejs
+  "users/show":  "html...",
+  "users/index": "html...",
+};
 ````
 
 This breaks existing JST references. You can work around this issue by applying
@@ -173,7 +177,9 @@ To make the `*.jst` files available and create the `window.JST` object, require
 them in your application.js Sprockets manifest:
 
 ````javascript
-//  other application requires
+// app/assets/javascripts/application.js
+
+// other application requires
 //= require_tree ../templates
 //= require_tree .
 ````
@@ -185,6 +191,10 @@ models) and then your routers and views must be loaded.
 
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
+
+````javascript
+// app/assets/javascripts/application.js
+````
 
 <<(../../example_app/app/assets/javascripts/application.js)
 

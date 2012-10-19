@@ -146,6 +146,7 @@ functionality in a module:
 case, we name it `TodoObserver`:
 
 ````ruby
+# app/observers/todo_observer.rb
 class TodoObserver < ActiveRecord::Observer
   include BackboneSync::Rails::Faye::Observer
 end
@@ -208,6 +209,7 @@ When the browser receives messages from Faye, we want to update a Backbone
 collection.  Let's wrap up those two concerns into a `FayeSubscriber`:
 
 ````javascript
+// app/assets/javascripts/backbone_sync.js
 this.BackboneSync = this.BackboneSync || {};
 
 BackboneSync.RailsFayeSubscriber = (function() {
@@ -261,6 +263,7 @@ Now, for each collection that we'd like to keep in sync, we instantiate a
 corresponding `FayeSubscriber`.  Say, in your application bootstrap code:
 
 ````javascript
+# app/assets/javascripts/routers/todos.js
 MyApp.Routers.TodosRouter = Backbone.Router.extend({
   initialize: function(options) {
     this.todos = new Todos.Collections.TodosCollection();

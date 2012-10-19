@@ -53,6 +53,7 @@ easily into a Rails application, and provides an RSpec-like syntax for writing
 specs:
 
 ````javascript
+// spec/javascripts/models/tasks_spec.js
 describe("ExampleApp.Models.Tasks", function() {
   it("knows if it is complete", function() {
     var completeTask = new ExampleApp.Models.Task({ complete: true });

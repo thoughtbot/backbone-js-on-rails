@@ -24,7 +24,7 @@ comments. Let's separate those concerns. A first approach might be to just
 break up the template files:
 
 ````erb
-<!-- tasks/show.jst -->
+<!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
   <%= JST['tasks/details']({ task: task }) %>
 </section>
@@ -35,13 +35,13 @@ break up the template files:
 ````
 
 ````erb
-<!-- tasks/details.jst -->
+<!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
 ````
 
 ````erb
-<!-- comments/list.jst -->
+<!-- app/assets/templates/comments/list.jst.ejs -->
 <ul>
   <% task.comments.each(function(comment) { %>
     <%= JST['comments/item']({ comment: comment }) %>
@@ -52,13 +52,13 @@ break up the template files:
 ````
 
 ````erb
-<!-- comments/item.jst -->
+<!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
 ````
 
 ````erb
-<!-- comments/new.jst -->
+<!-- app/assets/templates/comments/new.jst.ejs -->
 <div class="form-inputs">
   <label for="new-comment-input">Add comment</label>
   <textarea id="new-comment-input" cols="30" rows="10"></textarea>
@@ -184,7 +184,7 @@ view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:
 
 ````erb
-<!-- tasks/show.jst -->
+<!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
 </section>
 
@@ -193,13 +193,13 @@ contains placeholder elements that are used to wrap child views:
 ````
 
 ````erb
-<!-- tasks/details.jst -->
+<!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
 ````
 
 ````erb
-<!-- comments/list.jst -->
+<!-- app/assets/templates/comments/list.jst.ejs -->
 <ul class="comments-list">
 </ul>
 
@@ -208,13 +208,13 @@ contains placeholder elements that are used to wrap child views:
 ````
 
 ````erb
-<!-- comments/item.jst -->
+<!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
 ````
 
 ````erb
-<!-- comments/new.jst -->
+<!-- app/assets/templates/comments/new.jst.ejs -->
 <label for="new-comment-input">Add comment</label>
 <textarea class="new-comment-input" cols="30" rows="10"></textarea>
 <button>Add Comment</button>

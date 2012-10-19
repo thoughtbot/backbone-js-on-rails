@@ -13,6 +13,8 @@
 
 <<[introduction/example_app.md]
 
+<<[introduction/book_conventions.md]
+
 \clearpage
 
 # Getting up to speed

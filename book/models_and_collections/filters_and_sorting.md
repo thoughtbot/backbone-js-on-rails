@@ -61,6 +61,7 @@ function from Underscore.js; then, return new instances of the collection class.
 first implementation might look like this:
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -78,6 +79,7 @@ Let's refactor this a bit.  Ideally, the filter functions will reuse logic
 already defined in your model class:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
@@ -104,12 +106,14 @@ specific filtering criteria (`task.isComplete()`).
 Let's separate the two concerns here, and extract a `filtered` function:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
   }
 });
 
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -130,18 +134,21 @@ We can extract this function into a reusable mixin, abstracting the `Tasks`
 collection class using `this.constructor`:
 
 ````javascript
+// app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
     return new this.constructor(this.select(criteriaFunction));
   }
 };
 
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
     return this.get('completed_at') !== null;
   }
 });
 
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -166,6 +173,7 @@ collection, reapply the filter function, and repopulate the filtered
 collection:
 
 ````javascript
+// app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
     var sourceCollection = this;
@@ -207,6 +215,7 @@ The view accepts a base collection and then maintains a filtered version of that
 collection, which it renders from.
 
 ````javascript
+// app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   events: {
     "click button.filter": applyFilter,
@@ -256,6 +265,7 @@ its current view, disposing of the old view before swapping in the new one.
 
 
 ````javascript
+// app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   initialize: function(options) {
     this.baseCollection = options.collection;
@@ -288,6 +298,7 @@ The simplest way to sort a `Backbone.Collection` is to define a `comparator`
 function.  This functionality is built in:
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -304,6 +315,7 @@ use an approach similar to the `filtered` function above, and return a new
 the ordering on the new collection:
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -326,6 +338,7 @@ var Tasks = Backbone.Collection.extend({
 Similarly, you can extract the reusable concern to another function:
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks',
@@ -358,6 +371,7 @@ var Tasks = Backbone.Collection.extend({
 ...And then into another reusable mixin:
 
 ````javascript
+// app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
     var sortedCollection = new this.constructor(this.models);
@@ -396,6 +410,7 @@ Just as with the `FilterableCollectionMixin` before, the
 from one collection to another:
 
 ````javascript
+// app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
     var sourceCollection = this;

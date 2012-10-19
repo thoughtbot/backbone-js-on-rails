@@ -1,3 +1,4 @@
+// app/assets/javascripts/support/swapping_router.js
 Support.SwappingRouter = function(options) {
   Backbone.Router.apply(this, [options]);
 };

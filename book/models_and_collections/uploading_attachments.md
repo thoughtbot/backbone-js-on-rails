@@ -74,16 +74,26 @@ need to display uploads on the index view.
 First, let's write an acceptance test to drive the functionality:
 
 ````
-<<(../../example_app/features/users/attach_file_to_task.feature)
+# features/users/attach_file_to_task.feature
 ````
+
+<<(../../example_app/features/users/attach_file_to_task.feature)
 
 The first failures we get are from the lack of upload UI.  We'll drop down to
 unit tests to drive this out:
+
+````
+// spec/javascripts/views/task_show_spec.js
+````
 
 <<(../../example_app/spec/javascripts/views/task_show_spec.js)
 
 Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the 
 UI elements are in place:
+
+````
+// app/assets/templates/tasks/show.jst.ejs
+````
 
 <<(../../example_app/app/assets/templates/tasks/show.jst.ejs)
 
@@ -92,6 +102,8 @@ is that nothing happens upon upload.  We'll drop down to Jasmine here to write
 a spec for uploading that asserts the correct upload request is issued:
 
 ````javascript
+// spec/javascripts/views/task_show_uploading_spec.js
+
 it("uploads the file when the upload method is called", function() {
   view.upload();
   expect(this.requests.length).toEqual(1);
@@ -107,6 +119,8 @@ it("uploads an attachment for the current task", function() {
 and implement using the `uploader.js` library:
 
 ````javascript
+// app/assets/javascripts/views/task_show.js
+
 render: function () {
   // ...
   this.attachUploader();
@@ -135,6 +149,7 @@ using `$.ajax`, so that it may bind to the `onprogress` event.
 We write a spec:
 
 ````javascript
+// spec/javascripts/views/task_show_uploading_spec.js
 it("sets the CSRF token for the upload request", function() {
   view.upload();
   var expectedCsrfToken = $('meta[name="csrf-token"]').attr('content');
@@ -145,6 +160,7 @@ it("sets the CSRF token for the upload request", function() {
 And add the CSRF token implementation at the end of `attachUploader`:
 
 ````javascript
+// app/assets/javascripts/views/task_show.js
 attachUploader: function() {
   // ...
 
@@ -176,6 +192,7 @@ For structuring the attachments in Backbone, we want to be able to do something
 like the following:
 
 ````erb
+<!-- app/assets/templates/tasks/show.jst.ejs -->
 <% this.task.attachments.each(function(attachment) { %>
   Attached: <img src="<%= attachment.get('upload_url')" /> %>
 <% }); %>
@@ -187,6 +204,10 @@ So, the task model will have an attachments property that instantiates with an
 We're providing a JSON representation rooted at the task model using
 [Rabl](https://github.com/nesquena/rabl), which we discussed previously in
 "Implementing the API: presenting the JSON."
+
+````
+# app/views/tasks/show.json.rabl
+````
 
 <<(../../example_app/app/views/tasks/show.json.rabl)
 
@@ -202,12 +223,20 @@ end
 
 We can test drive the attachment display from Jasmine; see `task_show_with_attachments_spec.js`:
 
+````
+// spec/javascripts/views/task_show_with_attachments_spec.js
+````
+
 <<(../../example_app/spec/javascripts/views/task_show_with_attachments_spec.js)
 
 We'll represent attachments as an associated collection on `Task`, so we'll need
 a Backbone model and collection for attachments, too.  First, the task model
 should parse its JSON to populate the associated attachments.  Test drive that
 in the `ExampleApp.Models.Tasks` Jasmine spec:
+
+````
+// spec/javascripts/models/task_spec.js
+````
 
 <<(../../example_app/spec/javascripts/models/task_spec.js)
 
@@ -218,6 +247,7 @@ Next, we can implement the task model's JSON parsing to populate its associated
 attachments:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
     this.bind("change:attachments", this.parseAttachments);

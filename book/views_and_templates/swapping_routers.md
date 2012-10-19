@@ -4,6 +4,7 @@ When switching from one view to another, we should clean up the previous view.
 Earlier, we discussed a convention of writing a `view.leave()`. Let's augment our view to include the ability to clean itself up by "leaving" the DOM:
 
 ````javascript
+// app/assets/javascripts/views/my_view.js
 var MyView = Backbone.View.extend({
   // ...
 

@@ -139,7 +139,7 @@ You can build static HTML mockups of the application first, and pull these
 mockups directly in as templates, without modifying them.
 
 ````html
-<!-- snip -->
+<!-- app/views/some/page.html.erb -->
 <div id="song-player">
   <nav>
     <a class="home"    href="#/">Home</a>
@@ -156,6 +156,7 @@ mockups directly in as templates, without modifying them.
 ````
 
 ````javascript
+// app/assets/javascripts/views/my_view.js
 MyView = Backbone.View.extend({
   render: function() {
     this.renderTemplate();

@@ -30,6 +30,7 @@ providing for much more than 100 different interface states.
 A typical Backbone router will appear as shown below:
 
 ````javascript
+// app/assets/javascripts/routers/example_router.js
 ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
     ""         : "index"

@@ -1,3 +1,5 @@
+\clearpage
+
 ## Cleaning up: unbinding
 
 In the last section, we discussed three different kinds of event binding in
@@ -12,9 +14,13 @@ that need to be done:
 
 ![Tasks index view](images/tasks-index.png)
 
+\clearpage
+
 ...and a detail view that shows detail on one task:
 
 ![Tasks detail view](images/task-detail.png)
+
+\clearpage
 
 The interface switches between the two views.
 
@@ -76,6 +82,7 @@ this view elsewhere, you'll call `leave()` instead of `remove()` when you're
 done:
 
 ````javascript
+// app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   // snip...
 
@@ -105,6 +112,7 @@ function that keeps track of all the event handlers we bind, and then issue a
 single call to `unbindFromAll()` to unbind them:
 
 ````javascript
+// app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   initialize: function() {
     this.bindings = [];
@@ -174,6 +182,7 @@ triggers.
 This is handled by invoking `Backbone.Events.off()`:
 
 ````javascript
+// app/assets/javascripts/views/filtering_view.js
 var FilteringView = Backbone.View.extend({
   // snip...
 

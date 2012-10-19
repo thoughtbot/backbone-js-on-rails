@@ -64,16 +64,19 @@ people to perform a job.  The three domain models are `Job`, `Worker`, and
 the join model `Assignment`.
 
 ````ruby
+# app/models/job.rb
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
 end
 
+# app/models/assignment.rb
 class Assignment < ActiveRecord::Base
   belongs_to :job
   belongs_to :worker
 end
 
+# app/models/worker.rb
 class Worker < ActiveRecord::Base
   has_many :assignments
   has_many :jobs, :through => :assignments
@@ -94,6 +97,7 @@ one HTTP request.  We'll model this on the backend with Rails'
 `accepts_nested_attributes_for`:
 
 ````ruby
+# app/models/job.rb
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
@@ -129,17 +133,21 @@ This is a simplified perspective of the relationship, but it is all that the cli
 needs to know.
 
 ````javascript
+// app/assets/javascripts/my_app.js
 MyApp = {};
 MyApp.Models = {};
 MyApp.Collections = {};
 
+// app/assets/javascripts/models/worker.js
 MyApp.Models.Worker = Backbone.Model.extend({
 });
 
+// app/assets/javascripts/collections/workers.js
 MyApp.Collections.Workers = Backbone.Collection.extend({ 
   model: ExampleApp.Models.Worker
 });
 
+// app/assets/javascripts/models/job.js
 MyApp.Models.Job = Backbone.Model.extend({
   urlRoot: '/api/v1/jobs',
 

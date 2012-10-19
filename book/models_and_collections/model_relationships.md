@@ -144,6 +144,7 @@ At this point, we know that our HTTP JSON API should support at least the
 following Rails routes:
 
 ````ruby
+# config/routes.rb
 resources :tasks, :only => [:show, :create] do
   resources :attachments, :only => [:create]
 end
@@ -175,6 +176,7 @@ you can create a view ending with `.json.rabl` to handle any particular request.
 For example, a `tasks#show` action may look like this:
 
 ````ruby
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
 
@@ -191,6 +193,7 @@ it will invoke `to_json` on the `@task` model, but in this case we are providing
 one in `app/views/tasks/show.json.rabl`, so it will render that instead:
 
 ````ruby
+# app/views/tasks/show.json.rabl
 object @task
 attributes(:id, :title, :complete)
 child(:user) { attributes(:id, :email) }
@@ -244,6 +247,7 @@ is to bind to the `change` event for the association attribute - in this case,
 `task.attachments`:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
     this.on("change:attachments", this.parseAttachments);
@@ -280,6 +284,7 @@ This frees `TaskShow` from having to know about the persistence details of
 the model:
 
 ````javascript
+// app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   // ...
 

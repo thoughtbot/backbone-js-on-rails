@@ -16,6 +16,7 @@ In our example application, we have a Task model, exposed via a JSON API at
 shown below:
 
 ````javascript
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
@@ -41,6 +42,7 @@ The simplest Backbone collection to represent our `Tasks` would be the
 following.
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task
 });
@@ -52,11 +54,13 @@ the `urlRoot` no longer needs to be specified in the model. If we make that
 change, then our collection and model will be as follows.
 
 ````javascript
+// app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks'
 });
 
+// app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({});
 ````
 
@@ -97,6 +101,7 @@ individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
 ````ruby
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :html, :json
 
@@ -146,6 +151,7 @@ response code if validations fail.
 A controller that does this would appear as shown in the following example:
 
 ````ruby
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
 
@@ -165,6 +171,7 @@ status code when there are validation errors, so the action above can be
 refactored:
 
 ````ruby
+# app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
   def create
@@ -208,6 +215,7 @@ Organization chapter.
 This application object will look like the following:
 
 ````javascript
+// app/assets/javascripts/example_app.js
 var ExampleApp = {
   Models: {},
   Collections: {},
@@ -233,6 +241,7 @@ state.  In our example, the tasks have already been provided to the Rails view
 in an `@tasks` instance variable:
 
 ````javascript
+<!-- app/views/tasks/index.html.erb -->
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.initialize({ tasks: <%== @tasks.to_json %> });
@@ -249,6 +258,7 @@ Finally, you must have a Router in place that knows what to do.  We'll cover
 routers in more detail in the "Routers, Views and Templates" chapter.
 
 ````javascript
+// app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"

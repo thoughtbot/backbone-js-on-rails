@@ -12,6 +12,7 @@ Here, we create a mixin named `Observer` that contains behavior for binding to
 events in a fashion that can be cleaned up later:
 
 ````javascript
+// app/assets/javascripts/observer.js
 var Observer = {
   bindTo: function(source, event, callback) {
     source.on(event, callback, this);
@@ -32,6 +33,7 @@ We can mix `Observer` into a class by using Underscore.js' `_.extend` on the
 prototype of that class:
 
 ````javascript
+// app/assets/javascripts/views/some_collection_view.js
 SomeCollectionView = Backbone.View.extend({
   initialize: function() {
     this.bindTo(this.collection, "change", this.render);

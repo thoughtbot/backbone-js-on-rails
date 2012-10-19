@@ -10,6 +10,7 @@ Backbone views are classes that contain event handling and presentation logic.
 Consider the following Rails view for a tasks index:
 
 ````erb
+<!-- app/views/tasks/index.html.erb -->
 <h1>Tasks</h1>
 
 <table>
@@ -40,6 +41,7 @@ We'll start with a basic view that achieves the same result as the Rails templat
 above, rendering a collection of tasks:
 
 ````javascript
+// app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
     this.$el.html(JST['tasks/index']({ tasks: this.collection }));
@@ -60,6 +62,7 @@ collection for it to render. The router then renders the view, and inserts it
 into the DOM:
 
 ````javascript
+// app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
     "": "index"
@@ -94,6 +97,7 @@ We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
 ````erb
+<!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
 <table>
@@ -133,6 +137,7 @@ Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
 ````erb
+<!-- app/assets/templates/tasks/task.jst.ejs -->
 <tr>
   <td><%= model.escape('title') %></td>
   <td><%= model.escape('completed') %></td>
@@ -142,6 +147,7 @@ rendering just the individual table row for a `Task`:
 And the Task index template will be changed to appear as shown below:
 
 ````erb
+<!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
 <table>
@@ -160,6 +166,7 @@ iterated over and rendered inside the table, but instead within the
 `TasksIndex` and `TaskView` views, respectively:
 
 ````javascript
+// app/assets/javascripts/views/task.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   render: function () {
     this.$el.html(JST['tasks/view']({ model: this.model }));
@@ -174,6 +181,7 @@ element, and the concern of assembling the view of the list is left to the
 parent view object:
 
 ````javascript
+// app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
     var self = this;
@@ -198,6 +206,7 @@ the `<table>` element.
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
 ````erb
+<!-- output HTML -->
 <div>
   <h1>Tasks</h1>
 
@@ -242,6 +251,7 @@ The element to use is specified by the `tagName` member of the `TaskView`, as
 shown below:
 
 ````javascript
+// app/assets/javascripts/views/task_view.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   tagName: "tr",
 
@@ -259,6 +269,7 @@ Given the above `tagName` customization, the task view template will appear as
 follows:
 
 ````erb
+// app/assets/templates/tasks/view.jst.ejs
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
 ````
@@ -267,6 +278,7 @@ And the resulting output of the `TasksIndex` will be much cleaner, as shown
 below:
 
 ````html
+<!-- output HTML -->
 <div>
   <h1>Tasks</h1>
 
