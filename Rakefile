@@ -24,6 +24,10 @@ namespace :build do
     Builder.new.generate_pdf
   end
 
+  task :latex => [:prepare, :markdown] do
+    Builder.new.generate_latex
+  end
+
   task :epub => [:prepare, :markdown] do
     Builder.new.generate_epub
   end
@@ -113,6 +117,15 @@ class Builder
       run "rm book-without-cover.pdf"
     end
   end
+
+  def generate_latex
+    Dir.chdir OUTPUT_DIR do
+      puts "## Generating LaTeX version..."
+      working = File.expand_path File.dirname(__FILE__)
+      run "pandoc book.md --data-dir=#{working} --template=template --chapters --toc -o book.latex"
+    end
+  end
+
 
   def generate_sample
     markdown = File.new("output/sample.md", "w+")
