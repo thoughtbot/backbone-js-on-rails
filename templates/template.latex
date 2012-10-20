@@ -46,6 +46,10 @@ $endif$
 \fi
 $if(geometry)$
 \usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$else$
+% Not sure what the above geometry args do, but we want it for \newgeometry later
+% to inject a full-page PDF for the cover page.
+\usepackage{geometry}
 $endif$
 $if(natbib)$
 \usepackage{natbib}
@@ -144,6 +148,7 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 
+
 $if(title)$
 \title{$title$}
 $endif$
@@ -155,6 +160,13 @@ $if(date)$
 $endif$
 
 \begin{document}
+
+\newgeometry{top=0cm,bottom=0cm,left=0cm,right=0cm,nohead,nofoot}
+\begin{figure}
+\Oldincludegraphics[width=\textwidth,height=\textheight]{../book/images/cover.pdf}
+\end{figure}
+\restoregeometry
+
 $if(title)$
 \maketitle
 $endif$

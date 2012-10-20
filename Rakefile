@@ -112,9 +112,7 @@ class Builder
     Dir.chdir OUTPUT_DIR do
       puts "## Generating PDF version..."
       working = File.expand_path File.dirname(__FILE__)
-      run "pandoc book.md --data-dir=#{working} --template=template --chapters --toc -o book-without-cover.pdf"
-      run "gs -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite -sOutputFile=book.pdf ../book/images/cover.pdf book-without-cover.pdf"
-      run "rm book-without-cover.pdf"
+      run "pandoc book.md --data-dir=#{working} --template=template --chapters --toc -o book.pdf"
     end
   end
 
