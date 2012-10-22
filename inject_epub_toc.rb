@@ -80,14 +80,31 @@ class EpubContentsBuilder
     chapter_files.each do |chapter_file|
       chapter_xhtml = Nokogiri::XML.parse(@zipfile.read(chapter_file))
       h1 = chapter_xhtml.css('h1').first
-      h2s = chapter_xhtml.css('h2')
+      subheads = chapter_xhtml.css('h2, h3')
 
       toc_xhtml << %Q{<p><a href="#{chapter_file}">#{h1.text}</a></p>\n}
-
       toc_xhtml << "<ul>\n"
-      h2s.each do |h2|
-        toc_xhtml << %Q{  <li><a href="#{chapter_file}##{h2['id']}">#{h2.text}</a></li>\n}
+
+      indented = false
+
+      subheads.each do |subhead|
+        if subhead.name == 'h3' && indented == false
+          indented = true
+          toc_xhtml << "<!-- begin h3s -->\n<ul>\n"
+        end
+
+        if subhead.name == 'h2' && indented == true
+          indented == false
+          toc_xhtml << "</ul>\n<!-- end h3s -->\n"
+        end
+
+        toc_xhtml << %Q{  <li><a href="#{chapter_file}##{subhead['id']}">#{subhead.text}</a></li>\n}
       end
+
+      if indented == true
+        toc_xhtml << "</ul></li>\n<!-- end h3s at end of chapter -->\n"
+      end
+
       toc_xhtml << "</ul>\n"
     end
 
