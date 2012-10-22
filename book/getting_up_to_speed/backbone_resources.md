@@ -1,4 +1,4 @@
-## Backbone.online resources
+## Backbone online resources
 
 This book is not an introduction, and assumes you have some knowledge of
 Javascript and of Backbone.  Fortunately, there is solid documentation available
