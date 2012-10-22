@@ -142,6 +142,7 @@ class Builder
       run "convert -density 400 -resize 1000x1000 images/cover.pdf images/cover.png"
       run "pandoc book.md --toc --epub-cover-image=images/cover.png -o book.epub"
     end
+    run "ruby ./inject_epub_toc.rb #{OUTPUT_DIR}/book.epub"
   end
 
   def generate_mobi
