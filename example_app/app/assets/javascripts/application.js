@@ -11,6 +11,8 @@
 //= require jquery-ui-editors.js
 //= require uploader.js
 //
+//= require vendor/visualsearch.js
+//
 //= require example_app
 //
 //= require_tree ./models
