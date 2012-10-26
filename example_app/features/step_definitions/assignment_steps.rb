@@ -6,8 +6,8 @@ When /^I create a task "([^"]*)" assigned to:$/ do |task_title, table|
   table.hashes.each do |hash|
     click_link "Add Assignee"
 
-    last_assignee_input = page.all("input.new-task-assignee-email").last
-    last_assignee_input.set(hash['email'])
+    last_assignee_select = page.all("select.new-task-assignee-email").last
+    last_assignee_select.set(hash['email'])
   end
 
   click_button "Create task"

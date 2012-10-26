@@ -1,6 +1,11 @@
 <li class="bbf-field">
   <label>Assignee Email</label>
   <div class="bbf-editor bbf-editorText">
-    <input class="new-task-assignee-email" name="assignees[][email]" type="text">
+    <select class="new-task-assignee-email" name="assignees[][email]">
+      <option value=""></option>
+      <% users.each(function(user) { %>
+        <option value="<%= user.get('email') %>"><%= user.get('email') %></option>
+      <% }); %>
+    </select>
   </div>
 </li>

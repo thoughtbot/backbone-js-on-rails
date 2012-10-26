@@ -26,7 +26,7 @@ describe("ExampleApp.Views.TasksNew", function() {
 
   it("populates its model when saving", function() {
     view.addAssignee();
-    view.$('ul.assignees input').val('alice@example.com');
+    view.$('ul.assignees select').val('alice@example.com');
     view.$('input[name=title]').val('Deliver a package');
     view.save(e);
 
@@ -35,14 +35,14 @@ describe("ExampleApp.Views.TasksNew", function() {
   });
 
   it("adds assignee fields", function() {
-    expect(view.$('ul.assignees li input').size()).toEqual(0);
+    expect(view.$('ul.assignees li select').size()).toEqual(0);
     view.addAssignee();
-    expect(view.$('ul.assignees li input').size()).toEqual(1);
+    expect(view.$('ul.assignees li select').size()).toEqual(1);
   });
 
   it("finds assignees from its user collection by email", function() {
     view.addAssignee();
-    view.$('ul.assignees input').val('alice@example.com');
+    view.$('ul.assignees select').val('alice@example.com');
     view.save(e);
 
     expect(view.assignedUsers().length).toEqual(1);
@@ -58,8 +58,8 @@ describe("ExampleApp.Views.TasksNew", function() {
     view.addAssignee();
     view.addAssignee();
 
-    view.$('ul.assignees input').first().val('alice@example.com');
-    view.$('ul.assignees input').last().val('alice@example.com');
+    view.$('ul.assignees select').first().val('alice@example.com');
+    view.$('ul.assignees select').last().val('alice@example.com');
 
     expect(view.assignedUsers().length).toEqual(1);
   });

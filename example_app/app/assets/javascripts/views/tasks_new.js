@@ -18,7 +18,7 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
   },
 
   addAssignee: function() {
-    this.$('ul.assignees').append(JST['tasks/assignee_field']());
+    this.$('ul.assignees').append(JST['tasks/assignee_field']({ users: this.users }));
     return false;
   },
 
@@ -53,8 +53,8 @@ ExampleApp.Views.TasksNew = Backbone.View.extend({
   },
 
   assigneeEmails: function() {
-    return this.$('input.new-task-assignee-email').map(function(n, input) {
-      return $(input).val();
+    return this.$('select.new-task-assignee-email').map(function(n, select) {
+      return $(select).val();
     });
   },
 
