@@ -26,13 +26,13 @@ end
 Given /^I sign in$/ do
   email = FactoryGirl.next(:email)
   steps %{
-    I have signed up with "#{email}"
-    I sign in with "#{email}"
+    Given I have signed up with "#{email}"
+    When I sign in with "#{email}"
   }
 end
 
 When /^I sign in (?:with|as) "([^"]*)"$/ do |email|
-  When %{I sign in with "#{email}" and "password"}
+  steps %{When I sign in with "#{email}" and "password"}
 end
 
 When /^I sign in (?:with|as) "([^"]*)" and "([^"]*)"$/ do |email, password|
