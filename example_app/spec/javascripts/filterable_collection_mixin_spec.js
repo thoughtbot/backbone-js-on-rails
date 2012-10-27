@@ -2,7 +2,6 @@ describe("FilteredCollection", function() {
   var baseCollection, oddCollection, onAdd, onRemove, onChange, m1, m2, m3, m4;
 
   beforeEach(function() {
-    console.log('beforeEach');
     var FilterableCollection = Backbone.Collection.extend({});
     _.extend(FilterableCollection.prototype, FilterableCollectionMixin);
 
