@@ -2,7 +2,8 @@
 // Originally included on: https://github.com/thoughtbot/backbone-js-on-rails/issues/84
 //
 var FilterableCollectionMixin = {
-  filtered: function(criteria) {
+  filtered: function(initialCriteria) {
+    var criteria = initialCriteria;
     var sourceCollection = this;
     var filteredCollection = new this.constructor;
 
@@ -36,6 +37,13 @@ var FilterableCollectionMixin = {
       sourceCollection.unbind('change', changeFiltered);
       sourceCollection.unbind('add',    addToFiltered);
       sourceCollection.unbind('remove', removeFromFiltered);
+    };
+
+    filteredCollection.refilter = function(newCriteria) {
+      // TODO: It would be more efficient to iterate
+      // over sourceCollection and selectively add or remove
+      criteria = newCriteria;
+      filteredCollection.reset(sourceCollection.select(criteria));
     };
 
     filteredCollection.reset(sourceCollection.select(criteria));

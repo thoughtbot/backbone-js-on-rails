@@ -90,4 +90,15 @@ describe("FilteredCollection", function() {
     oddCollection.teardown();
     expect(_.size(baseCollection._callbacks)).toEqual(0);
   });
+
+  it("refilters by resetting the filtered collection", function() {
+    var isTwo = function(model) {
+      return model.get('number') == 2;
+    };
+
+    oddCollection.refilter(isTwo);
+
+    expect(oddCollection.size()).toEqual(1);
+    expect(oddCollection.at(0)).toEqual(m2);
+  });
 });
