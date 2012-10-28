@@ -3,6 +3,7 @@
 describe("ExampleApp.Views.TasksIndex", function() {
   it("renders a collection of tasks", function() {
     var tasksCollection = new ExampleApp.Collections.Tasks();
+    _.extend(tasksCollection, FilterableCollectionMixin);
     tasksCollection.reset([
       { title: "Wake up" },
       { title: "Brush your teeth" }

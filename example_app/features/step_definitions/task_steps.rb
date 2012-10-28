@@ -21,3 +21,11 @@ end
 Then /^I should see that "([^"]*)" is not complete$/ do |task_title|
   page.should have_unchecked_field(task_title)
 end
+
+When /^I filter the tasks for "([^"]*)"$/ do |query|
+  page.execute_script(<<-JS)
+    var enterEvent = $.Event('keypress');
+    enterEvent.which = 13;
+    $('div.visual-search input').val("#{query}").trigger(enterEvent);
+  JS
+end
