@@ -43,7 +43,7 @@ following.
 
 ````javascript
 // app/assets/javascripts/collections/tasks.js
-var Tasks = Backbone.Collection.extend({
+ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: Task
 });
 ````
@@ -55,7 +55,7 @@ change, then our collection and model will be as follows.
 
 ````javascript
 // app/assets/javascripts/collections/tasks.js
-var Tasks = Backbone.Collection.extend({
+ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks'
 });
