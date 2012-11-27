@@ -222,8 +222,8 @@ var ExampleApp = {
   Views: {},
   Routers: {},
   initialize: function(data) {
-    var tasks = new ExampleApp.Collections.Tasks(data.tasks);
-    new ExampleApp.Routers.Tasks({ tasks: tasks });
+    this.tasks = new ExampleApp.Collections.Tasks(data.tasks);
+    new ExampleApp.Routers.Tasks();
     Backbone.history.start();
   }
 };
