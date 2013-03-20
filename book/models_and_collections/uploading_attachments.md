@@ -39,7 +39,7 @@ importantly, breaking the use of HTTP response codes to indicate server-side
 errors.  This approach would deliver the smoothest user experience - at the cost
 of more integration code.
 
-The [Remotipart gem](https://github.com/leppert/remotipart) provides some
+The [Remotipart gem](https://github.com/JangoSteve/remotipart) provides some
 conventions for delivering response information back to the client side,
 although the use-case is slightly different and the library uses the
 `jquery.form.js` `ajaxSubmit()` function to perform an iframe upload, instead
