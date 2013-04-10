@@ -164,7 +164,7 @@ MyView = Backbone.View.extend({
   },
 
   renderTemplate: function() {
-    this.$el.html(JST['songs/index']();
+    this.$el.html(JST['songs/index']());
   },
 
   fillTemplate: function() {
