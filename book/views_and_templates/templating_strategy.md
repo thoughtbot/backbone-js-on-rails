@@ -23,7 +23,7 @@ libraries accomplish the same goal of rendering the above. Since you're already 
 
 An Underscore.js template may look like this:
 
-````erb
+````rhtml
 <ul class="tasks">
   <% tasks.each(function(task) { %>
     <li>
@@ -63,7 +63,7 @@ and `unless`, and simply provide control structures for rendering logic.
 
 The above template would look like this in Handlebars:
 
-````erb
+````rhtml
 <ul class="title">
   {{#each tasks}}
     <li>

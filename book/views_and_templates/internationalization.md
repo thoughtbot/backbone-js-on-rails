@@ -14,7 +14,7 @@ https://github.com/fnando/i18n-js[`i18n-js`], that provides access to your i18n
 content as a JavaScript object, similar to the way the JST object provides access
 to your templates.
 
-From the documentation, you can link the client-side locale to the server-side 
+From the documentation, you can link the client-side locale to the server-side
 locale:
 
 ````html
@@ -36,7 +36,7 @@ I18n.t("some.scoped.translation", {locale: "fr"});
 
 You can use the `I18n.t()` function inside your templates, too:
 
-````erb
+````rhtml
 <nav>
   <a href="#/"><%= I18n.t("nav.links.home") %></a>
   <a href="#/projects"><%= I18n.t("nav.links.projects") %></a>

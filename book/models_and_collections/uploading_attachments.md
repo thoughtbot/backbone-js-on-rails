@@ -88,7 +88,7 @@ unit tests to drive this out:
 
 <<(../../example_app/spec/javascripts/views/task_show_spec.js)
 
-Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the 
+Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the
 UI elements are in place:
 
 ````
@@ -191,7 +191,7 @@ attachments to the user.
 For structuring the attachments in Backbone, we want to be able to do something
 like the following:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <% this.task.attachments.each(function(attachment) { %>
   Attached: <img src="<%= attachment.get('upload_url')" /> %>

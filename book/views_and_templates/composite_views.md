@@ -23,7 +23,7 @@ the comments that folks have left, and rendering the form to create new
 comments. Let's separate those concerns. A first approach might be to just
 break up the template files:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
   <%= JST['tasks/details']({ task: task }) %>
@@ -34,13 +34,13 @@ break up the template files:
 </section>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/list.jst.ejs -->
 <ul>
   <% task.comments.each(function(comment) { %>
@@ -51,13 +51,13 @@ break up the template files:
 <%= JST['comments/new']() %>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/new.jst.ejs -->
 <div class="form-inputs">
   <label for="new-comment-input">Add comment</label>
@@ -183,7 +183,7 @@ Along with this, remove the `<%= JST(...) %>` template nestings, allowing the
 view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
 </section>
@@ -192,13 +192,13 @@ contains placeholder elements that are used to wrap child views:
 </section>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/list.jst.ejs -->
 <ul class="comments-list">
 </ul>
@@ -207,13 +207,13 @@ contains placeholder elements that are used to wrap child views:
 </section>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
 ````
 
-````erb
+````rhtml
 <!-- app/assets/templates/comments/new.jst.ejs -->
 <label for="new-comment-input">Add comment</label>
 <textarea class="new-comment-input" cols="30" rows="10"></textarea>
