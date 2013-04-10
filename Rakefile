@@ -74,9 +74,9 @@ class Builder
 
   def parse_file(output, filename)
     file = File.open(filename)
-    file.each do |line| 
+    file.each do |line|
       if line =~ /\<\<\((.+)\)/
-        output.puts "````"
+        output.puts "````#{language($1)}"
         parse_file(output, "#{File.dirname(filename)}/#{$1}")
         output.puts "````"
       elsif line =~ /\<\<\[(.+)\]/
@@ -84,6 +84,19 @@ class Builder
       else
         output.puts line
       end
+    end
+  end
+
+  def language(path)
+    case File.extname(path)
+    when '.js'
+      'javascript'
+    when '.rb'
+      'ruby'
+    when '.erb'
+      'rhtml'
+    else
+      ''
     end
   end
 

@@ -14,7 +14,7 @@ but you want to link to it from the Backbone templates.
 Let's say that the task history is visible at a URL of `/tasks/:id/history`.
 We will add this link as a fourth column in the template:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -22,7 +22,7 @@ We will add this link as a fourth column in the template:
 <td class="history">
   <a href="#">Task History</a>
 </td>
-````erb
+````
 
 and populate it from the view:
 
@@ -78,7 +78,7 @@ renderFormContents: function() {
 Since the `Routes` object is global, you can invoke these route helpers directly from
 templates as well:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -86,7 +86,7 @@ templates as well:
 <td class="history">
   <a href="<%= Routes.task_history_path(this.task) %>">Task History</a>
 </td>
-````erb
+````
 
 If you are using a templating library like
 [Handlebars.js](http://handlebarsjs.com/) that supports helper functions, you

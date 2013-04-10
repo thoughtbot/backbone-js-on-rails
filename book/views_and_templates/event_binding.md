@@ -62,7 +62,7 @@ detail below.
 The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
 
-````erb
+````rhtml
 <!-- app/assets/templates/soundboard.jst.ejs -->
 <a class="sound">Honk</a>
 <a class="sound">Beep</a>
