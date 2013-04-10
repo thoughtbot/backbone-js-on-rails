@@ -9,7 +9,7 @@ Backbone views are classes that contain event handling and presentation logic.
 
 Consider the following Rails view for a tasks index:
 
-````erb
+````rhtml
 <!-- app/views/tasks/index.html.erb -->
 <h1>Tasks</h1>
 
@@ -96,7 +96,7 @@ Underscore.js to provide these iteration functions as methods on `Backbone.Colle
 We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -136,7 +136,7 @@ which re-renders only the markup for one task.
 Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/task.jst.ejs -->
 <tr>
   <td><%= model.escape('title') %></td>
@@ -146,7 +146,7 @@ rendering just the individual table row for a `Task`:
 
 And the Task index template will be changed to appear as shown below:
 
-````erb
+````rhtml
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -177,7 +177,7 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
 
 The `TaskView` view above is very similar to the one we saw previously for the
 `TasksIndex` view.  It is only responsible for rendering the contents of its own
-element, and the concern of assembling the view of the list is left to the 
+element, and the concern of assembling the view of the list is left to the
 parent view object:
 
 ````javascript
@@ -205,7 +205,7 @@ the `<table>` element.
 
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
-````erb
+````rhtml
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -268,7 +268,7 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
 Given the above `tagName` customization, the task view template will appear as
 follows:
 
-````erb
+````rhtml
 // app/assets/templates/tasks/view.jst.ejs
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
