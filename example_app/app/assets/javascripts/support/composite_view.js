@@ -1,5 +1,3 @@
-// app/assets/javascripts/support/composite_view.js
-
 Support.CompositeView = function(options) {
   this.children = _([]);
   this.bindings = _([]);
@@ -32,7 +30,7 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
     this.children.push(view);
     view.parent = this;
   },
-  
+
   renderChildInto: function(view, container) {
     this.renderChild(view);
     $(container).empty().append(view.el);
@@ -42,17 +40,17 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
     this.renderChild(view);
     $(this.el).append(view.el);
   },
-  
+
   appendChildTo: function (view, container) {
     this.renderChild(view);
     $(container).append(view.el);
   },
-  
+
   prependChild: function(view) {
     this.renderChild(view);
     $(this.el).prepend(view.el);
   },
-  
+
   prependChildTo: function (view, container) {
     this.renderChild(view);
     $(container).prepend(view.el);
