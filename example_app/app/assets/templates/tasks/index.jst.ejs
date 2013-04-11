@@ -1,13 +1,15 @@
-<ul>
-  <% tasks.each(function(task) { %>
-    <div class="checkbox complete">
-      <input id="<%= dom_id(task, 'complete') %>"
-             type="checkbox"
-             <%= task.isComplete() ? ' checked="checked"' : '' %>>
-    </div>
+<div class="visual-search"></div>
 
-    <a href="#<%= task.id %>">
-      <%= task.escape("title") %>
-    </a>
-  <% end %>
-</ul>
+<table id="tasks-list">
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Assignees</th>
+      <th>Completed</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+<a class="create" href="#new">Add task</a>
