@@ -1,36 +1,17 @@
-ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
+var TasksIndex = Backbone.View.extend({
+  template: JST['tasks/tasks_index'],
+  tagName: 'section',
+  id: 'tasks',
+
   initialize: function() {
     _.bindAll(this, "render");
 
-    this.taskSearch = new ExampleApp.TaskSearch(this.collection);
-    this.bindTo(this.taskSearch.filteredCollection, "add", this.renderTasks);
-    this.bindTo(this.taskSearch.filteredCollection, "remove", this.renderTasks);
-    this.bindTo(this.taskSearch.filteredCollection, "reset", this.renderTasks);
+    this.collection.bind("change", this.render);
+    this.collection.bind("add",    this.render);
+    this.collection.bind("remove", this.render);
   },
 
-  render: function () {
-    this.renderTemplate();
-    this.attachVisualSearch();
-    this.renderTasks();
-    return this;
-  },
-
-  renderTemplate: function() {
-    this.$el.html(JST['tasks/index']({ tasks: this.collection }));
-  },
-
-  attachVisualSearch: function() {
-    this.taskSearch.attach(this.$('.visual-search'));
-  },
-
-  renderTasks: function() {
-    var self = this;
-    self.$('tbody').empty();
-
-    this.taskSearch.filteredCollection.each(function(task) {
-      var row = new ExampleApp.Views.TaskItem({ model: task });
-      self.renderChild(row);
-      self.$('tbody').append(row.el);
-    });
+  render: function() {
+    this.$el.html(this.template({tasks: this.collection}));
   }
 });

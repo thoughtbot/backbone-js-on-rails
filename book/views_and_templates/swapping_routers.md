@@ -30,7 +30,7 @@ Now, a `SwappingRouter` can take advantage of the `leave()` function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
 rendering that view into its own `el`:
 
-` sample_code/swapping_router.js
+` app/assets/javascripts/support/swapping_router.js@48f284c
 
 Now all you need to do in a route function is call `swap()`, passing in the
 new view that should be rendered. The `swap()` function's job is to call

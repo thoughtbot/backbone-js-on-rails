@@ -1,12 +1,21 @@
-<p>Task title</p>
+<section class="task-details">
+  <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
+  <h2><%= task.escape("title") %></h2>
+</section>
 
-<ul class="attachments">
-</ul>
+<section class="comments">
+  <ul>
+    <% task.comments.each(function(comment) { %>
+      <li>
+        <h4><%= comment.user.escape('name') %></h4>
+        <p><%= comment.escape('text') %></p>
+      </li>
+    <% } %>
+  </ul>
 
-<div class="upload">
-  <label for="input">Attach a file to upload</label>
-  <input type="file" name="file" />
-  <button>Upload attachment</button>
-</div>
-
-<a href="#">Back to task list</a>
+  <div class="form-inputs">
+    <label for="new-comment-input">Add comment</label>
+    <textarea id="new-comment-input" cols="30" rows="10"></textarea>
+    <button>Add Comment</button>
+  </div>
+</section>

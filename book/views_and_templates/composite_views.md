@@ -70,7 +70,7 @@ But this is really only half the story. The `TaskDetail` view class still
 handles multiple concerns, such as displaying the task and creating comments. Let's
 split that view class up, using the `CompositeView` base class:
 
-` sample_code/composite_view.js@f478197
+` app/assets/javascripts/support/composite_view.js@48f284c
 
 Similar to the `SwappingRouter`, the `CompositeView` base class solves common
 housekeeping problems by establishing a convention. See the "SwappingRouter and
