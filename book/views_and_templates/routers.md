@@ -23,13 +23,13 @@ view classes, but fewer than twenty routes.  Additionally, many of the view
 classes are displayed in parallel and have multiple internal states of their own,
 providing for much more than 100 different interface states.
 
-<<[a_note_about_push_state.md]
+<<[views_and_templates/a_note_about_push_state.md]
 
 ### Example router
 
 A typical Backbone router will appear as shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/example_router.js
 ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
@@ -45,7 +45,7 @@ ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
     // Instantiate and render the show view
   }
 });
-````
+```
 
 ### The routes hash
 

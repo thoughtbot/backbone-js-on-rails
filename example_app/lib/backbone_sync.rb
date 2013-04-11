@@ -1,5 +1,3 @@
-# lib/backbone_sync.rb
-
 module BackboneSync
   module Rails
     module Faye
@@ -27,7 +25,7 @@ module BackboneSync
         end
 
         def broadcast
-          Net::HTTP.post_form(uri, :message => message) 
+          Net::HTTP.post_form(uri, :message => message)
         end
 
         private

@@ -7,7 +7,7 @@ If you are only targeting mobile platforms, Backbone can also use
 minimalist JavaScript framework for mobile WebKit browsers, with a
 jQuery-compatible syntax."  From `backbone.js`:
 
-````javascript
+```javascript
 (function(){
 
   // Initial Setup
@@ -22,4 +22,4 @@ jQuery-compatible syntax."  From `backbone.js`:
   // ...
 
 }).call(this);
-````
+```

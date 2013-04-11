@@ -17,7 +17,7 @@ code.
 Libraries like jQuery have done a great deal to help abstract inconsistencies
 across browsers and provide a high-level API for making AJAX requests and
 performing DOM manipulation, but larger and richer client-side applications that
-lack decoupled and modular organizational structures often fall victim to the same 
+lack decoupled and modular organizational structures often fall victim to the same
 few kinds of technical debt.
 
 These apps are often highly asynchronous and the "path of least resistance"
@@ -235,7 +235,7 @@ similarities to help ease the learning curve.
 
 The models in Backbone and Rails are fairly analogous - each represent
 objects in your domain, and both mix the concerns of domain logic with
-persistence.  In Rails, the persistence is usually made to a database, and in 
+persistence.  In Rails, the persistence is usually made to a database, and in
 Backbone.js it's generally made to a remote HTTP JSON API.
 
 Backbone collections are just ordered sets of models.  Because it lacks
@@ -314,7 +314,7 @@ Typically, initializing your application will involve creating a router and
 starting Backbone history to route the initial URL fragment.  This app variable
 will look like the following:
 
-````javascript
+```javascript
 // app/assets/javascripts/example_app.js
 var ExampleApp = {
   Models: {},
@@ -326,7 +326,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-````
+```
 
 You can find a more fully fleshed-out version of this file in the example app
 in `app/assets/javascripts/example_app.js`.
@@ -338,13 +338,13 @@ build a collection of related, reusable behavior and include that in several
 classes that already inherit from a Backbone base class.  In these cases,
 you'll want to use a [mixin](http://en.wikipedia.org/wiki/Mixin).
 
-Backbone includes [Backbone.Events](http://documentcloud.github.com/backbone/#Events) 
+Backbone includes [Backbone.Events](http://documentcloud.github.com/backbone/#Events)
 as an example of a mixin.
 
 Here, we create a mixin named `Observer` that contains behavior for binding to
 events in a fashion that can be cleaned up later:
 
-````javascript
+```javascript
 // app/assets/javascripts/observer.js
 var Observer = {
   bindTo: function(source, event, callback) {
@@ -360,12 +360,12 @@ var Observer = {
     this.bindings = [];
   }
 };
-````
+```
 
 We can mix `Observer` into a class by using Underscore.js' `_.extend` on the
 prototype of that class:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_collection_view.js
 SomeCollectionView = Backbone.View.extend({
   initialize: function() {
@@ -379,7 +379,7 @@ SomeCollectionView = Backbone.View.extend({
 });
 
 _.extend(SomeCollectionView.prototype, Observer);
-````
+```
 
 \clearpage
 
@@ -395,7 +395,7 @@ Backbone-related assets: classes and templates.
 With Rails 3.0 and prior, store your Backbone classes in
 `public/javascripts`:
 
-````
+```
 public/
   javascripts/
     jquery.js
@@ -416,12 +416,12 @@ public/
         users_edit.js
       todos/
         todos_index.js
-````
+```
 
 If you are using templates, we prefer storing them in `app/templates` to keep
 them separated from the server views:
 
-````
+```
 app/
   views/
     pages/
@@ -437,7 +437,7 @@ app/
     todos/
       index.jst
       show.jst
-````
+```
 
 On Rails 3.0 and prior apps, we use Jammit for packaging assets and
 precompiling templates:
@@ -450,16 +450,16 @@ Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:
 
-````javascript
+```javascript
 JST['todos/index']
-````
+```
 
 Variables can be passed to the templates by passing a Hash to the template, as
 shown below.
 
-````javascript
+```javascript
 JST['todos/index']({ model: this.model })
-````
+```
 
 ### Jammit and a JST naming gotcha
 
@@ -469,19 +469,19 @@ templates in `app/templates`. You work for a while on the "Tasks" feature,
 placing templates under `app/templates/tasks`. So, `window.JST` looks something
 like:
 
-````javascript
+```javascript
 window.JST == {
   "form":  "html for template...",
   "show":  "html for template...",
   "index": "html for template...",
 };
-````
+```
 
 Now, you add another directory under `app/templates`, say `app/templates/user`.
 Now, templates with colliding names in JST references are prefixed with their
  parent directory name so they are unambiguous:
 
-````javascript
+```javascript
 window.JST == {
   "form":        "html...", // from tasks/form.jst.ejs
   "tasks/show":  "html...",
@@ -490,19 +490,19 @@ window.JST == {
   "users/show":  "html...",
   "users/index": "html...",
 };
-````
+```
 
 This breaks existing JST references. You can work around this issue by applying
 the following monkeypatch to Jammit, in `config/initializers/jammit.rb`:
 
-````ruby
+```ruby
 Jammit::Compressor.class_eval do
   private
   def find_base_path(path)
     File.expand_path(Rails.root.join('app','templates'))
   end
 end
-````
+```
 
 As applications are moving to Rails 3.1 or above, they're also moving to
 Sprockets for the asset packager.  Until then, many apps are using Jammit for
@@ -522,7 +522,7 @@ templates and classes in paths available to it: classes go in
 `app/assets/javascripts/`, and templates go alongside, in
 `app/assets/templates/`:
 
-````
+```
 app/
   assets/
     javascripts/
@@ -539,7 +539,7 @@ app/
       todos/
         index.jst.ejs
         show.jst.ejs
-````
+```
 
 In Rails 3.1 and above, jQuery is provided by the `jquery-rails` gem, and no
 longer needs to be included in your directory structure.
@@ -563,13 +563,13 @@ Sprockets, and requires the `ejs` gem to be included in the application Gemfile.
 To make the `*.jst` files available and create the `window.JST` object, require
 them in your application.js Sprockets manifest:
 
-````javascript
+```javascript
 // app/assets/javascripts/application.js
 
 // other application requires
 //= require_tree ../templates
 //= require_tree .
-````
+```
 
 Load order for Backbone and your Backbone app is very
 important. jQuery and Underscore must be loaded before Backbone. Then your models must be
@@ -579,11 +579,11 @@ models) and then your routers and views must be loaded.
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/application.js
-````
+```
 
-````
+```
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui-1.8.18.custom.min
@@ -605,7 +605,7 @@ done, your application.js Sprockets manifest will look as shown below:
 //= require_tree ./routers
 //= require_tree ../templates
 //= require_tree .
-````
+```
 
 The above is taken from the example application included with this book. You
 can view it at `example_app/app/assets/javascripts/application.js`.
@@ -627,12 +627,12 @@ In our example application, we have a Task model, exposed via a JSON API at
 `/tasks`. The simplest Backbone representation of this model would be as
 shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-````
+```
 
 The `urlRoot` property above describes a base for the server-side JSON API that
 houses this resource.  Collection-level requests will occur at that root URL,
@@ -653,19 +653,19 @@ plural representation of `Tasks` into `Collections`.
 The simplest Backbone collection to represent our `Tasks` would be the
 following.
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task
 });
-````
+```
 
 If we specify the URL for `Tasks` in our collection instead, then models within
 the collection will use the collection's URL to construct their own URLs, and
 the `urlRoot` no longer needs to be specified in the model. If we make that
 change, then our collection and model will be as follows.
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -674,7 +674,7 @@ var Tasks = Backbone.Collection.extend({
 
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({});
-````
+```
 
 Notice in the above model definitions that there is no specification of the
 attributes on the model. As in ActiveRecord, Backbone models get their
@@ -712,7 +712,7 @@ When using `respond_with`, declare supported formats with `respond_to`. Inside
 individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :html, :json
@@ -721,7 +721,7 @@ class TasksController < ApplicationController
     respond_with(@tasks = Task.all)
   end
 end
-````
+```
 
 In the above example tasks controller, the `respond_to` line declares that this
 controller should respond to requests for both the HTML and JSON formats. Then,
@@ -748,13 +748,13 @@ So, your Backbone applications will likely rely on at least some server-side
 validation logic.  Invalid requests return non-2xx HTTP responses, which
 are handled by error callbacks in Backbone:
 
-````javascript
+```javascript
 task.save({ title: "New Task title" }, {
   error: function() {
     // handle error from server
   }
 });
-````
+```
 
 The error callback will be triggered if your server returns a non-2xx
 response. Therefore, you'll want your controller to return a non-2xx HTTP
@@ -762,7 +762,7 @@ response code if validations fail.
 
 A controller that does this would appear as shown in the following example:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -776,13 +776,13 @@ class TasksController < ApplicationController
     end
   end
 end
-````
+```
 
 The default Rails responders will respond with an unprocessable entity (422)
 status code when there are validation errors, so the action above can be
 refactored:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -792,12 +792,12 @@ class TasksController < ApplicationController
     respond_with @task
   end
 end
-````
+```
 
 Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
-application. 
+application.
 
 A few different aspects of validations that we saw here are covered in other sections of this book. For more information about validations, see
 the "Validations" section of the "Models and Collections" chapter. For more
@@ -826,7 +826,7 @@ Organization chapter.
 
 This application object will look like the following:
 
-````javascript
+```javascript
 // app/assets/javascripts/example_app.js
 var ExampleApp = {
   Models: {},
@@ -839,7 +839,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-````
+```
 
 You can find this file in the example app in
 `app/assets/javascripts/example_app.js`.
@@ -852,14 +852,14 @@ You will often bootstrap data into the Backbone application to provide initial
 state.  In our example, the tasks have already been provided to the Rails view
 in an `@tasks` instance variable:
 
-````javascript
+```javascript
 <!-- app/views/tasks/index.html.erb -->
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.initialize({ tasks: <%== @tasks.to_json %> });
   <% end %>
 <% end -%>
-````
+```
 
 The above example uses ERB to pass the JSON for the tasks to the `initialize`
 method, but we should be mindful of the XSS risks that dumping user-generated
@@ -869,7 +869,7 @@ section in the "Security" chapter for a more secure approach.
 Finally, you must have a Router in place that knows what to do.  We'll cover
 routers in more detail in the "Routers, Views and Templates" chapter.
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
@@ -888,7 +888,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     // We'll pick back up here in the "Converting Views" section.
   }
 });
-````
+```
 
 The example router above is the last piece needed to complete our
 initial Backbone infrastructure. When a user visits `/tasks`, the
@@ -914,12 +914,12 @@ If you're concerned about sensitive data unintentionally being included in the
 JSON when it shouldn't be, then you'll want to whitelist attributes into the
 JSON with the `:only` option:
 
-````ruby
+```ruby
 # app/models/some_model.rb
-def as_json(options = {}) 
+def as_json(options = {})
   super(options.merge(:only => [ :id, :title ]))
 end
-````
+```
 
 The above `as_json` override will make it so that the JSON will _only_ include the
 id and title attributes, even if there are many other attributes on the model.
@@ -927,34 +927,34 @@ id and title attributes, even if there are many other attributes on the model.
 If instead you want to include all attributes by default and just exclude a few,
 you accomplish this with the `:except` option:
 
-````ruby
+```ruby
 # app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:except => [ :encrypted_password ]))
 end
-````
+```
 
 Another common customization you will want to do in the JSON is include the
 output of methods (say, calculated values) on your model. This is accomplished
 with the `:methods` option, as shown in the following example:
 
-````ruby
+```ruby
 # app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:methods => [ :calculated_value ]))
 end
-````
+```
 
 The final thing you'll most commonly do with your JSON is include related
 objects. If the `Task` model `has_many :comments`, include all of the JSON for
 comments in the JSON for a Task with the `:include` option:
 
-````ruby
+```ruby
 # app/models/some_model.rb
 def as_json(options = {})
   super(options.merge(:include => [ :comments ]))
 end
-````
+```
 
 As you may have guessed, you can then customize the JSON for the comments by
 overriding the `as_json` method on the `Comment` model.
@@ -971,7 +971,7 @@ about the format of JSON structures; specifically, whether or not a root key is
 present.  When generating JSON from Rails, this is controlled by the
 ActiveRecord setting `ActiveRecord::Base.include_root_in_json`.
 
-````ruby
+```ruby
   > ActiveRecord::Base.include_root_in_json = false
   > Task.last.as_json
  => {"id"=>4, "title"=>"Enjoy a three mile swim"}
@@ -979,15 +979,15 @@ ActiveRecord setting `ActiveRecord::Base.include_root_in_json`.
   > ActiveRecord::Base.include_root_in_json = true
   > Task.last.as_json
  => {"task"=>{"id"=>4, "title"=>"Enjoy a three mile swim"}}
-````
+```
 
-In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true." 
-Starting with 3.1, it defaults to "false." This reversal was made to simplify 
-the JSON returned by default in Rails application, but it is a fairly big 
+In Rails 3.0, `ActiveRecord::Base.include_root_in_json` is set to "true."
+Starting with 3.1, it defaults to "false." This reversal was made to simplify
+the JSON returned by default in Rails application, but it is a fairly big
 change from the default behavior of Rails 3.0.
 
 Practically speaking, this change is a good one, but take particular note if
-you're upgrading an existing Rails 3.0 application to Rails 3.1 or above and 
+you're upgrading an existing Rails 3.0 application to Rails 3.1 or above and
 you already have a published API; you may need to expose a new version of your
 API.
 
@@ -995,7 +995,7 @@ From the Backbone side, the default behavior expects no root node.  This
 behavior is defined in a few places: `Backbone.Collection.prototype.parse`,
 `Backbone.Model.prototype.parse`, and `Backbone.Model.prototype.toJSON`:
 
-````javascript
+```javascript
 // backbone.js
 
 _.extend(Backbone.Collection.prototype, Backbone.Events, {
@@ -1020,7 +1020,7 @@ _.extend(Backbone.Model.prototype, Backbone.Events, {
 
   // snip...
 });
-````
+```
 
 If you need to accept JSON with a root node, you can override `parse` in each of
 your models, or override the prototype's function.  You'll need to override it
@@ -1031,7 +1031,7 @@ override `toJSON`, per model or across all models.  When you do this, you'll
 need to explicitly specify the name of the root key.  We use a convention of a
 `modelName` function on your model to provide this:
 
-````javascript
+```javascript
 // app/assets/javascripts/backbone_overrides.js
 Backbone.Model.prototype.toJSON = function() {
   var hashWithRoot = {};
@@ -1045,7 +1045,7 @@ var Task = Backbone.Model.extend({
 
   // ...
 });
-````
+```
 
 ## Converting an existing page/view area to use Backbone
 
@@ -1058,7 +1058,7 @@ Backbone views are classes that contain event handling and presentation logic.
 
 Consider the following Rails view for a tasks index:
 
-````erb
+```erb
 <!-- app/views/tasks/index.html.erb -->
 <h1>Tasks</h1>
 
@@ -1075,7 +1075,7 @@ Consider the following Rails view for a tasks index:
     </tr>
   <% end %>
 </table>
-````
+```
 
 So far, we have the Backbone `Task` model and collection and the Rails `Task`
 model and controller discussed above, and we're bootstrapping the Backbone app
@@ -1089,7 +1089,7 @@ its DOM scope that trigger various behaviors.
 We'll start with a basic view that achieves the same result as the Rails template
 above, rendering a collection of tasks:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
@@ -1097,7 +1097,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 The `render` method above renders the `tasks/index` JST template, passing
 the collection of tasks into the template.
@@ -1110,7 +1110,7 @@ We'll update the Backbone route to instantiate this view, passing in the
 collection for it to render. The router then renders the view, and inserts it
 into the DOM:
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
@@ -1122,7 +1122,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     $('body').html(view.render().$el);
   }
 });
-````
+```
 
 Now that we have the Backbone view in place that renders the template, and
 it's being called by the router, we can focus on converting the above Rails
@@ -1145,7 +1145,7 @@ Underscore.js to provide these iteration functions as methods on `Backbone.Colle
 We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -1162,7 +1162,7 @@ passed to the view, as shown in the converted Underscore.js template below:
     </tr>
   <% }); %>
 </table>
-````
+```
 
 In Rails 3.0 and above, template output is HTML-escaped by default. In order to
 ensure that we have the same XSS protection as we did in our Rails template, we
@@ -1185,17 +1185,17 @@ which re-renders only the markup for one task.
 Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/task.jst.ejs -->
 <tr>
   <td><%= model.escape('title') %></td>
   <td><%= model.escape('completed') %></td>
 </tr>
-````
+```
 
 And the Task index template will be changed to appear as shown below:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -1208,13 +1208,13 @@ And the Task index template will be changed to appear as shown below:
   <!-- child content will be rendered here -->
 
 </table>
-````
+```
 
 As you can see above in the index template, the individual tasks are no longer
 iterated over and rendered inside the table, but instead within the
 `TasksIndex` and `TaskView` views, respectively:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   render: function () {
@@ -1222,14 +1222,14 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 The `TaskView` view above is very similar to the one we saw previously for the
 `TasksIndex` view.  It is only responsible for rendering the contents of its own
-element, and the concern of assembling the view of the list is left to the 
+element, and the concern of assembling the view of the list is left to the
 parent view object:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
@@ -1246,7 +1246,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 In the new `TasksIndex` view above, the `tasks` collection is iterated over. For
 each task, a new `TaskView` is instantiated, rendered, and then inserted into
@@ -1254,7 +1254,7 @@ the `<table>` element.
 
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
-````erb
+```erb
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -1279,7 +1279,7 @@ If you look at the output of the `TasksIndex`, it will appear as follows:
     </div>
   </table>
 </div>
-````
+```
 
 Unfortunately, we can see that there is a problem with the above rendered
 view: the surrounding div around each of the rendered tasks.
@@ -1299,7 +1299,7 @@ removed from the task view template.
 The element to use is specified by the `tagName` member of the `TaskView`, as
 shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_view.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   tagName: "tr",
@@ -1312,21 +1312,21 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 Given the above `tagName` customization, the task view template will appear as
 follows:
 
-````erb
+```erb
 // app/assets/templates/tasks/view.jst.ejs
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
-````
+```
 
 And the resulting output of the `TasksIndex` will be much cleaner, as shown
 below:
 
-````html
+```html
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -1347,7 +1347,7 @@ below:
     </tr>
   </table>
 </div>
-````
+```
 
 We've now covered the basic building blocks of converting Rails views to
 Backbone and getting a functional system. The majority of Backbone programming
@@ -1372,7 +1372,7 @@ but you want to link to it from the Backbone templates.
 Let's say that the task history is visible at a URL of `/tasks/:id/history`.
 We will add this link as a fourth column in the template:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -1380,11 +1380,11 @@ We will add this link as a fourth column in the template:
 <td class="history">
   <a href="#">Task History</a>
 </td>
-````erb
+```erb
 
 and populate it from the view:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_item.js
 
 ExampleApp.Views.TaskItem = Support.CompositeView.extend({
@@ -1403,7 +1403,7 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   },
   // ...
 });
-````
+```
 
 Now, the way we have constructed the URL in `renderFormContents` works, but it
 is fragile; it would break quietly if we changed the Rails routing structure.
@@ -1420,7 +1420,7 @@ available in JavaScript that provides JavaScript functions similar to the Rails
 path helper methods.  Let's replace our manual URL construction with one of
 these helpers:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_item.js
 renderFormContents: function() {
   // ...(existing code)...
@@ -1431,12 +1431,12 @@ renderFormContents: function() {
   // New history link:
   this.$('td.history a').attr("href", Routes.task_history_path(this.model));
 }
-````
+```
 
 Since the `Routes` object is global, you can invoke these route helpers directly from
 templates as well:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -1444,19 +1444,19 @@ templates as well:
 <td class="history">
   <a href="<%= Routes.task_history_path(this.task) %>">Task History</a>
 </td>
-````erb
+```erb
 
 If you are using a templating library like
 [Handlebars.js](http://handlebarsjs.com/) that supports helper functions, you
 could include the Routes object's helper functions into your view context
 directly to eliminate the need to prefix the calls with `Routes.`:
 
-````javascript
+```javascript
 // somewhere at initialization time, assuming you are using Handlebars.js:
 _.each(Routes, function(helper, name) {
   Handlebars.registerHelper(name, helper);
 });
-````
+```
 
 \clearpage
 
@@ -1477,7 +1477,7 @@ with Backbone.
 
 A basic Backbone view appears as follows.
 
-````javascript
+```javascript
 // app/assets/javascripts/views/example_view.js
 ExampleApp.Views.ExampleView = Backbone.View.extend({
   tagName: "li",
@@ -1497,7 +1497,7 @@ ExampleApp.Views.ExampleView = Backbone.View.extend({
     // do something
   }
 };
-````
+```
 
 ### Initialization
 
@@ -1540,10 +1540,10 @@ option to the view constructor with `new ExampleView({ el: existingElement })`.
 
 You can also set this after the fact with the `setElement()` function:
 
-````javascript
+```javascript
 var view = new ExampleView();
 view.setElement(existingElement);
-````
+```
 
 ### Customizing the View's Element
 
@@ -1584,13 +1584,13 @@ A nice convention of the render function is to return `this` at the end of
 render to enable chained calls on the view - usually fetching the element.
 For example:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_view.js
 render: function() {
   this.$el.html(this.childView.render().el);
   return this;
 }
-````
+```
 
 ### Events
 
@@ -1617,13 +1617,13 @@ There's no shortage of templating options for JavaScript. They generally fall in
 To quickly compare the different approaches, we will work with creating a
 template that renders the following HTML:
 
-````html
+```html
 <ul class="tasks">
   <li><span class="title">Buy milk</span> Get the good kind </li>
   <li><span class="title">Buy cheese</span> Sharp cheddar </li>
   <li><span class="title">Eat cheeseburger</span> Make with above cheese </li>
 </ul>
-````
+```
 
 Assuming we have a TasksCollection instance containing the three elements
 displayed in the above HTML snippet, let's look at how different templating
@@ -1631,7 +1631,7 @@ libraries accomplish the same goal of rendering the above. Since you're already 
 
 An Underscore.js template may look like this:
 
-````erb
+```erb
 <ul class="tasks">
   <% tasks.each(function(task) { %>
     <li>
@@ -1640,7 +1640,7 @@ An Underscore.js template may look like this:
     </li>
   <% }) %>
 </ul>
-````
+```
 
 Here, we interpolate a bit of JavaScript logic in order to iterate
 through the collection and render the desired markup. Also note
@@ -1671,7 +1671,7 @@ and `unless`, and simply provide control structures for rendering logic.
 
 The above template would look like this in Handlebars:
 
-````erb
+```erb
 <ul class="title">
   {{#each tasks}}
     <li>
@@ -1680,7 +1680,7 @@ The above template would look like this in Handlebars:
     </li>
   {{/each}}
 <ul>
-````
+```
 
 Of note:
 
@@ -1746,7 +1746,7 @@ your view class.
 You can build static HTML mockups of the application first, and pull these
 mockups directly in as templates, without modifying them.
 
-````html
+```html
 <!-- app/views/some/page.html.erb -->
 <div id="song-player">
   <nav>
@@ -1761,9 +1761,9 @@ mockups directly in as templates, without modifying them.
   </audio>
 </div>
 <!-- snip -->
-````
+```
 
-````javascript
+```javascript
 // app/assets/javascripts/views/my_view.js
 MyView = Backbone.View.extend({
   render: function() {
@@ -1789,7 +1789,7 @@ MyView = Backbone.View.extend({
     });
   }
 });
-````
+```
 
 You can see an example of this in the example application's `TaskItem` view
 class, at `app/assets/javascripts/views/task_item.js`.
@@ -1862,7 +1862,7 @@ currently use URL fragments and not pushState.
 
 A typical Backbone router will appear as shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/example_router.js
 ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
   routes: {
@@ -1878,7 +1878,7 @@ ExampleApp.Routers.ExampleRouter = Backbone.Router.extend({
     // Instantiate and render the show view
   }
 });
-````
+```
 
 ### The routes hash
 
@@ -1941,7 +1941,7 @@ Here's a quick example of a very simple game engine, where things happen in the
 system and an event is triggered, which in turn invokes any event handlers that
 are bound to that event:
 
-````javascript
+```javascript
 var gameEngine = {};
 _.extend(gameEngine, Backbone.Events);
 
@@ -1950,7 +1950,7 @@ gameEngine.on("user_registered", function(user) {
 });
 
 gameEngine.trigger("user_registered", User.new({ points: 0 }));
-````
+```
 
 In the example above, `on` subscribes the gameEngine to listen for the
 "user_registered" event, then `trigger` broadcasts that event to all
@@ -1988,13 +1988,13 @@ detail below.
 The primary function of a view class is to provide behavior for its markup's
 DOM elements. You can attach event listeners by hand if you like:
 
-````erb
+```erb
 <!-- app/assets/templates/soundboard.jst.ejs -->
 <a class="sound">Honk</a>
 <a class="sound">Beep</a>
-````
+```
 
-````javascript
+```javascript
 // app/assets/javascripts/views/sound_board.js
 var SoundBoard = Backbone.View.extend({
   render: function() {
@@ -2006,11 +2006,11 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-````
+```
 
 But Backbone provides an easier and more declarative approach with the `events` hash:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/sound_board.js
 var SoundBoard = Backbone.View.extend({
   events: {
@@ -2025,7 +2025,7 @@ var SoundBoard = Backbone.View.extend({
     // play sound for this element
   }
 });
-````
+```
 
 Backbone will bind the events with the
 [`Backbone.View.prototype.delegateEvents()`](http://documentcloud.github.com/backbone/#View-delegateEvents)
@@ -2047,7 +2047,7 @@ Consider a view that displays a collection of `Task` models. It will re-render
 itself when any model in the collection is changed or removed, or when a new
 model is added:
 
-````
+```
 // app/assets/javascripts/views/tasks_index.js
 
 var TasksIndexView = Backbone.View.extend({
@@ -2067,7 +2067,7 @@ var TasksIndexView = Backbone.View.extend({
     this.$el.html(this.template({tasks: this.collection}));
   }
 });
-````
+```
 
 Note how we bind to the collection's `change`, `add` and `remove` events.
 The `add` and `remove` events are triggered when you either `add()` or `remove()`
@@ -2089,7 +2089,7 @@ the other view has bindings.
 Consider a simple example with a table of users and a toggle control that
 filters the users to a particular gender:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/gender_picker.js
 GenderPicker = Backbone.View.extend({
   render: {
@@ -2124,7 +2124,7 @@ UsersTable = Backbone.View.extend({
     this.render();
   }
 });
-````
+```
 
 In the above snippet, the `GenderPicker` is responsible for the filter
 control. When the appropriate elements are clicked, a custom `changed` event
@@ -2167,7 +2167,7 @@ The interface switches between the two views.
 
 Here's the source for the aggregate index view:
 
-````
+```
 // app/assets/javascripts/views/tasks_index.js
 
 var TasksIndexView = Backbone.View.extend({
@@ -2187,11 +2187,11 @@ var TasksIndexView = Backbone.View.extend({
     this.$el.html(this.template({tasks: this.collection}));
   }
 });
-````
+```
 
 ...and the source for the individual task detail view:
 
-````
+```
 // app/assets/javascripts/views/task_detail.js
 var TaskDetail = Backbone.View.extend({
   template: JST['tasks/task_detail'],
@@ -2220,7 +2220,7 @@ var TaskDetail = Backbone.View.extend({
     this.model.comments.create(comment);
   }
 });
-````
+```
 
 Each task on the index page links to the detail view for itself. When a user
 follows one of these links and navigates from the index page to the detail
@@ -2271,7 +2271,7 @@ any additional event unbinding that's needed.  As a convention, when you use
 this view elsewhere, you'll call `leave()` instead of `remove()` when you're
 done:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   // snip...
@@ -2287,7 +2287,7 @@ var SomeCollectionView = Backbone.View.extend({
 
   // snip...
 });
-````
+```
 
 ### Keep track of `on()` calls to unbind more easily
 
@@ -2301,7 +2301,7 @@ clean up all the events with one call.  We'll add and use a `bindTo()`
 function that keeps track of all the event handlers we bind, and then issue a
 single call to `unbindFromAll()` to unbind them:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   initialize: function() {
@@ -2326,7 +2326,7 @@ var SomeCollectionView = Backbone.View.extend({
     this.bindings = [];
   }
 });
-````
+```
 
 These functions, `bindTo()` and `unbindFromAll()`, can be extracted into a
 reusable mixin or superclass.  Then, we just have to use `this.bindTo()`
@@ -2371,7 +2371,7 @@ triggers.
 
 This is handled by invoking `Backbone.Events.off()`:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filtering_view.js
 var FilteringView = Backbone.View.extend({
   // snip...
@@ -2393,7 +2393,7 @@ var FilteringView = Backbone.View.extend({
 
   // snip...
 });
-````
+```
 
 ### Establish a convention for consistent and correct unbinding
 
@@ -2411,7 +2411,7 @@ and `CompositeView`.
 When switching from one view to another, we should clean up the previous view.
 Earlier, we discussed a convention of writing a `view.leave()`. Let's augment our view to include the ability to clean itself up by "leaving" the DOM:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/my_view.js
 var MyView = Backbone.View.extend({
   // ...
@@ -2423,7 +2423,7 @@ var MyView = Backbone.View.extend({
 
   // ...
 });
-````
+```
 
 The `off()` and `remove()` functions are provided by `Backbone.Events` and
 `Backbone.View` respectively. `Backbone.Events.off()` will remove all
@@ -2438,7 +2438,7 @@ Now, a `SwappingRouter` can take advantage of the `leave()` function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
 rendering that view into its own `el`:
 
-````
+```
 // app/assets/javascripts/support/swapping_router.js
 Support.SwappingRouter = function(options) {
   Backbone.Router.apply(this, [options]);
@@ -2456,7 +2456,7 @@ _.extend(Support.SwappingRouter.prototype, Backbone.Router.prototype, {
 });
 
 Support.SwappingRouter.extend = Backbone.Router.extend;
-````
+```
 
 Now all you need to do in a route function is call `swap()`, passing in the
 new view that should be rendered. The `swap()` function's job is to call
@@ -2486,14 +2486,14 @@ constructor with the use of `Function#apply`. The next block of code uses
 Underscore.js' `Object#extend` to create the set of functions and properties that
 will become `SwappingRouter`. The `extend` function takes a destination - in
 this case, the empty prototype for `SwappingRouter` - and copies the properties
-into the `Backbone.Router` prototype along with our new custom object that 
+into the `Backbone.Router` prototype along with our new custom object that
 includes the `swap` function.
 
 Finally, the subclass cake is topped off with some Backbone frosting, by setting
 `extend`, which is a self-propagating function that all Backbone public classes
 use. Let's take a quick look at this function, as seen in Backbone 0.5.3:
 
-````javascript
+```javascript
 var extend = function (protoProps, classProps) {
   var child = inherits(this, protoProps, classProps);
   child.extend = this.extend;
@@ -2507,7 +2507,7 @@ var inherits = function(parent, protoProps, staticProps) {
   // sparing our readers the internals of this function... for a deep dive
   // into the dark realms of JavaScript's prototype system, read the source!
 }
-````
+```
 
 This is a function that calls `inherits` to make a new subclass.  The comments
 reference `goog.inherits` from Google's Closure Library, which contains similar
@@ -2541,7 +2541,7 @@ One of the first refactorings you'll find yourself doing in a non-trivial Backbo
 app is splitting up large views into composable parts. Let's take another look
 at the `TaskDetail` source code from the beginning of this section:
 
-````
+```
 // app/assets/javascripts/views/task_detail.js
 var TaskDetail = Backbone.View.extend({
   template: JST['tasks/task_detail'],
@@ -2570,11 +2570,11 @@ var TaskDetail = Backbone.View.extend({
     this.model.comments.create(comment);
   }
 });
-````
+```
 
 The view class references a template, which renders out the HTML for this page:
 
-````
+```
 <!-- app/assets/templates/task_detail.jst.ejs -->
 
 <section class="task-details">
@@ -2598,14 +2598,14 @@ The view class references a template, which renders out the HTML for this page:
     <button>Add Comment</button>
   </div>
 </section>
-````
+```
 
 There are clearly several concerns going on here: rendering the task, rendering
 the comments that folks have left, and rendering the form to create new
 comments. Let's separate those concerns. A first approach might be to just
 break up the template files:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
   <%= JST['tasks/details']({ task: task }) %>
@@ -2614,15 +2614,15 @@ break up the template files:
 <section class="comments">
   <%= JST['comments/list']({ task: task }) %>
 </section>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/list.jst.ejs -->
 <ul>
   <% task.comments.each(function(comment) { %>
@@ -2631,28 +2631,28 @@ break up the template files:
 </ul>
 
 <%= JST['comments/new']() %>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/new.jst.ejs -->
 <div class="form-inputs">
   <label for="new-comment-input">Add comment</label>
   <textarea id="new-comment-input" cols="30" rows="10"></textarea>
   <button>Add Comment</button>
 </div>
-````
+```
 
 But this is really only half the story. The `TaskDetail` view class still
 handles multiple concerns, such as displaying the task and creating comments. Let's
 split that view class up, using the `CompositeView` base class:
 
-````
+```
 // app/assets/javascripts/support/composite_view.js
 
 Support.CompositeView = function(options) {
@@ -2687,7 +2687,7 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
     this.children.push(view);
     view.parent = this;
   },
-  
+
   renderChildInto: function(view, container) {
     this.renderChild(view);
     $(container).empty().append(view.el);
@@ -2697,17 +2697,17 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
     this.renderChild(view);
     $(this.el).append(view.el);
   },
-  
+
   appendChildTo: function (view, container) {
     this.renderChild(view);
     $(container).append(view.el);
   },
-  
+
   prependChild: function(view) {
     this.renderChild(view);
     $(this.el).prepend(view.el);
   },
-  
+
   prependChildTo: function (view, container) {
     this.renderChild(view);
     $(container).prepend(view.el);
@@ -2732,7 +2732,7 @@ _.extend(Support.CompositeView.prototype, Backbone.View.prototype, {
 });
 
 Support.CompositeView.extend = Backbone.View.extend;
-````
+```
 
 Similar to the `SwappingRouter`, the `CompositeView` base class solves common
 housekeeping problems by establishing a convention. See the "SwappingRouter and
@@ -2750,7 +2750,7 @@ maintain a back-reference at `this.parent`. This is used to reach up and call
 
 Making use of `CompositeView`, we split up the `TaskDetail` view class:
 
-````javascript
+```javascript
 var TaskDetail = Support.CompositeView.extend({
   tagName: 'section',
   id: 'task',
@@ -2781,9 +2781,9 @@ var TaskDetail = Support.CompositeView.extend({
     this.renderChildInto(commentsList, commentsContainer);
   }
 });
-````
+```
 
-````javascript
+```javascript
 var CommentsList = Support.CompositeView.extend({
   tagName: 'ul',
 
@@ -2817,9 +2817,9 @@ var CommentsList = Support.CompositeView.extend({
     this.renderChildInto(commentForm, commentFormContainer);
   }
 });
-````
+```
 
-````javascript
+```javascript
 var CommentForm = Support.CompositeView.extend({
   events: {
     "click button": "createComment"
@@ -2839,48 +2839,48 @@ var CommentForm = Support.CompositeView.extend({
     this.model.comments.create(comment);
   }
 });
-````
+```
 
 Along with this, remove the `<%= JST(...) %>` template nestings, allowing the
 view classes to assemble the templates instead. In this case, each template
 contains placeholder elements that are used to wrap child views:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <section class="task-details">
 </section>
 
 <section class="comments">
 </section>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/details.jst.ejs -->
 <input type="checkbox"<%= task.isComplete() ? ' checked="checked"' : '' %> />
 <h2><%= task.escape("title") %></h2>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/list.jst.ejs -->
 <ul class="comments-list">
 </ul>
 
 <section class="new-comment-form">
 </section>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/item.jst.ejs -->
 <h4><%= comment.user.escape('name') %></h4>
 <p><%= comment.escape('text') %></p>
-````
+```
 
-````erb
+```erb
 <!-- app/assets/templates/comments/new.jst.ejs -->
 <label for="new-comment-input">Add comment</label>
 <textarea class="new-comment-input" cols="30" rows="10"></textarea>
 <button>Add Comment</button>
-````
+```
 
 There are several advantages to this approach:
 
@@ -2952,7 +2952,7 @@ Our first requirement is the ability to build markup.  For example, consider a
 Rails model `User` that has a username and password.  We might want to build
 form markup that looks like this:
 
-````html
+```html
 <!-- app/templates/users/form.jst.ejs -->
 <form>
   <li>
@@ -2964,7 +2964,7 @@ form markup that looks like this:
     <input type="password" id="password" name="password">
   </li>
 </form>
-````
+```
 
 One approach you could take is writing the full form markup by hand.  You could
 create a template available to Backbone via JST that contains the raw HTML.  If
@@ -2986,7 +2986,7 @@ markup; it doesn't serialize forms into data hashes or Backbone models.
 The second requirement in building forms is to serialize them into objects suitable for setting Backbone model attributes.  Assuming the markup we discussed above, you could
 approach this manually:
 
-````javascript
+```javascript
 var serialize = function(form) {
   var elements = $('input, select, textarea', form);
 
@@ -3002,7 +3002,7 @@ var form = $('form');
 var model = new MyApp.Models.User();
 var attributes = serialize(form);
 model.set(attributes);
-````
+```
 
 This gets you started, but has a few shortcomings.  It doesn't handle nested
 attributes, doesn't handle typing (consider a date picker input; ideally it
@@ -3038,18 +3038,18 @@ where attributes are processed and a response is generated.
 Let's add a validation to the Task Rails model, ensuring each task has something
 entered for the title:
 
-````ruby
+```ruby
   validates :title, :presence => true
-````
+```
 
 Now, if you create a task without a title, the Rails `TasksController` still
 delivers a response:
 
-````ruby
+```ruby
 def create
   respond_with(current_user.tasks.create(params[:task]))
 end
-````
+```
 
 but the response now returns with an HTTP response code of 422 and a JSON
 response body of `{"title":["can't be blank"]}`.
@@ -3059,7 +3059,7 @@ their corresponding form inputs.  We'll establish a few conventions that, when w
 
 For an example, let's examine a form field modeled after Formtastic conventions:
 
-````html
+```html
 <form id="example_form">
   <ol>
     <li id="task_title_input">
@@ -3073,14 +3073,14 @@ For an example, let's examine a form field modeled after Formtastic conventions:
     </li>
   </ol>
 </form>
-````
+```
 
 Elsewhere, likely in a view class, when a user triggers a save action in the
 interface, we save the form's corresponding model.  If the `save()` fails,
 we'll parse the model attributes and corresponding error(s) from the server's
 response and render an `ErrorView`.
 
-````javascript
+```javascript
 var formField = $('form#example_form');
 
 model.on('error', function(model, response, options) {
@@ -3093,14 +3093,14 @@ model.on('error', function(model, response, options) {
 });
 
 model.save();
-````
+```
 
 The `ErrorView` iterates over the response attributes and their errors (there
 may be more than one error per model attribute), rendering them inline into
 the form.  The `ErrorView` also adds the `error` CSS class to the `<li>` field
 container:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/error_view.js
 ErrorView = Backbone.View.extend({
   initialize: function(options) {
@@ -3134,7 +3134,7 @@ ErrorView = Backbone.View.extend({
     return this.$('li[id*="_' + attribute + '_input"]');
   }
 });
-````
+```
 
 ## Internationalization
 
@@ -3152,35 +3152,35 @@ https://github.com/fnando/i18n-js[`i18n-js`], that provides access to your i18n
 content as a JavaScript object, similar to the way the JST object provides access
 to your templates.
 
-From the documentation, you can link the client-side locale to the server-side 
+From the documentation, you can link the client-side locale to the server-side
 locale:
 
-````html
+```html
 <script type="text/javascript">
   I18n.defaultLocale = "<%= I18n.default_locale %>";
   I18n.locale = "<%= I18n.locale %>";
 </script>
-````
+```
 
 ...and then use the `I18n` JavaScript object to provide translations:
 
-````javascript
+```javascript
 // translate with your default locale
 I18n.t("some.scoped.translation");
 
 // translate with explicit setting of locale
 I18n.t("some.scoped.translation", {locale: "fr"});
-````
+```
 
 You can use the `I18n.t()` function inside your templates, too:
 
-````erb
+```erb
 <nav>
   <a href="#/"><%= I18n.t("nav.links.home") %></a>
   <a href="#/projects"><%= I18n.t("nav.links.projects") %></a>
   <a href="#/settings"><%= I18n.t("nav.links.settings") %></a>
 </nav>
-````
+```
 
 Number, currency, and date formatting is available with `i18n.js` as well - see
 the [documentation](https://github.com/fnando/i18n-js) for further usage
@@ -3202,7 +3202,7 @@ An easy method of filtering or sorting a collection is by updating it in-place.
 To sort a collection in-place, change its `comparator` property to a new
 function and call `#sort`:
 
-````javascript
+```javascript
 var alphabet = new Backbone.Collection([
   new Backbone.Model({ letter: 'W', syllables: 3 }),
   new Backbone.Model({ letter: 'X', syllables: 2 }),
@@ -3217,19 +3217,19 @@ console.log(alphabet.pluck('letter')); // ['W', 'X', 'Y', 'Z']
 alphabet.comparator = function(letter) { return letter.get('syllables') };
 alphabet.sort();
 console.log(alphabet.pluck('letter')); // ['Y', 'Z', 'X', 'W']
-````
+```
 
 To filter a collection in-place, iterate over it and reject the elements you
 want to remove:
 
-````javascript
+```javascript
 // get rid of letters that take too long to say
 shortLetters = alphabet.filter(function(letter) {
   return letter.get('syllables') == 1;
 });
 alphabet.reset(shortLetters);
 console.log(alphabet.pluck('letter')); // ['Y', 'Z']
-````
+```
 
 Note that the filtering is destructive; after we invoke `alphabet#reset`, there
 is no way to get the discarded elements back.  Also, there is no link back to
@@ -3252,7 +3252,7 @@ functions on your collections that filter by your criteria, using the `select`
 function from Underscore.js; then, return new instances of the collection class. A
 first implementation might look like this:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -3265,12 +3265,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-````
+```
 
 Let's refactor this a bit.  Ideally, the filter functions will reuse logic
 already defined in your model class:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
@@ -3289,7 +3289,7 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-````
+```
 
 Going further, notice that there are actually two concerns in this function.
 The first is the notion of filtering the collection, and the second is the
@@ -3297,7 +3297,7 @@ specific filtering criteria (`task.isComplete()`).
 
 Let's separate the two concerns here, and extract a `filtered` function:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
@@ -3320,12 +3320,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(this.select(criteriaFunction));
   }
 });
-````
+```
 
 We can extract this function into a reusable mixin, abstracting the `Tasks`
 collection class using `this.constructor`:
 
-````javascript
+```javascript
 // app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
@@ -3353,7 +3353,7 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, FilterableCollectionMixin);
-````
+```
 
 ## Propagating collection changes
 
@@ -3364,7 +3364,7 @@ A naive approach is to bind to the change, add, and remove events on the source
 collection, reapply the filter function, and repopulate the filtered
 collection:
 
-````javascript
+```javascript
 // app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
@@ -3384,7 +3384,7 @@ var FilterableCollectionMixin = {
     return filteredCollection;
   }
 };
-````
+```
 
 While this correctly updates the filtered collection when the base collection
 or one of its models is changed, this will always trigger a `reset` event
@@ -3406,7 +3406,7 @@ uses this derivative collection approach to filtering.
 The view accepts a base collection and then maintains a filtered version of that
 collection, which it renders from.
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   events: {
@@ -3430,7 +3430,7 @@ var FilterableResultsView = Support.CompositeView.extend({
 
   // ...
 });
-````
+```
 
 There is a leak in FilterableMixinCollection, as we have it now, which is
 exposed by this usage pattern.  The contructor-local functions `addToFiltered`,
@@ -3456,7 +3456,7 @@ You can think of this in a similar way to how the `SwappingRouter` tracks
 its current view, disposing of the old view before swapping in the new one.
 
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   initialize: function(options) {
@@ -3482,14 +3482,14 @@ var FilterableResultsView = Support.CompositeView.extend({
 
   // ...
 });
-````
+```
 
 ## Sorting
 
 The simplest way to sort a `Backbone.Collection` is to define a `comparator`
 function.  This functionality is built in:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -3499,14 +3499,14 @@ var Tasks = Backbone.Collection.extend({
     return task.dueDate;
   }
 });
-````
+```
 
 If you'd like to provide more than one sort order on your collection, you can
 use an approach similar to the `filtered` function above, and return a new
 `Backbone.Collection` whose `comparator` is overridden.  Call `sort` to update
 the ordering on the new collection:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -3525,11 +3525,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-````
+```
 
 Similarly, you can extract the reusable concern to another function:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -3558,11 +3558,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-````
+```
 
 ...And then into another reusable mixin:
 
-````javascript
+```javascript
 // app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
@@ -3595,13 +3595,13 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, SortableCollectionMixin);
-````
+```
 
 Just as with the `FilterableCollectionMixin` before, the
 `SortableCollectionMixin` should observe its source if updates are to propagate
 from one collection to another:
 
-````javascript
+```javascript
 // app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
@@ -3623,7 +3623,7 @@ var SortableCollectionMixin = {
     return sortedCollection;
   }
 };
-````
+```
 
 It is left as an excerise for the reader to update `SortableCollectionMixin`
 to trigger the correct change/add/remove events as in the improved
@@ -3648,27 +3648,27 @@ easy for the developer.
 Let's wire this up. To get started, we'll add a validation on the task's title
 attribute on the ActiveRecord model, like so:
 
-````ruby
+```ruby
 # app/models/task.rb
 class Task < ActiveRecord::Base
   validates :title, presence: true
 end
-````
+```
 
 On the Backbone side of the world, we have a Backbone task called
 `YourApp.Models.Task`:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 YourApp.Models.Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-````
+```
 
 We also have a place where users enter new tasks - just a form on the task
 list:
 
-````html
+```html
 <!-- app/assets/templates/tasks/form_fields.jst.ejs -->
 <form>
   <ul>
@@ -3681,12 +3681,12 @@ list:
     </li>
   </ul>
 </form>
-````
+```
 
 On the `NewTask` Backbone view, we bind the button's click event to a new
 function that we'll call `createTask`:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/new_task.js
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
@@ -3713,7 +3713,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-````
+```
 
 This gets the job done, but let's introduce a new class to handle extracting
 attributes from the form so that it's decoupled from this view and is
@@ -3721,7 +3721,7 @@ therefore easier to extend and reuse.
 
 We'll call this the `FormAttributes`, and its code is as follows:
 
-````javascript
+```javascript
 // app/assets/javascripts/form_attributes.js
 FormAttributes = function(form) {
   this.form = form;
@@ -3739,11 +3739,11 @@ _.extend(FormAttributes.prototype, {
     return attributes;
   }
 });
-````
+```
 
 With this class in place, we can rewrite our form submit action to:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/new_task.js
 YourApp.Views.NewTask = Backbone.View.extend({
   events: {
@@ -3762,7 +3762,7 @@ YourApp.Views.NewTask = Backbone.View.extend({
     return false;
   }
 })
-````
+```
 
 When you call `save()` on a Backbone model, Backbone will delegate to `.sync()`
 and create a POST request on the model's URL, where the payload is the
@@ -3771,7 +3771,7 @@ attributes that you've passed onto the `save()` call.
 The easiest way to handle this in Rails is to use `respond_to`/`respond_with`,
 available in Rails 3 applications:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -3780,16 +3780,16 @@ class TasksController < ApplicationController
     respond_with task
   end
 end
-````
+```
 
 When the task is created successfully, Rails will render the show action using
 the object that you've passed to the `respond_with` call, so make sure the show
 action is defined in your routes:
 
-````ruby
+```ruby
 # config/routes.rb
 resources :tasks, only: [:create, :show]
-````
+```
 
 When the task cannot be created successfully because some validation constraint
 is not met, the Rails responder will render the model's errors as a JSON
@@ -3798,9 +3798,9 @@ there was an error in the request and it was not processed.
 
 The response from Rails in that case looks something like this:
 
-````javascript
+```javascript
 { "title": ["can't be blank"] }
-````
+```
 
 That two-line action in a Rails controller is all we need to talk to our
 Backbone models and handle error cases.
@@ -3824,7 +3824,7 @@ First is the `ErrorList`. An `ErrorList` encapsulates parsing of the raw
 JSON that came in from the server and provides an iterator to easily loop
 through errors:
 
-````javascript
+```javascript
 // app/assets/javascripts/error_list.js
 ErrorList = function (response) {
   if (response && response.responseText) {
@@ -3841,13 +3841,13 @@ _.extend(ErrorList.prototype, {
     return _.size(this.attributesWithErrors);
   }
 });
-````
+```
 
 Next up is the `ErrorView`, which is in charge of taking the `ErrorList` and
 appending each inline error in the form, providing feedback to the user that
 their input is invalid:
 
-````javascript
+```javascript
 // app/assets/javascripts/error_view.js
 ErrorView = Backbone.View.extend({
   initialize: function() {
@@ -3872,7 +3872,7 @@ ErrorView = Backbone.View.extend({
     return $(this.options.el).find('li[id*="_' + attribute + '_input"]').first();
   }
 });
-````
+```
 
 Note the `fieldFor` function. It expects a field with an id containing a
 certain format. Therefore, in order for this to work, the form's HTML must
@@ -3888,7 +3888,7 @@ to the `ErrorList` constructor, which we then pass to the `ErrorView`, which wil
 its fine job inserting the inline errors when we call `render()` on it.
 Putting it all together, our save call's callbacks now look like this:
 
-````javascript
+```javascript
 var self = this;
 var model = new YourApp.Models.Task(attributes);
 model.save({
@@ -3898,7 +3898,7 @@ model.save({
     view.render();
   }
 });
-````
+```
 
 Here, we've shown how you can decouple different concerns into their own
 classes, creating a system that is easier to extend, and potentially
@@ -4012,7 +4012,7 @@ is to fetch attachments for an individual task.  Let's discuss two options.
 One way we could approach this is to issue an API call for the
 nested collection:
 
-````bash
+```bash
 $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
 [
   {
@@ -4024,7 +4024,7 @@ $ curl http://localhost:3000/tasks/78/attachments.json | ppjson
     "file_url": "https://s3.amazonaws.com/tasksapp/uploads/33/users.jpg"
   }
 ]
-````
+```
 
 Note that we will authenticate API requests with cookies, just like normal user
 logins, so the actual curl request would need to include a cookie from a
@@ -4034,7 +4034,7 @@ Another way we could approach this is to embed the comment and attachment data i
 the JSON representation of an individual task, and deliver this data from the
 `/tasks/:id` endpoint:
 
-````bash
+```bash
 $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
 {
   /* some attributes left out for clarity */
@@ -4049,7 +4049,7 @@ $ curl http://tasksapp.local:3000/tasks/78.json | ppjson
     }
   ]
 }
-````
+```
 
 We'll take this approach for the example application, because it illustrates
 parsing nested models in Backbone.
@@ -4057,12 +4057,12 @@ parsing nested models in Backbone.
 At this point, we know that our HTTP JSON API should support at least the
 following Rails routes:
 
-````ruby
+```ruby
 # config/routes.rb
 resources :tasks, :only => [:show, :create] do
   resources :attachments, :only => [:create]
 end
-````
+```
 
 As an aside: In some applications, you may choose to expose a user-facing API.  It's
 valuable to dogfood this endpoint by making use of it from your own Backbone
@@ -4089,7 +4089,7 @@ To use it, first include the `rabl` and `yajl-ruby` gems in your Gemfile. Then
 you can create a view ending with `.json.rabl` to handle any particular request.
 For example, a `tasks#show` action may look like this:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -4099,20 +4099,20 @@ class TasksController < ApplicationController
     respond_with @task
   end
 end
-````
+```
 
 Rails' responder will first look for a template matching the controller/action
 with the format in the file name, in this case `json`. If it doesn't find anything,
 it will invoke `to_json` on the `@task` model, but in this case we are providing
 one in `app/views/tasks/show.json.rabl`, so it will render that instead:
 
-````ruby
+```ruby
 # app/views/tasks/show.json.rabl
 object @task
 attributes(:id, :title, :complete)
 child(:user) { attributes(:id, :email) }
 child(:attachments) { attributes(:id, :email) }
-````
+```
 
 ## Parsing the JSON and instantiating client-side models
 
@@ -4127,7 +4127,7 @@ Backbone attribute which can be accessed with `get()` and `set()`.  We are
 replacing it with an instance of a Backbone `Attachments` collection and
 placing that as an object property:
 
-````javascript
+```javascript
 taskBeforeParsing.get('attachments')
 // => [ { id: 1, upload_url: '...' }, { id: 2, upload_url: '...' } ]
 taskBeforeParsing.attachments
@@ -4139,7 +4139,7 @@ taskAfterParsing.get('attachments')
 // => undefined
 taskAfterParsing.attachments
 // => ExampleApp.Collection.Attachments(...)
-````
+```
 
 One way to do this is to override the `parse` function on the `Task` model.
 
@@ -4160,7 +4160,7 @@ Another way to intercept nested attributes and produce a full object graph
 is to bind to the `change` event for the association attribute - in this case,
 `task.attachments`:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
@@ -4173,7 +4173,7 @@ ExampleApp.Models.Task = Backbone.Model.extend({
   },
 
   // ...
-````
+```
 
 This ensures that our custom parsing is invoked whenever the `attachments`
 attribute is changed, and when new model instances are created.
@@ -4197,7 +4197,7 @@ We'll instead prefer to treat the deferred nature explicitly in the
 This frees `TaskShow` from having to know about the persistence details of
 the model:
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
   // ...
@@ -4213,7 +4213,7 @@ ExampleApp.Routers.Tasks = Support.SwappingRouter.extend({
     });
   }
 });
-````
+```
 
 Now, we have successfully deferred the `Task#attachments` association and
 kept the concern clear of the view.
@@ -4283,7 +4283,7 @@ relationships.  For example, consider a workflow in which you assign multiple
 people to perform a job.  The three domain models are `Job`, `Worker`, and
 the join model `Assignment`.
 
-````ruby
+```ruby
 # app/models/job.rb
 class Job < ActiveRecord::Base
   has_many :assignments
@@ -4301,7 +4301,7 @@ class Worker < ActiveRecord::Base
   has_many :assignments
   has_many :jobs, :through => :assignments
 end
-````
+```
 
 Earlier, we discussed how Ajax-enabled web applications often provide more
 finely-grained user interfaces that allow the user to submit information in
@@ -4316,14 +4316,14 @@ submissions, creating a parent record along with several child records all in
 one HTTP request.  We'll model this on the backend with Rails'
 `accepts_nested_attributes_for`:
 
-````ruby
+```ruby
 # app/models/job.rb
 class Job < ActiveRecord::Base
   has_many :assignments
   has_many :workers, :though => :assignments
   accepts_nested_attributes_for :assignments
 end
-````
+```
 
 As a quick refresher, this allows us in our Rails code to set
 `@job.assignments_attributes = [{}, {}, ...]` with an Array of Hashes, each
@@ -4333,7 +4333,7 @@ endpoint controller should be able to pass the request parameters straight
 through to ActiveRecord, so the JSON going over the HTTP request will look
 like this:
 
-````javascript
+```javascript
 /* POST /api/v1/jobs */
 {
   name: "Move cardboard boxes to new warehouse",
@@ -4344,7 +4344,7 @@ like this:
     { worker_id: 5 }
   ]
 }
-````
+```
 
 Shifting our focus to the client-side implementation, we can largely ignore the
 `Assignment` join model in Backbone, and just model this nested association
@@ -4352,7 +4352,7 @@ directly.  We'll use a `Job` Backbone model containing a `Workers` collection.
 This is a simplified perspective of the relationship, but it is all that the client
 needs to know.
 
-````javascript
+```javascript
 // app/assets/javascripts/my_app.js
 MyApp = {};
 MyApp.Models = {};
@@ -4363,7 +4363,7 @@ MyApp.Models.Worker = Backbone.Model.extend({
 });
 
 // app/assets/javascripts/collections/workers.js
-MyApp.Collections.Workers = Backbone.Collection.extend({ 
+MyApp.Collections.Workers = Backbone.Collection.extend({
   model: ExampleApp.Models.Worker
 });
 
@@ -4385,11 +4385,11 @@ MyApp.Models.Job = Backbone.Model.extend({
     return json;
   }
 });
-````
+```
 
 Now, you can add workers directly to the job:
 
-````javascript
+```javascript
 var worker3 = new MyApp.Models.Worker({ id: 3 });
 var worker5 = new MyApp.Models.Worker({ id: 5 });
 
@@ -4407,7 +4407,7 @@ JSON.stringify(job.toJSON()) // Results in:
                              //     {"worker_id":5}
                              //   ]
                              // }
-````
+```
 
 ...and saving the Backbone `Job` model will submit correctly structured
 JSON to the Rails server.
@@ -4452,17 +4452,17 @@ At one end of the scale, there is no duplication: All business logic is defined
 in one tier, and other tiers access the logic by remote invocation.  Your Rails
 `Member` model provides a validation:
 
-````ruby
+```ruby
 # app/models/member.rb
 class Member < ActiveRecord::Base
   validate :email, :presence => true
 end
-````
+```
 
 The Backbone view attempts to persist the member as usual, binding to its
 `error` event to handle the server-side error:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/member_form_view.js
 var MemberFormView = Backbone.View.extend({
   events: {
@@ -4488,7 +4488,7 @@ var MemberFormView = Backbone.View.extend({
     new ErrorView({ el: self.el, errors: errors }).render();
   }
 });
-````
+```
 
 This uses the `ErrorView` class, which is able to parse the error hash returned
 from Rails, which was discussed in the "Validations" section of the "Models and
@@ -4496,13 +4496,13 @@ Collections" chapter.
 
 > This is probably the first time you'll see `_.bindAll()`, so let's pause
 > briefly to introduce what it is doing.
-> 
+>
 > When an event is triggered, the code invoking the callback is able to set the
 > JavaScript context. By calling `_.bindAll(this, "error")`, we are instead
 > overriding whatever context it may have been, and setting it to `this`. This is
 > necessary so that when we call `this.$(\'form\')` in the `error()` callback,
 > we get the right object back.
-> 
+>
 > Always use `_.bindAll` when you need to force the JavaScript context (`this`)
 > within a function's body.
 
@@ -4519,7 +4519,7 @@ have to implement the validation concern on the client side as well.  Backbone
 provides a facility for validating models during their persistence, so we could
 write:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/member.js
 var Member = Backbone.Model.extend({
   validate: function() {
@@ -4530,14 +4530,14 @@ var Member = Backbone.Model.extend({
     return errors;
   }
 });
-````
+```
 
 Conveniently, we've structured the return value of the `validate()` function to
 mirror the structure of the Rails error JSON we saw returned above.  Now, we
 _could_ augment the `ErrorView` class's constructor function to handle either
 client-side or server-side errors:
 
-````javascript
+```javascript
 // app/assets/javascripts/utility/error_list.js
 var ErrorList = function(responseOrErrors) {
   if (responseOrErrors && responseOrErrors.responseText) {
@@ -4546,7 +4546,7 @@ var ErrorList = function(responseOrErrors) {
     this.attributesWithErrors = responseOrErrors;
   }
 };
-````
+```
 
 With Backbone, the `validate()` function is called for each invocation of
 `set()`, so as soon as we set the email address on the member, its presence is
@@ -4603,7 +4603,7 @@ distributed across client and server to provide a responsive experience.
 Validations are probably the lowest-hanging fruit.  Since the API for
 declaring validations is largely declarative and well-bounded, we can imagine
 providing an interface that introspects Rails models and builds a client-side
-implementation automatically.  
+implementation automatically.
 
 Certainly, there are cases which aren't possible to automate, such as custom
 Ruby validation code or validations which depend on a very large dataset that
@@ -4779,7 +4779,7 @@ Rails apps that depend on Faye, We recommend keeping a `faye/` subdirectory unde
 app root that contains a `Gemfile` and `config.ru`, and maybe a shell script to
 start Faye:
 
-````bash
+```bash
 $ cat faye/Gemfile
 
 source 'http://rubygems.org'
@@ -4808,7 +4808,7 @@ $ ./faye/run.sh
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
 >> Maximum connections set to 1024
 >> Listening on 0.0.0.0:9292, CTRL+C to stop
-````
+```
 
 ### Implementing it: Step 2, ActiveRecord observers
 Now that the message bus is running, let's walk through the server code.  The
@@ -4818,7 +4818,7 @@ or deleted, it will publish a change event message.
 This is implemented with an `ActiveRecord::Observer`.  We provide the
 functionality in a module:
 
-````
+```
 # lib/backbone_sync.rb
 
 module BackboneSync
@@ -4848,7 +4848,7 @@ module BackboneSync
         end
 
         def broadcast
-          Net::HTTP.post_form(uri, :message => message) 
+          Net::HTTP.post_form(uri, :message => message)
         end
 
         private
@@ -4873,17 +4873,17 @@ module BackboneSync
     end
   end
 end
-````
+```
 
 ...and then mix it into a concrete observer class in our application.  In this
 case, we name it `TodoObserver`:
 
-````ruby
+```ruby
 # app/observers/todo_observer.rb
 class TodoObserver < ActiveRecord::Observer
   include BackboneSync::Rails::Faye::Observer
 end
-````
+```
 
 This observer is triggered each time a Rails `Todo` model is created, updated,
 or destroyed.  When one of these events happen, the observer sends along a
@@ -4891,14 +4891,14 @@ message to our message bus, indicating the change.
 
 Let's say that a `Todo` was just created:
 
-````ruby
+```ruby
 >> Todo.create(title: "Buy some tasty kale juice")
 => #<Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09">
-````
+```
 
 The message looks like this:
 
-````javascript
+```javascript
 {
   "channel": "/sync/todos",
   "data": {
@@ -4912,7 +4912,7 @@ The message looks like this:
     }
   }
 }
-````
+```
 
 Received by Faye, the message is broadcast to all clients subscribing to the
 `/sync/todos` channel, including our browser-side `FayeSubscriber` objects.
@@ -4925,23 +4925,23 @@ messages.
 
 Faye runs an HTTP server, and serves up its own client library, so that's easy to pull in:
 
-````html
+```html
 <script type="text/javascript" src="http://localhost:9292/faye.js"></script>
-````
+```
 
 To subscribe to Faye channels, instantiate a `Faye.Client` and call `subscribe` on it:
 
-````javascript
+```javascript
 var client = new Faye.Client('http://localhost:9292/faye');
 client.subscribe('/some/channel', function(message) {
   // handle message
 });
-````
+```
 
 When the browser receives messages from Faye, we want to update a Backbone
 collection.  Let's wrap up those two concerns into a `FayeSubscriber`:
 
-````javascript
+```javascript
 // app/assets/javascripts/backbone_sync.js
 this.BackboneSync = this.BackboneSync || {};
 
@@ -4990,12 +4990,12 @@ BackboneSync.RailsFayeSubscriber = (function() {
 
   return RailsFayeSubscriber;
 })();
-````
+```
 
 Now, for each collection that we'd like to keep in sync, we instantiate a
 corresponding `FayeSubscriber`.  Say, in your application bootstrap code:
 
-````javascript
+```javascript
 # app/assets/javascripts/routers/todos.js
 MyApp.Routers.TodosRouter = Backbone.Router.extend({
   initialize: function(options) {
@@ -5006,7 +5006,7 @@ MyApp.Routers.TodosRouter = Backbone.Router.extend({
 
   // ...
 });
-````
+```
 
 Now run the app, and watch browsers receive push updates!
 
@@ -5046,7 +5046,7 @@ to it when Cucumber boots, failing early if we can't connect. Here's a
 small snippet that you can drop in `features/support/faye.rb` to do
 just that:
 
-````ruby
+```ruby
 begin
   Timeout.timeout(1) do
     uri = URI.parse(BackboneSync::Rails::Faye.root_address)
@@ -5055,13 +5055,13 @@ begin
 rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
   raise "Could not connect to Faye"
 end
-````
+```
 
 With that in place, we are now sure that Faye is running and we can move
 on to our Cucumber scenario. Create a `features/sync_task.feature` file
 and let's describe the desired functionality:
 
-````cucumber
+```cucumber
   @javascript
   Scenario: Viewing a task edited by another user
     Given the following users exist:
@@ -5079,7 +5079,7 @@ and let's describe the desired functionality:
     And I edit the "Get Cheeseburgers" task and rename it to "Buy Cheeseburgers"
     And I switch to session "Alice"
     Then I should see "Buy Cheeseburgers"
-````
+```
 
 Thankfully, Capybara allows us to run acceptance tests with client-side
 behavior by specifying different drivers to run scenarios that require
@@ -5097,11 +5097,11 @@ introduced the ability to name and switch sessions in your scenarios via
 the `session_name` method. The definition for the `I am using session
 "Alice"` step looks like this:
 
-````ruby
+```ruby
 When /^I (?:am using|switch to) session "([^"]+)"$/ do |new_session_name|
   Capybara.session_name = new_session_name
 end
-````
+```
 
 This allows us to essentially open up different browsers, if you're
 using the Selenium driver, and it is the key to exercising background syncing
@@ -5198,11 +5198,11 @@ need to display uploads on the index view.
 
 First, let's write an acceptance test to drive the functionality:
 
-````
+```
 # features/users/attach_file_to_task.feature
-````
+```
 
-````
+```
 @javascript
 Feature: Attach a file to a task
 
@@ -5227,16 +5227,16 @@ Feature: Attach a file to a task
     And I attach "spec/fixtures/strawberries.jpg" to the "Buy" task
     Then I should see "blueberries.jpg" attached to the "Buy" task
     And I should see "strawberries.jpg" attached to the "Buy" task
-````
+```
 
 The first failures we get are from the lack of upload UI.  We'll drop down to
 unit tests to drive this out:
 
-````
+```
 // spec/javascripts/views/task_show_spec.js
-````
+```
 
-````
+```
 //= require application
 
 describe("ExampleApp.Views.TaskShow", function() {
@@ -5268,16 +5268,16 @@ describe("ExampleApp.Views.TaskShow", function() {
     expect($label.attr('for')).toEqual($input.attr('id'));
   });
 });
-````
+```
 
-Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the 
+Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the
 UI elements are in place:
 
-````
+```
 // app/assets/templates/tasks/show.jst.ejs
-````
+```
 
-````
+```
 <p>Task title</p>
 
 <ul class="attachments">
@@ -5290,13 +5290,13 @@ UI elements are in place:
 </div>
 
 <a href="#">Back to task list</a>
-````
+```
 
 Once our units pass, we run the acceptance tests again. The next failure we see
 is that nothing happens upon upload.  We'll drop down to Jasmine here to write
 a spec for uploading that asserts the correct upload request is issued:
 
-````javascript
+```javascript
 // spec/javascripts/views/task_show_uploading_spec.js
 
 it("uploads the file when the upload method is called", function() {
@@ -5309,11 +5309,11 @@ it("uploads an attachment for the current task", function() {
   view.upload();
   expect(this.requests[0].url).toEqual("/tasks/1/attachments.json");
 });
-````
+```
 
 and implement using the `uploader.js` library:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_show.js
 
 render: function () {
@@ -5333,7 +5333,7 @@ attachUploader: function() {
     prefix:   'upload'
   });
 },
-````
+```
 
 The acceptance tests still aren't passing, and a little digging will reveal
 that we need to manually set the CSRF token on the upload request.  Normally,
@@ -5343,18 +5343,18 @@ using `$.ajax`, so that it may bind to the `onprogress` event.
 
 We write a spec:
 
-````javascript
+```javascript
 // spec/javascripts/views/task_show_uploading_spec.js
 it("sets the CSRF token for the upload request", function() {
   view.upload();
   var expectedCsrfToken = $('meta[name="csrf-token"]').attr('content');
   expect(this.requests[0].requestHeaders['X-CSRF-Token']).toEqual(expectedCsrfToken);
 });
-````
+```
 
 And add the CSRF token implementation at the end of `attachUploader`:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_show.js
 attachUploader: function() {
   // ...
@@ -5364,7 +5364,7 @@ attachUploader: function() {
     if (token) this.xhr.setRequestHeader('X-CSRF-Token', token);
   };
 },
-````
+```
 
 And the spec is green.
 
@@ -5386,12 +5386,12 @@ attachments to the user.
 For structuring the attachments in Backbone, we want to be able to do something
 like the following:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/show.jst.ejs -->
 <% this.task.attachments.each(function(attachment) { %>
   Attached: <img src="<%= attachment.get('upload_url')" /> %>
 <% }); %>
-````
+```
 
 So, the task model will have an attachments property that instantiates with an
 `AttachmentsCollection` instance.
@@ -5400,11 +5400,11 @@ We're providing a JSON representation rooted at the task model using
 [Rabl](https://github.com/nesquena/rabl), which we discussed previously in
 "Implementing the API: presenting the JSON."
 
-````
+```
 # app/views/tasks/show.json.rabl
-````
+```
 
-````
+```
 object @task
 
 attributes :id, :created_at, :updated_id, :title, :complete, :user_id
@@ -5412,25 +5412,25 @@ attributes :id, :created_at, :updated_id, :title, :complete, :user_id
 child :attachments do
   attributes :id, :created_at, :updated_id, :upload_file_name, :upload_url
 end
-````
+```
 
 We also tell Rabl to suppress the root JSON node, much
 like we did with `ActiveRecord::Base.include_root_in_json`:
 
-````ruby
+```ruby
 # config/initializers/rabl_init.rb
 Rabl.configure do |config|
   config.include_json_root = false
 end
-````
+```
 
 We can test drive the attachment display from Jasmine; see `task_show_with_attachments_spec.js`:
 
-````
+```
 // spec/javascripts/views/task_show_with_attachments_spec.js
-````
+```
 
-````
+```
 //= require application
 
 describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
@@ -5469,18 +5469,18 @@ describe("ExampleApp.Views.TaskShow for a task with attachments", function() {
     expect(attachments.last()).toHaveText('Attached: strawberries.jpg');
   });
 });
-````
+```
 
 We'll represent attachments as an associated collection on `Task`, so we'll need
 a Backbone model and collection for attachments, too.  First, the task model
 should parse its JSON to populate the associated attachments.  Test drive that
 in the `ExampleApp.Models.Tasks` Jasmine spec:
 
-````
+```
 // spec/javascripts/models/task_spec.js
-````
+```
 
-````
+```
 //= require application
 
 describe("ExampleApp.Models.Tasks", function() {
@@ -5538,7 +5538,7 @@ describe("ExampleApp.Models.Task attachments:change", function() {
     expect(task.attachments.size()).toEqual(1);
   });
 });
-````
+```
 
 The first failures reference the Backbone attachment model and attachments
 collection, so we add those, driving the collection out with a spec.
@@ -5546,7 +5546,7 @@ collection, so we add those, driving the collection out with a spec.
 Next, we can implement the task model's JSON parsing to populate its associated
 attachments:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 ExampleApp.Models.Task = Backbone.Model.extend({
   initialize: function() {
@@ -5562,7 +5562,7 @@ ExampleApp.Models.Task = Backbone.Model.extend({
   // ...
 
 });
-````
+```
 
 At this point, we return back to the acceptance test, and it's fully passing.
 
@@ -5606,7 +5606,7 @@ that abstracts the difference as much as possible.
 Capybara is a high-level library that allows you to write tests from a user's
 perspective.  Consider this example, which uses RSpec:
 
-````ruby
+```ruby
 # spec/requests/login_spec.rb
 describe "the login process", :type => :request do
   it "accepts an email and password" do
@@ -5618,7 +5618,7 @@ describe "the login process", :type => :request do
     page.should have_content('You are logged in as alice@example.com')
   end
 end
-````
+```
 
 Notice that, as you read the spec, you're not concerned about whether the login
 interface is rendered with JavaScript, or whether the authentication request is
@@ -5646,19 +5646,19 @@ the description phase and the implementation phase of the test.  In the
 description phase, you are writing an English description of the software
 interaction:
 
-````cucumber
+```cucumber
 # features/login.feature
 Given there is a user account "alice@example.com" with the password "password"
 When I go to the home page
 And I fill in the login form with "alice@example.com" and "password"
 And I click the login button
 Then I should see "You are logged in as alice@example.com"
-````
+```
 
 In the implementation phase of the test, you define what these steps do.  In
 this case, they are defined to run Capybara methods:
 
-````ruby
+```ruby
 # features/step_definitions/login_steps.rb
 Given /^there is a user account "(.*)" with the password "(.*)"$/ do \\
 |email, password|
@@ -5681,7 +5681,7 @@ end
 Then /^I should see "(.*)"$/ do |text|
   page.should have_content(text)
 end
-````
+```
 
 ### Drivers
 
@@ -5702,10 +5702,10 @@ Chrome, Safari, and even Internet Explorer.
 
 Capybara makes it easy to switch between drivers. Just set your default driver to capybara-webkit:
 
-````ruby
+```ruby
 # features/support/javascript_driver.rb or spec/spec_helper.rb
 Capybara.javascript_driver = :webkit
-````
+```
 
 Then, tag a Cucumber scenario as @javascript. If you need to fall back to using Selenium, tag that scenario with @selenium.
 
@@ -5763,7 +5763,7 @@ We'll use the Jasmine framework for writing our isolation specs.  It integrates
 easily into a Rails application, and provides an RSpec-like syntax for writing
 specs:
 
-````javascript
+```javascript
 // spec/javascripts/models/tasks_spec.js
 describe("ExampleApp.Models.Tasks", function() {
   it("knows if it is complete", function() {
@@ -5776,7 +5776,7 @@ describe("ExampleApp.Models.Tasks", function() {
     expect(incompleteTask.isComplete()).toBe(false);
   });
 });
-````
+```
 
 To run the Jasmine tests in the example application, simply run `bundle exec
 rake jasmine` and visit http://localhost:8888.
@@ -5875,7 +5875,7 @@ Cucumber, and Jasmine to both the test and development groups so that you can
 run generators. With all our testing dependencies in place, the `Gemfile` in our
 sample application looks like this:
 
-````
+```
 source 'http://rubygems.org'
 
 gem 'rails', '3.2.6'
@@ -5899,7 +5899,7 @@ end
 group :development, :test do
   gem "rspec-rails", "~> 2.9.0"
   gem "ruby-debug19"
-  gem 'jasmine', :git => "git://github.com/pivotal/jasmine-gem.git", 
+  gem 'jasmine', :git => "git://github.com/pivotal/jasmine-gem.git",
                  :ref => "34c1529c3f7"
   gem 'cucumber-rails', "~> 1.0.2", :require => false
 end
@@ -5917,19 +5917,19 @@ group :test do
   gem "guard-spork"
   gem "spork", "~> 0.9.0.rc"
 end
-````
+```
 
 If you haven't already, bootstrap your application for Cucumber and Capybara:
 
-````bash
+```bash
 rails generate cucumber:install
-````
+```
 
 Next, bootstrap the application for Jasmine:
 
-````bash
+```bash
 rails generate jasmine:install
-````
+```
 
 With this configuration, you can run Cucumber scenarios with the Cucumber
 command and you can run Jasmine tests by running `bundle exec rake jasmine`
@@ -5940,11 +5940,11 @@ One final helpful configuration change is to include the `jasmine:ci` task
 in the default rake task.  This way, running `rake` will run all your specs,
 including Jasmine specs:
 
-````ruby
+```ruby
 # Rakefile
 # ...
 task :default => ['spec', 'jasmine:ci', 'cucumber']
-````
+```
 
 ### Step by step
 
@@ -5958,11 +5958,11 @@ two parts: a list of existing tasks, and an interface for adding new items to
 the list.  We'll start with the list of items, and create fixture data with
 [Factory Girl Cucumber steps](https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md):
 
-````
+```
 # features/users/view_tasks.feature
-````
+```
 
-````
+```
 Feature: Viewing Tasks
   As a user
   So that I can see what I have to do
@@ -5981,11 +5981,11 @@ Feature: Viewing Tasks
     And I am on the home page
     Then I should see "Master Backbone" within the tasks list
     And I should see "Purchase the Backbone on Rails ebook" within the tasks list
-````
+```
 
 Running this, we see a failure:
 
-````text
+```text
 Then I should see "Master Backbone" within the tasks list
   Unable to find css "#tasks table" (Capybara::ElementNotFound)
   (eval):2:in `find'
@@ -5993,7 +5993,7 @@ Then I should see "Master Backbone" within the tasks list
   ./features/step_definitions/web_steps.rb:36:in `/^(.*) within (.*[^:])$/'
   features/view_tasks.feature:13:in `Then I should see "Master Backbone" \\
   within the tasks list'
-````
+```
 
 A common mis-step when testing Rails apps with our structure is seeing false
 positives in bootstrapped data. Consider that, if we had just written the step
@@ -6007,11 +6007,11 @@ we will need to outline the UI first.  To do this, first we'll need a page to ho
 our code.  Let's create and route a Rails `TasksController`. We'll bootstrap the
 Backbone app on `tasks#index`.
 
-````
+```
 # config/routes.rb
-````
+```
 
-````
+```
 ExampleApp::Application.routes.draw do
   resources :tasks, :only => [:show, :create, :update, :index] do
     resources :attachments, :only => [:show, :create]
@@ -6019,13 +6019,13 @@ ExampleApp::Application.routes.draw do
 
   root :to => 'tasks#index'
 end
-````
+```
 
-````
+```
 # app/controllers/tasks_controller.rb
-````
+```
 
-````
+```
 class TasksController < ApplicationController
   before_filter :authorize
   respond_to :html, :json
@@ -6061,12 +6061,12 @@ class TasksController < ApplicationController
     (current_user.tasks + current_user.assigned_tasks).uniq
   end
 end
-````
+```
 
 To render our tasks, we'll want a TasksIndex Backbone view class.  But before we
 write this class, we'll motivate it with a Jasmine isolation spec:
 
-````javascript
+```javascript
 // spec/javascripts/views/tasks_index_spec.js
 describe("ExampleApp.Views.TasksIndex", function() {
   it("renders a task table", function() {
@@ -6077,7 +6077,7 @@ describe("ExampleApp.Views.TasksIndex", function() {
     expect(view.$el).toContain("table");
   });
 });
-````
+```
 
 We use the [jasmine-jquery](https://github.com/velesin/jasmine-jquery) library to
 provide DOM matchers for Jasmine like `toContain()`.
@@ -6087,7 +6087,7 @@ To run the Jasmine spec, run `bundle exec rake jasmine` and visit http://localho
 To make this test pass, we'll add a small template and make the `TasksIndex`
 view render it:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   tagName: 'div',
@@ -6101,13 +6101,13 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 The `app/assets/templates/tasks/index.jst.ejs` template:
 
-````html
+```html
 <table></table>
-````
+```
 
 Now our Jasmine specs pass:
 
@@ -6117,7 +6117,7 @@ Since the Jasmine specs pass, we'll pop back up a level and run the Cucumber
 story.  Running it again, the failure is slightly different.  The `"#tasks
 table"` element is present on the page, but doesn't contain the content we want:
 
-````text
+```text
 @javascript
 Scenario: View tasks
   Given the following tasks exist:
@@ -6132,17 +6132,17 @@ Scenario: View tasks
 `/^(?:|I )should see "([^"]*)"$/'
     features/view_tasks.feature:13:in `Then I should see "Master Backbone" \\
 within the tasks list'
-````
+```
 
 Drop back down to Jasmine and write a spec motivating the `TasksIndex` view to
 accept a collection and render it.  We'll rewrite our existing spec, since we
 are changing the `TasksIndex` interface to require that a collection be passed in:
 
-````
+```
 // spec/javascripts/views/tasks_index_spec.js
-````
+```
 
-````
+```
 //= require application
 
 describe("ExampleApp.Views.TasksIndex", function() {
@@ -6160,11 +6160,11 @@ describe("ExampleApp.Views.TasksIndex", function() {
     expect($el).toHaveText(/Brush your teeth/);
   });
 });
-````
+```
 
 This spec fails:
 
-````text
+```text
 1 spec, 1 failure in 0.008s
 Finished at Thu Sep 22 2011 18:10:26 GMT-0400 (EDT)
 ExampleApp.Views.TasksIndex
@@ -6173,55 +6173,55 @@ TypeError: undefined is not a function
 TypeError: undefined is not a function
     at [object Object].<anonymous> \\
 (http://localhost:8888/assets/views/tasks_index_spec.js?body=1:4:27)
-````
+```
 
 It's failing because we haven't defined `ExampleApp.Collections.Tasks` yet.  We
 need to define a task model and tasks collection.  We'll define the model:
 
-````
+```
 // app/assets/javascripts/models/task.js
-````
+```
 
 <<(../../example_app/app/assets/javascripts/models/task.js
 
 ...write a test to motivate the collection:
 
-````
+```
 // spec/javascripts/collections/tasks_spec.js
-````
+```
 
 <<(../../example_app/spec/javascripts/collections/tasks_spec.js
 
 ...and pass the test by implementing the collection:
 
-````
+```
 // app/assets/javascripts/collections/tasks.js
-````
+```
 
-````
-ExampleApp.Collections.Tasks = Backbone.Collection.extend({ 
-  model: ExampleApp.Models.Task, 
+```
+ExampleApp.Collections.Tasks = Backbone.Collection.extend({
+  model: ExampleApp.Models.Task,
   url: '/tasks'
 });
-````
+```
 
 Running the Jasmine specs again, we're making progress.  The `TasksIndex` view is
 accepting a collection of tasks, and now we have to render it:
 
-````text
+```text
 Expected '<div id="tasks"><table> <tbody><tr> <th>Title</th> \\
 <th>Completed</th> </tr> </tbody><div></div><div></div></table> </div>' to \\
 have text 'Wake up'.
-````
+```
 
 The simplest thing we can do to get the spec passing is to pass the `tasks`
 collection into the template, and iterate over it there:
 
-````
+```
 // app/assets/javascripts/views/tasks_index.js
-````
+```
 
-````
+```
 ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
   initialize: function() {
     _.bindAll(this, "render");
@@ -6247,13 +6247,13 @@ ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
     });
   }
 });
-````
+```
 
-````
+```
 // app/assets/templates/tasks/index.jst.ejs
-````
+```
 
-````
+```
 <table id="tasks-list">
   <thead>
     <tr>
@@ -6267,14 +6267,14 @@ ExampleApp.Views.TasksIndex = Support.CompositeView.extend({
 </table>
 
 <a class="create" href="#new">Add task</a>
-````
+```
 
 Now, Jasmine passes, but the Cucumber story is still failing:
 
-````text
+```text
 Then I should see "Master Backbone" within the tasks list
 Unable to find css "#tasks table" (Capybara::ElementNotFound)
-````
+```
 
 This is because the Jasmine spec is an isolation spec, and verifies that the
 `TasksIndex` view works in isolation.  There is additional code we need to write
@@ -6287,7 +6287,7 @@ Note the use of a `sinon.spy` for verifying the router instantiation:
 
 `// spec/javascripts/example_app_spec.js`
 
-````
+```
 describe("ExampleApp", function(){
   it("has a namespace for Models", function() {
     expect(ExampleApp.Models).toBeTruthy();
@@ -6340,13 +6340,13 @@ describe("ExampleApp", function(){
     });
   });
 });
-````
+```
 
 Get it to green:
 
 `// app/assets/javascripts/example_app.js`
 
-````
+```
 window.ExampleApp = {
   Models: {},
   Collections: {},
@@ -6363,13 +6363,13 @@ window.ExampleApp = {
     }
   }
 };
-````
+```
 
 Then we bootstrap the app from the Rails view:
 
 `<!-- app/views/tasks/index.html.erb -->`
 
-````
+```
 <h1>Tasks</h1>
 
 <div id="tasks">
@@ -6377,7 +6377,7 @@ Then we bootstrap the app from the Rails view:
 
 <script type="text/json" id="bootstrap">
   {
-    "tasks": <%= @tasks.to_json(include: 
+    "tasks": <%= @tasks.to_json(include:
                                 { assigned_users: { only: [:id, :email] } }) %>,
     "users": <%= @users.to_json %>
   }
@@ -6394,11 +6394,11 @@ Then we bootstrap the app from the Rails view:
     });
   </script>
 <% end %>
-````
+```
 
 And the integration test passes!
 
-````text
+```text
 Feature: Viewing Tasks
   As a user
   So that I can see what I have to do
@@ -6416,7 +6416,7 @@ Feature: Viewing Tasks
 
 1 scenario (1 passed)
 5 steps (5 passed)
-````
+```
 
 \clearpage
 
@@ -6440,7 +6440,7 @@ it using a simple jquery selector, and parse it ourselves.
 
 Here's an example:
 
-````javascript
+```javascript
 <script type="text/json" id="bootstrap">
   { "tasks": <%= @tasks.to_json %> }
 </script>
@@ -6457,7 +6457,7 @@ Here's an example:
     ExampleApp.initialize(data);
   });
 </script>
-````
+```
 
 A reliable way to unencode the HTML-encoded JSON string is to use the browser's
 native functionality by setting an element's `innerHTML`.  So in the above
@@ -6473,11 +6473,11 @@ Now, the application's models, populated by the bootstrap data structure,
 contain raw data that is not HTML-escaped.  When you render this data into the
 DOM, make sure you escape the HTML at that point:
 
-````javascript
+```javascript
 // From app/assets/javascripts/views/task_item.js:
 
 this.$('label').html(this.model.escape('title')); // not model.get
-````
+```
 
 # Application Structure
 

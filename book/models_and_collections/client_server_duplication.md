@@ -15,17 +15,17 @@ At one end of the scale, there is no duplication: All business logic is defined
 in one tier, and other tiers access the logic by remote invocation.  Your Rails
 `Member` model provides a validation:
 
-````ruby
+```ruby
 # app/models/member.rb
 class Member < ActiveRecord::Base
   validate :email, :presence => true
 end
-````
+```
 
 The Backbone view attempts to persist the member as usual, binding to its
 `error` event to handle the server-side error:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/member_form_view.js
 var MemberFormView = Backbone.View.extend({
   events: {
@@ -51,13 +51,13 @@ var MemberFormView = Backbone.View.extend({
     new ErrorView({ el: self.el, errors: errors }).render();
   }
 });
-````
+```
 
 This uses the `ErrorView` class, which is able to parse the error hash returned
 from Rails, which was discussed in the "Validations" section of the "Models and
 Collections" chapter.
 
-<<[a_note_about_bindall.md]
+<<[models_and_collections/a_note_about_bindall.md]
 
 In the case of no duplication, your Backbone `Member` model does not declare
 this validation.  A user fills out a form for a creating a new member in your
@@ -72,7 +72,7 @@ have to implement the validation concern on the client side as well.  Backbone
 provides a facility for validating models during their persistence, so we could
 write:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/member.js
 var Member = Backbone.Model.extend({
   validate: function() {
@@ -83,14 +83,14 @@ var Member = Backbone.Model.extend({
     return errors;
   }
 });
-````
+```
 
 Conveniently, we've structured the return value of the `validate()` function to
 mirror the structure of the Rails error JSON we saw returned above.  Now, we
 _could_ augment the `ErrorView` class's constructor function to handle either
 client-side or server-side errors:
 
-````javascript
+```javascript
 // app/assets/javascripts/utility/error_list.js
 var ErrorList = function(responseOrErrors) {
   if (responseOrErrors && responseOrErrors.responseText) {
@@ -99,7 +99,7 @@ var ErrorList = function(responseOrErrors) {
     this.attributesWithErrors = responseOrErrors;
   }
 };
-````
+```
 
 With Backbone, the `validate()` function is called for each invocation of
 `save()`.  Validations can also be run on `set()` by passing `{validate: true}`,
@@ -157,7 +157,7 @@ distributed across client and server to provide a responsive experience.
 Validations are probably the lowest-hanging fruit.  Since the API for
 declaring validations is largely declarative and well-bounded, we can imagine
 providing an interface that introspects Rails models and builds a client-side
-implementation automatically.  
+implementation automatically.
 
 Certainly, there are cases which aren't possible to automate, such as custom
 Ruby validation code or validations which depend on a very large dataset that
