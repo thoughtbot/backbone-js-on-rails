@@ -20,7 +20,7 @@ Cucumber, and Jasmine to both the test and development groups so that you can
 run generators. With all our testing dependencies in place, the `Gemfile` in our
 sample application looks like this:
 
-` Gemfile@e4319b3
+` Gemfile@f478197
 
 If you haven't already, bootstrap your application for Cucumber and Capybara:
 
@@ -61,7 +61,7 @@ two parts: a list of existing tasks, and an interface for adding new items to
 the list.  We'll start with the list of items, and create fixture data with
 [Factory Girl Cucumber steps](https://github.com/thoughtbot/factory_girl/blob/v2.1.0/GETTING_STARTED.md):
 
-` features/users/view_tasks.feature@e4319b3
+` features/users/view_tasks.feature@f478197
 
 Running this, we see a failure:
 
@@ -87,9 +87,9 @@ we will need to outline the UI first.  To do this, first we'll need a page to ho
 our code.  Let's create and route a Rails `TasksController`. We'll bootstrap the
 Backbone app on `tasks#index`.
 
-` config/routes.rb@e4319b3
+` config/routes.rb@f478197
 
-` app/controllers/tasks_controller.rb@e4319b3
+` app/controllers/tasks_controller.rb@f478197
 
 To render our tasks, we'll want a TasksIndex Backbone view class.  But before we
 write this class, we'll motivate it with a Jasmine isolation spec:
@@ -166,7 +166,7 @@ Drop back down to Jasmine and write a spec motivating the `TasksIndex` view to
 accept a collection and render it.  We'll rewrite our existing spec, since we
 are changing the `TasksIndex` interface to require that a collection be passed in:
 
-` spec/javascripts/views/tasks_index_spec.js@e4319b3
+` spec/javascripts/views/tasks_index_spec.js@f478197
 
 This spec fails:
 
@@ -184,15 +184,15 @@ TypeError: undefined is not a function
 It's failing because we haven't defined `ExampleApp.Collections.Tasks` yet.  We
 need to define a task model and tasks collection.  We'll define the model:
 
-` app/assets/javascripts/models/task.js@e4319b3
+` app/assets/javascripts/models/task.js@f478197
 
 ...write a test to motivate the collection:
 
-` spec/javascripts/collections/tasks_spec.js@e4319b3
+` spec/javascripts/collections/tasks_spec.js@f478197
 
 ...and pass the test by implementing the collection:
 
-` app/assets/javascripts/collections/tasks.js@e4319b3
+` app/assets/javascripts/collections/tasks.js@f478197
 
 Running the Jasmine specs again, we're making progress.  The `TasksIndex` view is
 accepting a collection of tasks, and now we have to render it:
@@ -206,9 +206,9 @@ have text 'Wake up'.
 The simplest thing we can do to get the spec passing is to pass the `tasks`
 collection into the template, and iterate over it there:
 
-` app/assets/javascripts/views/tasks_index.js@e4319b3
+` app/assets/javascripts/views/tasks_index.js@f478197
 
-` app/assets/templates/tasks/index.jst.ejs@e4319b3
+` app/assets/templates/tasks/index.jst.ejs@f478197
 
 Now, Jasmine passes, but the Cucumber story is still failing:
 
@@ -226,15 +226,15 @@ get the tests passing.
 We'll motivate writing a top-level Backbone application object with a spec.
 Note the use of a `sinon.spy` for verifying the router instantiation:
 
-` spec/javascripts/example_app_spec.js@e4319b3
+` spec/javascripts/example_app_spec.js@f478197
 
 Get it to green:
 
-` app/assets/javascripts/example_app.js@e4319b3
+` app/assets/javascripts/example_app.js@f478197
 
 Then we bootstrap the app from the Rails view:
 
-` app/views/tasks/index.html.erb@e4319b3
+` app/views/tasks/index.html.erb@f478197
 
 And the integration test passes!
 

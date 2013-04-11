@@ -73,17 +73,17 @@ need to display uploads on the index view.
 
 First, let's write an acceptance test to drive the functionality:
 
-` features/users/attach_file_to_task.feature@e4319b3
+` features/users/attach_file_to_task.feature@f478197
 
 The first failures we get are from the lack of upload UI.  We'll drop down to
 unit tests to drive this out:
 
-` spec/javascripts/views/task_show_spec.js@e4319b3
+` spec/javascripts/views/task_show_spec.js@f478197
 
 Then, we'll add the upload form in the `tasks/show.jst.ejs` template, so the
 UI elements are in place:
 
-` app/assets/templates/tasks/show.jst.ejs@e4319b3
+` app/assets/templates/tasks/show.jst.ejs@f478197
 
 Once our units pass, we run the acceptance tests again. The next failure we see
 is that nothing happens upon upload.  We'll drop down to Jasmine here to write
@@ -193,7 +193,7 @@ We're providing a JSON representation rooted at the task model using
 [Rabl](https://github.com/nesquena/rabl), which we discussed previously in
 "Implementing the API: presenting the JSON."
 
-` app/views/tasks/show.json.rabl@e4319b3
+` app/views/tasks/show.json.rabl@f478197
 
 We also tell Rabl to suppress the root JSON node, much
 like we did with `ActiveRecord::Base.include_root_in_json`:
@@ -207,14 +207,14 @@ end
 
 We can test drive the attachment display from Jasmine; see `task_show_with_attachments_spec.js`:
 
-` spec/javascripts/views/task_show_with_attachments_spec.js@e4319b3
+` spec/javascripts/views/task_show_with_attachments_spec.js@f478197
 
 We'll represent attachments as an associated collection on `Task`, so we'll need
 a Backbone model and collection for attachments, too.  First, the task model
 should parse its JSON to populate the associated attachments.  Test drive that
 in the `ExampleApp.Models.Tasks` Jasmine spec:
 
-` spec/javascripts/models/task_spec.js@e4319b3
+` spec/javascripts/models/task_spec.js@f478197
 
 The first failures reference the Backbone attachment model and attachments
 collection, so we add those, driving the collection out with a spec.

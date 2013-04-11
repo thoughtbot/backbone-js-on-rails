@@ -192,7 +192,7 @@ models) and then your routers and views must be loaded.
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
-` app/assets/javascripts/application.js@e4319b3
+` app/assets/javascripts/application.js@f478197
 
 The above is taken from the example application included with this book. You
 can view it at `example_app/app/assets/javascripts/application.js`.

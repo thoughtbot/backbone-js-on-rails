@@ -2,6 +2,8 @@
 \usepackage{amssymb,amsmath}
 \usepackage{ifxetex,ifluatex}
 \usepackage{fixltx2e} % provides \textsubscript
+\usepackage[T1]{fontenc}
+\usepackage{upquote}
 \ifxetex
   \usepackage{fontspec,xltxtra,xunicode}
   \defaultfontfeatures{Mapping=tex-text,Scale=MatchLowercase}
@@ -13,7 +15,7 @@ $if(sansfont)$
   \setsansfont{$sansfont$}
 $endif$
 $if(monofont)$
-  \setmonofont[Scale=0.8]{$monofont$}
+  \setmonofont{$monofont$}
 $endif$
 $if(mathfont)$
   \setmathfont{$mathfont$}
@@ -44,6 +46,10 @@ $endif$
 \fi
 $if(geometry)$
 \usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
+$else$
+% Not sure what the above geometry args do, but we want it for \newgeometry later
+% to inject a full-page PDF for the cover page.
+\usepackage{geometry}
 $endif$
 $if(natbib)$
 \usepackage{natbib}
@@ -83,7 +89,7 @@ $endif$
 $if(url)$
 \usepackage{url}
 $endif$
-$if(graphics)$
+
 \usepackage{graphicx}
 % We will generate all images so they have a width \maxwidth. This means
 % that they will get their normal width if they fit onto the page, but
@@ -94,7 +100,7 @@ $if(graphics)$
 \makeatother
 \let\Oldincludegraphics\includegraphics
 \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=\maxwidth]{#1}}
-$endif$
+
 \ifxetex
   \usepackage[setpagesize=false, % page size defined by xetex
               unicode=false, % unicode breaks when used with xetex
@@ -142,6 +148,7 @@ $for(header-includes)$
 $header-includes$
 $endfor$
 
+
 $if(title)$
 \title{$title$}
 $endif$
@@ -152,40 +159,26 @@ $if(date)$
 \date{$date$}
 $endif$
 
-% Remove "Chapter x" text from chapter titles
-\makeatletter
-\def\@makechapterhead#1{%
-  \vspace*{50\p@}%
-  {\parindent \z@ \raggedright \normalfont
-    \interlinepenalty\@M
-    \Huge \bfseries #1\par\nobreak
-    \vskip 40\p@
-  }}
-  \makeatother
-
-\usepackage{pdfpages}
-
 \begin{document}
-\pagenumbering{roman}
-\frontmatter
-\includepdf[pages={1}]{images/cover.pdf}
+
+\newgeometry{top=0cm,bottom=0cm,left=0cm,right=0cm,nohead,nofoot}
+\begin{figure}
+\Oldincludegraphics[width=\textwidth,height=\textheight]{../book/images/cover.pdf}
+\end{figure}
+\restoregeometry
+
 $if(title)$
 \maketitle
 $endif$
 
 $for(include-before)$
 $include-before$
+
 $endfor$
-
 $if(toc)$
-{
-\hypersetup{linkcolor=black}
-\setcounter{tocdepth}{1}
-\def\numberline#1{}
 \tableofcontents
-}
-$endif$
 
+$endif$
 $body$
 
 $if(natbib)$

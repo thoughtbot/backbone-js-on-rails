@@ -12,11 +12,11 @@ One of the first refactorings you'll find yourself doing in a non-trivial Backbo
 app is splitting up large views into composable parts. Let's take another look
 at the `TaskDetail` source code from the beginning of this section:
 
-` sample_code/task_detail_view_class.js@e4319b3
+` sample_code/task_detail_view_class.js@f478197
 
 The view class references a template, which renders out the HTML for this page:
 
-` sample_code/task_detail.html.jst@e4319b3
+` sample_code/task_detail.html.jst@f478197
 
 There are clearly several concerns going on here: rendering the task, rendering
 the comments that folks have left, and rendering the form to create new
@@ -70,7 +70,7 @@ But this is really only half the story. The `TaskDetail` view class still
 handles multiple concerns, such as displaying the task and creating comments. Let's
 split that view class up, using the `CompositeView` base class:
 
-` sample_code/composite_view.js@e4319b3
+` sample_code/composite_view.js@f478197
 
 Similar to the `SwappingRouter`, the `CompositeView` base class solves common
 housekeeping problems by establishing a convention. See the "SwappingRouter and

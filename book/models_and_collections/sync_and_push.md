@@ -140,7 +140,7 @@ or deleted, it will publish a change event message.
 This is implemented with an `ActiveRecord::Observer`.  We provide the
 functionality in a module:
 
-` sample_code/backbone_sync.rb@e4319b3
+` sample_code/backbone_sync.rb@f478197
 
 ...and then mix it into a concrete observer class in our application.  In this
 case, we name it `TodoObserver`:
