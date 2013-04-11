@@ -30,7 +30,7 @@ Here's the source for the aggregate index view:
 
 ...and the source for the individual task detail view:
 
-` sample_code/task_detail_view_class.js@f478197
+` app/assets/javascripts/views/task_show.js@f03c55e
 
 Each task on the index page links to the detail view for itself. When a user
 follows one of these links and navigates from the index page to the detail
