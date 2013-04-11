@@ -121,7 +121,7 @@ Consider a view that displays a collection of `Task` models. It will re-render
 itself when any model in the collection is changed or removed, or when a new
 model is added:
 
-` app/assets/javascripts/views/tasks_index.js@71981dd
+` app/assets/javascripts/views/tasks_index.js@5bfb07a
 
 Note how we bind to the collection's `change`, `add` and `remove` events.
 The `add` and `remove` events are triggered when you either `add()` or `remove()`

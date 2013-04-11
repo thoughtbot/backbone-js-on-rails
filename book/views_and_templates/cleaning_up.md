@@ -26,11 +26,11 @@ The interface switches between the two views.
 
 Here's the source for the aggregate index view:
 
-` app/assets/javascripts/views/tasks_index.js@f03c55e
+` app/assets/javascripts/views/tasks_index.js@5bfb07a
 
 ...and the source for the individual task detail view:
 
-` app/assets/javascripts/views/task_show.js@f03c55e
+` app/assets/javascripts/views/task_detail.js@5bfb07a
 
 Each task on the index page links to the detail view for itself. When a user
 follows one of these links and navigates from the index page to the detail

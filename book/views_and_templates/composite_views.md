@@ -12,11 +12,11 @@ One of the first refactorings you'll find yourself doing in a non-trivial Backbo
 app is splitting up large views into composable parts. Let's take another look
 at the `TaskDetail` source code from the beginning of this section:
 
-` app/assets/javascripts/views/task_detail.js@71981dd
+` app/assets/javascripts/views/task_detail.js@5bfb07a
 
 The view class references a template, which renders out the HTML for this page:
 
-` app/assets/templates/tasks_detail.jst.ejs@71981dd
+` app/assets/templates/task_detail.jst.ejs@5bfb07a
 
 There are clearly several concerns going on here: rendering the task, rendering
 the comments that folks have left, and rendering the form to create new
