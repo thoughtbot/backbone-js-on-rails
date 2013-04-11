@@ -17,32 +17,32 @@ to your templates.
 From the documentation, you can link the client-side locale to the server-side
 locale:
 
-````html
+```html
 <script type="text/javascript">
   I18n.defaultLocale = "<%= I18n.default_locale %>";
   I18n.locale = "<%= I18n.locale %>";
 </script>
-````
+```
 
 ...and then use the `I18n` JavaScript object to provide translations:
 
-````javascript
+```javascript
 // translate with your default locale
 I18n.t("some.scoped.translation");
 
 // translate with explicit setting of locale
 I18n.t("some.scoped.translation", {locale: "fr"});
-````
+```
 
 You can use the `I18n.t()` function inside your templates, too:
 
-````rhtml
+```rhtml
 <nav>
   <a href="#/"><%= I18n.t("nav.links.home") %></a>
   <a href="#/projects"><%= I18n.t("nav.links.projects") %></a>
   <a href="#/settings"><%= I18n.t("nav.links.settings") %></a>
 </nav>
-````
+```
 
 Number, currency, and date formatting is available with `i18n.js` as well - see
 the [documentation](https://github.com/fnando/i18n-js) for further usage

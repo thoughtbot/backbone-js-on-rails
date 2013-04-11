@@ -26,11 +26,11 @@ The interface switches between the two views.
 
 Here's the source for the aggregate index view:
 
-<<(tasks_index_view_class.js)
+` sample_code/tasks_index_view_class.js@e4319b3
 
 ...and the source for the individual task detail view:
 
-<<(task_detail_view_class.js)
+` sample_code/task_detail_view_class.js@e4319b3
 
 Each task on the index page links to the detail view for itself. When a user
 follows one of these links and navigates from the index page to the detail
@@ -81,7 +81,7 @@ any additional event unbinding that's needed.  As a convention, when you use
 this view elsewhere, you'll call `leave()` instead of `remove()` when you're
 done:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   // snip...
@@ -97,7 +97,7 @@ var SomeCollectionView = Backbone.View.extend({
 
   // snip...
 });
-````
+```
 
 ### Keep track of `on()` calls to unbind more easily
 
@@ -111,7 +111,7 @@ clean up all the events with one call.  We'll add and use a `bindTo()`
 function that keeps track of all the event handlers we bind, and then issue a
 single call to `unbindFromAll()` to unbind them:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/some_collection_view.js
 var SomeCollectionView = Backbone.View.extend({
   initialize: function() {
@@ -136,7 +136,7 @@ var SomeCollectionView = Backbone.View.extend({
     this.bindings = [];
   }
 });
-````
+```
 
 These functions, `bindTo()` and `unbindFromAll()`, can be extracted into a
 reusable mixin or superclass.  Then, we just have to use `this.bindTo()`
@@ -181,7 +181,7 @@ triggers.
 
 This is handled by invoking `Backbone.Events.off()`:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filtering_view.js
 var FilteringView = Backbone.View.extend({
   // snip...
@@ -203,7 +203,7 @@ var FilteringView = Backbone.View.extend({
 
   // snip...
 });
-````
+```
 
 ### Establish a convention for consistent and correct unbinding
 

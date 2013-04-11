@@ -8,7 +8,7 @@ Backbone-related assets: classes and templates.
 With Rails 3.0 and prior, store your Backbone classes in
 `public/javascripts`:
 
-````
+```
 public/
   javascripts/
     jquery.js
@@ -29,12 +29,12 @@ public/
         users_edit.js
       todos/
         todos_index.js
-````
+```
 
 If you are using templates, we prefer storing them in `app/templates` to keep
 them separated from the server views:
 
-````
+```
 app/
   views/
     pages/
@@ -50,7 +50,7 @@ app/
     todos/
       index.jst
       show.jst
-````
+```
 
 On Rails 3.0 and prior apps, we use Jammit for packaging assets and
 precompiling templates:
@@ -63,16 +63,16 @@ Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:
 
-````javascript
+```javascript
 JST['todos/index']
-````
+```
 
 Variables can be passed to the templates by passing a Hash to the template, as
 shown below.
 
-````javascript
+```javascript
 JST['todos/index']({ model: this.model })
-````
+```
 
 ### Jammit and a JST naming gotcha
 
@@ -82,19 +82,19 @@ templates in `app/templates`. You work for a while on the "Tasks" feature,
 placing templates under `app/templates/tasks`. So, `window.JST` looks something
 like:
 
-````javascript
+```javascript
 window.JST == {
   "form":  "html for template...",
   "show":  "html for template...",
   "index": "html for template...",
 };
-````
+```
 
 Now, you add another directory under `app/templates`, say `app/templates/user`.
 Now, templates with colliding names in JST references are prefixed with their
  parent directory name so they are unambiguous:
 
-````javascript
+```javascript
 window.JST == {
   "form":        "html...", // from tasks/form.jst.ejs
   "tasks/show":  "html...",
@@ -103,19 +103,19 @@ window.JST == {
   "users/show":  "html...",
   "users/index": "html...",
 };
-````
+```
 
 This breaks existing JST references. You can work around this issue by applying
 the following monkeypatch to Jammit, in `config/initializers/jammit.rb`:
 
-````ruby
+```ruby
 Jammit::Compressor.class_eval do
   private
   def find_base_path(path)
     File.expand_path(Rails.root.join('app','templates'))
   end
 end
-````
+```
 
 As applications are moving to Rails 3.1 or above, they're also moving to
 Sprockets for the asset packager.  Until then, many apps are using Jammit for
@@ -135,7 +135,7 @@ templates and classes in paths available to it: classes go in
 `app/assets/javascripts/`, and templates go alongside, in
 `app/assets/templates/`:
 
-````
+```
 app/
   assets/
     javascripts/
@@ -152,7 +152,7 @@ app/
       todos/
         index.jst.ejs
         show.jst.ejs
-````
+```
 
 In Rails 3.1 and above, jQuery is provided by the `jquery-rails` gem, and no
 longer needs to be included in your directory structure.
@@ -176,13 +176,13 @@ Sprockets, and requires the `ejs` gem to be included in the application Gemfile.
 To make the `*.jst` files available and create the `window.JST` object, require
 them in your application.js Sprockets manifest:
 
-````javascript
+```javascript
 // app/assets/javascripts/application.js
 
 // other application requires
 //= require_tree ../templates
 //= require_tree .
-````
+```
 
 Load order for Backbone and your Backbone app is very
 important. jQuery and Underscore must be loaded before Backbone. Then your models must be
@@ -192,11 +192,7 @@ models) and then your routers and views must be loaded.
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
-````javascript
-// app/assets/javascripts/application.js
-````
-
-<<(../../example_app/app/assets/javascripts/application.js)
+` app/assets/javascripts/application.js@e4319b3
 
 The above is taken from the example application included with this book. You
 can view it at `example_app/app/assets/javascripts/application.js`.

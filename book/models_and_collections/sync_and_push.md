@@ -101,7 +101,7 @@ Rails apps that depend on Faye, We recommend keeping a `faye/` subdirectory unde
 app root that contains a `Gemfile` and `config.ru`, and maybe a shell script to
 start Faye:
 
-````bash
+```bash
 $ cat faye/Gemfile
 
 source 'http://rubygems.org'
@@ -130,7 +130,7 @@ $ ./faye/run.sh
 >> Thin web server (v1.2.11 codename Bat-Shit Crazy)
 >> Maximum connections set to 1024
 >> Listening on 0.0.0.0:9292, CTRL+C to stop
-````
+```
 
 ### Implementing it: Step 2, ActiveRecord observers
 Now that the message bus is running, let's walk through the server code.  The
@@ -140,17 +140,17 @@ or deleted, it will publish a change event message.
 This is implemented with an `ActiveRecord::Observer`.  We provide the
 functionality in a module:
 
-<<(backbone_sync.rb)
+` sample_code/backbone_sync.rb@e4319b3
 
 ...and then mix it into a concrete observer class in our application.  In this
 case, we name it `TodoObserver`:
 
-````ruby
+```ruby
 # app/observers/todo_observer.rb
 class TodoObserver < ActiveRecord::Observer
   include BackboneSync::Rails::Faye::Observer
 end
-````
+```
 
 This observer is triggered each time a Rails `Todo` model is created, updated,
 or destroyed.  When one of these events happen, the observer sends along a
@@ -158,14 +158,14 @@ message to our message bus, indicating the change.
 
 Let's say that a `Todo` was just created:
 
-````ruby
+```ruby
 >> Todo.create(title: "Buy some tasty kale juice")
 => #<Todo id: 17, title: "Buy some tasty kale juice", created_at: "2011-09-06 20:49:03", updated_at: "2011-09-07 15:01:09">
-````
+```
 
 The message looks like this:
 
-````javascript
+```javascript
 {
   "channel": "/sync/todos",
   "data": {
@@ -179,7 +179,7 @@ The message looks like this:
     }
   }
 }
-````
+```
 
 Received by Faye, the message is broadcast to all clients subscribing to the
 `/sync/todos` channel, including our browser-side `FayeSubscriber` objects.
@@ -192,23 +192,23 @@ messages.
 
 Faye runs an HTTP server, and serves up its own client library, so that's easy to pull in:
 
-````html
+```html
 <script type="text/javascript" src="http://localhost:9292/faye.js"></script>
-````
+```
 
 To subscribe to Faye channels, instantiate a `Faye.Client` and call `subscribe` on it:
 
-````javascript
+```javascript
 var client = new Faye.Client('http://localhost:9292/faye');
 client.subscribe('/some/channel', function(message) {
   // handle message
 });
-````
+```
 
 When the browser receives messages from Faye, we want to update a Backbone
 collection.  Let's wrap up those two concerns into a `FayeSubscriber`:
 
-````javascript
+```javascript
 // app/assets/javascripts/backbone_sync.js
 this.BackboneSync = this.BackboneSync || {};
 
@@ -257,12 +257,12 @@ BackboneSync.RailsFayeSubscriber = (function() {
 
   return RailsFayeSubscriber;
 })();
-````
+```
 
 Now, for each collection that we'd like to keep in sync, we instantiate a
 corresponding `FayeSubscriber`.  Say, in your application bootstrap code:
 
-````javascript
+```javascript
 # app/assets/javascripts/routers/todos.js
 MyApp.Routers.TodosRouter = Backbone.Router.extend({
   initialize: function(options) {
@@ -273,7 +273,7 @@ MyApp.Routers.TodosRouter = Backbone.Router.extend({
 
   // ...
 });
-````
+```
 
 Now run the app, and watch browsers receive push updates!
 
@@ -313,7 +313,7 @@ to it when Cucumber boots, failing early if we can't connect. Here's a
 small snippet that you can drop in `features/support/faye.rb` to do
 just that:
 
-````ruby
+```ruby
 begin
   Timeout.timeout(1) do
     uri = URI.parse(BackboneSync::Rails::Faye.root_address)
@@ -322,13 +322,13 @@ begin
 rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH, Timeout::Error
   raise "Could not connect to Faye"
 end
-````
+```
 
 With that in place, we are now sure that Faye is running and we can move
 on to our Cucumber scenario. Create a `features/sync_task.feature` file
 and let's describe the desired functionality:
 
-````cucumber
+```cucumber
   @javascript
   Scenario: Viewing a task edited by another user
     Given the following users exist:
@@ -346,7 +346,7 @@ and let's describe the desired functionality:
     And I edit the "Get Cheeseburgers" task and rename it to "Buy Cheeseburgers"
     And I switch to session "Alice"
     Then I should see "Buy Cheeseburgers"
-````
+```
 
 Thankfully, Capybara allows us to run acceptance tests with client-side
 behavior by specifying different drivers to run scenarios that require
@@ -364,11 +364,11 @@ introduced the ability to name and switch sessions in your scenarios via
 the `session_name` method. The definition for the `I am using session
 "Alice"` step looks like this:
 
-````ruby
+```ruby
 When /^I (?:am using|switch to) session "([^"]+)"$/ do |new_session_name|
   Capybara.session_name = new_session_name
 end
-````
+```
 
 This allows us to essentially open up different browsers, if you're
 using the Selenium driver, and it is the key to exercising background syncing
