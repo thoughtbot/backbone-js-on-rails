@@ -26,7 +26,7 @@ The interface switches between the two views.
 
 Here's the source for the aggregate index view:
 
-` sample_code/tasks_index_view_class.js@f478197
+` app/assets/javascripts/views/tasks_index.js@f03c55e
 
 ...and the source for the individual task detail view:
 
