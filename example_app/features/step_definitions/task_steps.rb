@@ -1,3 +1,11 @@
+Given /^the following tasks exist:$/ do |tasks|
+  tasks.hashes.each do |task|
+    email = task['user']
+    user = User.find_by_email(email) || FactoryGirl.create(:user, email: email)
+    FactoryGirl.create(:task, title: task['Title'], user: user)
+  end
+end
+
 When /^I create a task "([^"]*)"$/ do |task_title|
   visit root_path
   click_link "Add task"

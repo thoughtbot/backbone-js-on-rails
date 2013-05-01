@@ -6,9 +6,9 @@ Feature: Viewing Tasks
   @javascript
   Scenario: View tasks
     Given the following tasks exist:
-      | Title                                | user                     |
-      | Purchase the Backbone on Rails ebook | email: email@example.com |
-      | Master Backbone                      | email: email@example.com |
+      | Title                                | user              |
+      | Purchase the Backbone on Rails ebook | email@example.com |
+      | Master Backbone                      | email@example.com |
     When I sign in as "email@example.com"
     And I am on the home page
     Then I should see "Master Backbone" within the tasks list

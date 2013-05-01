@@ -16,8 +16,8 @@ ActiveRecord::Schema.define(:version => 20120329160935) do
   create_table "assignments", :force => true do |t|
     t.integer  "user_id"
     t.integer  "task_id"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", :null => false
+    t.datetime "updated_at", :null => false
   end
 
   create_table "attachments", :force => true do |t|
@@ -25,15 +25,15 @@ ActiveRecord::Schema.define(:version => 20120329160935) do
     t.string   "upload_content_type"
     t.integer  "upload_file_size"
     t.datetime "upload_updated_at"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
     t.integer  "task_id"
   end
 
   create_table "tasks", :force => true do |t|
     t.string   "title"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                    :null => false
+    t.datetime "updated_at",                    :null => false
     t.boolean  "complete",   :default => false, :null => false
     t.integer  "user_id"
   end
@@ -44,8 +44,8 @@ ActiveRecord::Schema.define(:version => 20120329160935) do
     t.string   "salt",               :limit => 128
     t.string   "confirmation_token", :limit => 128
     t.string   "remember_token",     :limit => 128
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at",                        :null => false
+    t.datetime "updated_at",                        :null => false
   end
 
   add_index "users", ["email"], :name => "index_users_on_email"
