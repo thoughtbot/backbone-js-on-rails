@@ -14,7 +14,7 @@ but you want to link to it from the Backbone templates.
 Let's say that the task history is visible at a URL of `/tasks/:id/history`.
 We will add this link as a fourth column in the template:
 
-````rhtml
+```rhtml
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -22,11 +22,11 @@ We will add this link as a fourth column in the template:
 <td class="history">
   <a href="#">Task History</a>
 </td>
-````
+```
 
 and populate it from the view:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_item.js
 
 ExampleApp.Views.TaskItem = Support.CompositeView.extend({
@@ -45,7 +45,7 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   },
   // ...
 });
-````
+```
 
 Now, the way we have constructed the URL in `renderFormContents` works, but it
 is fragile; it would break quietly if we changed the Rails routing structure.
@@ -62,7 +62,7 @@ available in JavaScript that provides JavaScript functions similar to the Rails
 path helper methods.  Let's replace our manual URL construction with one of
 these helpers:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_item.js
 renderFormContents: function() {
   // ...(existing code)...
@@ -73,12 +73,12 @@ renderFormContents: function() {
   // New history link:
   this.$('td.history a').attr("href", Routes.task_history_path(this.model));
 }
-````
+```
 
 Since the `Routes` object is global, you can invoke these route helpers directly from
 templates as well:
 
-````rhtml
+```rhtml
 <!-- app/assets/templates/tasks/item.jst.ejs -->
 <td><label>Task title</label><a class="task-link" href="#">details</a></td>
 <td class="assignees">(Unassigned)</td>
@@ -86,16 +86,16 @@ templates as well:
 <td class="history">
   <a href="<%= Routes.task_history_path(this.task) %>">Task History</a>
 </td>
-````
+```
 
 If you are using a templating library like
 [Handlebars.js](http://handlebarsjs.com/) that supports helper functions, you
 could include the Routes object's helper functions into your view context
 directly to eliminate the need to prefix the calls with `Routes.`:
 
-````javascript
+```javascript
 // somewhere at initialization time, assuming you are using Handlebars.js:
 _.each(Routes, function(helper, name) {
   Handlebars.registerHelper(name, helper);
 });
-````
+```

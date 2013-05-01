@@ -17,7 +17,7 @@ application at:
 Glad you asked!
 
 The eBook covers intermediate to advanced topics on using Backbone.js,
-including content specific to integrating with Rails applications. 
+including content specific to integrating with Rails applications.
 
 In addition to the book (in HTML, PDF, EPUB, and Kindle formats), you also get
 a complete example application, and the ability to get your questions about
@@ -33,7 +33,7 @@ working code. Fully up to date for Rails 3.2.
 
 # Contact us
 
-If you have any questions, or just want to get in touch, drop us a line at 
+If you have any questions, or just want to get in touch, drop us a line at
 [learn@thoughtbot.com](mailto:learn@thoughtbot.com).
 
 \clearpage
@@ -50,7 +50,7 @@ Backbone-related assets: classes and templates.
 With Rails 3.0 and prior, store your Backbone classes in
 `public/javascripts`:
 
-````
+```
 public/
   javascripts/
     jquery.js
@@ -71,12 +71,12 @@ public/
         users_edit.js
       todos/
         todos_index.js
-````
+```
 
 If you are using templates, we prefer storing them in `app/templates` to keep
 them separated from the server views:
 
-````
+```
 app/
   views/
     pages/
@@ -92,7 +92,7 @@ app/
     todos/
       index.jst
       show.jst
-````
+```
 
 On Rails 3.0 and prior apps, we use Jammit for packaging assets and
 precompiling templates:
@@ -105,16 +105,16 @@ Jammit will make your templates available in a top-level JST object. For
 example, to access the above todos/index.jst template, you would refer to it
 as:
 
-````javascript
+```javascript
 JST['todos/index']
-````
+```
 
 Variables can be passed to the templates by passing a Hash to the template, as
 shown below.
 
-````javascript
+```javascript
 JST['todos/index']({ model: this.model })
-````
+```
 
 ### Jammit and a JST naming gotcha
 
@@ -124,19 +124,19 @@ templates in `app/templates`. You work for a while on the "Tasks" feature,
 placing templates under `app/templates/tasks`. So, `window.JST` looks something
 like:
 
-````javascript
+```javascript
 window.JST == {
   "form":  "html for template...",
   "show":  "html for template...",
   "index": "html for template...",
 };
-````
+```
 
 Now, you add another directory under `app/templates`, say `app/templates/user`.
 Now, templates with colliding names in JST references are prefixed with their
  parent directory name so they are unambiguous:
 
-````javascript
+```javascript
 window.JST == {
   "form":        "html...", // from tasks/form.jst.ejs
   "tasks/show":  "html...",
@@ -145,19 +145,19 @@ window.JST == {
   "users/show":  "html...",
   "users/index": "html...",
 };
-````
+```
 
 This breaks existing JST references. You can work around this issue by applying
 the following monkeypatch to Jammit, in `config/initializers/jammit.rb`:
 
-````ruby
+```ruby
 Jammit::Compressor.class_eval do
   private
   def find_base_path(path)
     File.expand_path(Rails.root.join('app','templates'))
   end
 end
-````
+```
 
 As applications are moving to Rails 3.1 or above, they're also moving to
 Sprockets for the asset packager.  Until then, many apps are using Jammit for
@@ -177,7 +177,7 @@ templates and classes in paths available to it: classes go in
 `app/assets/javascripts/`, and templates go alongside, in
 `app/assets/templates/`:
 
-````
+```
 app/
   assets/
     javascripts/
@@ -194,7 +194,7 @@ app/
       todos/
         index.jst.ejs
         show.jst.ejs
-````
+```
 
 In Rails 3.1 and above, jQuery is provided by the `jquery-rails` gem, and no
 longer needs to be included in your directory structure.
@@ -218,13 +218,13 @@ Sprockets, and requires the `ejs` gem to be included in the application Gemfile.
 To make the `*.jst` files available and create the `window.JST` object, require
 them in your application.js Sprockets manifest:
 
-````javascript
+```javascript
 // app/assets/javascripts/application.js
 
 // other application requires
 //= require_tree ../templates
 //= require_tree .
-````
+```
 
 Load order for Backbone and your Backbone app is very
 important. jQuery and Underscore must be loaded before Backbone. Then your models must be
@@ -234,11 +234,11 @@ models) and then your routers and views must be loaded.
 Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/application.js
-````
+```
 
-````
+```
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui-1.8.18.custom.min
@@ -260,7 +260,7 @@ done, your application.js Sprockets manifest will look as shown below:
 //= require_tree ./routers
 //= require_tree ../templates
 //= require_tree .
-````
+```
 
 The above is taken from the example application included with this book. You
 can view it at `example_app/app/assets/javascripts/application.js`.
@@ -282,12 +282,12 @@ In our example application, we have a Task model, exposed via a JSON API at
 `/tasks`. The simplest Backbone representation of this model would be as
 shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   urlRoot: '/tasks'
 });
-````
+```
 
 The `urlRoot` property above describes a base for the server-side JSON API that
 houses this resource.  Collection-level requests will occur at that root URL,
@@ -308,19 +308,19 @@ plural representation of `Tasks` into `Collections`.
 The simplest Backbone collection to represent our `Tasks` would be the
 following.
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task
 });
-````
+```
 
 If we specify the URL for `Tasks` in our collection instead, then models within
 the collection will use the collection's URL to construct their own URLs, and
 the `urlRoot` no longer needs to be specified in the model. If we make that
 change, then our collection and model will be as follows.
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -329,7 +329,7 @@ var Tasks = Backbone.Collection.extend({
 
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({});
-````
+```
 
 Notice in the above model definitions that there is no specification of the
 attributes on the model. As in ActiveRecord, Backbone models get their
@@ -367,7 +367,7 @@ When using `respond_with`, declare supported formats with `respond_to`. Inside
 individual actions, you then specify the resource or resources to be delivered
 using `respond_with`:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :html, :json
@@ -376,7 +376,7 @@ class TasksController < ApplicationController
     respond_with(@tasks = Task.all)
   end
 end
-````
+```
 
 In the above example tasks controller, the `respond_to` line declares that this
 controller should respond to requests for both the HTML and JSON formats. Then,
@@ -403,13 +403,13 @@ So, your Backbone applications will likely rely on at least some server-side
 validation logic.  Invalid requests return non-2xx HTTP responses, which
 are handled by error callbacks in Backbone:
 
-````javascript
+```javascript
 task.save({ title: "New Task title" }, {
   error: function() {
     // handle error from server
   }
 });
-````
+```
 
 The error callback will be triggered if your server returns a non-2xx
 response. Therefore, you'll want your controller to return a non-2xx HTTP
@@ -417,7 +417,7 @@ response code if validations fail.
 
 A controller that does this would appear as shown in the following example:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -431,13 +431,13 @@ class TasksController < ApplicationController
     end
   end
 end
-````
+```
 
 The default Rails responders will respond with an unprocessable entity (422)
 status code when there are validation errors, so the action above can be
 refactored:
 
-````ruby
+```ruby
 # app/controllers/tasks_controller.rb
 class TasksController < ApplicationController
   respond_to :json
@@ -447,12 +447,12 @@ class TasksController < ApplicationController
     respond_with @task
   end
 end
-````
+```
 
 Your error callback will receive both the model as it was attempted to be
 saved and the response from the server. You can take that response and handle
 the errors returned by the above controller in whatever way is fit for your
-application. 
+application.
 
 A few different aspects of validations that we saw here are covered in other sections of this book. For more information about validations, see
 the "Validations" section of the "Models and Collections" chapter. For more
@@ -481,7 +481,7 @@ Organization chapter.
 
 This application object will look like the following:
 
-````javascript
+```javascript
 // app/assets/javascripts/example_app.js
 var ExampleApp = {
   Models: {},
@@ -494,7 +494,7 @@ var ExampleApp = {
     Backbone.history.start();
   }
 };
-````
+```
 
 You can find this file in the example app in
 `app/assets/javascripts/example_app.js`.
@@ -507,14 +507,14 @@ You will often bootstrap data into the Backbone application to provide initial
 state.  In our example, the tasks have already been provided to the Rails view
 in an `@tasks` instance variable:
 
-````javascript
+```javascript
 <!-- app/views/tasks/index.html.erb -->
 <%= content_for :javascript do -%>
   <%= javascript_tag do %>
     ExampleApp.initialize({ tasks: <%== @tasks.to_json %> });
   <% end %>
 <% end -%>
-````
+```
 
 The above example uses ERB to pass the JSON for the tasks to the `initialize`
 method, but we should be mindful of the XSS risks that dumping user-generated
@@ -524,7 +524,7 @@ section in the "Security" chapter for a more secure approach.
 Finally, you must have a Router in place that knows what to do.  We'll cover
 routers in more detail in the "Routers, Views and Templates" chapter.
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
@@ -543,7 +543,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     // We'll pick back up here in the "Converting Views" section.
   }
 });
-````
+```
 
 The example router above is the last piece needed to complete our
 initial Backbone infrastructure. When a user visits `/tasks`, the
@@ -562,7 +562,7 @@ Backbone views are classes that contain event handling and presentation logic.
 
 Consider the following Rails view for a tasks index:
 
-````erb
+```erb
 <!-- app/views/tasks/index.html.erb -->
 <h1>Tasks</h1>
 
@@ -579,7 +579,7 @@ Consider the following Rails view for a tasks index:
     </tr>
   <% end %>
 </table>
-````
+```
 
 So far, we have the Backbone `Task` model and collection and the Rails `Task`
 model and controller discussed above, and we're bootstrapping the Backbone app
@@ -593,7 +593,7 @@ its DOM scope that trigger various behaviors.
 We'll start with a basic view that achieves the same result as the Rails template
 above, rendering a collection of tasks:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
@@ -601,7 +601,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 The `render` method above renders the `tasks/index` JST template, passing
 the collection of tasks into the template.
@@ -614,7 +614,7 @@ We'll update the Backbone route to instantiate this view, passing in the
 collection for it to render. The router then renders the view, and inserts it
 into the DOM:
 
-````javascript
+```javascript
 // app/assets/javascripts/routers/tasks.js
 ExampleApp.Routers.Tasks = Backbone.Router.extend({
   routes: {
@@ -626,7 +626,7 @@ ExampleApp.Routers.Tasks = Backbone.Router.extend({
     $('body').html(view.render().$el);
   }
 });
-````
+```
 
 Now that we have the Backbone view in place that renders the template, and
 it's being called by the router, we can focus on converting the above Rails
@@ -649,7 +649,7 @@ Underscore.js to provide these iteration functions as methods on `Backbone.Colle
 We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -666,7 +666,7 @@ passed to the view, as shown in the converted Underscore.js template below:
     </tr>
   <% }); %>
 </table>
-````
+```
 
 In Rails 3.0 and above, template output is HTML-escaped by default. In order to
 ensure that we have the same XSS protection as we did in our Rails template, we
@@ -689,17 +689,17 @@ which re-renders only the markup for one task.
 Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/task.jst.ejs -->
 <tr>
   <td><%= model.escape('title') %></td>
   <td><%= model.escape('completed') %></td>
 </tr>
-````
+```
 
 And the Task index template will be changed to appear as shown below:
 
-````erb
+```erb
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -712,13 +712,13 @@ And the Task index template will be changed to appear as shown below:
   <!-- child content will be rendered here -->
 
 </table>
-````
+```
 
 As you can see above in the index template, the individual tasks are no longer
 iterated over and rendered inside the table, but instead within the
 `TasksIndex` and `TaskView` views, respectively:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   render: function () {
@@ -726,14 +726,14 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 The `TaskView` view above is very similar to the one we saw previously for the
 `TasksIndex` view.  It is only responsible for rendering the contents of its own
-element, and the concern of assembling the view of the list is left to the 
+element, and the concern of assembling the view of the list is left to the
 parent view object:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/tasks_index.js
 ExampleApp.Views.TasksIndex = Backbone.View.extend({
   render: function () {
@@ -750,7 +750,7 @@ ExampleApp.Views.TasksIndex = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 In the new `TasksIndex` view above, the `tasks` collection is iterated over. For
 each task, a new `TaskView` is instantiated, rendered, and then inserted into
@@ -758,7 +758,7 @@ the `<table>` element.
 
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
-````erb
+```erb
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -783,7 +783,7 @@ If you look at the output of the `TasksIndex`, it will appear as follows:
     </div>
   </table>
 </div>
-````
+```
 
 Unfortunately, we can see that there is a problem with the above rendered
 view: the surrounding div around each of the rendered tasks.
@@ -803,7 +803,7 @@ removed from the task view template.
 The element to use is specified by the `tagName` member of the `TaskView`, as
 shown below:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/task_view.js
 ExampleApp.Views.TaskView = Backbone.View.extend({
   tagName: "tr",
@@ -816,21 +816,21 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
     return this;
   }
 });
-````
+```
 
 Given the above `tagName` customization, the task view template will appear as
 follows:
 
-````erb
+```erb
 // app/assets/templates/tasks/view.jst.ejs
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
-````
+```
 
 And the resulting output of the `TasksIndex` will be much cleaner, as shown
 below:
 
-````html
+```html
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -851,7 +851,7 @@ below:
     </tr>
   </table>
 </div>
-````
+```
 
 We've now covered the basic building blocks of converting Rails views to
 Backbone and getting a functional system. The majority of Backbone programming
@@ -876,7 +876,7 @@ An easy method of filtering or sorting a collection is by updating it in-place.
 To sort a collection in-place, change its `comparator` property to a new
 function and call `#sort`:
 
-````javascript
+```javascript
 var alphabet = new Backbone.Collection([
   new Backbone.Model({ letter: 'W', syllables: 3 }),
   new Backbone.Model({ letter: 'X', syllables: 2 }),
@@ -891,19 +891,19 @@ console.log(alphabet.pluck('letter')); // ['W', 'X', 'Y', 'Z']
 alphabet.comparator = function(letter) { return letter.get('syllables') };
 alphabet.sort();
 console.log(alphabet.pluck('letter')); // ['Y', 'Z', 'X', 'W']
-````
+```
 
 To filter a collection in-place, iterate over it and reject the elements you
 want to remove:
 
-````javascript
+```javascript
 // get rid of letters that take too long to say
 shortLetters = alphabet.filter(function(letter) {
   return letter.get('syllables') == 1;
 });
 alphabet.reset(shortLetters);
 console.log(alphabet.pluck('letter')); // ['Y', 'Z']
-````
+```
 
 Note that the filtering is destructive; after we invoke `alphabet#reset`, there
 is no way to get the discarded elements back.  Also, there is no link back to
@@ -926,7 +926,7 @@ functions on your collections that filter by your criteria, using the `select`
 function from Underscore.js; then, return new instances of the collection class. A
 first implementation might look like this:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -939,12 +939,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-````
+```
 
 Let's refactor this a bit.  Ideally, the filter functions will reuse logic
 already defined in your model class:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
@@ -963,7 +963,7 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(filteredTasks);
   }
 });
-````
+```
 
 Going further, notice that there are actually two concerns in this function.
 The first is the notion of filtering the collection, and the second is the
@@ -971,7 +971,7 @@ specific filtering criteria (`task.isComplete()`).
 
 Let's separate the two concerns here, and extract a `filtered` function:
 
-````javascript
+```javascript
 // app/assets/javascripts/models/task.js
 var Task = Backbone.Model.extend({
   isComplete: function() {
@@ -994,12 +994,12 @@ var Tasks = Backbone.Collection.extend({
     return new Tasks(this.select(criteriaFunction));
   }
 });
-````
+```
 
 We can extract this function into a reusable mixin, abstracting the `Tasks`
 collection class using `this.constructor`:
 
-````javascript
+```javascript
 // app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
@@ -1027,7 +1027,7 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, FilterableCollectionMixin);
-````
+```
 
 ## Propagating collection changes
 
@@ -1038,7 +1038,7 @@ A naive approach is to bind to the change, add, and remove events on the source
 collection, reapply the filter function, and repopulate the filtered
 collection:
 
-````javascript
+```javascript
 // app/assets/javascripts/filterable_collection_mixin.js
 var FilterableCollectionMixin = {
   filtered: function(criteriaFunction) {
@@ -1058,7 +1058,7 @@ var FilterableCollectionMixin = {
     return filteredCollection;
   }
 };
-````
+```
 
 While this correctly updates the filtered collection when the base collection
 or one of its models is changed, this will always trigger a `reset` event
@@ -1080,7 +1080,7 @@ uses this derivative collection approach to filtering.
 The view accepts a base collection and then maintains a filtered version of that
 collection, which it renders from.
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   events: {
@@ -1104,7 +1104,7 @@ var FilterableResultsView = Support.CompositeView.extend({
 
   // ...
 });
-````
+```
 
 There is a leak in FilterableMixinCollection, as we have it now, which is
 exposed by this usage pattern.  The contructor-local functions `addToFiltered`,
@@ -1130,7 +1130,7 @@ You can think of this in a similar way to how the `SwappingRouter` tracks
 its current view, disposing of the old view before swapping in the new one.
 
 
-````javascript
+```javascript
 // app/assets/javascripts/views/filterable_results_view.js
 var FilterableResultsView = Support.CompositeView.extend({
   initialize: function(options) {
@@ -1156,14 +1156,14 @@ var FilterableResultsView = Support.CompositeView.extend({
 
   // ...
 });
-````
+```
 
 ## Sorting
 
 The simplest way to sort a `Backbone.Collection` is to define a `comparator`
 function.  This functionality is built in:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -1173,14 +1173,14 @@ var Tasks = Backbone.Collection.extend({
     return task.dueDate;
   }
 });
-````
+```
 
 If you'd like to provide more than one sort order on your collection, you can
 use an approach similar to the `filtered` function above, and return a new
 `Backbone.Collection` whose `comparator` is overridden.  Call `sort` to update
 the ordering on the new collection:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -1199,11 +1199,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-````
+```
 
 Similarly, you can extract the reusable concern to another function:
 
-````javascript
+```javascript
 // app/assets/javascripts/collections/tasks.js
 var Tasks = Backbone.Collection.extend({
   model: Task,
@@ -1232,11 +1232,11 @@ var Tasks = Backbone.Collection.extend({
     return sortedCollection;
   }
 });
-````
+```
 
 ...And then into another reusable mixin:
 
-````javascript
+```javascript
 // app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
@@ -1269,13 +1269,13 @@ var Tasks = Backbone.Collection.extend({
 });
 
 _.extend(Tasks.prototype, SortableCollectionMixin);
-````
+```
 
 Just as with the `FilterableCollectionMixin` before, the
 `SortableCollectionMixin` should observe its source if updates are to propagate
 from one collection to another:
 
-````javascript
+```javascript
 // app/assets/javascripts/sortable_collection_mixin.js
 var SortableCollectionMixin = {
   sortedBy: function(comparator) {
@@ -1297,7 +1297,7 @@ var SortableCollectionMixin = {
     return sortedCollection;
   }
 };
-````
+```
 
 It is left as an excerise for the reader to update `SortableCollectionMixin`
 to trigger the correct change/add/remove events as in the improved

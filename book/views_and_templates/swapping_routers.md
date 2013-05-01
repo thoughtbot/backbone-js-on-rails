@@ -3,7 +3,7 @@
 When switching from one view to another, we should clean up the previous view.
 Earlier, we discussed a convention of writing a `view.leave()`. Let's augment our view to include the ability to clean itself up by "leaving" the DOM:
 
-````javascript
+```javascript
 // app/assets/javascripts/views/my_view.js
 var MyView = Backbone.View.extend({
   // ...
@@ -15,7 +15,7 @@ var MyView = Backbone.View.extend({
 
   // ...
 });
-````
+```
 
 The `off()` and `remove()` functions are provided by `Backbone.Events` and
 `Backbone.View` respectively. `Backbone.Events.off()` will remove all
@@ -30,7 +30,7 @@ Now, a `SwappingRouter` can take advantage of the `leave()` function, and clean
 up any existing views before swapping to a new one.  It swaps into a new view by
 rendering that view into its own `el`:
 
-<<(swapping_router.js)
+` app/assets/javascripts/support/swapping_router.js@48f284c
 
 Now all you need to do in a route function is call `swap()`, passing in the
 new view that should be rendered. The `swap()` function's job is to call
@@ -60,14 +60,14 @@ constructor with the use of `Function#apply`. The next block of code uses
 Underscore.js' `Object#extend` to create the set of functions and properties that
 will become `SwappingRouter`. The `extend` function takes a destination - in
 this case, the empty prototype for `SwappingRouter` - and copies the properties
-into the `Backbone.Router` prototype along with our new custom object that 
+into the `Backbone.Router` prototype along with our new custom object that
 includes the `swap` function.
 
 Finally, the subclass cake is topped off with some Backbone frosting, by setting
 `extend`, which is a self-propagating function that all Backbone public classes
 use. Let's take a quick look at this function, as seen in Backbone 0.5.3:
 
-````javascript
+```javascript
 var extend = function (protoProps, classProps) {
   var child = inherits(this, protoProps, classProps);
   child.extend = this.extend;
@@ -81,7 +81,7 @@ var inherits = function(parent, protoProps, staticProps) {
   // sparing our readers the internals of this function... for a deep dive
   // into the dark realms of JavaScript's prototype system, read the source!
 }
-````
+```
 
 This is a function that calls `inherits` to make a new subclass.  The comments
 reference `goog.inherits` from Google's Closure Library, which contains similar
