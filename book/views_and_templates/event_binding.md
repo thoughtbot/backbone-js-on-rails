@@ -103,10 +103,10 @@ var SoundBoard = Backbone.View.extend({
 
 Backbone will bind the events with the
 [`Backbone.View.prototype.delegateEvents()`](http://documentcloud.github.com/backbone/#View-delegateEvents)
-function.  It binds DOM events with `$.delegate()`, whether you're using the
-[jQuery](http://api.jquery.com/delegate/) or
-[Zepto](https://github.com/madrobby/zepto/blob/v0.7/src/event.js#L96-108)
-`.delegate()` function.
+function.  It binds DOM events with `$.on()`, whether you're using the
+[jQuery](http://api.jquery.com/on/) or
+[Zepto](https://github.com/madrobby/zepto/blob/v1.0/src/event.js#L181-L184)
+`.on()` function.
 
 It also takes care of binding the event handlers' `this` to the view instance
 using `_.on()`.
