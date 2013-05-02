@@ -100,6 +100,23 @@ view's element being an `li` rather than a `div`.
 the view. For example, setting `className: "example"` in the view will result
 in that view's element having that additional class like `<div class="example">`.
 
+In addition, as of Backbone 0.9.9, `className`, `tagName`, and `id` can now
+be defined as functions to allow them to be determined at runtime. An example
+use case for this would be defining the `id` of a view based on its model:
+
+````javascript
+ExampleApp.Views.TaskItem = Support.CompositeView.extend({
+  tagName: "tr",
+
+  id: function() {
+    return "task_" + this.model.id;
+  },
+````
+
+Note that this dynamic definition is only used when creating the views `el`,
+and will not be invoked if `el` is passed in when creating the view, or during
+subsequent calls to render.
+
 ### Rendering
 
 The `render` function above renders the `example/view` template. Template
