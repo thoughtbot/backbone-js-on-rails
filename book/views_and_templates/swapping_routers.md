@@ -20,7 +20,9 @@ var MyView = Backbone.View.extend({
 The `off()` and `remove()` functions are provided by `Backbone.Events` and
 `Backbone.View` respectively. `Backbone.Events.off()` will remove all
 callbacks registered on the view, and `remove()` will remove the view's
-element from the DOM, equivalent to calling `this.$el.remove()`.
+element from the DOM, equivalent to calling `this.$el.remove()`. In addition,
+`remove()` will also call `stopListening()` on the view to clean up any event
+callbacks defined using `listenTo`.
 
 In simple cases, we replace one full page view with another full page (less any
 shared layout). We introduce a convention that all actions underneath one
@@ -60,7 +62,7 @@ constructor with the use of `Function#apply`. The next block of code uses
 Underscore.js' `Object#extend` to create the set of functions and properties that
 will become `SwappingRouter`. The `extend` function takes a destination - in
 this case, the empty prototype for `SwappingRouter` - and copies the properties
-into the `Backbone.Router` prototype along with our new custom object that 
+into the `Backbone.Router` prototype along with our new custom object that
 includes the `swap` function.
 
 Finally, the subclass cake is topped off with some Backbone frosting, by setting
