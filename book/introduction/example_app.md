@@ -18,7 +18,9 @@ than being a sequential read that must be understood in sequence.
 
 ### Framework and library choice in the example application
 
-The application uses Rails 3.2.6 and Ruby 1.9.2.  We provide an `.rvmrc`.
+The application uses Rails 3.2.13 and Ruby 1.9.3.  We provide a `Gemfile` and
+a `.ruby-version` file in the root of the example app that help define these
+versions, and the other dependencies of the app.
 
 The included JavaScript libraries are non-minified for readability.  This
 is a general good practice, and the Rails asset pipeline will properly package

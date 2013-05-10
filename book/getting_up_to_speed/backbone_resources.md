@@ -12,7 +12,7 @@ The GitHub wiki for Backbone links to a large number of tutorials and examples:
 
 <https://github.com/documentcloud/backbone/wiki/Tutorials%2C-blog-posts-and-example-sites>
 
-PeepCode is producing a three-part series on getting up to speed on Backbone:
+PeepCode has produced a three-part series on getting up to speed on Backbone:
 
 <http://peepcode.com/products/backbone-js>
 

@@ -1,6 +1,10 @@
 ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   tagName: "tr",
 
+  id: function() {
+    return "task_" + this.model.id;
+  },
+
   events: {
     "change input": "update"
   },
@@ -10,7 +14,6 @@ ExampleApp.Views.TaskItem = Support.CompositeView.extend({
   },
 
   render: function () {
-    this.$el.attr("id", "task_" + this.model.id);
     this.$el.html(JST['tasks/item']({ task: this.model }));
     this.renderFormContents();
     return this;

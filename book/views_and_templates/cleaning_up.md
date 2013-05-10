@@ -63,6 +63,27 @@ cleaning up any events bound on DOM elements within your view, regardless of
 whether you bound them with the Backbone `events` hash or by hand; for example,
 with `$.bind()`, `$.delegate()`, `live()` or `$.on()`.
 
+### Backbone's `listentTo` and `stopListening`
+
+In Backbone 0.9.9, a handful of functions were added to the `Events` object
+within Backbone that make it easier to manage and clean up events. The core
+of them is the `listentTo` function which allows you to bind to events from
+the point of view of the observer, rather than the triggering object.
+
+````javascript
+// Standard event binding approach using .on
+taskModel.on('change', taskView.render)
+
+// new listentTo function, called on the observing object
+taskView.listentTo(taskModel, 'change', taskView.render)
+````
+
+The benefit of using `listenTo` is that it allows the observing object to keep
+track of its callbacks and clean them up efficiently. Specifically, Backbone
+also provides a `stopListening` function that will remove all registered
+callbacks. This `stopListening` function is called automatically when the
+view's `remove` function is called.
+
 ### Unbinding model and collection events
 
 If your view binds to events on a model or collection with `on()`, you are

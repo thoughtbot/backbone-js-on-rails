@@ -102,10 +102,11 @@ var ErrorList = function(responseOrErrors) {
 ````
 
 With Backbone, the `validate()` function is called for each invocation of
-`set()`, so as soon as we set the email address on the member, its presence is
-validated.  For the user experience with the quickest response, we could observe
-changes on the email form field, updating the model's `email` attribute whenever
-it changes, and displaying the inline error message immediately.
+`save()`.  Validations can also be run on `set()` by passing `{validate: true}`,
+so as soon as we set the email address on the member, its presence is validated.
+For the user experience with the quickest response, we could observe changes on
+the email form field, updating the model's `email` attribute whenever it
+changes, and displaying the inline error message immediately.
 
 With `ErrorList` able to handle either client-side or server-side error messages,
 we have a server-side guarantee of data correctness, footnote^[At least, we

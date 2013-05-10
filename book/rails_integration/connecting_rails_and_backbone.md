@@ -121,7 +121,7 @@ provided resource, `@tasks`.
 
 If a Backbone model has a `validate` method defined, it will be validated on
 the client side, before its attributes are set. If validation fails, no changes
-to the model will occur, and the "error" event will be fired. Your `validate`
+to the model will occur, and the "invalid" event will be fired. Your `validate`
 method will be passed the attributes that are about to be updated. You can
 signal that validation passed by returning nothing from your `validate` method.
 You signify that validation has failed by returning something from the method.
@@ -182,10 +182,9 @@ class TasksController < ApplicationController
 end
 ````
 
-Your error callback will receive both the model as it was attempted to be
-saved and the response from the server. You can take that response and handle
-the errors returned by the above controller in whatever way is fit for your
-application. 
+Your error callback will receive the response from the server. You can take
+that response and handle the errors returned by the above controller action
+however you want.
 
 A few different aspects of validations that we saw here are covered in other sections of this book. For more information about validations, see
 the "Validations" section of the "Models and Collections" chapter. For more
