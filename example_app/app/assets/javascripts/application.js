@@ -1,6 +1,6 @@
 //= require jquery
 //= require jquery_ujs
-//= require jquery-ui-1.8.18.custom.min
+//= require jquery-ui
 //
 //= require underscore
 //= require json2
@@ -11,7 +11,7 @@
 //= require jquery-ui-editors.js
 //= require uploader.js
 //
-//= require vendor/visualsearch.js
+//= require visualsearch.js
 //
 //= require example_app
 //

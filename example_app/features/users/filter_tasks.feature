@@ -7,8 +7,8 @@ Feature: Filtering Tasks
   Scenario: View tasks
     Given the following tasks exist:
       | Title                                | user                     |
-      | Purchase the Backbone on Rails ebook | email: email@example.com |
-      | Master Backbone                      | email: email@example.com |
+      | Purchase the Backbone on Rails ebook | email@example.com |
+      | Master Backbone                      | email@example.com |
     When I sign in as "email@example.com"
     And I am on the home page
     And I filter the tasks for "title: Master"

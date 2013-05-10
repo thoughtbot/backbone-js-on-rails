@@ -86,9 +86,9 @@ describe("FilteredCollection", function() {
   });
 
   it("provides an teardown function which unbinds the filtered collection from the base collection, allowing it to be GC'd", function() {
-    expect(_.size(baseCollection._callbacks)).toEqual(3);
+    expect(_.size(baseCollection._events)).toEqual(3);
     oddCollection.teardown();
-    expect(_.size(baseCollection._callbacks)).toEqual(0);
+    expect(_.size(baseCollection._events)).toEqual(0);
   });
 
   it("refilters by resetting the filtered collection", function() {
