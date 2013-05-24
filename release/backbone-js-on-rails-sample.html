@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="generator" content="pandoc">
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <!--[if lt IE 9]>
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+  <![endif]-->
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; }
+code > span.dt { color: #902000; }
+code > span.dv { color: #40a070; }
+code > span.bn { color: #40a070; }
+code > span.fl { color: #40a070; }
+code > span.ch { color: #4070a0; }
+code > span.st { color: #4070a0; }
+code > span.co { color: #60a0b0; font-style: italic; }
+code > span.ot { color: #007020; }
+code > span.al { color: #ff0000; font-weight: bold; }
+code > span.fu { color: #06287e; }
+code > span.er { color: #ff0000; font-weight: bold; }
+  </style>
+</head>
+<body>
+<nav id="TOC">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#what-can-i-expect-from-that">What can I expect from that?</a></li>
+<li><a href="#contact-us">Contact us</a></li>
+<li><a href="#rails-integration">Rails Integration</a><ul>
+<li><a href="#organizing-your-backbone-code-in-a-rails-app">Organizing your Backbone code in a Rails app</a></li>
+<li><a href="#rails-3.0-and-prior">Rails 3.0 and prior</a><ul>
+<li><a href="#jammit-and-a-jst-naming-gotcha">Jammit and a JST naming gotcha</a></li>
+</ul></li>
+<li><a href="#rails-3.1-and-above">Rails 3.1 and above</a></li>
+<li><a href="#an-overview-of-the-stack-connecting-rails-and-backbone">An overview of the stack: connecting Rails and Backbone</a><ul>
+<li><a href="#setting-up-models">Setting up models</a></li>
+<li><a href="#setting-up-rails-controllers">Setting up Rails controllers</a></li>
+<li><a href="#setting-up-views">Setting Up Views</a></li>
+</ul></li>
+<li><a href="#converting-an-existing-pageview-area-to-use-backbone">Converting an existing page/view area to use Backbone</a><ul>
+<li><a href="#breaking-out-the-taskview">Breaking out the TaskView</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#models-and-collections">Models and collections</a><ul>
+<li><a href="#filters-and-sorting">Filters and sorting</a></li>
+<li><a href="#modifying-collections-in-place">Modifying collections in-place</a></li>
+<li><a href="#filtering">Filtering</a></li>
+<li><a href="#propagating-collection-changes">Propagating collection changes</a><ul>
+<li><a href="#a-note-on-event-bindings-and-reference-leaks">A note on event bindings and reference leaks</a></li>
+</ul></li>
+<li><a href="#sorting">Sorting</a></li>
+</ul></li>
+<li><a href="#closing">Closing</a></li>
+</ul>
+</nav>
+<section id="introduction" class="level1">
+<h1><a href="#introduction">Introduction</a></h1>
+<p>Welcome to the Backbone.js on Rails eBook sample. This is published directly from the book, so that you can get a sense for the content, style, and delivery of the product. We’ve included three sample sections. Two are specific to Rails integration: file organization, and a high-level overview of connecting a Backbone app inside your Rails app. The last is Backbone.js specific, and covers filtering and sorting your Backbone collections.</p>
+<p>If you enjoy the sample, you can get access to the entire book and sample application at:</p>
+<p><a href="https://learn.thoughtbot.com/products/1-backbone-js-on-rails">https://learn.thoughtbot.com/products/1-backbone-js-on-rails</a></p>
+</section>
+<section id="what-can-i-expect-from-that" class="level1">
+<h1><a href="#what-can-i-expect-from-that">What can I expect from that?</a></h1>
+<p>Glad you asked!</p>
+<p>The eBook covers intermediate to advanced topics on using Backbone.js, including content specific to integrating with Rails applications.</p>
+<p>In addition to the book (in HTML, PDF, EPUB, and Kindle formats), you also get a complete example application, and the ability to get your questions about Backbone.js and Rails answered by the thoughtbot team.</p>
+<p>The book is written using Markdown and pandoc, and hosted on GitHub. You get access to all this. You can also use the GitHub comment and issue features to give us feedback about what we’ve written and what you’d like to see. Give us your toughest Backbone.js questions, and we’ll see what we can do. Last but not least, also included is a complete sample Backbone.js and Rails application. What the book describes and explains, the example app demonstrates with real, working code. Fully up to date for Rails 3.2.</p>
+</section>
+<section id="contact-us" class="level1">
+<h1><a href="#contact-us">Contact us</a></h1>
+<p>If you have any questions, or just want to get in touch, drop us a line at <script type="text/javascript">
+<!--
+h='&#116;&#104;&#x6f;&#x75;&#x67;&#104;&#116;&#98;&#x6f;&#116;&#46;&#x63;&#x6f;&#x6d;';a='&#64;';n='&#108;&#x65;&#x61;&#114;&#110;';e=n+a+h;
+document.write('<a h'+'ref'+'="ma'+'ilto'+':'+e+'">'+e+'<\/'+'a'+'>');
+// -->
+</script><noscript>learn at thoughtbot dot com</noscript>.</p>
+<p></p>
+</section>
+<section id="rails-integration" class="level1">
+<h1><a href="#rails-integration">Rails Integration</a></h1>
+<section id="organizing-your-backbone-code-in-a-rails-app" class="level2">
+<h2><a href="#organizing-your-backbone-code-in-a-rails-app">Organizing your Backbone code in a Rails app</a></h2>
+<p>When using Backbone in a Rails app, you'll have two kinds of Backbone-related assets: classes and templates.</p>
+</section>
+<section id="rails-3.0-and-prior" class="level2">
+<h2><a href="#rails-3.0-and-prior">Rails 3.0 and prior</a></h2>
+<p>With Rails 3.0 and prior, store your Backbone classes in <code>public/javascripts</code>:</p>
+<pre><code>public/
+  javascripts/
+    jquery.js
+    jquery-ui.js
+    collections/
+      users.js
+      todos.js
+    models/
+      user.js
+      todo.js
+    routers/
+      users_router.js
+      todos_router.js
+    views/
+      users/
+        users_index.js
+        users_new.js
+        users_edit.js
+      todos/
+        todos_index.js</code></pre>
+<p>If you are using templates, we prefer storing them in <code>app/templates</code> to keep them separated from the server views:</p>
+<pre><code>app/
+  views/
+    pages/
+      home.html.erb
+      terms.html.erb
+      privacy.html.erb
+      about.html.erb
+  templates/
+    users/
+      index.jst
+      new.jst
+      edit.jst
+    todos/
+      index.jst
+      show.jst</code></pre>
+<p>On Rails 3.0 and prior apps, we use Jammit for packaging assets and precompiling templates:</p>
+<p><a href="http://documentcloud.github.com/jammit/">http://documentcloud.github.com/jammit/</a></p>
+<p><a href="http://documentcloud.github.com/jammit/#jst">http://documentcloud.github.com/jammit/#jst</a></p>
+<p>Jammit will make your templates available in a top-level JST object. For example, to access the above todos/index.jst template, you would refer to it as:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript">JST[<span class="st">'todos/index'</span>]</code></pre>
+<p>Variables can be passed to the templates by passing a Hash to the template, as shown below.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript">JST[<span class="st">'todos/index'</span>]({ <span class="dt">model</span>: <span class="kw">this</span>.<span class="fu">model</span> })</code></pre>
+<section id="jammit-and-a-jst-naming-gotcha" class="level3">
+<h3><a href="#jammit-and-a-jst-naming-gotcha">Jammit and a JST naming gotcha</a></h3>
+<p>One issue with Jammit that we've encountered and worked around is that the JST template path can change when adding new templates. Let's say you place templates in <code>app/templates</code>. You work for a while on the &quot;Tasks&quot; feature, placing templates under <code>app/templates/tasks</code>. So, <code>window.JST</code> looks something like:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">window</span>.<span class="fu">JST</span> == {
+  <span class="st">&quot;form&quot;</span>:  <span class="st">&quot;html for template...&quot;</span>,
+  <span class="st">&quot;show&quot;</span>:  <span class="st">&quot;html for template...&quot;</span>,
+  <span class="st">&quot;index&quot;</span>: <span class="st">&quot;html for template...&quot;</span>,
+};</code></pre>
+<p>Now, you add another directory under <code>app/templates</code>, say <code>app/templates/user</code>. Now, templates with colliding names in JST references are prefixed with their parent directory name so they are unambiguous:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">window</span>.<span class="fu">JST</span> == {
+  <span class="st">&quot;form&quot;</span>:        <span class="st">&quot;html...&quot;</span>, <span class="co">// from tasks/form.jst.ejs</span>
+  <span class="st">&quot;tasks/show&quot;</span>:  <span class="st">&quot;html...&quot;</span>,
+  <span class="st">&quot;tasks/index&quot;</span>: <span class="st">&quot;html...&quot;</span>,
+  <span class="st">&quot;new&quot;</span>:         <span class="st">&quot;html...&quot;</span>, <span class="co">// from users/new.jst.ejs</span>
+  <span class="st">&quot;users/show&quot;</span>:  <span class="st">&quot;html...&quot;</span>,
+  <span class="st">&quot;users/index&quot;</span>: <span class="st">&quot;html...&quot;</span>,
+};</code></pre>
+<p>This breaks existing JST references. You can work around this issue by applying the following monkeypatch to Jammit, in <code>config/initializers/jammit.rb</code>:</p>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="dt">Jammit</span>::<span class="dt">Compressor</span>.class_eval <span class="kw">do</span>
+  <span class="kw">private</span>
+  <span class="kw">def</span> find_base_path(path)
+    <span class="dt">File</span>.expand_path(<span class="dt">Rails</span>.root.join(<span class="st">'app'</span>,<span class="st">'templates'</span>))
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>As applications are moving to Rails 3.1 or above, they're also moving to Sprockets for the asset packager. Until then, many apps are using Jammit for asset packaging. We have an open issue and workaround:</p>
+<p><a href="https://github.com/documentcloud/jammit/issues/192">https://github.com/documentcloud/jammit/issues/192</a></p>
+</section>
+</section>
+<section id="rails-3.1-and-above" class="level2">
+<h2><a href="#rails-3.1-and-above">Rails 3.1 and above</a></h2>
+<p>Rails 3.1 introduced the <a href="http://guides.rubyonrails.org/asset_pipeline.html">asset pipeline</a>, which uses the <a href="http://getsprockets.org">Sprockets library</a> for preprocessing and packaging assets.</p>
+<p>To take advantage of the built-in asset pipeline, organize your Backbone templates and classes in paths available to it: classes go in <code>app/assets/javascripts/</code>, and templates go alongside, in <code>app/assets/templates/</code>:</p>
+<pre><code>app/
+  assets/
+    javascripts/
+      collections/
+        todos.js
+      models/
+        todo.js
+      routers/
+        todos_router.js
+      views/
+        todos/
+          todos_index.js
+    templates/
+      todos/
+        index.jst.ejs
+        show.jst.ejs</code></pre>
+<p>In Rails 3.1 and above, jQuery is provided by the <code>jquery-rails</code> gem, and no longer needs to be included in your directory structure.</p>
+<p>Using Sprockets' preprocessors, we can use templates as before. Here, we're using the EJS template preprocessor to provide the same functionality as Underscore.js' templates. It compiles the <code>*.jst</code> files and makes them available on the client side via the <code>window.JST</code> object. Identifying the <code>.ejs</code> extension and invoking EJS to compile the templates is managed by Sprockets, and requires the <code>ejs</code> gem to be included in the application Gemfile.</p>
+<blockquote>
+<p>Underscore.js templates: <a href="http://documentcloud.github.com/underscore/#template">http://documentcloud.github.com/underscore/#template</a></p>
+<p>EJS gem: <a href="https://github.com/sstephenson/ruby-ejs">https://github.com/sstephenson/ruby-ejs</a></p>
+<p>Sprockets support for EJS: <a href="https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb">https://github.com/sstephenson/sprockets/blob/master/lib/sprockets/ejs_template.rb</a></p>
+</blockquote>
+<p>To make the <code>*.jst</code> files available and create the <code>window.JST</code> object, require them in your application.js Sprockets manifest:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/application.js</span>
+
+<span class="co">// other application requires</span>
+<span class="co">//= require_tree ../templates</span>
+<span class="co">//= require_tree .</span></code></pre>
+<p>Load order for Backbone and your Backbone app is very important. jQuery and Underscore must be loaded before Backbone. Then your models must be loaded before your collections (because your collections will reference your models) and then your routers and views must be loaded.</p>
+<p>Fortunately, Sprockets can handle this load order for us. When all is said and done, your application.js Sprockets manifest will look as shown below:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"># app/assets/javascripts/<span class="ot">application</span>.<span class="fu">js</span>
+<span class="co">//= require jquery</span>
+<span class="co">//= require jquery_ujs</span>
+<span class="co">//= require jquery-ui-1.8.18.custom.min</span>
+<span class="co">//</span>
+<span class="co">//= require underscore</span>
+<span class="co">//= require json2</span>
+<span class="co">//= require backbone</span>
+<span class="co">//= require backbone-support</span>
+<span class="co">//</span>
+<span class="co">//= require backbone-forms.js</span>
+<span class="co">//= require jquery-ui-editors.js</span>
+<span class="co">//= require uploader.js</span>
+<span class="co">//</span>
+<span class="co">//= require vendor/visualsearch.js</span>
+<span class="co">//</span>
+<span class="co">//= require example_app</span>
+<span class="co">//</span>
+<span class="co">//= require_tree ./models</span>
+<span class="co">//= require_tree ./collections</span>
+<span class="co">//= require_tree ./views</span>
+<span class="co">//= require_tree ./routers</span>
+<span class="co">//= require_tree ../templates</span>
+<span class="co">//= require_tree .</span></code></pre>
+<p>The above is taken from the example application included with this book. You can view it at <code>example_app/app/assets/javascripts/application.js</code>.</p>
+</section>
+<section id="an-overview-of-the-stack-connecting-rails-and-backbone" class="level2">
+<h2><a href="#an-overview-of-the-stack-connecting-rails-and-backbone">An overview of the stack: connecting Rails and Backbone</a></h2>
+<p>By default, Backbone communicates with your Rails application via JSON HTTP requests. If you've ever made a JSON API for your Rails app, then for the most part, this will be very familiar. If you have not made a JSON API for your Rails application before, lucky you! It's pretty straightforward.</p>
+<p>This section will briefly touch on each of the major parts of an application using both Rails and Backbone. We'll go into more detail in later chapters, but this should give you the big picture of how the pieces fit together.</p>
+<section id="setting-up-models" class="level3">
+<h3><a href="#setting-up-models">Setting up models</a></h3>
+<p>In our example application, we have a Task model, exposed via a JSON API at <code>/tasks</code>. The simplest Backbone representation of this model would be as shown below:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/models/task.js</span>
+<span class="kw">var</span> Task = <span class="ot">Backbone</span>.<span class="ot">Model</span>.<span class="fu">extend</span>({
+  <span class="dt">urlRoot</span>: <span class="st">'/tasks'</span>
+});</code></pre>
+<p>The <code>urlRoot</code> property above describes a base for the server-side JSON API that houses this resource. Collection-level requests will occur at that root URL, and requests relating to instances of this model will be found at <code>/tasks/:id</code>.</p>
+<p>It's important to understand that there is no need to have a one-to-one mapping between Rails models and Backbone models. Backbone models instead correspond with RESTful resources. Since your Backbone code is in the presentation tier, it's likely that some of your Backbone models may end up providing only a subset of the information present in the Rails models, or they may aggregate information from multiple Rails models into a composite resource.</p>
+<p>In Rails, it's possible to access individual tasks, as well as all tasks (and query all tasks) through the same <code>Task</code> model. In Backbone, models only represent the singular representation of a <code>Task</code>. Backbone splits out the plural representation of <code>Tasks</code> into <code>Collections</code>.</p>
+<p>The simplest Backbone collection to represent our <code>Tasks</code> would be the following.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Collections</span>.<span class="fu">Tasks</span> = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task
+});</code></pre>
+<p>If we specify the URL for <code>Tasks</code> in our collection instead, then models within the collection will use the collection's URL to construct their own URLs, and the <code>urlRoot</code> no longer needs to be specified in the model. If we make that change, then our collection and model will be as follows.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Collections</span>.<span class="fu">Tasks</span> = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>
+});
+
+<span class="co">// app/assets/javascripts/models/task.js</span>
+<span class="kw">var</span> Task = <span class="ot">Backbone</span>.<span class="ot">Model</span>.<span class="fu">extend</span>({});</code></pre>
+<p>Notice in the above model definitions that there is no specification of the attributes on the model. As in ActiveRecord, Backbone models get their attributes from the data used to populate them at runtime. In this case, this schema and data are JSON responses from the Rails server.</p>
+<p>The default JSON representation of an ActiveRecord model is an object that includes all the model's attributes. It does not include the data for any related models or any methods on the model, but it does include the ids of any <code>belongs_to</code> relations as those are stored in a <code>relation_name_id</code> attribute on the model.</p>
+<p>The JSON representation of your ActiveRecord models will be retrieved by calling <code>to_json</code> on them, which returns a string of JSON. Customize the output of <code>to_json</code> by overriding the <code>as_json</code> method in your model, which returns a Ruby data structure like a Hash or Array which will be serialized into the JSON string. We'll touch on this more later in the section, &quot;Customizing your Rails-generated JSON.&quot;</p>
+</section>
+<section id="setting-up-rails-controllers" class="level3">
+<h3><a href="#setting-up-rails-controllers">Setting up Rails controllers</a></h3>
+<p>The Backbone models and collections will talk to your Rails controllers. The most basic pattern is one Rails controller providing one family of RESTful resource to one Backbone model.</p>
+<p>By default, Backbone models communicate in the normal RESTful way that Rails controllers understand, using the proper verbs to support the standard RESTful Rails controller actions: index, show, create, update, and destroy. Backbone does not make any use of the new action.</p>
+<p>Therefore, it's just up to us to write a <em>normal</em> RESTful controller. The newest and most succinct way to structure these is to use the <code>respond_with</code> method, introduced in Rails 3.0.</p>
+<p>When using <code>respond_with</code>, declare supported formats with <code>respond_to</code>. Inside individual actions, you then specify the resource or resources to be delivered using <code>respond_with</code>:</p>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app/controllers/tasks_controller.rb</span>
+<span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+  respond_to <span class="st">:html</span>, <span class="st">:json</span>
+
+  <span class="kw">def</span> index
+    respond_with(<span class="ot">@tasks</span> = <span class="dt">Task</span>.all)
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>In the above example tasks controller, the <code>respond_to</code> line declares that this controller should respond to requests for both the HTML and JSON formats. Then, in the index action, the <code>respond_with</code> call will build a response according to the requested content type (which may be HTML or JSON in this case) and provided resource, <code>@tasks</code>.</p>
+<section id="validations-and-your-http-api" class="level4">
+<h4><a href="#validations-and-your-http-api">Validations and your HTTP API</a></h4>
+<p>If a Backbone model has a <code>validate</code> method defined, it will be validated on the client side, before its attributes are set. If validation fails, no changes to the model will occur, and the &quot;invalid&quot; event will be fired. Your <code>validate</code> method will be passed the attributes that are about to be updated. You can signal that validation passed by returning nothing from your <code>validate</code> method. You signify that validation has failed by returning something from the method. What you return can be as simple as a string, or a more complex object that describes the error in all its gory detail.</p>
+<p>The amount of validation you include on the client side is essentially a tradeoff between interface performance and code duplication. It's important for the server to make the last call on validation.</p>
+<p>So, your Backbone applications will likely rely on at least some server-side validation logic. Invalid requests return non-2xx HTTP responses, which are handled by error callbacks in Backbone:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="ot">task</span>.<span class="fu">save</span>({ <span class="dt">title</span>: <span class="st">&quot;New Task title&quot;</span> }, {
+  <span class="dt">error</span>: <span class="kw">function</span>() {
+    <span class="co">// handle error from server</span>
+  }
+});</code></pre>
+<p>The error callback will be triggered if your server returns a non-2xx response. Therefore, you'll want your controller to return a non-2xx HTTP response code if validations fail.</p>
+<p>A controller that does this would appear as shown in the following example:</p>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app/controllers/tasks_controller.rb</span>
+<span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+  respond_to <span class="st">:json</span>
+
+  <span class="kw">def</span> create
+    <span class="ot">@task</span> = <span class="dt">Task</span>.new(params[<span class="st">:task</span>])
+    <span class="kw">if</span> <span class="ot">@task</span>.save
+      respond_with(<span class="ot">@task</span>)
+    <span class="kw">else</span>
+      respond_with(<span class="ot">@task</span>, <span class="st">:status</span> =&gt; <span class="st">:unprocessable_entity</span>)
+    <span class="kw">end</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>The default Rails responders will respond with an unprocessable entity (422) status code when there are validation errors, so the action above can be refactored:</p>
+<pre class="sourceCode ruby"><code class="sourceCode ruby"><span class="co"># app/controllers/tasks_controller.rb</span>
+<span class="kw">class</span> <span class="dt">TasksController</span> &lt; <span class="dt">ApplicationController</span>
+  respond_to <span class="st">:json</span>
+  <span class="kw">def</span> create
+    <span class="ot">@task</span> = <span class="dt">Task</span>.new(params[<span class="st">:task</span>])
+    <span class="ot">@task</span>.save
+    respond_with <span class="ot">@task</span>
+  <span class="kw">end</span>
+<span class="kw">end</span></code></pre>
+<p>Your error callback will receive both the model as it was attempted to be saved and the response from the server. You can take that response and handle the errors returned by the above controller in whatever way is fit for your application.</p>
+<p>A few different aspects of validations that we saw here are covered in other sections of this book. For more information about validations, see the &quot;Validations&quot; section of the &quot;Models and Collections&quot; chapter. For more information about reducing redundancy between client and server validations, see the &quot;Duplicating business logic across the client and server&quot; section of the &quot;Models and Collections&quot; chapter. For more information about handling and displaying errors on the client side, see the &quot;Forms&quot; section of the &quot;Routers, Views and Templates&quot; chapter.</p>
+</section>
+</section>
+<section id="setting-up-views" class="level3">
+<h3><a href="#setting-up-views">Setting Up Views</a></h3>
+<p>Most Backbone applications will be a single-page app, or &quot;SPA.&quot; This means that your Rails application handles two jobs: First, it renders a single page which hosts your Backbone application and, optionally, an initial data set for it to use. From there, ongoing interaction with your Rails application occurs via HTTP JSON APIs.</p>
+<p>For our example application, this host page will be located at <code>Tasks#index</code>, which is also routed to the root route.</p>
+<p>You will want to create an object in JavaScript for your Backbone application. Generally, we use this object as a top-level namespace for other Backbone classes, as well as a place to hold initialization code. For more information on this namespacing see the &quot;Namespacing your application&quot; section of the Organization chapter.</p>
+<p>This application object will look like the following:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/example_app.js</span>
+<span class="kw">var</span> ExampleApp = {
+  <span class="dt">Models</span>: {},
+  <span class="dt">Collections</span>: {},
+  <span class="dt">Views</span>: {},
+  <span class="dt">Routers</span>: {},
+  <span class="dt">initialize</span>: <span class="kw">function</span>(data) {
+    <span class="kw">this</span>.<span class="fu">tasks</span> = <span class="kw">new</span> <span class="ot">ExampleApp</span>.<span class="ot">Collections</span>.<span class="fu">Tasks</span>(<span class="ot">data</span>.<span class="fu">tasks</span>);
+    <span class="kw">new</span> <span class="ot">ExampleApp</span>.<span class="ot">Routers</span>.<span class="fu">Tasks</span>();
+    <span class="ot">Backbone</span>.<span class="ot">history</span>.<span class="fu">start</span>();
+  }
+};</code></pre>
+<p>You can find this file in the example app in <code>app/assets/javascripts/example_app.js</code>.</p>
+<p>IMPORTANT: You must instantiate a Backbone router before calling <code>Backbone.history.start()</code> otherwise <code>Backbone.history</code> will be <code>undefined</code>.</p>
+<p>Then, inside <code>app/views/tasks/index.html.erb</code> you will call the <code>initialize</code> method. You will often bootstrap data into the Backbone application to provide initial state. In our example, the tasks have already been provided to the Rails view in an <code>@tasks</code> instance variable:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript">&lt;!-- app/views/tasks/<span class="ot">index</span>.<span class="ot">html</span>.<span class="fu">erb</span> --&gt;
+&lt;%= content_for :javascript <span class="kw">do</span> -%&gt;
+  &lt;%= javascript_tag <span class="kw">do</span> %&gt;
+    <span class="ot">ExampleApp</span>.<span class="fu">initialize</span>({ <span class="dt">tasks</span>: &lt;%== @<span class="ot">tasks</span>.<span class="fu">to_json</span> %&gt; });
+  &lt;% end %&gt;
+&lt;% end -%&gt;</code></pre>
+<p>The above example uses ERB to pass the JSON for the tasks to the <code>initialize</code> method, but we should be mindful of the XSS risks that dumping user-generated content here poses. See the &quot;Encoding data when bootstrapping JSON data&quot; section in the &quot;Security&quot; chapter for a more secure approach.</p>
+<p>Finally, you must have a Router in place that knows what to do. We'll cover routers in more detail in the &quot;Routers, Views and Templates&quot; chapter.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/routers/tasks.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Routers</span>.<span class="fu">Tasks</span> = <span class="ot">Backbone</span>.<span class="ot">Router</span>.<span class="fu">extend</span>({
+  <span class="dt">routes</span>: {
+    <span class="st">&quot;&quot;</span>: <span class="st">&quot;index&quot;</span>
+  },
+
+  <span class="dt">index</span>: <span class="kw">function</span>() {
+    <span class="co">// We've reached the end of Rails integration - it's all Backbone from here!</span>
+
+    <span class="fu">alert</span>(<span class="st">'Hello, world!  This is a Backbone router action.'</span>);
+
+    <span class="co">// Normally you would continue down the stack, instantiating a</span>
+    <span class="co">// Backbone.View class, calling render() on it, and inserting its element</span>
+    <span class="co">// into the DOM.</span>
+
+    <span class="co">// We'll pick back up here in the &quot;Converting Views&quot; section.</span>
+  }
+});</code></pre>
+<p>The example router above is the last piece needed to complete our initial Backbone infrastructure. When a user visits <code>/tasks</code>, the <code>index.html.erb</code> Rails view will be rendered, which properly initializes Backbone and its dependencies and the Backbone models, collections, routers, and views.</p>
+</section>
+</section>
+<section id="converting-an-existing-pageview-area-to-use-backbone" class="level2">
+<h2><a href="#converting-an-existing-pageview-area-to-use-backbone">Converting an existing page/view area to use Backbone</a></h2>
+<p>This section is meant to get you started understanding how Backbone views work by illustrating the conversion of a Rails view to a Backbone view.</p>
+<p>Its important to note that a Rails view is not directly analogous to a Backbone view. In Rails, the term &quot;view&quot; usually refers to an HTML template, where Backbone views are classes that contain event handling and presentation logic.</p>
+<p>Consider the following Rails view for a tasks index:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml"><span class="co">&lt;!-- app/views/tasks/index.html.erb --&gt;</span>
+<span class="kw">&lt;h1&gt;</span>Tasks<span class="kw">&lt;/h1&gt;</span>
+
+<span class="kw">&lt;table&gt;</span>
+  <span class="kw">&lt;tr&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Completed<span class="kw">&lt;/th&gt;</span>
+  <span class="kw">&lt;/tr&gt;</span>
+
+  <span class="kw">&lt;%</span> <span class="ot">@tasks</span>.each <span class="kw">do</span> <span class="ch">|</span>task<span class="ch">|</span> <span class="kw">%&gt;</span>
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;td&gt;&lt;%=</span> task.title <span class="kw">%&gt;&lt;/td&gt;</span>
+      <span class="kw">&lt;td&gt;&lt;%=</span> task.completed <span class="kw">%&gt;&lt;/td&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+  <span class="kw">&lt;%</span> <span class="kw">end</span> <span class="kw">%&gt;</span>
+<span class="kw">&lt;/table&gt;</span></code></pre>
+<p>So far, we have the Backbone <code>Task</code> model and collection and the Rails <code>Task</code> model and controller discussed above, and we're bootstrapping the Backbone app with all the tasks. Next, we will create a Backbone view which will render a corresponding Backbone template.</p>
+<p>A Backbone view is a class that is responsible for rendering the display of a logical element on the page. A view also binds to DOM events occurring within its DOM scope that trigger various behaviors.</p>
+<p>We'll start with a basic view that achieves the same result as the Rails template above, rendering a collection of tasks:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/tasks_index.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TasksIndex</span> = <span class="ot">Backbone</span>.<span class="ot">View</span>.<span class="fu">extend</span>({
+  <span class="dt">render</span>: <span class="kw">function</span> () {
+    <span class="kw">this</span>.<span class="ot">$el</span>.<span class="fu">html</span>(JST[<span class="st">'tasks/index'</span>]({ <span class="dt">tasks</span>: <span class="kw">this</span>.<span class="fu">collection</span> }));
+    <span class="kw">return</span> <span class="kw">this</span>;
+  }
+});</code></pre>
+<p>The <code>render</code> method above renders the <code>tasks/index</code> JST template, passing the collection of tasks into the template.</p>
+<p>Each Backbone view has an element that it stores in <code>this.$el</code>. This element can be populated with content, although it's a good practice for code outside the view to actually insert the view into the DOM.</p>
+<p>We'll update the Backbone route to instantiate this view, passing in the collection for it to render. The router then renders the view, and inserts it into the DOM:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/routers/tasks.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Routers</span>.<span class="fu">Tasks</span> = <span class="ot">Backbone</span>.<span class="ot">Router</span>.<span class="fu">extend</span>({
+  <span class="dt">routes</span>: {
+    <span class="st">&quot;&quot;</span>: <span class="st">&quot;index&quot;</span>
+  },
+
+  <span class="dt">index</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> view = <span class="kw">new</span> <span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TasksIndex</span>({ <span class="dt">collection</span>: <span class="ot">ExampleApp</span>.<span class="fu">tasks</span> });
+    <span class="fu">$</span>(<span class="st">'body'</span>).<span class="fu">html</span>(<span class="ot">view</span>.<span class="fu">render</span>().<span class="fu">$el</span>);
+  }
+});</code></pre>
+<p>Now that we have the Backbone view in place that renders the template, and it's being called by the router, we can focus on converting the above Rails view to a Backbone template.</p>
+<p>Backbone depends on Underscore.js which, among many things, provides templating. The delimiter and basic concepts used for Underscore.js templates and ERB are the same. When converting an existing Rails application to Backbone, this similarity can help ease the transition.</p>
+<p>The <code>tasks/index</code> JST template does two things:</p>
+<ul>
+<li>Loops over all of the tasks</li>
+<li>For each task, it outputs the task title and completed attributes</li>
+</ul>
+<p>Underscore.js provides many iteration functions that will be familiar to Rails developers such as <code>_.each</code>, <code>_.map</code>, and <code>_.reject</code>. Backbone also proxies to Underscore.js to provide these iteration functions as methods on <code>Backbone.Collection</code>.</p>
+<p>We'll use the <code>each</code> method to iterate through the <code>Tasks</code> collection that was passed to the view, as shown in the converted Underscore.js template below:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml"><span class="co">&lt;!-- app/assets/templates/tasks/index.jst.ejs --&gt;</span>
+<span class="kw">&lt;h1&gt;</span>Tasks<span class="kw">&lt;/h1&gt;</span>
+
+<span class="kw">&lt;table&gt;</span>
+  <span class="kw">&lt;tr&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Completed<span class="kw">&lt;/th&gt;</span>
+  <span class="kw">&lt;/tr&gt;</span>
+
+  <span class="kw">&lt;%</span> tasks.each(function(model) <span class="ch">{</span> <span class="kw">%&gt;</span>
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'title'</span>) <span class="kw">%&gt;&lt;/td&gt;</span>
+      <span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'completed'</span>) <span class="kw">%&gt;&lt;/td&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+  <span class="kw">&lt;%</span> <span class="ch">}</span>); <span class="kw">%&gt;</span>
+<span class="kw">&lt;/table&gt;</span></code></pre>
+<p>In Rails 3.0 and above, template output is HTML-escaped by default. In order to ensure that we have the same XSS protection as we did in our Rails template, we access and output the Backbone model attributes using the <code>escape</code> method instead of the normal <code>get</code> method.</p>
+<section id="breaking-out-the-taskview" class="level3">
+<h3><a href="#breaking-out-the-taskview">Breaking out the TaskView</a></h3>
+<p>In Backbone, views are often bound to an underlying model, re-rendering themselves when the model data changes. Consider what happens when any task changes data with our approach above; the entire collection must be re-rendered. It's useful to break up these composite views into two separate classes, each with their own responsibility: a parent view that handles the aggregation, and a child view responsible for rendering each node of content.</p>
+<p>With each of the <code>Task</code> models represented by an individual <code>TaskView</code>, changes to an individual model are broadcast to its corresponding <code>TaskView</code>, which re-renders only the markup for one task.</p>
+<p>Continuing our example from above, a <code>TaskView</code> will be responsible for rendering just the individual table row for a <code>Task</code>:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml"><span class="co">&lt;!-- app/assets/templates/tasks/task.jst.ejs --&gt;</span>
+<span class="kw">&lt;tr&gt;</span>
+  <span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'title'</span>) <span class="kw">%&gt;&lt;/td&gt;</span>
+  <span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'completed'</span>) <span class="kw">%&gt;&lt;/td&gt;</span>
+<span class="kw">&lt;/tr&gt;</span></code></pre>
+<p>And the Task index template will be changed to appear as shown below:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml"><span class="co">&lt;!-- app/assets/templates/tasks/index.jst.ejs --&gt;</span>
+<span class="kw">&lt;h1&gt;</span>Tasks<span class="kw">&lt;/h1&gt;</span>
+
+<span class="kw">&lt;table&gt;</span>
+  <span class="kw">&lt;tr&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>
+    <span class="kw">&lt;th&gt;</span>Completed<span class="kw">&lt;/th&gt;</span>
+  <span class="kw">&lt;/tr&gt;</span>
+
+  <span class="co">&lt;!-- child content will be rendered here --&gt;</span>
+
+<span class="kw">&lt;/table&gt;</span></code></pre>
+<p>As you can see above in the index template, the individual tasks are no longer iterated over and rendered inside the table, but instead within the <code>TasksIndex</code> and <code>TaskView</code> views, respectively:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/task.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TaskView</span> = <span class="ot">Backbone</span>.<span class="ot">View</span>.<span class="fu">extend</span>({
+  <span class="dt">render</span>: <span class="kw">function</span> () {
+    <span class="kw">this</span>.<span class="ot">$el</span>.<span class="fu">html</span>(JST[<span class="st">'tasks/view'</span>]({ <span class="dt">model</span>: <span class="kw">this</span>.<span class="fu">model</span> }));
+    <span class="kw">return</span> <span class="kw">this</span>;
+  }
+});</code></pre>
+<p>The <code>TaskView</code> view above is very similar to the one we saw previously for the <code>TasksIndex</code> view. It is only responsible for rendering the contents of its own element, and the concern of assembling the view of the list is left to the parent view object:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/tasks_index.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TasksIndex</span> = <span class="ot">Backbone</span>.<span class="ot">View</span>.<span class="fu">extend</span>({
+  <span class="dt">render</span>: <span class="kw">function</span> () {
+    <span class="kw">var</span> self = <span class="kw">this</span>;
+
+    <span class="kw">this</span>.<span class="ot">$el</span>.<span class="fu">html</span>(JST[<span class="st">'tasks/index'</span>]()); <span class="co">// Note that no collection is needed</span>
+                                         <span class="co">// to build the container markup.</span>
+
+    <span class="kw">this</span>.<span class="ot">collection</span>.<span class="fu">each</span>(<span class="kw">function</span>(task) {
+      <span class="kw">var</span> taskView = <span class="kw">new</span> <span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TaskView</span>({ <span class="dt">model</span>: task });
+      <span class="ot">self</span>.<span class="fu">$</span>(<span class="st">'table'</span>).<span class="fu">append</span>(<span class="ot">taskView</span>.<span class="fu">render</span>().<span class="fu">el</span>);
+    });
+
+    <span class="kw">return</span> <span class="kw">this</span>;
+  }
+});</code></pre>
+<p>In the new <code>TasksIndex</code> view above, the <code>tasks</code> collection is iterated over. For each task, a new <code>TaskView</code> is instantiated, rendered, and then inserted into the <code>&lt;table&gt;</code> element.</p>
+<p>If you look at the output of the <code>TasksIndex</code>, it will appear as follows:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml"><span class="co">&lt;!-- output HTML --&gt;</span>
+<span class="kw">&lt;div&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>Tasks<span class="kw">&lt;/h1&gt;</span>
+
+  <span class="kw">&lt;table&gt;</span>
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>
+      <span class="kw">&lt;th&gt;</span>Completed<span class="kw">&lt;/th&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+
+    <span class="kw">&lt;div&gt;</span>
+      <span class="kw">&lt;tr&gt;</span>
+        <span class="kw">&lt;td&gt;</span>Task 1<span class="kw">&lt;/td&gt;</span>
+        <span class="kw">&lt;td&gt;</span>true<span class="kw">&lt;/td&gt;</span>
+      <span class="kw">&lt;/tr&gt;</span>
+    <span class="kw">&lt;/div&gt;</span>
+    <span class="kw">&lt;div&gt;</span>
+      <span class="kw">&lt;tr&gt;</span>
+        <span class="kw">&lt;td&gt;</span>Task 2<span class="kw">&lt;/td&gt;</span>
+        <span class="kw">&lt;td&gt;</span>false<span class="kw">&lt;/td&gt;</span>
+      <span class="kw">&lt;/tr&gt;</span>
+    <span class="kw">&lt;/div&gt;</span>
+  <span class="kw">&lt;/table&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre>
+<p>Unfortunately, we can see that there is a problem with the above rendered view: the surrounding div around each of the rendered tasks.</p>
+<p>Each of the rendered tasks has a surrounding div because this is the element that each view has that is accessed via <code>this.el</code>, and what the view's content is inserted into. By default, this element is a div and therefore every view will be wrapped in an extra div. While sometimes this extra div doesn't really matter, as in the outermost div that wraps the entire index, other times this produces invalid markup.</p>
+<p>Fortunately, Backbone provides us with a clean and simple mechanism for changing the element to something other than a div. In the case of the <code>TaskView</code>, we would like this element to be a tr, then the wrapping tr can be removed from the task view template.</p>
+<p>The element to use is specified by the <code>tagName</code> member of the <code>TaskView</code>, as shown below:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/task_view.js</span>
+<span class="ot">ExampleApp</span>.<span class="ot">Views</span>.<span class="fu">TaskView</span> = <span class="ot">Backbone</span>.<span class="ot">View</span>.<span class="fu">extend</span>({
+  <span class="dt">tagName</span>: <span class="st">&quot;tr&quot;</span>,
+
+  <span class="dt">initialize</span>: <span class="kw">function</span>() {
+  },
+
+  <span class="dt">render</span>: <span class="kw">function</span> () {
+    <span class="kw">this</span>.<span class="ot">$el</span>.<span class="fu">html</span>(JST[<span class="st">'tasks/view'</span>]({ <span class="dt">model</span>: <span class="kw">this</span>.<span class="fu">model</span> }));
+    <span class="kw">return</span> <span class="kw">this</span>;
+  }
+});</code></pre>
+<p>Given the above <code>tagName</code> customization, the task view template will appear as follows:</p>
+<pre class="sourceCode rhtml"><code class="sourceCode rhtml">// app/assets/templates/tasks/view.jst.ejs
+<span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'title'</span>) <span class="kw">%&gt;&lt;/td&gt;</span>
+<span class="kw">&lt;td&gt;&lt;%=</span> model.escape(<span class="st">'completed'</span>) <span class="kw">%&gt;&lt;/td&gt;</span></code></pre>
+<p>And the resulting output of the <code>TasksIndex</code> will be much cleaner, as shown below:</p>
+<pre class="sourceCode html"><code class="sourceCode html"><span class="co">&lt;!-- output HTML --&gt;</span>
+<span class="kw">&lt;div&gt;</span>
+  <span class="kw">&lt;h1&gt;</span>Tasks<span class="kw">&lt;/h1&gt;</span>
+
+  <span class="kw">&lt;table&gt;</span>
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;th&gt;</span>Title<span class="kw">&lt;/th&gt;</span>
+      <span class="kw">&lt;th&gt;</span>Completed<span class="kw">&lt;/th&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;td&gt;</span>Task 1<span class="kw">&lt;/td&gt;</span>
+      <span class="kw">&lt;td&gt;</span>true<span class="kw">&lt;/td&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+    <span class="kw">&lt;tr&gt;</span>
+      <span class="kw">&lt;td&gt;</span>Task 2<span class="kw">&lt;/td&gt;</span>
+      <span class="kw">&lt;td&gt;</span>false<span class="kw">&lt;/td&gt;</span>
+    <span class="kw">&lt;/tr&gt;</span>
+  <span class="kw">&lt;/table&gt;</span>
+<span class="kw">&lt;/div&gt;</span></code></pre>
+<p>We've now covered the basic building blocks of converting Rails views to Backbone and getting a functional system. The majority of Backbone programming you will do will likely be in the views and templates, and there is a lot more to them: event binding, different templating strategies, helpers, event unbinding, and more. Those topics are covered in the &quot;Routers, Views, and Templates&quot; chapter.</p>
+<p></p>
+</section>
+</section>
+</section>
+<section id="models-and-collections" class="level1">
+<h1><a href="#models-and-collections">Models and collections</a></h1>
+<section id="filters-and-sorting" class="level2">
+<h2><a href="#filters-and-sorting">Filters and sorting</a></h2>
+<p>When using our Backbone models and collections, it's often handy to filter the collections by reusable criteria, or sort them by several different criteria.</p>
+</section>
+<section id="modifying-collections-in-place" class="level2">
+<h2><a href="#modifying-collections-in-place">Modifying collections in-place</a></h2>
+<p>An easy method of filtering or sorting a collection is by updating it in-place.</p>
+<p>To sort a collection in-place, change its <code>comparator</code> property to a new function and call <code>#sort</code>:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="kw">var</span> alphabet = <span class="kw">new</span> <span class="ot">Backbone</span>.<span class="fu">Collection</span>([
+  <span class="kw">new</span> <span class="ot">Backbone</span>.<span class="fu">Model</span>({ <span class="dt">letter</span>: <span class="st">'W'</span>, <span class="dt">syllables</span>: <span class="dv">3</span> }),
+  <span class="kw">new</span> <span class="ot">Backbone</span>.<span class="fu">Model</span>({ <span class="dt">letter</span>: <span class="st">'X'</span>, <span class="dt">syllables</span>: <span class="dv">2</span> }),
+  <span class="kw">new</span> <span class="ot">Backbone</span>.<span class="fu">Model</span>({ <span class="dt">letter</span>: <span class="st">'Y'</span>, <span class="dt">syllables</span>: <span class="dv">1</span> }),
+  <span class="kw">new</span> <span class="ot">Backbone</span>.<span class="fu">Model</span>({ <span class="dt">letter</span>: <span class="st">'Z'</span>, <span class="dt">syllables</span>: <span class="dv">1</span> })
+]);
+
+<span class="co">// the collection starts off in natural, insertion order</span>
+<span class="ot">console</span>.<span class="fu">log</span>(<span class="ot">alphabet</span>.<span class="fu">pluck</span>(<span class="st">'letter'</span>)); <span class="co">// ['W', 'X', 'Y', 'Z']</span>
+
+<span class="co">// sort them by number of syllables in the pronunciation</span>
+<span class="ot">alphabet</span>.<span class="fu">comparator</span> = <span class="kw">function</span>(letter) { <span class="kw">return</span> <span class="ot">letter</span>.<span class="fu">get</span>(<span class="st">'syllables'</span>) };
+<span class="ot">alphabet</span>.<span class="fu">sort</span>();
+<span class="ot">console</span>.<span class="fu">log</span>(<span class="ot">alphabet</span>.<span class="fu">pluck</span>(<span class="st">'letter'</span>)); <span class="co">// ['Y', 'Z', 'X', 'W']</span></code></pre>
+<p>To filter a collection in-place, iterate over it and reject the elements you want to remove:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// get rid of letters that take too long to say</span>
+shortLetters = <span class="ot">alphabet</span>.<span class="fu">filter</span>(<span class="kw">function</span>(letter) {
+  <span class="kw">return</span> <span class="ot">letter</span>.<span class="fu">get</span>(<span class="st">'syllables'</span>) == <span class="dv">1</span>;
+});
+<span class="ot">alphabet</span>.<span class="fu">reset</span>(shortLetters);
+<span class="ot">console</span>.<span class="fu">log</span>(<span class="ot">alphabet</span>.<span class="fu">pluck</span>(<span class="st">'letter'</span>)); <span class="co">// ['Y', 'Z']</span></code></pre>
+<p>Note that the filtering is destructive; after we invoke <code>alphabet#reset</code>, there is no way to get the discarded elements back. Also, there is no link back to the parent collection - if elements are added to the base collection, they are not propagated automatically to the filtered view. Since it's occasionally valuable to produce a filtered view on a collection that receives changes to the root collection, let's take a look at implementing it.</p>
+<p>After that, we'll take a look at a memory leak that this pattern can introduce, and how to effectively manage that.</p>
+<p>Finally, while the clone-and-modify approach is more clearly useful for filtering, it can be helpful in sorting as well if you need to render multiple views from the same base collection, but with different sort orders.</p>
+</section>
+<section id="filtering" class="level2">
+<h2><a href="#filtering">Filtering</a></h2>
+<p>To filter a <code>Backbone.Collection</code>, as with Rails named scopes, first define functions on your collections that filter by your criteria, using the <code>select</code> function from Underscore.js; then, return new instances of the collection class. A first implementation might look like this:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">complete</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> filteredTasks = <span class="kw">this</span>.<span class="fu">select</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">get</span>(<span class="st">'completed_at'</span>) !== <span class="kw">null</span>;
+    });
+    <span class="kw">return</span> <span class="kw">new</span> <span class="fu">Tasks</span>(filteredTasks);
+  }
+});</code></pre>
+<p>Let's refactor this a bit. Ideally, the filter functions will reuse logic already defined in your model class:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/models/task.js</span>
+<span class="kw">var</span> Task = <span class="ot">Backbone</span>.<span class="ot">Model</span>.<span class="fu">extend</span>({
+  <span class="dt">isComplete</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">get</span>(<span class="st">'completed_at'</span>) !== <span class="kw">null</span>;
+  }
+});
+
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">complete</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> filteredTasks = <span class="kw">this</span>.<span class="fu">select</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">isComplete</span>();
+    });
+    <span class="kw">return</span> <span class="kw">new</span> <span class="fu">Tasks</span>(filteredTasks);
+  }
+});</code></pre>
+<p>Going further, notice that there are actually two concerns in this function. The first is the notion of filtering the collection, and the second is the specific filtering criteria (<code>task.isComplete()</code>).</p>
+<p>Let's separate the two concerns here, and extract a <code>filtered</code> function:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/models/task.js</span>
+<span class="kw">var</span> Task = <span class="ot">Backbone</span>.<span class="ot">Model</span>.<span class="fu">extend</span>({
+  <span class="dt">isComplete</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">get</span>(<span class="st">'completed_at'</span>) !== <span class="kw">null</span>;
+  }
+});
+
+<span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">complete</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">filtered</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">isComplete</span>();
+    });
+  },
+
+  <span class="dt">filtered</span>: <span class="kw">function</span>(criteriaFunction) {
+    <span class="kw">return</span> <span class="kw">new</span> <span class="fu">Tasks</span>(<span class="kw">this</span>.<span class="fu">select</span>(criteriaFunction));
+  }
+});</code></pre>
+<p>We can extract this function into a reusable mixin, abstracting the <code>Tasks</code> collection class using <code>this.constructor</code>:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/filterable_collection_mixin.js</span>
+<span class="kw">var</span> FilterableCollectionMixin = {
+  <span class="dt">filtered</span>: <span class="kw">function</span>(criteriaFunction) {
+    <span class="kw">return</span> <span class="kw">new</span> <span class="kw">this</span>.<span class="fu">constructor</span>(<span class="kw">this</span>.<span class="fu">select</span>(criteriaFunction));
+  }
+};
+
+<span class="co">// app/assets/javascripts/models/task.js</span>
+<span class="kw">var</span> Task = <span class="ot">Backbone</span>.<span class="ot">Model</span>.<span class="fu">extend</span>({
+  <span class="dt">isComplete</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">get</span>(<span class="st">'completed_at'</span>) !== <span class="kw">null</span>;
+  }
+});
+
+<span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">complete</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">filtered</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">isComplete</span>();
+    });
+  }
+});
+
+<span class="ot">_</span>.<span class="fu">extend</span>(<span class="ot">Tasks</span>.<span class="fu">prototype</span>, FilterableCollectionMixin);</code></pre>
+</section>
+<section id="propagating-collection-changes" class="level2">
+<h2><a href="#propagating-collection-changes">Propagating collection changes</a></h2>
+<p>The <code>FilterableCollectionMixin</code>, as we've written it, will produce a filtered collection that does not update when the original collection is changed.</p>
+<p>A naive approach is to bind to the change, add, and remove events on the source collection, reapply the filter function, and repopulate the filtered collection:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/filterable_collection_mixin.js</span>
+<span class="kw">var</span> FilterableCollectionMixin = {
+  <span class="dt">filtered</span>: <span class="kw">function</span>(criteriaFunction) {
+    <span class="kw">var</span> sourceCollection = <span class="kw">this</span>;
+    <span class="kw">var</span> filteredCollection = <span class="kw">new</span> <span class="kw">this</span>.<span class="fu">constructor</span>;
+
+    <span class="kw">var</span> applyFilter = <span class="kw">function</span>() {
+      <span class="ot">filteredCollection</span>.<span class="fu">reset</span>(<span class="ot">sourceCollection</span>.<span class="fu">select</span>(criteriaFunction));
+    };
+
+    <span class="kw">this</span>.<span class="fu">bind</span>(<span class="st">&quot;change&quot;</span>, applyFilter);
+    <span class="kw">this</span>.<span class="fu">bind</span>(<span class="st">&quot;add&quot;</span>,    applyFilter);
+    <span class="kw">this</span>.<span class="fu">bind</span>(<span class="st">&quot;remove&quot;</span>, applyFilter);
+
+    <span class="fu">applyFilter</span>();
+
+    <span class="kw">return</span> filteredCollection;
+  }
+};</code></pre>
+<p>While this correctly updates the filtered collection when the base collection or one of its models is changed, this will always trigger a <code>reset</code> event on the filtered collection, rather than the appropriate event.</p>
+<p>A full <code>FilteredCollectionMixin</code>, along with specs for its event triggering in various states, is included in the <code>example_app</code> in:</p>
+<ul>
+<li><code>app/assets/javascripts/filterable_collection_mixin.js</code></li>
+<li><code>spec/javascripts/filterable_collection_mixin_spec.js</code></li>
+</ul>
+<section id="a-note-on-event-bindings-and-reference-leaks" class="level3">
+<h3><a href="#a-note-on-event-bindings-and-reference-leaks">A note on event bindings and reference leaks</a></h3>
+<p>The general approach of duplicating a collection to filter or sort it is handy, but there is a piece of bookkeeping that you have to keep in mind. Consider a filterable results interface that renders a collection, and assume that the view uses this derivative collection approach to filtering.</p>
+<p>The view accepts a base collection and then maintains a filtered version of that collection, which it renders from.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/filterable_results_view.js</span>
+<span class="kw">var</span> FilterableResultsView = <span class="ot">Support</span>.<span class="ot">CompositeView</span>.<span class="fu">extend</span>({
+  <span class="dt">events</span>: {
+    <span class="st">&quot;click button.filter&quot;</span>: applyFilter,
+  },
+
+  <span class="dt">initialize</span>: <span class="kw">function</span>(options) {
+    <span class="kw">this</span>.<span class="fu">baseCollection</span> = <span class="ot">options</span>.<span class="fu">collection</span>;
+    <span class="kw">this</span>.<span class="fu">filteredCollection</span> = <span class="kw">this</span>.<span class="fu">baseCollection</span>;
+  },
+
+  <span class="dt">applyFilter</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> filterFunction = <span class="kw">this</span>.<span class="fu">computeFilterFunction</span>(); <span class="co">// filtering logic goes here</span>
+    <span class="kw">this</span>.<span class="fu">filteredCollection</span> = <span class="kw">this</span>.<span class="ot">baseCollection</span>.<span class="fu">filtered</span>(filterFunction);
+    <span class="kw">this</span>.<span class="fu">render</span>();
+  },
+
+  <span class="dt">render</span>: <span class="kw">function</span>() {
+    <span class="co">// render from this.filteredCollection</span>
+  },
+
+  <span class="co">// ...</span>
+});</code></pre>
+<p>There is a leak in FilterableMixinCollection, as we have it now, which is exposed by this usage pattern. The contructor-local functions <code>addToFiltered</code>, <code>removeFromFiltered</code>, and <code>changeFiltered</code> close over the <code>filteredCollection</code> reference inside <code>FilterableCollectionMixin#filtered</code>. Those functions are also bound as event handlers on the <code>baseCollection</code>, which means a reference chain is maintained from the base collection, through its event handlers, to those functions, to the filtered collection.</p>
+<p>Unless these event handlers are unbound, the filtered collection will never be eligible for garbage collection. If the user re-filters the view many times, which is particularly likely in a long-lived client-side application, this leakage can grow quite large. Additionally, the chain of references extending from the filtered collections may grow quite large themselves.</p>
+<p>Unfortunately, a filtered collection is not aware of when you are finished using it, so we must expose the cleanup concern as something for the view to handle. See the <code>teardown</code> function in <code>FilterableCollectionMixin</code>, which unbinds these event handlers, allowing the filtered collection to be correctly garbage collected.</p>
+<p>You can think of this in a similar way to how the <code>SwappingRouter</code> tracks its current view, disposing of the old view before swapping in the new one.</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/views/filterable_results_view.js</span>
+<span class="kw">var</span> FilterableResultsView = <span class="ot">Support</span>.<span class="ot">CompositeView</span>.<span class="fu">extend</span>({
+  <span class="dt">initialize</span>: <span class="kw">function</span>(options) {
+    <span class="kw">this</span>.<span class="fu">baseCollection</span> = <span class="ot">options</span>.<span class="fu">collection</span>;
+
+    <span class="co">// If we just assign filteredCollection to baseCollection, either:</span>
+    <span class="co">//</span>
+    <span class="co">// 1. baseCollection does not have #teardown, so calling it blows up.</span>
+    <span class="co">// 2. baseCollection does have #teardown, and we tear it down while</span>
+    <span class="co">//    filtering, breaking the chain from its parent.  Oops.</span>
+    <span class="co">//</span>
+    <span class="co">// So, produce a filtered copy that initially contains all member elements.</span>
+    <span class="kw">this</span>.<span class="fu">filteredCollection</span> = <span class="kw">this</span>.<span class="ot">baseCollection</span>.<span class="fu">filtered</span>(
+      <span class="kw">function</span>() { <span class="kw">return</span> <span class="kw">true</span>; });
+  },
+
+  <span class="dt">applyFilter</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> filterFunction = <span class="kw">this</span>.<span class="fu">computeFilterFunction</span>(); <span class="co">// filtering logic goes here</span>
+    <span class="kw">this</span>.<span class="ot">filteredFunction</span>.<span class="fu">teardown</span>();
+    <span class="kw">this</span>.<span class="fu">filteredCollection</span> = <span class="kw">this</span>.<span class="ot">baseCollection</span>.<span class="fu">filtered</span>(filterFunction);
+    <span class="kw">this</span>.<span class="fu">render</span>();
+  },
+
+  <span class="co">// ...</span>
+});</code></pre>
+</section>
+</section>
+<section id="sorting" class="level2">
+<h2><a href="#sorting">Sorting</a></h2>
+<p>The simplest way to sort a <code>Backbone.Collection</code> is to define a <code>comparator</code> function. This functionality is built in:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">comparator</span>: <span class="kw">function</span>(task) {
+    <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">dueDate</span>;
+  }
+});</code></pre>
+<p>If you'd like to provide more than one sort order on your collection, you can use an approach similar to the <code>filtered</code> function above, and return a new <code>Backbone.Collection</code> whose <code>comparator</code> is overridden. Call <code>sort</code> to update the ordering on the new collection:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">comparator</span>: <span class="kw">function</span>(task) {
+    <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">dueDate</span>;
+  },
+
+  <span class="dt">byCreatedAt</span>: <span class="kw">function</span>() {
+    <span class="kw">var</span> sortedCollection = <span class="kw">new</span> <span class="fu">Tasks</span>(<span class="kw">this</span>.<span class="fu">models</span>);
+    <span class="ot">sortedCollection</span>.<span class="fu">comparator</span> = <span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">createdAt</span>;
+    };
+    <span class="ot">sortedCollection</span>.<span class="fu">sort</span>();
+    <span class="kw">return</span> sortedCollection;
+  }
+});</code></pre>
+<p>Similarly, you can extract the reusable concern to another function:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/collections/tasks.js</span>
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">comparator</span>: <span class="kw">function</span>(task) {
+    <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">dueDate</span>;
+  },
+
+  <span class="dt">byCreatedAt</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">sortedBy</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">createdAt</span>;
+    });
+  },
+
+  <span class="dt">byCompletedAt</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">sortedBy</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">completedAt</span>;
+    });
+  },
+
+  <span class="dt">sortedBy</span>: <span class="kw">function</span>(comparator) {
+    <span class="kw">var</span> sortedCollection = <span class="kw">new</span> <span class="fu">Tasks</span>(<span class="kw">this</span>.<span class="fu">models</span>);
+    <span class="ot">sortedCollection</span>.<span class="fu">comparator</span> = comparator;
+    <span class="ot">sortedCollection</span>.<span class="fu">sort</span>();
+    <span class="kw">return</span> sortedCollection;
+  }
+});</code></pre>
+<p>...And then into another reusable mixin:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/sortable_collection_mixin.js</span>
+<span class="kw">var</span> SortableCollectionMixin = {
+  <span class="dt">sortedBy</span>: <span class="kw">function</span>(comparator) {
+    <span class="kw">var</span> sortedCollection = <span class="kw">new</span> <span class="kw">this</span>.<span class="fu">constructor</span>(<span class="kw">this</span>.<span class="fu">models</span>);
+    <span class="ot">sortedCollection</span>.<span class="fu">comparator</span> = comparator;
+    <span class="ot">sortedCollection</span>.<span class="fu">sort</span>();
+    <span class="kw">return</span> sortedCollection;
+  }
+};
+
+<span class="kw">var</span> Tasks = <span class="ot">Backbone</span>.<span class="ot">Collection</span>.<span class="fu">extend</span>({
+  <span class="dt">model</span>: Task,
+  <span class="dt">url</span>: <span class="st">'/tasks'</span>,
+
+  <span class="dt">comparator</span>: <span class="kw">function</span>(task) {
+    <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">dueDate</span>;
+  },
+
+  <span class="dt">byCreatedAt</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">sortedBy</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">createdAt</span>;
+    });
+  },
+
+  <span class="dt">byCompletedAt</span>: <span class="kw">function</span>() {
+    <span class="kw">return</span> <span class="kw">this</span>.<span class="fu">sortedBy</span>(<span class="kw">function</span>(task) {
+      <span class="kw">return</span> <span class="ot">task</span>.<span class="fu">completedAt</span>;
+    });
+  }
+});
+
+<span class="ot">_</span>.<span class="fu">extend</span>(<span class="ot">Tasks</span>.<span class="fu">prototype</span>, SortableCollectionMixin);</code></pre>
+<p>Just as with the <code>FilterableCollectionMixin</code> before, the <code>SortableCollectionMixin</code> should observe its source if updates are to propagate from one collection to another:</p>
+<pre class="sourceCode javascript"><code class="sourceCode javascript"><span class="co">// app/assets/javascripts/sortable_collection_mixin.js</span>
+<span class="kw">var</span> SortableCollectionMixin = {
+  <span class="dt">sortedBy</span>: <span class="kw">function</span>(comparator) {
+    <span class="kw">var</span> sourceCollection = <span class="kw">this</span>;
+    <span class="kw">var</span> sortedCollection = <span class="kw">new</span> <span class="kw">this</span>.<span class="fu">constructor</span>;
+    <span class="ot">sortedCollection</span>.<span class="fu">comparator</span> = comparator;
+
+    <span class="kw">var</span> applySort = <span class="kw">function</span>() {
+      <span class="ot">sortedCollection</span>.<span class="fu">reset</span>(<span class="ot">sourceCollection</span>.<span class="fu">models</span>);
+      <span class="ot">sortedCollection</span>.<span class="fu">sort</span>();
+    };
+
+    <span class="kw">this</span>.<span class="fu">on</span>(<span class="st">&quot;change&quot;</span>, applySort);
+    <span class="kw">this</span>.<span class="fu">on</span>(<span class="st">&quot;add&quot;</span>,    applySort);
+    <span class="kw">this</span>.<span class="fu">on</span>(<span class="st">&quot;remove&quot;</span>, applySort);
+
+    <span class="fu">applySort</span>();
+
+    <span class="kw">return</span> sortedCollection;
+  }
+};</code></pre>
+<p>It is left as an excerise for the reader to update <code>SortableCollectionMixin</code> to trigger the correct change/add/remove events as in the improved <code>FilterableCollectionMixin</code> above.</p>
+</section>
+</section>
+<section id="closing" class="level1">
+<h1><a href="#closing">Closing</a></h1>
+<p>Thanks for checking out the sample of our Backbone.js on Rails eBook. If you’d like to get access to the full content, the example application, ongoing updates, and the ability to get your questions about Bakcbone.js and Rails answered by us, you can pick it up on our website:</p>
+<p><a href="https://learn.thoughtbot.com/products/1-backbone-js-on-rails">https://learn.thoughtbot.com/products/1-backbone-js-on-rails</a></p>
+</section>
+</body>
+</html>
