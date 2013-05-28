@@ -17,7 +17,7 @@ application at:
 Glad you asked!
 
 The eBook covers intermediate to advanced topics on using Backbone.js,
-including content specific to integrating with Rails applications.
+including content specific to integrating with Rails applications. 
 
 In addition to the book (in HTML, PDF, EPUB, and Kindle formats), you also get
 a complete example application, and the ability to get your questions about
@@ -33,7 +33,7 @@ working code. Fully up to date for Rails 3.2.
 
 # Contact us
 
-If you have any questions, or just want to get in touch, drop us a line at
+If you have any questions, or just want to get in touch, drop us a line at 
 [learn@thoughtbot.com](mailto:learn@thoughtbot.com).
 
 \clearpage
@@ -235,10 +235,7 @@ Fortunately, Sprockets can handle this load order for us. When all is said and
 done, your application.js Sprockets manifest will look as shown below:
 
 ```javascript
-// app/assets/javascripts/application.js
-```
-
-```
+# app/assets/javascripts/application.js
 //= require jquery
 //= require jquery_ujs
 //= require jquery-ui-1.8.18.custom.min
@@ -251,6 +248,8 @@ done, your application.js Sprockets manifest will look as shown below:
 //= require backbone-forms.js
 //= require jquery-ui-editors.js
 //= require uploader.js
+//
+//= require vendor/visualsearch.js
 //
 //= require example_app
 //
@@ -310,7 +309,7 @@ following.
 
 ```javascript
 // app/assets/javascripts/collections/tasks.js
-var Tasks = Backbone.Collection.extend({
+ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: Task
 });
 ```
@@ -322,7 +321,7 @@ change, then our collection and model will be as follows.
 
 ```javascript
 // app/assets/javascripts/collections/tasks.js
-var Tasks = Backbone.Collection.extend({
+ExampleApp.Collections.Tasks = Backbone.Collection.extend({
   model: Task,
   url: '/tasks'
 });
@@ -388,7 +387,7 @@ provided resource, `@tasks`.
 
 If a Backbone model has a `validate` method defined, it will be validated on
 the client side, before its attributes are set. If validation fails, no changes
-to the model will occur, and the "error" event will be fired. Your `validate`
+to the model will occur, and the "invalid" event will be fired. Your `validate`
 method will be passed the attributes that are about to be updated. You can
 signal that validation passed by returning nothing from your `validate` method.
 You signify that validation has failed by returning something from the method.
@@ -489,8 +488,8 @@ var ExampleApp = {
   Views: {},
   Routers: {},
   initialize: function(data) {
-    var tasks = new ExampleApp.Collections.Tasks(data.tasks);
-    new ExampleApp.Routers.Tasks({ tasks: tasks });
+    this.tasks = new ExampleApp.Collections.Tasks(data.tasks);
+    new ExampleApp.Routers.Tasks();
     Backbone.history.start();
   }
 };
@@ -562,7 +561,7 @@ Backbone views are classes that contain event handling and presentation logic.
 
 Consider the following Rails view for a tasks index:
 
-```erb
+```rhtml
 <!-- app/views/tasks/index.html.erb -->
 <h1>Tasks</h1>
 
@@ -649,7 +648,7 @@ Underscore.js to provide these iteration functions as methods on `Backbone.Colle
 We'll use the `each` method to iterate through the `Tasks` collection that was
 passed to the view, as shown in the converted Underscore.js template below:
 
-```erb
+```rhtml
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -689,7 +688,7 @@ which re-renders only the markup for one task.
 Continuing our example from above, a `TaskView` will be responsible for
 rendering just the individual table row for a `Task`:
 
-```erb
+```rhtml
 <!-- app/assets/templates/tasks/task.jst.ejs -->
 <tr>
   <td><%= model.escape('title') %></td>
@@ -699,7 +698,7 @@ rendering just the individual table row for a `Task`:
 
 And the Task index template will be changed to appear as shown below:
 
-```erb
+```rhtml
 <!-- app/assets/templates/tasks/index.jst.ejs -->
 <h1>Tasks</h1>
 
@@ -758,7 +757,7 @@ the `<table>` element.
 
 If you look at the output of the `TasksIndex`, it will appear as follows:
 
-```erb
+```rhtml
 <!-- output HTML -->
 <div>
   <h1>Tasks</h1>
@@ -821,7 +820,7 @@ ExampleApp.Views.TaskView = Backbone.View.extend({
 Given the above `tagName` customization, the task view template will appear as
 follows:
 
-```erb
+```rhtml
 // app/assets/templates/tasks/view.jst.ejs
 <td><%= model.escape('title') %></td>
 <td><%= model.escape('completed') %></td>
