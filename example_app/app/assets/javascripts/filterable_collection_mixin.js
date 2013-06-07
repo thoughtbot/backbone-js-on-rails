@@ -29,14 +29,14 @@ var FilterableCollectionMixin = {
       }
     };
 
-    this.bind("change", changeFiltered);
-    this.bind("add",    addToFiltered);
-    this.bind("remove", removeFromFiltered);
+    this.on("change", changeFiltered);
+    this.on("add",    addToFiltered);
+    this.on("remove", removeFromFiltered);
 
     filteredCollection.teardown = function() {
-      sourceCollection.unbind('change', changeFiltered);
-      sourceCollection.unbind('add',    addToFiltered);
-      sourceCollection.unbind('remove', removeFromFiltered);
+      sourceCollection.off('change', changeFiltered);
+      sourceCollection.off('add',    addToFiltered);
+      sourceCollection.off('remove', removeFromFiltered);
     };
 
     filteredCollection.refilter = function(newCriteria) {
