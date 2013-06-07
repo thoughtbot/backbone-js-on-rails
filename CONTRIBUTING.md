@@ -42,16 +42,24 @@ We recommend using the binary distribution of pandoc whenever possible.
 
 Install dependencies with Bundler:
 
-  bundle install
+```
+bundle install
+```
+
+The `paperback` gem depends on the following fonts:
+
+* [Proxima Nova](https://www.dropbox.com/sh/ntxu99zcm28agp8/Cqiwu9ORA5)
+* [Inconsolata](http://www.levien.com/type/myfonts/inconsolata.html)
 
 Now install the pandoc dependencies:
 
 #### Installing dependencies on OSX
 
-  brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
-  brew install imagemagick
-  brew install ghostscript
-
+```
+brew install https://raw.github.com/adamv/homebrew-alt/master/non-free/kindlegen.rb
+brew install imagemagick
+brew install ghostscript
+```
 Latex is needed for PDF distribution:
 
 We recommend downloading the [smaller, basic version of MacTex](http://www.tug.org/mactex/morepackages.html).
@@ -61,35 +69,56 @@ The `cm-super` TeX package is required to correctly render outline (vector) font
 
 Assuming you installed the BasicTeX package above, install this with the TeXLive manager commandline tool:
 
-  sudo tlmgr update --self
-  sudo tlmgr install upquote
-  sudo tlmgr install cm-super
+```
+sudo tlmgr update --self
+sudo tlmgr install upquote
+sudo tlmgr install cm-super
+```
+
+You may need to add its bin directory to your PATH:
+
+```
+export PATH=$PATH:/usr/texbin
+```
 
 #### Installing dependencies on Ubuntu
 
 Install KindleGen into ~/bin; you can put it anywhere in your PATH you like:
 
-   wget -P /tmp/ http://s3.amazonaws.com/kindlegen/kindlegen_linux_2.6_i386_v1.2.tar.gz
-   tar -C /tmp/ -xzf /tmp/kindlegen_linux_2.6_i386_v1.2.tar.gz
-   mv /tmp/kindlegen ~/bin/
+```
+wget -P /tmp/ http://s3.amazonaws.com/kindlegen/kindlegen_linux_2.6_i386_v1.2.tar.gz
+tar -C /tmp/ -xzf /tmp/kindlegen_linux_2.6_i386_v1.2.tar.gz
+mv /tmp/kindlegen ~/bin/
+```
 
 Latex is needed for PDF creation:
 
-   sudo apt-get install texlive
+```
+sudo apt-get install texlive
+```
 
 As are the upquote and cm-super TeX packages:
 
-  sudo tlmgr update --self
-  sudo tlmgr install upquote
-  sudo tlmgr install cm-super
+```
+sudo tlmgr update --self
+sudo tlmgr install upquote
+sudo tlmgr install cm-super
+```
 
 ## Building
 
-Run `rake build:all` to build all output targets.
+Run `paperback build` to build all output targets.
 
-Run `rake build:epub` (or `:html`, `:pdf`, `:mobi`) to build individual versions.
+## Reviewing
+
+When reviewing new chapters, use `paperback review` to check out, build, and
+view the book locally. Example: `paperback review 6` will review the book for
+pull request 6.
 
 ## Releasing
 
-Run `rake release` to build all output targets, commit to git, and push up to
-GitHub.
+Run `paperback release` to build all output targets in the `release` directory.
+Then commit and push up to GitHub.
+
+For more detailed documentation on the `paperback` gem, check out the
+[README](https://github.com/thoughtbot/paperback/blob/master/README.md)
