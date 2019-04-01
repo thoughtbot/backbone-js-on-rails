@@ -10,9 +10,9 @@ var TaskDetail = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, "render");
 
-    this.model.on("change", this.render);
-    this.model.comments.on("change", this.render);
-    this.model.comments.on("add",    this.render);
+    this.listenTo(this.model, "change", this.render);
+    this.listenTo(this.model.comments, "change", this.render);
+    this.listenTo(this.model.comments, "add", this.render);
   },
 
   render: function() {
